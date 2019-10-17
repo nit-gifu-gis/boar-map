@@ -14,6 +14,7 @@ $ npm run dev
 
 ## ブランチの切り方
 基本的に機能を作る前にissueを立ててから作業する
+
 feature/issue番号
 - 新機能実装時
 
