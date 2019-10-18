@@ -15,6 +15,7 @@
     "watch": "npm-run-all -p watch:*",
     "next": "next",
     "cp:resetcss": "cp -f node_modules/reboot.css/dist/reboot.min.css utils/resetcss/reboot.min.scss",
+    "build": "npm-run-all -p build:*"
     "build:next": "next build",
     "lint:ts": "eslint {pages,components,utils} --ext .js --ext .jsx --fix",
     "watch:ts": "chokidar '{components,pages,scss,utils}/**/*.{js,jsx}' -c 'npm run lint:ts'"
