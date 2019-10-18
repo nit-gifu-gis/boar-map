@@ -1,7 +1,10 @@
 # いのししマップぎふ
 
 ## 使用するフレームーワーク
-- Next.js
+- Next.js ([参考](https://qiita.com/tsuuuuu_san/items/790ee15ed435b9860f57))
+- SCSS ([参考](https://dev.classmethod.jp/slide/scss-tutorial/))
+
+基本的に[Atomic Design](https://bit.ly/2QqaTKl)に基づいて作成しましょう
 
 ## コマンド等
 ```
@@ -22,16 +25,21 @@ bug/issue番号
 - バグ修正時
 
 ## コミットメッセージ
-- コミットメッセージには日本語を用いる。
+- コミットメッセージには日本語を用いる
 - 作業内容がぱっと見てわかるように簡潔に書く
 - コミットメッセージのどこかにissue番号を書く
+
 ex) `メイン画面の実装 #1`
 
 ## 開発の流れ
-1. issueのAsigneesに自分を追加する(誰がどの作業をしているかわかるようにするため)
+1. IssueのAsigneesに自分を追加する(誰がどの作業をしているかわかるようにするため)
 2. 新しいブランチを切る
 3. 作業をする
 4. プルリクを作成する 
+
+##　その他
+- [homebrewのインストール方法](https://brew.sh/)
+- [yarnのインストール方法](https://yarnpkg.com/lang/ja/docs/install/#mac-stable)
 
 ## 著作権表記
 Copyright (c) 2019 National Institute of Technology, Gifu College GIS Team
