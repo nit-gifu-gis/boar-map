@@ -14,7 +14,7 @@ import GoogleMapReact from "google-map-react";
 const Index = () => (
   <div>
     <Header />
-    <h1>Index Content!</h1>
+    <h1>Hello World!</h1>
     <Link href="/login">
       <a>ログインページへのリンク</a>
     </Link>
