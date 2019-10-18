@@ -37,7 +37,7 @@ ex) `メイン画面の実装 #1`
 3. 作業をする
 4. プルリクを作成する 
 
-##　その他
+## その他
 - [homebrewのインストール方法](https://brew.sh/)
 - [yarnのインストール方法](https://yarnpkg.com/lang/ja/docs/install/#mac-stable)
 
