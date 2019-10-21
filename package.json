@@ -63,7 +63,8 @@
       "es6": true
     },
     "rules": {
-      "no-unused-vars": "off"
+      "no-unused-vars": "off",
+      "require-jsdoc" : 0
     }
   },
   "stylelint": {
