@@ -6,10 +6,18 @@ import SessionManager from "../../utils/session";
 import Login from "../../components/templates/Login";
 
 class LoginPage extends React.Component {
-  componentDidMount() {
-    if (SessionManager.isLogin(localStorage)) {
-      Router.push("/");
+  static async getInitialProps(ctx) {
+    if (SessionManager.isLogin(ctx)) {
+      if (ctx.res) {
+        ctx.res.writeHead(302, {
+          Location: "/"
+        });
+        ctx.res.end();
+      } else {
+        Router.push("/");
+      }
     }
+    return { isLogin: true };
   }
 
   render() {

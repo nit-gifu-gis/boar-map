@@ -18,16 +18,17 @@ const OnSubmitting = event => {
     tenantID: "210005"
   };
 
-  const url =
-    "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetToken";
-  fetch(url, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  })
+  fetch(
+    "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetToken",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    }
+  )
     .then(function(res) {
       const time = new Date().getTime();
       const json = res.json().then(data => onLogin(data, time));
@@ -39,9 +40,9 @@ const onLogin = (data, time) => {
   console.log(data);
   console.log(data["commonHeader"].resultInfomation);
   if (data["commonHeader"].resultInfomation == "0") {
-    localStorage.setItem("user_id", data.data.user_Id);
-    localStorage.setItem("access_token", data.data.accessToken);
-    localStorage.setItem("login_time", time);
+    document.cookie = `user_id=${data.data.userId}; path=/`;
+    document.cookie = `access_token=${data.data.accessToken}; path=/`;
+    document.cookie = `login_time=${time}; path=/`;
     Router.push("/");
   } else {
     document.getElementById("error_message").innerHTML =
