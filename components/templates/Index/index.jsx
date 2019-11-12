@@ -18,6 +18,10 @@ const Index = () => (
     <Link href="#">
       <a onClick={OnLogout}>ログアウト</a>
     </Link>
+    <br />
+    <Link href="/map">
+      <a>マップ</a>
+    </Link>
     <Footer />
   </div>
 );
