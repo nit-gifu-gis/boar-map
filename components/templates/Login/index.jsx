@@ -1,16 +1,13 @@
 import "./login.scss";
-import Link from "next/link";
 
 import Header from "../../organisms/header";
+import LoginForm from "../../organisms/loginForm";
 import Footer from "../../organisms/footer";
 
 const Login = () => (
   <div>
     <Header />
-    <h1>Login Page Content!</h1>
-    <Link href="/">
-      <a>トップページへのリンク</a>
-    </Link>
+    <LoginForm />
     <Footer />
   </div>
 );
