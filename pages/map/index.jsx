@@ -25,6 +25,7 @@ class MapPage extends React.Component {
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="stylesheet" href="/static/css/leaflet.css" />
           <title>いのししマップぎふ - マップ</title>
         </Head>
         <Map />
