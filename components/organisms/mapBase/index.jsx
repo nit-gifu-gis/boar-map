@@ -1,7 +1,7 @@
 import "./mapBase.scss";
 import React from "react";
 import L from "leaflet";
-import "../../../node_modules/leaflet-wms-header";
+import "leaflet-wms-header";
 
 class MapBase extends React.Component {
   state = {
