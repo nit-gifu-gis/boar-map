@@ -37,7 +37,7 @@ export default class SessionManager {
         receiptNumber: receiptNumber
       },
       userID: userData.user_id,
-      tenantID: "210005"
+      tenantID: "21000S"
     };
     const header = {
       "X-Map-Api-Access-Token": userData.access_token
