@@ -19,7 +19,8 @@ class MapBase extends React.Component {
   }
 
   map() {
-    const map = L.map("map").setView(
+    const node = this.node;
+    const map = L.map(node).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
@@ -81,21 +82,28 @@ class MapBase extends React.Component {
   }
 
   render() {
-    return <div id="map"></div>;
+    return (
+      <div
+        id="map"
+        ref={node => {
+          this.node = node;
+        }}
+      ></div>
+    );
   }
 }
 
 export default MapBase;
 
 // 現在地取得ボタンを押した時
-function onClickSetLocation(btn, map) {
+const onClickSetLocation = (btn, map) => {
   if (navigator.geolocation == false) {
     alert("現在地を取得できませんでした．");
     return;
   }
 
   // 取得成功時
-  function success(e) {
+  const success = e => {
     // マップを現在地中心で表示
     const lat = e.coords.latitude;
     const lng = e.coords.longitude;
@@ -113,11 +121,11 @@ function onClickSetLocation(btn, map) {
       iconAnchor: [21, 21]
     });
     locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
-  }
+  };
 
-  function error() {
+  const error = () => {
     alert("現在地を取得できませんでした．");
-  }
+  };
 
   navigator.geolocation.getCurrentPosition(success, error);
-}
+};
