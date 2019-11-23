@@ -2,6 +2,10 @@ import "./mapBase.scss";
 import React from "react";
 import L from "leaflet";
 import "leaflet-wms-header";
+import "leaflet-easybutton";
+
+// 現在地マーカー
+let locMarker = undefined;
 
 class MapBase extends React.Component {
   state = {
@@ -15,7 +19,8 @@ class MapBase extends React.Component {
   }
 
   map() {
-    const map = L.map("map").setView(
+    const node = this.node;
+    const map = L.map(node).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
@@ -67,11 +72,60 @@ class MapBase extends React.Component {
 
     L.control.layers(baseLayers, overlays).addTo(map);
     L.control.scale().addTo(map);
+
+    // 現在地ボタン追加
+
+    L.easyButton(
+      "<img src='static/images/map/my_location-24px.svg'>",
+      onClickSetLocation
+    ).addTo(map);
   }
 
   render() {
-    return <div id="map"></div>;
+    return (
+      <div
+        id="map"
+        ref={node => {
+          this.node = node;
+        }}
+      ></div>
+    );
   }
 }
 
 export default MapBase;
+
+// 現在地取得ボタンを押した時
+const onClickSetLocation = (btn, map) => {
+  if (navigator.geolocation == false) {
+    alert("現在地を取得できませんでした．");
+    return;
+  }
+
+  // 取得成功時
+  const success = e => {
+    // マップを現在地中心で表示
+    const lat = e.coords.latitude;
+    const lng = e.coords.longitude;
+    map.setView([lat, lng], 17);
+
+    // 前に表示されていた現在地マーカを消す
+    if (locMarker != undefined) {
+      map.removeLayer(locMarker);
+    }
+    // 現在地にマーカーを置く
+    const locMerkerIcon = L.icon({
+      iconUrl: "static/images/map/myLoc.png",
+      iconRetinaUrl: "static/images/map/myLoc.png",
+      iconSize: [40, 40],
+      iconAnchor: [21, 21]
+    });
+    locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
+  };
+
+  const error = () => {
+    alert("現在地を取得できませんでした．");
+  };
+
+  navigator.geolocation.getCurrentPosition(success, error);
+};
