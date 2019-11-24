@@ -38,6 +38,7 @@
   padding: 15px 0px;
   width: 400px;
   border: 2px solid #d1d1d1;
+  border-radius: 3px;
 }
 .form h1,h2{
   padding:10px 30px;
@@ -51,6 +52,7 @@
   margin-left: 30px;
   width: 80%;
   outline: none;
+  border-radius: 3px;
   border: 2px solid #d1d1d1;
 }
 .form input:focus{
@@ -73,21 +75,21 @@
   background-image: none;
   background-color: #ff52eb;
 }
-@media screen and (max-width:40px){
+@media screen and (max-width:400px){
 .login{
 }
 .form{
-  text-align: center;
   width: 90vw;
   border: none;
 }
-.form input{
+.input_form{
   text-align: center;
-  margin: 0;
+}
+.form input{
+ margin: 0;
  width: 70vw;
 }
 .form button{
-  text-align: center;
   margin:  25px 0px 20px 0px;
   width: 78vw;
 }

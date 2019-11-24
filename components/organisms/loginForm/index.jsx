@@ -62,11 +62,16 @@ const LoginForm = () => {
       <div className="form">
         <form method="POST" onSubmit={OnSubmitting} className="login__form">
           <h1>ユーザーID</h1>
-          <input type="text" id="login__id" required />
+          <div className="input_form">
+            <input type="text" id="login__id" required />
+          </div>
           <h1>パスワード</h1>
-          <input type="password" id="login__pass" required />
-          <p />
-          <button>ログイン</button>
+          <div className="input_form">
+            <input type="password" id="login__pass" required />
+          </div>
+          <div className="input_form">
+            <button>ログイン</button>
+          </div>
         </form>
         <h2 id="login__error"></h2>
       </div>
