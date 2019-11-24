@@ -50,18 +50,32 @@ const onLogin = (data, time) => {
 const LoginForm = () => {
   return (
     <div className="login">
-      <h1 className="login__title">いのししマップぎふ</h1>
-      <form method="POST" onSubmit={OnSubmitting} className="login__form">
-        <h1 className="login__form__title">ログイン</h1>
-        <h1>ユーザーID</h1>
-        <input type="text" id="login__id" required />
-        <h1>パスワード</h1>
-        <input type="password" id="login__pass" required />
-        <button>ログイン</button>
-      </form>
-      <h2 id="login__error"></h2>
+      <img
+        src="images/logosample.png"
+        alt=""
+        width=""
+        height="80px"
+        border="0"
+        className="title"
+      />
+      <h1 className="title">ログイン</h1>
+      <div className="form">
+        <form method="POST" onSubmit={OnSubmitting} className="login__form">
+          <h1>ユーザーID</h1>
+          <div className="input_form">
+            <input type="text" id="login__id" required />
+          </div>
+          <h1>パスワード</h1>
+          <div className="input_form">
+            <input type="password" id="login__pass" required />
+          </div>
+          <div className="input_form">
+            <button>ログイン</button>
+          </div>
+        </form>
+        <h2 id="login__error"></h2>
+      </div>
     </div>
   );
 };
-
 export default LoginForm;
