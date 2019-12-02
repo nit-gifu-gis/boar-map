@@ -108,11 +108,14 @@ class InfoTypeSelector extends React.Component {
     }
   }
 
+  // 前へボタンを押したときの処理
   onClickPrev() {
     Router.push("/map");
   }
 
+  // 次へボタンを押したときの処理
   onClickNext() {
+    // チェックボックスを確認
     const infoTypes = document.getElementsByName("infoType");
     let checkedItem = "";
     infoTypes.forEach(i => {
@@ -120,7 +123,22 @@ class InfoTypeSelector extends React.Component {
         checkedItem = i.value;
       }
     });
-    console.log(checkedItem);
+    // チェックが入ってない
+    if (!checkedItem) {
+      window.alert("登録する情報の種類が選択されていません!!");
+      return;
+    }
+    // チェックが有る場合
+    let nextLink = "";
+    switch (checkedItem) {
+      case "boar":
+        nextLink = "/add/boar/location";
+        break;
+      default:
+        window.alert("工事中");
+        return;
+    }
+    Router.push(nextLink);
   }
 
   render() {
