@@ -1,9 +1,10 @@
-import "./linkButton.scss";
-
 import Router from "next/router";
 import React from "react";
 
-class LinkButton extends React.Component {
+class PrevButton extends React.Component {
+  // クリックした場合の処理
+  // 引数を取りたい場合はバインドする必要がある
+  // (render関数以外ではpropsは呼べない)
   onClick(e) {
     const link = e.target.value;
     Router.push(link);
@@ -12,14 +13,14 @@ class LinkButton extends React.Component {
   render() {
     return (
       <button
-        className="LinkButton"
+        className="NextButton"
         value={this.props.link}
         onClick={this.onClick.bind(this)}
       >
-        {this.props.title}
+        前へ
       </button>
     );
   }
 }
 
-export default LinkButton;
+export default PrevButton;
