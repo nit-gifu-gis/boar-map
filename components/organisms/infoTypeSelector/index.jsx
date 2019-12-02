@@ -6,34 +6,40 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 
 const BoarDiv = () => (
   <div className="boar_div">
-    <input type="radio" name="infoType" value="boar" />
-    <InfoTypeItem
-      src="../static/images/icons/boar.svg"
-      alt="いのししアイコン"
-      text="捕獲いのしし"
-    />
+    <input type="radio" id="radio1" name="infoType" value="boar" />
+    <label for="radio1">
+      <InfoTypeItem
+        src="../static/images/icons/boar.svg"
+        alt="いのししアイコン"
+        text="捕獲いのしし"
+      />
+    </label>
   </div>
 );
 
 const TrapDiv = () => (
   <div className="trap_div">
-    <input type="radio" name="infoType" value="trap" />
-    <InfoTypeItem
-      src="../static/images/icons/trap.svg"
-      alt="わなアイコン"
-      text="わな"
-    />
+    <input type="radio" id="radio2" name="infoType" value="trap" />
+    <label for="radio2">
+      <InfoTypeItem
+        src="../static/images/icons/trap.svg"
+        alt="わなアイコン"
+        text="わな"
+      />
+    </label>
   </div>
 );
 
 const VaccineDiv = () => (
   <div className="vaccine_div">
-    <input type="radio" name="infoType" value="vaccine" />
-    <InfoTypeItem
-      src="../static/images/icons/vaccine.svg"
-      alt="ワクチンアイコン"
-      text="ワクチン"
-    />
+    <input type="radio" id="radio3" name="infoType" value="vaccine" />
+    <label for="radio3">
+      <InfoTypeItem
+        src="../static/images/icons/vaccine.svg"
+        alt="ワクチンアイコン"
+        text="ワクチン"
+      />
+    </label>
   </div>
 );
 
