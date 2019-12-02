@@ -1,6 +1,7 @@
 import "./infoTypeSelector.scss";
 import Router from "next/router";
 import InfoTypeItem from "../../molecules/InfoTypeItem";
+import AddInfoFooter from "../../molecules/addInfoFooter";
 
 const InfoTypeSelector = () => {
   return (
@@ -25,6 +26,7 @@ const InfoTypeSelector = () => {
           text="ワクチン"
         />
       </div>
+      <AddInfoFooter prevLink={"/map"} nextLink={"/add/select"} />
     </div>
   );
 };
