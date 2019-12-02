@@ -1,5 +1,6 @@
 import "./loginForm.scss";
 import Router from "next/router";
+import LoginLogo from "../../molecules/loginLogo";
 
 const OnSubmitting = event => {
   event.preventDefault();
@@ -50,26 +51,19 @@ const onLogin = (data, time) => {
 const LoginForm = () => {
   return (
     <div className="login">
-      <img
-        src="images/logosample.png"
-        alt=""
-        width=""
-        height="80px"
-        border="0"
-        className="title"
-      />
-      <h1 className="title">ログイン</h1>
-      <div className="form">
-        <form method="POST" onSubmit={OnSubmitting} className="login__form">
+      <LoginLogo />
+      <h1 className="login__title">ログイン</h1>
+      <div className="login__form">
+        <form method="POST" onSubmit={OnSubmitting}>
           <h1>ユーザーID</h1>
-          <div className="input_form">
+          <div className="login__form__input">
             <input type="text" id="login__id" required />
           </div>
           <h1>パスワード</h1>
-          <div className="input_form">
+          <div className="login__form__input">
             <input type="password" id="login__pass" required />
           </div>
-          <div className="input_form">
+          <div className="login__form__input">
             <button>ログイン</button>
           </div>
         </form>
