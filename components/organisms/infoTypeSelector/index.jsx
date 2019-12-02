@@ -7,7 +7,7 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 const BoarDiv = () => (
   <div className="boar_div">
     <input type="radio" id="radio1" name="infoType" value="boar" />
-    <label for="radio1">
+    <label htmlFor="radio1">
       <InfoTypeItem
         src="../static/images/icons/boar.svg"
         alt="いのししアイコン"
@@ -20,7 +20,7 @@ const BoarDiv = () => (
 const TrapDiv = () => (
   <div className="trap_div">
     <input type="radio" id="radio2" name="infoType" value="trap" />
-    <label for="radio2">
+    <label htmlFor="radio2">
       <InfoTypeItem
         src="../static/images/icons/trap.svg"
         alt="わなアイコン"
@@ -33,7 +33,7 @@ const TrapDiv = () => (
 const VaccineDiv = () => (
   <div className="vaccine_div">
     <input type="radio" id="radio3" name="infoType" value="vaccine" />
-    <label for="radio3">
+    <label htmlFor="radio3">
       <InfoTypeItem
         src="../static/images/icons/vaccine.svg"
         alt="ワクチンアイコン"
