@@ -1,96 +1,99 @@
 * {
   font-family: sans-serif;
   padding: 0;
-  margin: 0; }
+  margin: 0;
+}
 
-.header {
-  width: 100vw;
-  height: 4rem;
-  background-color: pink; }
-  .header__text {
-    margin: 0;
-    color: #5439cc; }
-.footer {
-  width: 100vw;
-  height: 4rem;
-  background-color: pink; }
-
-/*----------フォーム------------*/
-.login{
+.login {
   overflow: hidden;
-  padding: 100px 0px;
+  padding: 10vh 0px;
+  box-sizing: border-box;
+  height: 100vh;
   background-color: #740f75;
+
+  &__title {
+    color:white;
+    padding-top: 10px;
+    text-align: center;
+  }
+
+  &__form {
+    background-color: white;
+    font-size: 10px;
+    margin: 0 auto;
+    margin-top: 30px;
+    padding: 15px 0px;
+    width: 400px;
+    border: 2px solid #d1d1d1;
+    border-radius: 3px;
+    
+    h1, h2 {
+      padding: 10px 30px;
+    }
+
+    h2 {
+      color:red;
+    }
+
+    &__input {
+      input {
+        font-size: 20px;
+        padding: 10px;
+        margin-left: 30px;
+        width: 80%;
+        outline: none;
+        border-radius: 3px;
+        border: 2px solid #d1d1d1;
+
+        &:focus {
+          border: 2px solid #2a75de;
+        }
+      }
+    }
+
+    button {
+      font-size: 20px;
+      padding: 10px;
+      margin: 25px 0px 20px 30px;
+      width: 86%;
+      color: white;
+      border: 2px solid #ff33fc;
+      border-radius: 3px;
+      background-image: linear-gradient(-180deg,#ffd1fa,#ff52eb 90%);
+
+      &:hover {
+        background-image: linear-gradient(-180deg,#ffbdf7,#fc49e8 90%);
+      }
+
+      &:active {
+        background-image: none;
+        background-color: #ff52eb;
+      }
+    }
+
+  }
 }
-.login .title{
-  color:white;
-  padding-top:10px;
-  text-align: center;
-}
-.login img{
-  display: block;
-  margin: auto;
-}
-.form{
-  background-color: white;
-  font-size: 10px;
-  margin: 0 auto;
-  margin-top: 30px;
-  padding: 15px 0px;
-  width: 400px;
-  border: 2px solid #d1d1d1;
-  border-radius: 3px;
-}
-.form h1,h2{
-  padding:10px 30px;
-}
-.form h2{
-  color:red;
-}
-.form input{
-  font-size: 20px;
-  padding: 10px;
-  margin-left: 30px;
-  width: 80%;
-  outline: none;
-  border-radius: 3px;
-  border: 2px solid #d1d1d1;
-}
-.form input:focus{
-  border: 2px solid #2a75de;
-}
-.form button{
-  font-size: 20px;
-  padding: 10px;
-  margin: 25px 0px 20px 30px;
-  width: 86%;
-  color: white;
-  border: 2px solid #ff33fc;
-  border-radius: 3px;
-  background-image: linear-gradient(-180deg,#ffd1fa,#ff52eb 90%);
-}
-.form button:hover{
-  background-image: linear-gradient(-180deg,#ffbdf7,#fc49e8 90%);
-}
-.form button:active{
-  background-image: none;
-  background-color: #ff52eb;
-}
+
 @media screen and (max-width:400px){
-.login{
-}
-.form{
-  width: 90vw;
-  border: none;
-}
-.input_form{
-  text-align: center;
-}
-.form input{
- margin: 0;
- width: 70vw;
-}
-.form button{
-  margin:  25px 0px 20px 0px;
-  width: 78vw;
-}
+  .login {
+    &__form {
+      width: 90vw;
+      border: none;
+
+      &__input {
+        text-align: center;
+
+        input {
+          margin: 0;
+          width: 70vw;
+        }
+      }
+
+      button {
+        margin: 25px 0px 20px 0px;
+        width: 78vw;
+        text-align: center;
+      }
+    }
+  }
 }

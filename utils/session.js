@@ -51,14 +51,20 @@ export default class SessionManager {
         body: JSON.stringify(data)
       }
     )
-      .then(res => res.json().then(data => console.log(data)))
-      .catch(error => console.log("Error: ", error));
-
-    document.cookie =
-      "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    document.cookie =
-      "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-    Router.push("/login");
+      .then(res =>
+        res
+          .json()
+          .then(
+            data => console.log(data),
+            (document.cookie =
+              "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
+            (document.cookie =
+              "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
+            (document.cookie =
+              "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
+            Router.push("/login")
+          )
+      )
+      .catch(error => alert("Error: ", error));
   }
 }
