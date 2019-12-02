@@ -10,6 +10,25 @@ class MapForAddInfo extends MapBase {
 
   map() {
     super.map();
+    // Todo: 一番上のレイヤーに持ってくる
+    const centerCross = L.centerCross();
+    this.myMap.addLayer(centerCross);
+  }
+
+  render() {
+    return (
+      <div className="mapForAddInfo">
+        <div className="__description">
+          登録したい地点が地図の中心になるように地図を移動させてください。
+        </div>
+        <div
+          id="map"
+          ref={node => {
+            this.node = node;
+          }}
+        ></div>
+      </div>
+    );
   }
 }
 
