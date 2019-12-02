@@ -1,15 +1,14 @@
 import Router from "next/router";
 import React from "react";
-import NextButton from "../../atomos/nextButton";
-import PrevButton from "../../atomos/prevButton";
+import LinkButton from "../../atomos/linkButton";
 
 class AddInfoFooter extends React.Component {
   render() {
     return (
       <div className="AddInfoFooter">
         <div className="flex">
-          <PrevButton link={this.props.prevLink} />
-          <NextButton link={this.props.nextLink} />
+          <LinkButton link={this.props.prevLink} title="次へ" />
+          <LinkButton link={this.props.nextLink} title="前へ" />
         </div>
       </div>
     );
