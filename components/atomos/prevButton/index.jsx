@@ -17,7 +17,7 @@ class PrevButton extends React.Component {
         value={this.props.link}
         onClick={this.onClick.bind(this)}
       >
-        前
+        前へ
       </button>
     );
   }

@@ -17,7 +17,7 @@ class NextButton extends React.Component {
         value={this.props.link}
         onClick={this.onClick.bind(this)}
       >
-        次
+        次へ
       </button>
     );
   }

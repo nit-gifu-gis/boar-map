@@ -105,7 +105,15 @@ class InfoTypeSelector extends React.Component {
   render() {
     return (
       <div className="infoTypeSelector">
-        <div className="radio">{this.choices}</div>
+        <div className="__Title">
+          <h1>情報登録</h1>
+        </div>
+        <div className="__description">
+          <p>登録する情報を選択し、次へボタンを押してください。</p>
+        </div>
+        <div className="__choices">
+          <div className="radio">{this.choices}</div>
+        </div>
         <AddInfoFooter prevLink={"/map"} nextLink={"/add/select"} />
       </div>
     );
