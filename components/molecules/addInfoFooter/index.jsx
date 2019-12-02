@@ -8,8 +8,8 @@ class AddInfoFooter extends React.Component {
     return (
       <div className="AddInfoFooter">
         <div className="flex">
-          <PrevButton link={this.props.prevLink} />
-          <NextButton link={this.props.nextLink} />
+          <PrevButton bind={this.props.prevBind} />
+          <NextButton bind={this.props.nextBind} />
         </div>
       </div>
     );

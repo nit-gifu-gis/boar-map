@@ -108,6 +108,21 @@ class InfoTypeSelector extends React.Component {
     }
   }
 
+  onClickPrev() {
+    Router.push("/map");
+  }
+
+  onClickNext() {
+    const infoTypes = document.getElementsByName("infoType");
+    let checkedItem = "";
+    infoTypes.forEach(i => {
+      if (i.checked) {
+        checkedItem = i.value;
+      }
+    });
+    console.log(checkedItem);
+  }
+
   render() {
     return (
       <div className="infoTypeSelector">
@@ -120,7 +135,10 @@ class InfoTypeSelector extends React.Component {
         <div className="__choices">
           <div className="radio">{this.choices}</div>
         </div>
-        <AddInfoFooter prevLink={"/map"} nextLink={"/add/select"} />
+        <AddInfoFooter
+          prevBind={this.onClickPrev}
+          nextBind={this.onClickNext}
+        />
       </div>
     );
   }
