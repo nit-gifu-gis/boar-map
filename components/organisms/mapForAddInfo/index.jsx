@@ -3,6 +3,8 @@ import React from "react";
 import L from "leaflet";
 import "leaflet-center-cross";
 import MapBase from "../mapBase";
+import AddInfoFooter from "../../molecules/addInfoFooter";
+import Router from "next/router";
 
 class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
@@ -13,6 +15,14 @@ class MapForAddInfo extends MapBase {
     // Todo: 一番上のレイヤーに持ってくる
     const centerCross = L.centerCross();
     this.myMap.addLayer(centerCross);
+  }
+
+  onClickPrev() {
+    Router.push("/add/select");
+  }
+
+  onClickNext() {
+    window.alert("工事中");
   }
 
   render() {
@@ -27,6 +37,10 @@ class MapForAddInfo extends MapBase {
             this.node = node;
           }}
         ></div>
+        <AddInfoFooter
+          prevBind={this.onClickPrev}
+          nextBind={this.onClickNext}
+        />
       </div>
     );
   }
