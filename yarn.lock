@@ -4258,11 +4258,6 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
-leaflet-center-cross@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/leaflet-center-cross/-/leaflet-center-cross-0.0.8.tgz#909f7c01d8be46b73ab3005460172ada9604315e"
-  integrity sha512-XYp1B1zITYrHIGavtU2e/k0xpHDy3xNyQlA3uqqvkq+OubpbYasVsIG4KlTiLnCGoKIGrwyTErPlwRRoniD79Q==
-
 leaflet-easybutton@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/leaflet-easybutton/-/leaflet-easybutton-2.4.0.tgz#3ad8ad31c9cf6d5ca7a6a1988f82eed13ff2c1af"
