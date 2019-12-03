@@ -5,13 +5,20 @@ import MapBase from "../mapBase";
 import AddInfoFooter from "../../molecules/addInfoFooter";
 import Router from "next/router";
 
+let lat = 0;
+let lng = 0;
+
 class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
   myLocIcon = "../../static/images/map/myLoc.png";
 
   map() {
     super.map();
+    // 下のon関数の中ではthisが使えないので仕方なくコピー
     const mapObj = this.myMap;
+    // onClickNextでthisが呼べないので仕方なくコピー
+    lat = mapObj.getCenter().lat;
+    lng = mapObj.getCenter().lng;
     // 十字
     const centerCrossIcon = L.icon({
       iconUrl: "../../static/images/map/centerCross.png",
@@ -42,6 +49,9 @@ class MapForAddInfo extends MapBase {
       // 地図の動きに合わせてピンを動かす
       centerPin.setLatLng(upperCenter);
       centerCross.setLatLng(mapObj.getCenter());
+      // グローバル変数の方もコピー
+      lat = mapObj.getCenter().lat;
+      lng = mapObj.getCenter().lng;
     });
     // 動かし終わったらピンを戻す
     mapObj.on("moveend", function(e) {
@@ -49,12 +59,16 @@ class MapForAddInfo extends MapBase {
     });
   }
 
+  getMapCenter() {
+    return this.myMap.getCenter();
+  }
+
   onClickPrev() {
     Router.push("/add/select");
   }
 
   onClickNext() {
-    window.alert("工事中");
+    window.alert(lat + ", " + lng);
   }
 
   render() {
