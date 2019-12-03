@@ -132,7 +132,7 @@ class InfoTypeSelector extends React.Component {
     let nextLink = "";
     switch (checkedItem) {
       case "boar":
-        nextLink = "/add/boar/location";
+        nextLink = "/add/location?type=boar";
         break;
       default:
         window.alert("工事中");

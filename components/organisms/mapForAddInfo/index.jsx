@@ -68,6 +68,7 @@ class MapForAddInfo extends MapBase {
   }
 
   onClickNext() {
+    window.alert(JSON.stringify(Router.query));
     window.alert(lat + ", " + lng);
   }
 

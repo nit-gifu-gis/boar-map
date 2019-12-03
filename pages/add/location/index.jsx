@@ -1,8 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import Router from "next/router";
-import AddLocation from "../../../../components/templates/AddLocation";
-import SessionManager from "../../../../utils/session";
+import AddLocation from "../../../components/templates/AddLocation";
+import SessionManager from "../../../utils/session";
 
 class SelectPage extends React.Component {
   static async getInitialProps(ctx) {
@@ -25,7 +25,7 @@ class SelectPage extends React.Component {
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="stylesheet" href="/static/css/leaflet.css" />
-          <title>いのししマップぎふ - 捕獲いのしし情報 | 位置情報選択</title>
+          <title>いのししマップぎふ - 位置情報選択</title>
         </Head>
         <AddLocation />
       </>
