@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import Router from "next/router";
-import AddBoarLocation from "../../../../components/templates/AddBoarLocation";
+import AddLocation from "../../../../components/templates/AddLocation";
 import SessionManager from "../../../../utils/session";
 
 class SelectPage extends React.Component {
@@ -27,7 +27,7 @@ class SelectPage extends React.Component {
           <link rel="stylesheet" href="/static/css/leaflet.css" />
           <title>いのししマップぎふ - 捕獲いのしし情報 | 位置情報選択</title>
         </Head>
-        <AddBoarLocation />
+        <AddLocation />
       </>
     );
   }

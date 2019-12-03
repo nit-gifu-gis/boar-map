@@ -1,4 +1,4 @@
-import "./addBoarLocation.scss";
+import "./addLocation.scss";
 
 import dynamic from "next/dynamic";
 import Header from "../../organisms/header";
@@ -11,7 +11,7 @@ const DynamicMapComponentWithNoSSR = dynamic(
   }
 );
 
-const AddBoarLocation = () => (
+const AddLocation = () => (
   <div>
     <Header />
     <DynamicMapComponentWithNoSSR />
@@ -19,4 +19,4 @@ const AddBoarLocation = () => (
   </div>
 );
 
-export default AddBoarLocation;
+export default AddLocation;
