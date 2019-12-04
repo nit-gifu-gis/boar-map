@@ -68,8 +68,8 @@ class MapForAddInfo extends MapBase {
   }
 
   onClickNext() {
-    window.alert(JSON.stringify(Router.query));
-    window.alert(lat + ", " + lng);
+    const url = "/add/" + Router.query.type;
+    Router.push({ pathname: url, query: { lat: lat, lng: lng } }, url);
   }
 
   render() {
