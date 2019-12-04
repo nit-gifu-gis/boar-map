@@ -4,7 +4,7 @@ import Router from "next/router";
 import AddLocation from "../../../components/templates/AddLocation";
 import SessionManager from "../../../utils/session";
 
-class SelectPage extends React.Component {
+class AddLocationPage extends React.Component {
   static async getInitialProps(ctx) {
     if (!SessionManager.isLogin(ctx)) {
       if (ctx.res) {
@@ -33,4 +33,4 @@ class SelectPage extends React.Component {
   }
 }
 
-export default SelectPage;
+export default AddLocationPage;
