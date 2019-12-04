@@ -129,16 +129,15 @@ class InfoTypeSelector extends React.Component {
       return;
     }
     // チェックが有る場合
-    let nextLink = "";
+    const url = "/add/location";
     switch (checkedItem) {
       case "boar":
-        nextLink = "/add/location?type=boar";
         break;
       default:
         window.alert("工事中");
         return;
     }
-    Router.push(nextLink);
+    Router.push({ pathname: url, query: { type: checkedItem } }, url);
   }
 
   render() {
