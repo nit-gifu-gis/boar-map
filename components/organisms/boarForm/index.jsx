@@ -27,6 +27,7 @@ const EnvSelector = () => (
 
 class BoarForm extends React.Component {
   state = {
+    userId: "",
     todayStr: "",
     trapOrEnvSelector: <TrapSelector />
   };
@@ -46,6 +47,7 @@ class BoarForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userId = userData.user_id;
     } else {
       return;
     }
@@ -60,6 +62,34 @@ class BoarForm extends React.Component {
 
   // 次へボタンを押したときの処理
   onClickNext() {
+    const form = document.forms.form;
+    // 送信に必要な情報を集めておく
+    // 0 入力者
+    // 1 区分
+    const division = form.division.options[form.division.selectedIndex].value;
+    // 2 捕獲年月日
+    const date = form.date.value;
+    // 3 位置情報
+    const lat = Router.query.lat;
+    const lng = Router.query.lng;
+    // 4 わなor発見場所
+    let trapOrEnv;
+    switch (division) {
+      case "死亡":
+        trapOrEnv = form.env.options[form.env.selectedIndex].value;
+        break;
+      default:
+        trapOrEnv = form.trap.options[form.trap.selectedIndex].value;
+        break;
+    }
+    // 5 性別
+    const sex = form.sex.options[form.sex.selectedIndex].value;
+    // 6 体長
+    const length = form.length.value;
+    // 7 体重
+    const weight = this.weigh(Number(length));
+    // 8 歯列画像
+    // 9 現地写真
     window.alert("工事中！");
   }
 
@@ -88,6 +118,31 @@ class BoarForm extends React.Component {
           return { trapOrEnvSelector: <TrapSelector /> };
         });
         break;
+    }
+  }
+
+  // 体長を体重に変換する
+  weigh(length) {
+    if (length < 35) {
+      return 5;
+    } else if (length < 55) {
+      return 10;
+    } else if (length < 91) {
+      return 20; // 幼獣
+    } else if (length < 95) {
+      return 20; // 成獣
+    } else if (length < 105) {
+      return 30;
+    } else if (length < 115) {
+      return 45;
+    } else if (length < 125) {
+      return 60;
+    } else if (length < 135) {
+      return 80;
+    } else if (length < 145) {
+      return 100;
+    } else {
+      return 130;
     }
   }
 
@@ -137,14 +192,14 @@ class BoarForm extends React.Component {
             </div>
             <div className="__length">
               <label>体長(cm)</label>
-              <input type="number" step="0.01"></input>
+              <input name="length" type="number" step="1"></input>
             </div>
             {/* 体重は体長から計算して送信する（表示しない） */}
           </form>
         </div>
         <AddInfoFooter
           prevBind={this.onClickPrev}
-          nextBind={this.onClickNext}
+          nextBind={this.onClickNext.bind(this)}
         />
       </div>
     );
