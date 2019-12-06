@@ -12,7 +12,7 @@ class MapBase extends React.Component {
     lat: 35.367237,
     lng: 136.637408,
     zoom: 17,
-    markers: []
+    overlays: {}
   };
 
   componentDidMount() {
@@ -20,7 +20,10 @@ class MapBase extends React.Component {
   }
 
   getMarkers(map, token) {
-    // markers clear
+    // 既存のマーカーを削除
+    console.log(this.state.overlays);
+    map.removeLayer(this.state.overlays);
+
     const bounds = map.getBounds();
     const topLat = bounds.getNorth();
     const rightLng = bounds.getEast();
@@ -32,7 +35,7 @@ class MapBase extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000008,
+      layerId: layerId,
       inclusion: 1,
       buffer: 100,
       srid: 4326,
@@ -119,7 +122,7 @@ class MapBase extends React.Component {
       )
       .addTo(map);
 
-    this.getMarkers(map, userData.access_token);
+    this.getMarkers(map, userData.access_token, 5000008);
 
     const mapMarker = L.marker([35.367237, 136.637408]);
     mapMarker.addTo(map);
@@ -129,7 +132,7 @@ class MapBase extends React.Component {
       test: mainLayer
     };
     const overlays = {
-      Marker: mapMarker
+      捕獲いのしし: L.layerGroup([mapMarker])
     };
 
     L.control.layers(baseLayers, overlays).addTo(map);
