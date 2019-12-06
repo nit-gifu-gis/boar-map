@@ -117,7 +117,7 @@ class BoarConfirmForm extends React.Component {
           </div>
           <div className="__date">
             <h3>捕獲年月日</h3>
-            <p>{Router.query.name}</p>
+            <p>{Router.query.date}</p>
           </div>
           <div className="__trap_or_env">
             <h3>わな・発見場所</h3>
