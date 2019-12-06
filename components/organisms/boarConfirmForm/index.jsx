@@ -93,7 +93,7 @@ class BoarConfirmForm extends React.Component {
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();
-      // Router.push("/map");
+      Router.push("/map");
     }
   }
 
