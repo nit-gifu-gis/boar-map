@@ -59,7 +59,7 @@ class MapForAddInfo extends MapBase {
   }
 
   onClickNext() {
-    const url = "/add/" + Router.query.type;
+    const url = "/add/info/" + Router.query.type;
     Router.push(
       {
         pathname: url,

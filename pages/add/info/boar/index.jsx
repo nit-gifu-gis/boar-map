@@ -1,8 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import Router from "next/router";
-import SessionManager from "../../../utils/session";
-import AddBoar from "../../../components/templates/AddBoar";
+import SessionManager from "../../../../utils/session";
+import AddBoar from "../../../../components/templates/AddBoar";
 
 class AddBoarPage extends React.Component {
   static async getInitialProps(ctx) {
