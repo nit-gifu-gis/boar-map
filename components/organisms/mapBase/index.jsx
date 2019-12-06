@@ -12,7 +12,9 @@ class MapBase extends React.Component {
     lat: 35.367237,
     lng: 136.637408,
     zoom: 17,
-    overlays: {}
+    overlays: {},
+    markerstate: [true, true, true],
+    control: undefined
   };
 
   componentDidMount() {
@@ -74,6 +76,7 @@ class MapBase extends React.Component {
     if (rdata["commonHeader"]["resultInfomation"] == "0") {
       const bmarkers = [];
       const features = rdata["data"]["features"];
+
       for (let i = 0; i < features.length; i++) {
         const feature = features[i];
         const Lat = feature["geometry"]["coordinates"][1];
@@ -83,23 +86,61 @@ class MapBase extends React.Component {
         mapMarker.bindPopup("Marker");
         bmarkers.push(mapMarker);
       }
-      overlays["捕獲いのしし"] = L.layerGroup(bmarkers).addTo(map);
-      overlays["ワナ"] = L.layerGroup([]).addTo(map);
-      overlays["ワクチン"] = L.layerGroup([]).addTo(map);
 
-      console.log(overlays);
+      const me = this;
+
+      /*
+       * 再描画時にも選択状態を保持するため
+       * TODO: コードから削除したときにもイベントが発生するのを防ぐ
+       */
+
+      overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
+      overlays["捕獲いのしし"].addEventListener("add", function(e) {
+        me.state.markerstate[0] = true;
+      });
+      overlays["捕獲いのしし"].addEventListener("remove", function(e) {
+        me.state.markerstate[0] = false;
+      });
+      if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
+
+      overlays["ワナ"] = L.layerGroup([]);
+      overlays["ワナ"].addEventListener("add", function(e) {
+        me.state.markerstate[1] = true;
+      });
+      overlays["ワナ"].addEventListener("remove", function(e) {
+        me.state.markerstate[1] = false;
+      });
+      if (me.state.markerstate[1]) overlays["ワナ"].addTo(map);
+
+      overlays["ワクチン"] = L.layerGroup([]);
+      overlays["ワクチン"].addEventListener("add", function(e) {
+        me.state.markerstate[2] = true;
+      });
+      overlays["ワクチン"].addEventListener("remove", function(e) {
+        me.state.markerstate[2] = false;
+      });
+      if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
     }
 
     // 既存のマーカーを削除
     console.log(this.state.overlays);
-    if (true) {
-      map.removeLayer(this.state.overlays);
-      // コントロールの削除
-      console.log(map.controlLayers);
+    if (this.state.control != undefined && this.state.overlays != undefined) {
+      this.state.control.remove();
+      const ovl = this.state.overlays;
+      Object.keys(ovl).forEach(function(key) {
+        console.log(ovl[key]);
+        ovl[key].remove();
+        console.log(ovl[key]);
+      });
+      // console.log(this.state.overlays);
+      // console.log(this.state.control);
     }
 
     this.state.overlays = overlays;
-    L.control.layers(undefined, overlays, { collapsed: false }).addTo(map);
+    this.state.control = L.control.layers(undefined, overlays, {
+      collapsed: false
+    });
+    this.state.control.addTo(map);
   }
 
   map() {
