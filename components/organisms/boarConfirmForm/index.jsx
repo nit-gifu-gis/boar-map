@@ -60,7 +60,8 @@ class BoarConfirmForm extends React.Component {
         }
       ]
     };
-    window.alert(JSON.stringify(data));
+
+    console.log(data);
 
     fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/AddFeatures",
@@ -76,7 +77,13 @@ class BoarConfirmForm extends React.Component {
     )
       .then(function(res) {
         const json = res.json().then(data => {
-          alert("登録が完了しました。\nご協力ありがとうございました。");
+          if (data.commonHeader.resultInfomation == "0") {
+            alert("登録が完了しました。\nご協力ありがとうございました。");
+            Router.push("/map");
+          } else {
+            console.log("Error:", data.commonHeader.systemErrorReport);
+            alert("登録に失敗しました。");
+          }
         });
       })
       .catch(error => console.log("Error:", error));
@@ -93,7 +100,6 @@ class BoarConfirmForm extends React.Component {
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();
-      Router.push("/map");
     }
   }
 
