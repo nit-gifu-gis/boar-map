@@ -1,7 +1,13 @@
 import "./boarConfirmForm.scss";
+
+import dynamic from "next/dynamic";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+
+const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
+  ssr: false
+});
 
 class BoarConfirmForm extends React.Component {
   state = {
@@ -52,7 +58,8 @@ class BoarConfirmForm extends React.Component {
             入力者: this.state.userData.user_id,
             区分: Router.query.division,
             捕獲年月日: Router.query.date,
-            // 罠発見場所: Router.query.trapOrEnv,
+            位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
+            "罠・発見場": Router.query.trapOrEnv,
             性別: Router.query.sex,
             体長: Router.query.length,
             体重: Router.query.weight
@@ -111,10 +118,12 @@ class BoarConfirmForm extends React.Component {
         </div>
         <div className="__location">
           <h3>場所</h3>
-          {/* TODO: 地図にする */}
-          <p>
-            (lat, lng) = ({Router.query.lat}, {Router.query.lng})
-          </p>
+          <div className="__map_canvas">
+            <DynamicMapComponentWithNoSSR
+              lat={Router.query.lat}
+              lng={Router.query.lng}
+            />
+          </div>
         </div>
         <div className="__info">
           <div className="__division">

@@ -24,6 +24,7 @@ class AddBoarPage extends React.Component {
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="stylesheet" href="/static/css/leaflet.css" />
           <title>いのししマップぎふ - 情報確認</title>
         </Head>
         <ConfirmBoar />
