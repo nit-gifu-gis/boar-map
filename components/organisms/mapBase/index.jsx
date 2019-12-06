@@ -19,11 +19,7 @@ class MapBase extends React.Component {
     this.map();
   }
 
-  getMarkers(map, token) {
-    // 既存のマーカーを削除
-    console.log(this.state.overlays);
-    map.removeLayer(this.state.overlays);
-
+  async getMarkers(map, token, layerId) {
     const bounds = map.getBounds();
     const topLat = bounds.getNorth();
     const rightLng = bounds.getEast();
@@ -54,7 +50,7 @@ class MapBase extends React.Component {
       }
     };
 
-    fetch(
+    const res = await fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
       {
         method: "POST",
@@ -65,20 +61,45 @@ class MapBase extends React.Component {
         },
         body: JSON.stringify(data)
       }
-    ).then(function(res) {
-      const json = res.json().then(rdata => {
-        if (rdata["commonHeader"]["resultInfomation"] == "0") {
-          const features = rdata["data"]["features"];
-          for (let i = 0; i < features.length; i++) {
-            const feature = features[i];
-            const Lat = feature["geometry"]["coordinates"][1];
-            const Lng = feature["geometry"]["coordinates"][0];
+    );
+    const rdata = await res.json();
+    return rdata;
+  }
 
-            console.log(Lat + "," + Lng);
-          }
-        }
-      });
-    });
+  async addMarkers(map, token) {
+    // 取得中にマーカーが消えないように先に情報を取得する
+    const overlays = {};
+
+    const rdata = await this.getMarkers(map, token, 5000008);
+    if (rdata["commonHeader"]["resultInfomation"] == "0") {
+      const bmarkers = [];
+      const features = rdata["data"]["features"];
+      for (let i = 0; i < features.length; i++) {
+        const feature = features[i];
+        const Lat = feature["geometry"]["coordinates"][1];
+        const Lng = feature["geometry"]["coordinates"][0];
+
+        const mapMarker = L.marker([Lat, Lng]);
+        mapMarker.bindPopup("Marker");
+        bmarkers.push(mapMarker);
+      }
+      overlays["捕獲いのしし"] = L.layerGroup(bmarkers).addTo(map);
+      overlays["ワナ"] = L.layerGroup([]).addTo(map);
+      overlays["ワクチン"] = L.layerGroup([]).addTo(map);
+
+      console.log(overlays);
+    }
+
+    // 既存のマーカーを削除
+    console.log(this.state.overlays);
+    if (true) {
+      map.removeLayer(this.state.overlays);
+      // コントロールの削除
+      console.log(map.controlLayers);
+    }
+
+    this.state.overlays = overlays;
+    L.control.layers(undefined, overlays, { collapsed: false }).addTo(map);
   }
 
   map() {
@@ -122,20 +143,20 @@ class MapBase extends React.Component {
       )
       .addTo(map);
 
-    this.getMarkers(map, userData.access_token, 5000008);
+    this.addMarkers(map, userData.access_token);
 
-    const mapMarker = L.marker([35.367237, 136.637408]);
-    mapMarker.addTo(map);
-    mapMarker.bindPopup("Test Location");
-    mapMarker.openPopup();
-    const baseLayers = {
-      test: mainLayer
-    };
-    const overlays = {
-      捕獲いのしし: L.layerGroup([mapMarker])
-    };
+    const me = this;
 
-    L.control.layers(baseLayers, overlays).addTo(map);
+    map.on("moveend", function(e) {
+      me.addMarkers(map, userData.access_token);
+    });
+
+    map.on("zoomend", function(e) {
+      // eslint-disable-next-line no-invalid-this
+      me.addMarkers(map, userData.access_token);
+    });
+
+    // L.control.layers(baseLayers).addTo(map);
     L.control.scale().addTo(map);
 
     // 現在地ボタン追加
