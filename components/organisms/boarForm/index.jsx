@@ -28,7 +28,6 @@ const EnvSelector = () => (
 class BoarForm extends React.Component {
   state = {
     userId: "",
-    todayStr: "",
     trapOrEnvSelector: <TrapSelector />
   };
 
@@ -51,7 +50,6 @@ class BoarForm extends React.Component {
     } else {
       return;
     }
-    this.state.todayStr = this.getTodayStr();
   }
 
   // 前へボタンを押したときの処理
@@ -91,15 +89,6 @@ class BoarForm extends React.Component {
     // 8 歯列画像
     // 9 現地写真
     window.alert("工事中！");
-  }
-
-  // 今日の日付を取得する
-  getTodayStr() {
-    const date = new Date();
-    const yyyy = date.getFullYear();
-    const mm = ("0" + (date.getMonth() + 1)).slice(-2);
-    const dd = ("0" + date.getDate()).slice(-2);
-    return yyyy + "-" + mm + "-" + dd;
   }
 
   // 区分が変更されたときに呼ばれる
@@ -178,7 +167,7 @@ class BoarForm extends React.Component {
                 type="date"
                 name="date"
                 id="date"
-                value={this.state.todayStr}
+                // value={this.state.todayStr}
               />
             </div>
             <div className="__trap_or_env">{this.state.trapOrEnvSelector}</div>
