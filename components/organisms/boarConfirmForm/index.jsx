@@ -59,7 +59,7 @@ class BoarConfirmForm extends React.Component {
             区分: Router.query.division,
             捕獲年月日: Router.query.date,
             位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
-            "罠・発見場": Router.query.trapOrEnv,
+            "罠・発生場": Router.query.trapOrEnv,
             性別: Router.query.sex,
             体長: Router.query.length,
             体重: Router.query.weight
