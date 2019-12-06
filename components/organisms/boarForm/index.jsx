@@ -27,7 +27,6 @@ const EnvSelector = () => (
 
 class BoarForm extends React.Component {
   state = {
-    userId: "",
     trapOrEnvSelector: <TrapSelector />
   };
 
@@ -46,7 +45,6 @@ class BoarForm extends React.Component {
           userData.access_token = content[1];
         }
       });
-      this.state.userId = userData.user_id;
     } else {
       return;
     }
@@ -88,7 +86,24 @@ class BoarForm extends React.Component {
     const weight = this.weigh(Number(length));
     // 8 歯列画像
     // 9 現地写真
-    window.alert("工事中！");
+    // 確認画面に遷移
+    const url = "/add/confirm/boar";
+    Router.push(
+      {
+        pathname: url,
+        query: {
+          division: division,
+          date: date,
+          lat: lat,
+          lng: lng,
+          trapOrEnv: trapOrEnv,
+          sex: sex,
+          length: length,
+          weight: weight
+        }
+      },
+      url
+    );
   }
 
   // 区分が変更されたときに呼ばれる
