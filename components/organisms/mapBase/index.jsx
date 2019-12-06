@@ -11,11 +11,71 @@ class MapBase extends React.Component {
   state = {
     lat: 35.367237,
     lng: 136.637408,
-    zoom: 17
+    zoom: 17,
+    markers: []
   };
 
   componentDidMount() {
     this.map();
+  }
+
+  getMarkers(map, token) {
+    // markers clear
+    const bounds = map.getBounds();
+    const topLat = bounds.getNorth();
+    const rightLng = bounds.getEast();
+    const bottomLat = bounds.getSouth();
+    const leftLng = bounds.getWest();
+
+    const receiptNumber = Math.floor(Math.random() * 100000);
+    const data = {
+      commonHeader: {
+        receiptNumber: receiptNumber
+      },
+      layerId: 5000008,
+      inclusion: 1,
+      buffer: 100,
+      srid: 4326,
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [leftLng, topLat],
+            [rightLng, topLat],
+            [rightLng, bottomLat],
+            [leftLng, bottomLat],
+            [leftLng, topLat]
+          ]
+        ]
+      }
+    };
+
+    fetch(
+      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Map-Api-Access-Token": token
+        },
+        body: JSON.stringify(data)
+      }
+    ).then(function(res) {
+      const json = res.json().then(rdata => {
+        if (rdata["commonHeader"]["resultInfomation"] == "0") {
+          const features = rdata["data"]["features"];
+          for (let i = 0; i < features.length; i++) {
+            const feature = features[i];
+            const Lat = feature["geometry"]["coordinates"][1];
+            const Lng = feature["geometry"]["coordinates"][0];
+
+            console.log(Lat + "," + Lng);
+          }
+        }
+      });
+    });
   }
 
   map() {
@@ -58,6 +118,8 @@ class MapBase extends React.Component {
         ]
       )
       .addTo(map);
+
+    this.getMarkers(map, userData.access_token);
 
     const mapMarker = L.marker([35.367237, 136.637408]);
     mapMarker.addTo(map);
