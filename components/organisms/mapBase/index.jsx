@@ -14,13 +14,17 @@ class MapBase extends React.Component {
     zoom: 17
   };
 
+  getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
+  myLocIcon = "static/images/map/myLoc.png";
+  myMap = null;
+
   componentDidMount() {
     this.map();
   }
 
   map() {
     const node = this.node;
-    const map = L.map(node).setView(
+    this.myMap = L.map(node).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
@@ -57,10 +61,10 @@ class MapBase extends React.Component {
           }
         ]
       )
-      .addTo(map);
+      .addTo(this.myMap);
 
     const mapMarker = L.marker([35.367237, 136.637408]);
-    mapMarker.addTo(map);
+    mapMarker.addTo(this.myMap);
     mapMarker.bindPopup("Test Location");
     mapMarker.openPopup();
     const baseLayers = {
@@ -70,15 +74,15 @@ class MapBase extends React.Component {
       Marker: mapMarker
     };
 
-    L.control.layers(baseLayers, overlays).addTo(map);
-    L.control.scale().addTo(map);
+    L.control.layers(baseLayers, overlays).addTo(this.myMap);
+    L.control.scale().addTo(this.myMap);
 
     // 現在地ボタン追加
 
     L.easyButton(
-      "<img src='static/images/map/my_location-24px.svg'>",
-      onClickSetLocation
-    ).addTo(map);
+      "<img src=" + this.getMyLocBtnIcon + ">",
+      this.onClickSetLocation
+    ).addTo(this.myMap);
   }
 
   render() {
@@ -91,41 +95,41 @@ class MapBase extends React.Component {
       ></div>
     );
   }
+
+  // 現在地取得ボタンをクリックしたときの処理
+  onClickSetLocation = (btn, map) => {
+    if (navigator.geolocation == false) {
+      alert("現在地を取得できませんでした．");
+      return;
+    }
+
+    // 取得成功時
+    const success = e => {
+      // マップを現在地中心で表示
+      const lat = e.coords.latitude;
+      const lng = e.coords.longitude;
+      map.setView([lat, lng], 17);
+
+      // 前に表示されていた現在地マーカを消す
+      if (locMarker != undefined) {
+        map.removeLayer(locMarker);
+      }
+      // 現在地にマーカーを置く
+      const locMerkerIcon = L.icon({
+        iconUrl: this.myLocIcon,
+        iconRetinaUrl: this.myLocIcon,
+        iconSize: [40, 40],
+        iconAnchor: [21, 21]
+      });
+      locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
+    };
+
+    const error = () => {
+      alert("現在地を取得できませんでした．");
+    };
+
+    navigator.geolocation.getCurrentPosition(success, error);
+  };
 }
 
 export default MapBase;
-
-// 現在地取得ボタンを押した時
-const onClickSetLocation = (btn, map) => {
-  if (navigator.geolocation == false) {
-    alert("現在地を取得できませんでした．");
-    return;
-  }
-
-  // 取得成功時
-  const success = e => {
-    // マップを現在地中心で表示
-    const lat = e.coords.latitude;
-    const lng = e.coords.longitude;
-    map.setView([lat, lng], 17);
-
-    // 前に表示されていた現在地マーカを消す
-    if (locMarker != undefined) {
-      map.removeLayer(locMarker);
-    }
-    // 現在地にマーカーを置く
-    const locMerkerIcon = L.icon({
-      iconUrl: "static/images/map/myLoc.png",
-      iconRetinaUrl: "static/images/map/myLoc.png",
-      iconSize: [40, 40],
-      iconAnchor: [21, 21]
-    });
-    locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
-  };
-
-  const error = () => {
-    alert("現在地を取得できませんでした．");
-  };
-
-  navigator.geolocation.getCurrentPosition(success, error);
-};
