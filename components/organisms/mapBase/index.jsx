@@ -14,7 +14,8 @@ class MapBase extends React.Component {
     zoom: 17,
     overlays: {},
     markerstate: [true, true, true],
-    control: undefined
+    control: undefined,
+    pauseEvent: false
   };
 
   componentDidMount() {
@@ -65,6 +66,7 @@ class MapBase extends React.Component {
       }
     );
     const rdata = await res.json();
+    console.log(rdata);
     return rdata;
   }
 
@@ -89,35 +91,42 @@ class MapBase extends React.Component {
 
       const me = this;
 
-      /*
-       * 再描画時にも選択状態を保持するため
-       * TODO: コードから削除したときにもイベントが発生するのを防ぐ
-       */
-
       overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
       overlays["捕獲いのしし"].addEventListener("add", function(e) {
-        me.state.markerstate[0] = true;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[0] = true;
+        }
       });
       overlays["捕獲いのしし"].addEventListener("remove", function(e) {
-        me.state.markerstate[0] = false;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[0] = false;
+        }
       });
       if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
 
       overlays["ワナ"] = L.layerGroup([]);
       overlays["ワナ"].addEventListener("add", function(e) {
-        me.state.markerstate[1] = true;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[1] = true;
+        }
       });
       overlays["ワナ"].addEventListener("remove", function(e) {
-        me.state.markerstate[1] = false;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[1] = false;
+        }
       });
       if (me.state.markerstate[1]) overlays["ワナ"].addTo(map);
 
       overlays["ワクチン"] = L.layerGroup([]);
       overlays["ワクチン"].addEventListener("add", function(e) {
-        me.state.markerstate[2] = true;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[2] = true;
+        }
       });
       overlays["ワクチン"].addEventListener("remove", function(e) {
-        me.state.markerstate[2] = false;
+        if (!me.state.pauseEvent) {
+          me.state.markerstate[2] = false;
+        }
       });
       if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
     }
@@ -127,13 +136,11 @@ class MapBase extends React.Component {
     if (this.state.control != undefined && this.state.overlays != undefined) {
       this.state.control.remove();
       const ovl = this.state.overlays;
+      this.state.pauseEvent = true;
       Object.keys(ovl).forEach(function(key) {
-        console.log(ovl[key]);
         ovl[key].remove();
-        console.log(ovl[key]);
       });
-      // console.log(this.state.overlays);
-      // console.log(this.state.control);
+      this.state.pauseEvent = false;
     }
 
     this.state.overlays = overlays;
@@ -193,11 +200,9 @@ class MapBase extends React.Component {
     });
 
     map.on("zoomend", function(e) {
-      // eslint-disable-next-line no-invalid-this
       me.addMarkers(map, userData.access_token);
     });
 
-    // L.control.layers(baseLayers).addTo(map);
     L.control.scale().addTo(map);
 
     // 現在地ボタン追加
