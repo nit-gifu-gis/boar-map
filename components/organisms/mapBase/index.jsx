@@ -74,6 +74,7 @@ class MapBase extends React.Component {
     // 取得中にマーカーが消えないように先に情報を取得する
     const overlays = {};
 
+    const me = this;
     const rdata = await this.getMarkers(map, token, 5000008);
     if (rdata["commonHeader"]["resultInfomation"] == "0") {
       const bmarkers = [];
@@ -89,8 +90,6 @@ class MapBase extends React.Component {
         bmarkers.push(mapMarker);
       }
 
-      const me = this;
-
       overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
       overlays["捕獲いのしし"].addEventListener("add", function(e) {
         if (!me.state.pauseEvent) {
@@ -103,8 +102,25 @@ class MapBase extends React.Component {
         }
       });
       if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
+    }
 
-      overlays["ワナ"] = L.layerGroup([]);
+    const wdata = await this.getMarkers(map, token, 5000009);
+    if (wdata["commonHeader"]["resultInfomation"] == "0") {
+      const wmarkers = [];
+      const features = wdata["data"]["features"];
+
+      for (let i = 0; i < features.length; i++) {
+        const feature = features[i];
+        const Lat = feature["geometry"]["coordinates"][1];
+        const Lng = feature["geometry"]["coordinates"][0];
+
+        const mapMarker = L.marker([Lat, Lng]);
+        mapMarker.bindPopup("Marker");
+        wmarkers.push(mapMarker);
+      }
+      console.log(wmarkers);
+
+      overlays["ワナ"] = L.layerGroup(wmarkers);
       overlays["ワナ"].addEventListener("add", function(e) {
         if (!me.state.pauseEvent) {
           me.state.markerstate[1] = true;
@@ -116,8 +132,25 @@ class MapBase extends React.Component {
         }
       });
       if (me.state.markerstate[1]) overlays["ワナ"].addTo(map);
+    }
 
-      overlays["ワクチン"] = L.layerGroup([]);
+    const vdata = await this.getMarkers(map, token, 5000010);
+    if (vdata["commonHeader"]["resultInfomation"] == "0") {
+      const vmarkers = [];
+      const features = vdata["data"]["features"];
+
+      for (let i = 0; i < features.length; i++) {
+        const feature = features[i];
+        const Lat = feature["geometry"]["coordinates"][1];
+        const Lng = feature["geometry"]["coordinates"][0];
+
+        const mapMarker = L.marker([Lat, Lng]);
+        mapMarker.bindPopup("Marker");
+        vmarkers.push(mapMarker);
+      }
+
+      console.log(vmarkers);
+      overlays["ワクチン"] = L.layerGroup(vmarkers);
       overlays["ワクチン"].addEventListener("add", function(e) {
         if (!me.state.pauseEvent) {
           me.state.markerstate[2] = true;
@@ -132,7 +165,6 @@ class MapBase extends React.Component {
     }
 
     // 既存のマーカーを削除
-    console.log(this.state.overlays);
     if (this.state.control != undefined && this.state.overlays != undefined) {
       this.state.control.remove();
       const ovl = this.state.overlays;
