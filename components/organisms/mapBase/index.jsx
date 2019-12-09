@@ -2,6 +2,7 @@
 import "./mapBase.scss";
 import React from "react";
 import L from "leaflet";
+import Router from "next/router";
 import "leaflet-wms-header";
 import "leaflet-easybutton";
 
@@ -27,6 +28,9 @@ class MapBase extends React.Component {
     this.map();
   }
 
+  /*
+   * TODO: 権限に応じた表示処理
+   */
   async getMarkers(map, token, layerId) {
     const bounds = map.getBounds();
     const topLat = bounds.getNorth();
@@ -91,7 +95,22 @@ class MapBase extends React.Component {
         const Lng = feature["geometry"]["coordinates"][0];
 
         const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup("Marker");
+        mapMarker.bindPopup(
+          "ID: " + feature["properties"]["ID$"] + "<br>種類: 捕獲いのしし"
+        );
+        mapMarker.on("click", function(e) {
+          Router.push(
+            {
+              pathname: "/detail",
+              query: {
+                FeatureID: feature["properties"]["ID$"],
+                type: 0
+              }
+            },
+            "/detail"
+          );
+          console.log();
+        });
         bmarkers.push(mapMarker);
       }
 
@@ -120,7 +139,22 @@ class MapBase extends React.Component {
         const Lng = feature["geometry"]["coordinates"][0];
 
         const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup("Marker");
+        mapMarker.bindPopup(
+          "ID: " + feature["properties"]["ID$"] + "<br>種類: わな"
+        );
+        mapMarker.on("click", function(e) {
+          Router.push(
+            {
+              pathname: "/detail",
+              query: {
+                FeatureID: feature["properties"]["ID$"],
+                type: 1
+              }
+            },
+            "/detail"
+          );
+          console.log();
+        });
         wmarkers.push(mapMarker);
       }
       console.log(wmarkers);
@@ -150,7 +184,22 @@ class MapBase extends React.Component {
         const Lng = feature["geometry"]["coordinates"][0];
 
         const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup("Marker");
+        mapMarker.bindPopup(
+          "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
+        );
+        mapMarker.on("click", function(e) {
+          Router.push(
+            {
+              pathname: "/detail",
+              query: {
+                FeatureID: feature["properties"]["ID$"],
+                type: 2
+              }
+            },
+            "/detail"
+          );
+          console.log();
+        });
         vmarkers.push(mapMarker);
       }
 
