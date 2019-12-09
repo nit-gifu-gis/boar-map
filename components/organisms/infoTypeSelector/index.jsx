@@ -132,6 +132,7 @@ class InfoTypeSelector extends React.Component {
     const url = "/add/location";
     switch (checkedItem) {
       case "boar":
+      case "vaccine":
       case "trap":
         break;
       default:
