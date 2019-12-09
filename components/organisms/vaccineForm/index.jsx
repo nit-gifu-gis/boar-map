@@ -2,12 +2,13 @@ import "./vaccineForm.scss";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+import DateInput from "../../atomos/dateInput";
 
 const RecoverInfoForm = () => (
   <div className="__recover_info_form">
     <div className="__recover_date">
       <label>回収年月日</label>
-      <input type="date" name="recoverDate" id="recoverDate" />
+      <DateInput name="recoverDate" id="recoverDate" />
     </div>
     <div className="eaten">
       <label>摂食の有無</label>
@@ -144,7 +145,7 @@ class VaccineForm extends React.Component {
             </div>
             <div className="__treat_date">
               <label>散布年月日</label>
-              <input type="date" name="treatDate" id="treatDate" />
+              <DateInput name="treatDate" id="treatDate" />
             </div>
             <div className="__treat_number">
               <label>散布数</label>
