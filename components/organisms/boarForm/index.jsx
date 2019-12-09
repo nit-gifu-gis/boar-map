@@ -150,6 +150,11 @@ class BoarForm extends React.Component {
     }
   }
 
+  onSubmit(e) {
+    // エンターキーで送信されるのを防ぐ
+    e.preventDefault();
+  }
+
   render() {
     return (
       <div className="boarForm">
@@ -163,7 +168,7 @@ class BoarForm extends React.Component {
           <p>
             位置情報確認：({Router.query.lat}, {Router.query.lng})
           </p>
-          <form name="form">
+          <form name="form" onSubmit={this.onSubmit}>
             <div className="__division">
               <label>区分</label>
               <select
