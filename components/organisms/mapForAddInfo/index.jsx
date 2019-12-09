@@ -79,7 +79,7 @@ class MapForAddInfo extends MapBase {
           登録したい地点が地図の中心になるように地図を移動させてください。
         </div>
         <div
-          id="map"
+          id="mapForAddInfo"
           ref={node => {
             this.node = node;
           }}
