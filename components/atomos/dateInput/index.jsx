@@ -47,9 +47,9 @@ class DateInput extends React.Component {
   }
 
   setDate() {
-    const yyyy = document.getElementById("year").value;
-    const mm = document.getElementById("month").value;
-    const dd = document.getElementById("day").value;
+    const yyyy = document.getElementById(this.props.id + "Year").value;
+    const mm = document.getElementById(this.props.id + "Month").value;
+    const dd = document.getElementById(this.props.id + "Day").value;
     const date = yyyy + "-" + mm + "-" + dd;
     // console.log(date);
     if (yyyy != "" && mm != "" && dd != "") {
@@ -79,7 +79,7 @@ class DateInput extends React.Component {
             type="number"
             min="1900"
             step="1"
-            id="year"
+            id={this.props.id + "Year"}
             placeholder="西暦"
             onChange={this.setDate.bind(this)}
           />
@@ -89,7 +89,7 @@ class DateInput extends React.Component {
             max="12"
             min="1"
             step="1"
-            id="month"
+            id={this.props.id + "Month"}
             onChange={this.setDate.bind(this)}
           />
           月
@@ -98,7 +98,7 @@ class DateInput extends React.Component {
             max="31"
             min="1"
             step="1"
-            id="day"
+            id={this.props.id + "Day"}
             onChange={this.setDate.bind(this)}
           />
           日
