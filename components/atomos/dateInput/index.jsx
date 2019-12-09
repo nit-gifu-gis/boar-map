@@ -1,10 +1,28 @@
 import React from "react";
+import { hidden } from "ansi-colors";
 
 class DateInput extends React.Component {
   isSafari() {
     const userAgent = window.navigator.userAgent.toLowerCase();
 
-    if (userAgent.indexOf("msie") != -1 || userAgent.indexOf("trident") != -1) {
+    if (userAgent.indexOf("iphone") != -1) {
+      console.log("iPhone");
+      return false;
+    } else if (userAgent.indexOf("ipad") != -1) {
+      console.log("iPad");
+      return false;
+    } else if (userAgent.indexOf("android") != -1) {
+      if (userAgent.indexOf("mobile") != -1) {
+        console.log("android");
+        return false;
+      } else {
+        console.log("android");
+        return false;
+      }
+    } else if (
+      userAgent.indexOf("msie") != -1 ||
+      userAgent.indexOf("trident") != -1
+    ) {
       console.log("Internet Explorer");
       return false;
     } else if (userAgent.indexOf("edge") != -1) {
@@ -85,7 +103,12 @@ class DateInput extends React.Component {
           />
           日
           <br />
-          <input type="date" name={this.props.name} id={this.props.id} />
+          <input
+            type="date"
+            name={this.props.name}
+            id={this.props.id}
+            style={{ display: "none" }}
+          />
         </div>
       );
     } else {
