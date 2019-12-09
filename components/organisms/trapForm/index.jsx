@@ -2,11 +2,12 @@ import "./trapForm.scss";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+import DateInput from "../../atomos/dateInput";
 
 const RemoveDateInput = () => (
   <div className="__remove_date">
     <label>撤去年月日</label>
-    <input type="date" name="removeDate" id="removeDate" />
+    <DateInput name="removeDate" id="removeDate" />
   </div>
 );
 
@@ -106,7 +107,7 @@ class TrapForm extends React.Component {
           <form name="form">
             <div className="__set_date">
               <label>設置年月日</label>
-              <input type="date" name="setDate" id="setDate" />
+              <DateInput name="setDate" id="setDate" />
             </div>
             <div className="__kind">
               <label>わなの種類</label>
