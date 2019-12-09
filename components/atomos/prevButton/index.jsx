@@ -2,21 +2,11 @@ import Router from "next/router";
 import React from "react";
 
 class PrevButton extends React.Component {
-  // クリックした場合の処理
-  // 引数を取りたい場合はバインドする必要がある
-  // (render関数以外ではpropsは呼べない)
-  onClick(e) {
-    const link = e.target.value;
-    Router.push(link);
-  }
+  // クリック時の処理は親の方で定義
 
   render() {
     return (
-      <button
-        className="PrevButton"
-        value={this.props.link}
-        onClick={this.onClick.bind(this)}
-      >
+      <button className="NextButton" onClick={this.props.bind}>
         前へ
       </button>
     );

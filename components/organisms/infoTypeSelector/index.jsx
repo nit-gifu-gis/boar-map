@@ -108,6 +108,40 @@ class InfoTypeSelector extends React.Component {
     }
   }
 
+  // 前へボタンを押したときの処理
+  onClickPrev() {
+    Router.push("/map");
+  }
+
+  // 次へボタンを押したときの処理
+  onClickNext() {
+    // フォーム取得
+    const infoTypeSelect = document.form.infoType;
+    let checkedItem = null;
+    for (let i = 0; i < infoTypeSelect.length; i++) {
+      if (infoTypeSelect[i].checked) {
+        checkedItem = infoTypeSelect[i].value;
+        break;
+      }
+    }
+    if (!checkedItem) {
+      window.alert("登録する情報の種類が選択されていません!!");
+      return;
+    }
+    // チェックが有る場合
+    const url = "/add/location";
+    switch (checkedItem) {
+      case "boar":
+      case "vaccine":
+      case "trap":
+        break;
+      default:
+        window.alert("工事中");
+        return;
+    }
+    Router.push({ pathname: url, query: { type: checkedItem } }, url);
+  }
+
   render() {
     return (
       <div className="infoTypeSelector">
@@ -118,9 +152,14 @@ class InfoTypeSelector extends React.Component {
           <p>情報の種類を選択してください。</p>
         </div>
         <div className="__choices">
-          <div className="radio">{this.choices}</div>
+          <form name="form">
+            <div className="radio">{this.choices}</div>
+          </form>
         </div>
-        <AddInfoFooter prevLink={"/map"} nextLink={"/add/select"} />
+        <AddInfoFooter
+          prevBind={this.onClickPrev}
+          nextBind={this.onClickNext}
+        />
       </div>
     );
   }
