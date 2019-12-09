@@ -1,4 +1,4 @@
-import "./boarConfirmForm.scss";
+import "./trapConfirmForm.scss";
 
 import dynamic from "next/dynamic";
 import Router from "next/router";
@@ -9,9 +9,17 @@ const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
   ssr: false
 });
 
-class BoarConfirmForm extends React.Component {
+const RemoveDateDiv = () => (
+  <div className="__remove_date">
+    <h3>撤去年月日</h3>
+    <p>{Router.query.removeDate}</p>
+  </div>
+);
+
+class TrapConfirmForm extends React.Component {
   state = {
-    userData: undefined
+    userData: undefined,
+    removeDateDiv: null
   };
 
   constructor() {
@@ -33,6 +41,11 @@ class BoarConfirmForm extends React.Component {
     } else {
       return;
     }
+    if (Router.query.capture == "あり") {
+      this.state.removeDateDiv = <RemoveDateDiv />;
+    } else {
+      this.state.removeDateDiv = null;
+    }
   }
 
   submitInfo() {
@@ -42,7 +55,7 @@ class BoarConfirmForm extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000008,
+      layerId: 5000009,
       srid: 4326,
       features: [
         {
@@ -56,13 +69,11 @@ class BoarConfirmForm extends React.Component {
           },
           properties: {
             入力者: this.state.userData.user_id,
-            区分: Router.query.division,
-            捕獲年月日: Router.query.date,
+            設置年月日: Router.query.setDate,
+            撤去年月日: Router.query.removeDate,
             位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
-            "罠・発見場所": Router.query.trapOrEnv,
-            性別: Router.query.sex,
-            体長: Router.query.length,
-            体重: Router.query.weight
+            罠の種類: Router.query.kind,
+            捕獲の有無: Router.query.capture
           }
         }
       ]
@@ -98,7 +109,7 @@ class BoarConfirmForm extends React.Component {
 
   onClickPrev() {
     Router.push({
-      pathname: "/add/info/boar",
+      pathname: "/add/info/trap",
       query: { lat: Router.query.lat, lng: Router.query.lng }
     });
   }
@@ -114,7 +125,7 @@ class BoarConfirmForm extends React.Component {
     return (
       <div className="boar_confirm_form">
         <div className="__title">
-          <h1>捕獲いのしし情報</h1>
+          <h1>わな情報</h1>
         </div>
         <div className="__location">
           <h3>場所</h3>
@@ -126,30 +137,19 @@ class BoarConfirmForm extends React.Component {
           </div>
         </div>
         <div className="__info">
-          <div className="__division">
-            <h3>区分</h3>
-            <p>{Router.query.division}</p>
+          <div className="__set_date">
+            <h3>設置年月日</h3>
+            <p>{Router.query.setDate}</p>
           </div>
-          <div className="__date">
-            <h3>捕獲年月日</h3>
-            <p>{Router.query.date}</p>
+          <div className="__kind">
+            <h3>わなの種類</h3>
+            <p>{Router.query.kind}</p>
           </div>
-          <div className="__trap_or_env">
-            <h3>わな・発見場所</h3>
-            <p>{Router.query.trapOrEnv}</p>
+          <div className="__capture">
+            <h3>捕獲の有無</h3>
+            <p>{Router.query.capture}</p>
           </div>
-          <div className="__sex">
-            <h3>性別</h3>
-            <p>{Router.query.sex}</p>
-          </div>
-          <div className="__length">
-            <h3>体長</h3>
-            <p>{Router.query.length}cm</p>
-          </div>
-          <div className="__weight">
-            <h3>体重</h3>
-            <p>{Router.query.weight}kg (体長から自動計算)</p>
-          </div>
+          {this.state.removeDateDiv}
         </div>
         <AddInfoFooter
           prevBind={this.onClickPrev}
@@ -160,4 +160,4 @@ class BoarConfirmForm extends React.Component {
   }
 }
 
-export default BoarConfirmForm;
+export default TrapConfirmForm;
