@@ -133,6 +133,7 @@ class InfoTypeSelector extends React.Component {
     switch (checkedItem) {
       case "boar":
       case "trap":
+      case "vaccine":
         break;
       default:
         window.alert("工事中");
