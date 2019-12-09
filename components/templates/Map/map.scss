@@ -1,3 +1,83 @@
-body {
+* {
+    padding: 0;
     margin: 0;
+}
+.fa-map{
+  font-size: 100px;
+  color:#e87b15;
+}
+.fa-cog{
+  font-size: 100px;
+}
+img{
+  position: fixed;
+  bottom: 80px;
+  right:80px;
+  -webkit-filter: drop-shadow(10px 10px 3px 10px rgba(0,0,0,.8));
+  filter: drop-shadow(10px 10px 10px rgba(0.0,0.0,0.0,0.2));
+  width: 100px;
+}
+.footer-nav{
+
+}
+button{
+  background-color: white;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+button:hover{
+  color:#333;
+}
+button:active{
+}
+@media screen and (max-width:400px){
+  .footer-nav{
+    position: relative;
+    background-color: white;
+    z-index: 2;
+    box-shadow: -10px -10px -10px -10px rgba(0,0,0,0.6) inset;
+  }
+  p{
+    font-size: 24px;
+    position: fixed;
+    top: 95%;
+  }
+  .fa-map{
+    font-size: 50px;
+    position: fixed;
+    top: 88%;
+    left: 8%;
+  }
+  img{
+    width: 80px;
+    position: fixed;
+    top: 82%;
+    left: 40.5%;
+  }
+  .fa-cog{
+    font-size: 50px;
+    position: fixed;
+    top: 88%;
+    right: 9%;
+  }
+  .label{
+    &__regist{
+      font-size: 16px;
+      position: fixed;
+      left: 42%;
+    }
+    &__map{
+      font-size: 16px;
+      position: fixed;
+      left: 9%;
+      top: 96%;
+    }
+    &__setting{
+      font-size: 16px;
+      position: fixed;
+      right: 11.5%;
+      top:96%;
+    }
+  }
 }

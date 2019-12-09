@@ -6,9 +6,7 @@ import Footer from "../../organisms/footer";
 
 const SelectType = () => (
   <div>
-    <Header />
     <InfoTypeSelector />
-    <Footer />
   </div>
 );
 

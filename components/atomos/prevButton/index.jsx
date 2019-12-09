@@ -13,7 +13,7 @@ class PrevButton extends React.Component {
   render() {
     return (
       <button
-        className="NextButton"
+        className="PrevButton"
         value={this.props.link}
         onClick={this.onClick.bind(this)}
       >

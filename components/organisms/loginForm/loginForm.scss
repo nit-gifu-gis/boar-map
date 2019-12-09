@@ -11,13 +11,17 @@
   height: 100vh;
   background-color: #740f75;
 
-  &__title {
+  .title {
     color:white;
     padding-top: 10px;
     text-align: center;
   }
+  img{
+    display: block;
+      margin: auto;
+  }
 
-  &__form {
+  .form {
     background-color: white;
     font-size: 10px;
     margin: 0 auto;
@@ -26,7 +30,7 @@
     width: 400px;
     border: 2px solid #d1d1d1;
     border-radius: 3px;
-    
+
     h1, h2 {
       padding: 10px 30px;
     }
@@ -35,8 +39,7 @@
       color:red;
     }
 
-    &__input {
-      input {
+    input {
         font-size: 20px;
         padding: 10px;
         margin-left: 30px;
@@ -47,7 +50,6 @@
 
         &:focus {
           border: 2px solid #2a75de;
-        }
       }
     }
 
@@ -76,11 +78,11 @@
 
 @media screen and (max-width:400px){
   .login {
-    &__form {
+    .form {
       width: 90vw;
       border: none;
 
-      &__input {
+      .input_form {
         text-align: center;
 
         input {

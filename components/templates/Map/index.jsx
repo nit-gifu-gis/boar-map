@@ -14,11 +14,16 @@ const DynamicMapComponentWithNoSSR = dynamic(
 
 const Map = () => (
   <div>
-    <Header />
-    <h1>Map</h1>
     <DynamicMapComponentWithNoSSR />
-    <AddInformationButton />
-    <Footer />
+    <div class="footer-nav">
+      <i class="fa fa-map">
+        <p class="label__map">マップ</p>
+      </i>
+      <AddInformationButton />
+      <i class="fa fa-cog">
+        <p class="label__setting">設定</p>
+      </i>
+    </div>
   </div>
 );
 
