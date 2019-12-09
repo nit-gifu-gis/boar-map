@@ -115,15 +115,15 @@ class InfoTypeSelector extends React.Component {
 
   // 次へボタンを押したときの処理
   onClickNext() {
-    // チェックボックスを確認
-    const infoTypes = document.getElementsByName("infoType");
-    let checkedItem = "";
-    infoTypes.forEach(i => {
-      if (i.checked) {
-        checkedItem = i.value;
+    // フォーム取得
+    const infoTypeSelect = document.form.infoType;
+    let checkedItem = null;
+    for (let i = 0; i < infoTypeSelect.length; i++) {
+      if (infoTypeSelect[i].checked) {
+        checkedItem = infoTypeSelect[i].value;
+        break;
       }
-    });
-    // チェックが入ってない
+    }
     if (!checkedItem) {
       window.alert("登録する情報の種類が選択されていません!!");
       return;
@@ -150,7 +150,9 @@ class InfoTypeSelector extends React.Component {
           <p>登録する情報を選択し、次へボタンを押してください。</p>
         </div>
         <div className="__choices">
-          <div className="radio">{this.choices}</div>
+          <form name="form">
+            <div className="radio">{this.choices}</div>
+          </form>
         </div>
         <AddInfoFooter
           prevBind={this.onClickPrev}
