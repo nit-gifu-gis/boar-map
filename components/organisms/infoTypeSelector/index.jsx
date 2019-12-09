@@ -132,6 +132,7 @@ class InfoTypeSelector extends React.Component {
     const url = "/add/location";
     switch (checkedItem) {
       case "boar":
+      case "trap":
         break;
       default:
         window.alert("工事中");
