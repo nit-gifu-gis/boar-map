@@ -79,10 +79,10 @@ class VaccineConfirmForm extends React.Component {
           properties: {
             入力者: this.state.userData.user_id,
             位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
-            メッシュ番: Router.query.meshNumber,
+            メッシュ番号: Router.query.meshNumber,
             散布年月日: Router.query.treatDate,
             散布数: Router.query.treatNumber,
-            改修年月日: Router.query.recoverDate,
+            回収年月日: Router.query.recoverDate,
             摂食の有無: Router.query.eaten,
             その他破損: Router.query.damage,
             備考: Router.query.note
