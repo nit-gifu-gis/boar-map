@@ -2,6 +2,7 @@ import "./boarForm.scss";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+import DateInput from "../../atomos/dateInput";
 
 const TrapSelector = () => (
   <div className="trap_selector">
@@ -183,12 +184,13 @@ class BoarForm extends React.Component {
             </div>
             <div className="__date">
               <label>捕獲年月日</label>
-              <input
+              {/* <input
                 type="date"
                 name="date"
                 id="date"
                 // value={this.state.todayStr}
-              />
+              /> */}
+              <DateInput name="date" id="date" />
             </div>
             <div className="__trap_or_env">{this.state.trapOrEnvSelector}</div>
             <div className="__sex">
