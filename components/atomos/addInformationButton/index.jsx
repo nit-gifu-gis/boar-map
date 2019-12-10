@@ -11,7 +11,7 @@ const AddInformationButton = () => {
       <button className="regist__button" onClick={OnClick}>
         <img src="images/button.png" />
       </button>
-      <p className="label__regist">新覝登録</p>
+      <p className="label__regist">新規登録</p>
     </div>
   );
 };
