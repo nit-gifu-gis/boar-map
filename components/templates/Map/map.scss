@@ -11,7 +11,7 @@
 }
 .regist__button{
 }
-.regist__button img{
+.regist__button{
   position: absolute;
   right: 80px;
   bottom:80px;
@@ -42,16 +42,21 @@ button:hover{
     padding-left: 30px;
     font-size: 40px;
     float: left;
+    margin-top: -30px;
   }
-  .regist__button img{
+  .regist__button{
     position: static;
-    margin-top: -45px;
+    display: block;
+    margin: 0 auto;
+    margin-top: -50px;
+    top:-50px;
     width: 26%;
   }
   .fa-cog{
     padding-right: 30px;
     font-size: 40px;
     float: right;
+    margin-top: -30px;
   }
   .label{
     &__regist{

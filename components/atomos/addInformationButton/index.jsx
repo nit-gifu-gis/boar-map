@@ -8,9 +8,11 @@ const OnClick = () => {
 const AddInformationButton = () => {
   return (
     <div>
-      <button className="regist__button" onClick={OnClick}>
-        <img src="images/button.png" />
-      </button>
+      <img
+        className="regist__button"
+        src="images/button.png"
+        onClick={OnClick}
+      />
       <p className="label__regist">新規登録</p>
     </div>
   );
