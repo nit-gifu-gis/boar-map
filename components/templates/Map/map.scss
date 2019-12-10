@@ -12,6 +12,9 @@
 .regist__button{
 }
 .regist__button img{
+  position: absolute;
+  right: 80px;
+  bottom:80px;
   -webkit-filter: drop-shadow(10px 10px 3px 10px rgba(0,0,0,.8));
   filter: drop-shadow(10px 10px 10px rgba(0.0,0.0,0.0,0.2));
   width: 80px;
@@ -41,6 +44,7 @@ button:hover{
     float: left;
   }
   .regist__button img{
+    position: static;
     margin-top: -45px;
     width: 26%;
   }
