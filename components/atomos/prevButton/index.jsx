@@ -7,7 +7,7 @@ class PrevButton extends React.Component {
   render() {
     return (
       <button className="PrevButton" onClick={this.props.bind}>
-        前へ
+        戻る
       </button>
     );
   }

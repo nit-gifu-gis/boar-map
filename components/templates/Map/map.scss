@@ -9,7 +9,7 @@
 .fa-cog{
   font-size: 100px;
 }
-img{
+.regist__button img{
   position: fixed;
   bottom: 80px;
   right:80px;
@@ -29,9 +29,7 @@ button{
 button:hover{
   color:#333;
 }
-button:active{
-}
-@media screen and (max-width:400px){
+@media screen and (max-width:480px){
   .footer-nav{
     position: relative;
     background-color: white;
@@ -46,19 +44,19 @@ button:active{
   .fa-map{
     font-size: 50px;
     position: fixed;
-    top: 88%;
+    top: 85%;
     left: 8%;
   }
-  img{
+  .regist__button img{
     width: 80px;
     position: fixed;
-    top: 82%;
+    top: 79%;
     left: 40.5%;
   }
   .fa-cog{
     font-size: 50px;
     position: fixed;
-    top: 88%;
+    top: 85%;
     right: 9%;
   }
   .label{

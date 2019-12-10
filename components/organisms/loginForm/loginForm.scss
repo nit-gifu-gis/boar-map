@@ -9,7 +9,7 @@
   padding: 10vh 0px;
   box-sizing: border-box;
   height: 100vh;
-  background-color: #740f75;
+  background-color: #e87b15;
 
   .title {
     color:white;
@@ -59,17 +59,17 @@
       margin: 25px 0px 20px 30px;
       width: 86%;
       color: white;
-      border: 2px solid #ff33fc;
+      border: 2px solid #e87b15;
       border-radius: 3px;
-      background-image: linear-gradient(-180deg,#ffd1fa,#ff52eb 90%);
+      background-image: linear-gradient(-180deg,#f5d0ae,#e37107 90%);
 
       &:hover {
-        background-image: linear-gradient(-180deg,#ffbdf7,#fc49e8 90%);
+        background-image: linear-gradient(-180deg,#e37107,#f5d0ae 90%);
       }
 
       &:active {
         background-image: none;
-        background-color: #ff52eb;
+        background-color: #e87b15;
       }
     }
 
