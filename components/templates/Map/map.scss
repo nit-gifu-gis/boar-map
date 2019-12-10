@@ -10,12 +10,8 @@
   font-size: 100px;
 }
 .regist__button{
-  text-align: center;
 }
 .regist__button img{
-  position: absolute;
-  bottom: 80px;
-  right: 80px;
   -webkit-filter: drop-shadow(10px 10px 3px 10px rgba(0,0,0,.8));
   filter: drop-shadow(10px 10px 10px rgba(0.0,0.0,0.0,0.2));
   width: 80px;
@@ -40,42 +36,32 @@ button:hover{
     box-shadow: -10px -10px -10px -10px rgba(0,0,0,0.6) inset;
   }
   .fa-map{
+    padding-left: 30px;
     font-size: 40px;
-    position: fixed;
-    top: 85%;
-    left: 12%;
+    float: left;
   }
   .regist__button img{
-    bottom: 0;
-    top: -50px;
-    right: 0;
-    left: 37%;
+    margin-top: -45px;
     width: 26%;
   }
   .fa-cog{
+    padding-right: 30px;
     font-size: 40px;
-    position: fixed;
-    top: 85%;
-    right: 12%;
+    float: right;
   }
   .label{
     &__regist{
       font-size: 16px;
-      position: fixed;
-      top: 93%;
-      left: 40%;
+      padding-top: 5%;
+      text-align: center;
     }
     &__map{
+      padding: 3px 0px 0px 2px;
       font-size: 14px;
-      position: fixed;
-      top: 95%;
-      left:12%;
     }
     &__setting{
+      padding: 3px 0px 0px 5px;
       font-size: 14px;
-      position: fixed;
-      top: 95%;
-      right: 14%;
     }
   }
 }

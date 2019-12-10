@@ -16,10 +16,11 @@ const Map = () => (
   <div>
     <DynamicMapComponentWithNoSSR />
     <div className="footer-nav">
+      <AddInformationButton />
       <i className="fa fa-map">
         <p className="label__map">マップ</p>
       </i>
-      <AddInformationButton />
+
       <i className="fa fa-cog">
         <p className="label__setting">設定</p>
       </i>

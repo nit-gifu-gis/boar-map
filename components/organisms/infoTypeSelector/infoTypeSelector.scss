@@ -60,6 +60,7 @@
 input[type=radio]{
   display: none;
   font-size: 100px;
+  outline: none;
 }
 input[type=radio]:checked + .label p{
     background-color: #e87b15;
@@ -149,9 +150,8 @@ button:hover{
   .PrevButton{
     display: inline-block;
     border-radius: 5px;
-    background-color: #e87b15;
     padding: 15px;
-    color: white;
+    color: black;
     width: 100px;
     font-size: 15px;
   }
@@ -163,8 +163,8 @@ button:hover{
     width: 6px;
     height: 6px;
     margin: -4px 0 0 0;
-    border-top: solid 2px #fff;
-    border-right: solid 2px #fff;
+    border-top: solid 2px black;
+    border-right: solid 2px black;
     -webkit-transform: rotate(225deg);
           transform: rotate(225deg);
 }
