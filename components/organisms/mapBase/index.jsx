@@ -73,9 +73,8 @@ class MapBase extends React.Component {
         },
         body: JSON.stringify(data)
       }
-    );
-    const rdata = await res.json();
-    console.log(rdata);
+    ).catch(e => console.log(e));
+    const rdata = await res.json().catch(e => console.log(e));
     return rdata;
   }
 
@@ -109,7 +108,6 @@ class MapBase extends React.Component {
             },
             "/detail"
           );
-          console.log();
         });
         bmarkers.push(mapMarker);
       }
@@ -153,11 +151,9 @@ class MapBase extends React.Component {
             },
             "/detail"
           );
-          console.log();
         });
         wmarkers.push(mapMarker);
       }
-      console.log(wmarkers);
 
       overlays["ワナ"] = L.layerGroup(wmarkers);
       overlays["ワナ"].addEventListener("add", function(e) {
@@ -198,12 +194,10 @@ class MapBase extends React.Component {
             },
             "/detail"
           );
-          console.log();
         });
         vmarkers.push(mapMarker);
       }
 
-      console.log(vmarkers);
       overlays["ワクチン"] = L.layerGroup(vmarkers);
       overlays["ワクチン"].addEventListener("add", function(e) {
         if (!me.state.pauseEvent) {
