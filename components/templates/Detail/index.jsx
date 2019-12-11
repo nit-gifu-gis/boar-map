@@ -60,9 +60,9 @@ class Detail extends React.Component {
               this.setState({ detail: feature });
             }
           })
-          .catch(e => console.log(e));
+          .catch(e => this.getFeatureDetail());
       })
-      .catch(e => console.log(e));
+      .catch(e => this.getFeatureDetail());
   }
 
   componentDidMount() {
