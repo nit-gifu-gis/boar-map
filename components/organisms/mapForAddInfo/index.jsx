@@ -9,6 +9,13 @@ class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
   myLocIcon = "../../static/images/map/myLoc.png";
 
+  constructor() {
+    super();
+    if (Router.query.type == undefined) {
+      Router.replace("/add/select");
+    }
+  }
+
   map() {
     super.map();
     // 下のon関数の中ではthisが使えないのでコピー
