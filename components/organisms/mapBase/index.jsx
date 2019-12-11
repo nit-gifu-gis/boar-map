@@ -19,7 +19,8 @@ class MapBase extends React.Component {
     overlays: {},
     markerstate: [true, true, true],
     control: undefined,
-    pauseEvent: false
+    pauseEvent: false,
+    retry: 0
   };
 
   boarIcon = L.icon({
@@ -50,6 +51,7 @@ class MapBase extends React.Component {
   }
 
   getBoar(map, token, me, data) {
+    this.state.retry++;
     const overlays = {};
     fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
@@ -109,14 +111,24 @@ class MapBase extends React.Component {
                 }
               });
             }
+            this.state.retry = 0;
             this.getTrap(map, token, me, overlays, data);
           })
-          .catch(e => this.getBoar(map, token, me, data));
+          .catch(e => {
+            if (this.state.retry <= 5) {
+              this.getBoar(map, token, me, data);
+            }
+          });
       })
-      .catch(e => this.getBoar(map, token, me, data));
+      .catch(e => {
+        if (this.state.retry <= 5) {
+          this.getBoar(map, token, me, data);
+        }
+      });
   }
 
   getTrap(map, token, me, overlays, data) {
+    this.state.retry++;
     data.layerId = 5000009;
     fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
@@ -174,18 +186,24 @@ class MapBase extends React.Component {
                 }
               });
             }
+            this.state.retry = 0;
             this.getVaccine(map, token, me, overlays, data);
           })
           .catch(e => {
-            this.getTrap(map, token, me, overlays, data);
+            if (this.state.retry <= 5) {
+              this.getTrap(map, token, me, overlays, data);
+            }
           });
       })
       .catch(e => {
-        this.getTrap(map, token, me, overlays, data);
+        if (this.state.retry <= 5) {
+          this.getTrap(map, token, me, overlays, data);
+        }
       });
   }
 
   getVaccine(map, token, me, overlays, data) {
+    this.state.retry++;
     data.layerId = 5000010;
     fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
@@ -245,14 +263,19 @@ class MapBase extends React.Component {
                 }
               });
             }
+            this.state.retry = 0;
             this.applyMarkers(map, token, me, overlays);
           })
           .catch(e => {
-            this.getVaccine(map, token, me, overlays, data);
+            if (this.state.retry <= 5) {
+              this.getVaccine(map, token, me, overlays, data);
+            }
           });
       })
       .catch(e => {
-        this.getVaccine(map, token, me, overlays, data);
+        if (this.state.retry <= 5) {
+          this.getVaccine(map, token, me, overlays, data);
+        }
       });
   }
 

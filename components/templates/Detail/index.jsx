@@ -10,9 +10,11 @@ import DetailFooter from "../../molecules/detailFooter";
 
 class Detail extends React.Component {
   state = {
-    detail: {}
+    detail: {},
+    retry: 0
   };
   async getFeatureDetail() {
+    retry++;
     if (Router.query.type == undefined) {
       Router.push("/map");
       return;
@@ -55,14 +57,23 @@ class Detail extends React.Component {
         res
           .json()
           .then(rdata => {
+            retry = 0;
             if (rdata["data"]["features"].length != 0) {
               const feature = rdata["data"]["features"][0];
               this.setState({ detail: feature });
             }
           })
-          .catch(e => this.getFeatureDetail());
+          .catch(e => {
+            if (this.state <= 5) {
+              this.getFeatureDetail();
+            }
+          });
       })
-      .catch(e => this.getFeatureDetail());
+      .catch(e => {
+        if (this.state <= 5) {
+          this.getFeatureDetail();
+        }
+      });
   }
 
   componentDidMount() {
