@@ -22,6 +22,25 @@ class MapBase extends React.Component {
     pauseEvent: false
   };
 
+  boarIcon = L.icon({
+    iconUrl: "static/images/icons/boar.svg",
+    iconRetinaUrl: "static/images/icons/boar.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+  trapIcon = L.icon({
+    iconUrl: "static/images/icons/trap.svg",
+    iconRetinaUrl: "static/images/icons/boar.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+  vaccineIcon = L.icon({
+    iconUrl: "static/images/icons/vaccine.svg",
+    iconRetinaUrl: "static/images/icons/vaccine.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+
   getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
   myLocIcon = "static/images/map/myLoc.png";
   myMap = null;
@@ -56,7 +75,9 @@ class MapBase extends React.Component {
                 const Lat = feature["geometry"]["coordinates"][1];
                 const Lng = feature["geometry"]["coordinates"][0];
 
-                const mapMarker = L.marker([Lat, Lng]);
+                const mapMarker = L.marker([Lat, Lng], {
+                  icon: this.boarIcon
+                });
                 mapMarker.bindPopup(
                   "ID: " +
                     feature["properties"]["ID$"] +
@@ -121,7 +142,9 @@ class MapBase extends React.Component {
                 const Lat = feature["geometry"]["coordinates"][1];
                 const Lng = feature["geometry"]["coordinates"][0];
 
-                const mapMarker = L.marker([Lat, Lng]);
+                const mapMarker = L.marker([Lat, Lng], {
+                  icon: this.trapIcon
+                });
                 mapMarker.bindPopup(
                   "ID: " + feature["properties"]["ID$"] + "<br>種類: わな"
                 );
@@ -189,7 +212,9 @@ class MapBase extends React.Component {
                 const Lat = feature["geometry"]["coordinates"][1];
                 const Lng = feature["geometry"]["coordinates"][0];
 
-                const mapMarker = L.marker([Lat, Lng]);
+                const mapMarker = L.marker([Lat, Lng], {
+                  icon: this.vaccineIcon
+                });
                 mapMarker.bindPopup(
                   "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
                 );
