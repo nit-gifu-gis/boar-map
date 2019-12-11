@@ -87,7 +87,6 @@ class MapBase extends React.Component {
                   me.state.markerstate[0] = false;
                 }
               });
-              if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
             }
             this.getTrap(map, token, me, overlays, data);
           })
@@ -151,7 +150,6 @@ class MapBase extends React.Component {
                   me.state.markerstate[1] = false;
                 }
               });
-              if (me.state.markerstate[1]) overlays["わな"].addTo(map);
             }
             this.getVaccine(map, token, me, overlays, data);
           })
@@ -221,7 +219,6 @@ class MapBase extends React.Component {
                   me.state.markerstate[2] = false;
                 }
               });
-              if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
             }
             this.applyMarkers(map, token, me, overlays);
           })
@@ -246,6 +243,10 @@ class MapBase extends React.Component {
       });
       this.state.pauseEvent = false;
     }
+
+    if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
+    if (me.state.markerstate[1]) overlays["わな"].addTo(map);
+    if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
 
     this.state.overlays = overlays;
     this.state.control = L.control.layers(undefined, overlays, {
