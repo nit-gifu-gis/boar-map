@@ -24,6 +24,7 @@ class DetailPage extends React.Component {
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="stylesheet" href="/static/css/leaflet.css" />
           <title>いのししマップぎふ - スポット詳細</title>
         </Head>
         <Detail />

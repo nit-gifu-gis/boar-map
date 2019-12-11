@@ -14,7 +14,7 @@ class Detail extends React.Component {
     retry: 0
   };
   async getFeatureDetail() {
-    retry++;
+    this.state.retry++;
     if (Router.query.type == undefined) {
       Router.push("/map");
       return;
@@ -37,7 +37,7 @@ class Detail extends React.Component {
         receiptNumber: receiptNumber
       },
       layerId: 5000008 + parseInt(Router.query.type),
-      shapeIds: [1],
+      shapeIds: [Router.query.FeatureID],
       srid: 3857
     };
 
@@ -57,7 +57,7 @@ class Detail extends React.Component {
         res
           .json()
           .then(rdata => {
-            retry = 0;
+            this.state.retry = 0;
             if (rdata["data"]["features"].length != 0) {
               const feature = rdata["data"]["features"][0];
               this.setState({ detail: feature });
@@ -66,12 +66,14 @@ class Detail extends React.Component {
           .catch(e => {
             if (this.state <= 5) {
               this.getFeatureDetail();
+              console.log("retry");
             }
           });
       })
       .catch(e => {
         if (this.state <= 5) {
           this.getFeatureDetail();
+          console.log("retry");
         }
       });
   }

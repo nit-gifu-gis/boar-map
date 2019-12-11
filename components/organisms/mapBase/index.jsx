@@ -280,7 +280,6 @@ class MapBase extends React.Component {
   }
 
   applyMarkers(map, token, me, overlays) {
-    console.log(overlays);
     // 既存のマーカーを削除
     if (this.state.control != undefined && this.state.overlays != undefined) {
       this.state.control.remove();
