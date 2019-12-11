@@ -30,7 +30,7 @@ class MapBase extends React.Component {
   });
   trapIcon = L.icon({
     iconUrl: "static/images/icons/trap.svg",
-    iconRetinaUrl: "static/images/icons/boar.svg",
+    iconRetinaUrl: "static/images/icons/trap.svg",
     iconSize: [40, 40],
     iconAnchor: [21, 21]
   });
