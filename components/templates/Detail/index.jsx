@@ -39,7 +39,7 @@ class Detail extends React.Component {
       srid: 3857
     };
 
-    const res = await fetch(
+    fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesById",
       {
         method: "POST",
@@ -50,12 +50,19 @@ class Detail extends React.Component {
         },
         body: JSON.stringify(data)
       }
-    ).catch(e => console.log(e));
-    const rdata = await res.json().catch(e => console.log(e));
-    if (rdata["data"]["features"].length != 0) {
-      const feature = rdata["data"]["features"][0];
-      this.setState({ detail: feature });
-    }
+    )
+      .then(res => {
+        res
+          .json()
+          .then(rdata => {
+            if (rdata["data"]["features"].length != 0) {
+              const feature = rdata["data"]["features"][0];
+              this.setState({ detail: feature });
+            }
+          })
+          .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
   }
 
   componentDidMount() {

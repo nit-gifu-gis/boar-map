@@ -5,6 +5,8 @@ import L from "leaflet";
 import Router from "next/router";
 import "leaflet-wms-header";
 import "leaflet-easybutton";
+import SessionManager from "../../../utils/session";
+import { resolve } from "uri-js";
 
 // 現在地マーカー
 let locMarker = undefined;
@@ -28,10 +30,10 @@ class MapBase extends React.Component {
     this.map();
   }
 
-  /*
-   * TODO: 権限に応じた表示処理
-   */
-  async getMarkers(map, token, layerId) {
+  updateMarkers(map, token) {
+    const overlays = {};
+    const me = this;
+
     const bounds = map.getBounds();
     const topLat = bounds.getNorth();
     const rightLng = bounds.getEast();
@@ -43,7 +45,7 @@ class MapBase extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: layerId,
+      layerId: 5000008,
       inclusion: 1,
       buffer: 100,
       srid: 4326,
@@ -62,7 +64,8 @@ class MapBase extends React.Component {
       }
     };
 
-    const res = await fetch(
+    // 捕獲いのしし情報の取得
+    fetch(
       "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
       {
         method: "POST",
@@ -73,161 +76,231 @@ class MapBase extends React.Component {
         },
         body: JSON.stringify(data)
       }
-    ).catch(e => console.log(e));
-    const rdata = await res.json().catch(e => console.log(e));
-    return rdata;
-  }
+    )
+      .then(res => {
+        res
+          .json()
+          .then(rdata => {
+            // 捕獲いのしし情報取得完了時
+            if (rdata["commonHeader"]["resultInfomation"] == "0") {
+              const bmarkers = [];
+              const features = rdata["data"]["features"];
+              for (let i = 0; i < features.length; i++) {
+                const feature = features[i];
+                const Lat = feature["geometry"]["coordinates"][1];
+                const Lng = feature["geometry"]["coordinates"][0];
 
-  async addMarkers(map, token) {
-    // 取得中にマーカーが消えないように先に情報を取得する
-    const overlays = {};
-
-    const me = this;
-    const rdata = await this.getMarkers(map, token, 5000008);
-    if (rdata["commonHeader"]["resultInfomation"] == "0") {
-      const bmarkers = [];
-      const features = rdata["data"]["features"];
-
-      for (let i = 0; i < features.length; i++) {
-        const feature = features[i];
-        const Lat = feature["geometry"]["coordinates"][1];
-        const Lng = feature["geometry"]["coordinates"][0];
-
-        const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup(
-          "ID: " + feature["properties"]["ID$"] + "<br>種類: 捕獲いのしし"
-        );
-        mapMarker.on("click", function(e) {
-          Router.push(
-            {
-              pathname: "/detail",
-              query: {
-                FeatureID: feature["properties"]["ID$"],
-                type: 0
+                const mapMarker = L.marker([Lat, Lng]);
+                mapMarker.bindPopup(
+                  "ID: " +
+                    feature["properties"]["ID$"] +
+                    "<br>種類: 捕獲いのしし"
+                );
+                mapMarker.on("click", function(e) {
+                  Router.push(
+                    {
+                      pathname: "/detail",
+                      query: {
+                        FeatureID: feature["properties"]["ID$"],
+                        type: 0
+                      }
+                    },
+                    "/detail"
+                  );
+                });
+                bmarkers.push(mapMarker);
               }
-            },
-            "/detail"
-          );
-        });
-        bmarkers.push(mapMarker);
-      }
-
-      overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
-      overlays["捕獲いのしし"].addEventListener("add", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[0] = true;
-        }
-      });
-      overlays["捕獲いのしし"].addEventListener("remove", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[0] = false;
-        }
-      });
-      if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
-    }
-
-    const wdata = await this.getMarkers(map, token, 5000009);
-    if (wdata["commonHeader"]["resultInfomation"] == "0") {
-      const wmarkers = [];
-      const features = wdata["data"]["features"];
-
-      for (let i = 0; i < features.length; i++) {
-        const feature = features[i];
-        const Lat = feature["geometry"]["coordinates"][1];
-        const Lng = feature["geometry"]["coordinates"][0];
-
-        const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup(
-          "ID: " + feature["properties"]["ID$"] + "<br>種類: わな"
-        );
-        mapMarker.on("click", function(e) {
-          Router.push(
-            {
-              pathname: "/detail",
-              query: {
-                FeatureID: feature["properties"]["ID$"],
-                type: 1
+              overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
+              overlays["捕獲いのしし"].addEventListener("add", function(e) {
+                if (!me.state.pauseEvent) {
+                  me.state.markerstate[0] = true;
+                }
+              });
+              overlays["捕獲いのしし"].addEventListener("remove", function(e) {
+                if (!me.state.pauseEvent) {
+                  me.state.markerstate[0] = false;
+                }
+              });
+              if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
+            }
+            return "";
+          })
+          .then(_void => {
+            data.layerId = 5000009;
+            fetch(
+              "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
+              {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  "X-Map-Api-Access-Token": token
+                },
+                body: JSON.stringify(data)
               }
-            },
-            "/detail"
-          );
-        });
-        wmarkers.push(mapMarker);
-      }
+            )
+              .then(res2 => {
+                res2
+                  .json()
+                  .then(wdata => {
+                    // わな情報取得完了時
+                    if (wdata["commonHeader"]["resultInfomation"] == "0") {
+                      const wmarkers = [];
+                      const features = wdata["data"]["features"];
+                      for (let i = 0; i < features.length; i++) {
+                        const feature = features[i];
+                        const Lat = feature["geometry"]["coordinates"][1];
+                        const Lng = feature["geometry"]["coordinates"][0];
 
-      overlays["ワナ"] = L.layerGroup(wmarkers);
-      overlays["ワナ"].addEventListener("add", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[1] = true;
-        }
-      });
-      overlays["ワナ"].addEventListener("remove", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[1] = false;
-        }
-      });
-      if (me.state.markerstate[1]) overlays["ワナ"].addTo(map);
-    }
+                        const mapMarker = L.marker([Lat, Lng]);
+                        mapMarker.bindPopup(
+                          "ID: " +
+                            feature["properties"]["ID$"] +
+                            "<br>種類: わな"
+                        );
+                        mapMarker.on("click", function(e) {
+                          Router.push(
+                            {
+                              pathname: "/detail",
+                              query: {
+                                FeatureID: feature["properties"]["ID$"],
+                                type: 1
+                              }
+                            },
+                            "/detail"
+                          );
+                        });
+                        wmarkers.push(mapMarker);
+                      }
+                      overlays["わな"] = L.layerGroup(wmarkers);
+                      overlays["わな"].addEventListener("add", function(e) {
+                        if (!me.state.pauseEvent) {
+                          me.state.markerstate[1] = true;
+                        }
+                      });
+                      overlays["わな"].addEventListener("remove", function(e) {
+                        if (!me.state.pauseEvent) {
+                          me.state.markerstate[1] = false;
+                        }
+                      });
+                      if (me.state.markerstate[1]) overlays["わな"].addTo(map);
+                    }
+                    return "";
+                  })
+                  .then(_void2 => {
+                    data.layerId = 5000010;
+                    fetch(
+                      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
+                      {
+                        method: "POST",
+                        headers: {
+                          Accept: "application/json",
+                          "Content-Type": "application/json",
+                          "X-Map-Api-Access-Token": token
+                        },
+                        body: JSON.stringify(data)
+                      }
+                    )
+                      .then(res3 => {
+                        // ワクチン情報の取得
+                        res3
+                          .json()
+                          .then(vdata => {
+                            // ワクチン情報取得完了時
+                            if (
+                              vdata["commonHeader"]["resultInfomation"] == "0"
+                            ) {
+                              const vmarkers = [];
+                              const features = vdata["data"]["features"];
 
-    const vdata = await this.getMarkers(map, token, 5000010);
-    if (vdata["commonHeader"]["resultInfomation"] == "0") {
-      const vmarkers = [];
-      const features = vdata["data"]["features"];
+                              for (let i = 0; i < features.length; i++) {
+                                const feature = features[i];
+                                const Lat =
+                                  feature["geometry"]["coordinates"][1];
+                                const Lng =
+                                  feature["geometry"]["coordinates"][0];
 
-      for (let i = 0; i < features.length; i++) {
-        const feature = features[i];
-        const Lat = feature["geometry"]["coordinates"][1];
-        const Lng = feature["geometry"]["coordinates"][0];
+                                const mapMarker = L.marker([Lat, Lng]);
+                                mapMarker.bindPopup(
+                                  "ID: " +
+                                    feature["properties"]["ID$"] +
+                                    "<br>種類: ワクチン"
+                                );
+                                mapMarker.on("click", function(e) {
+                                  Router.push(
+                                    {
+                                      pathname: "/detail",
+                                      query: {
+                                        FeatureID: feature["properties"]["ID$"],
+                                        type: 2
+                                      }
+                                    },
+                                    "/detail"
+                                  );
+                                });
+                                vmarkers.push(mapMarker);
+                              }
 
-        const mapMarker = L.marker([Lat, Lng]);
-        mapMarker.bindPopup(
-          "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
-        );
-        mapMarker.on("click", function(e) {
-          Router.push(
-            {
-              pathname: "/detail",
-              query: {
-                FeatureID: feature["properties"]["ID$"],
-                type: 2
-              }
-            },
-            "/detail"
-          );
-        });
-        vmarkers.push(mapMarker);
-      }
+                              overlays["ワクチン"] = L.layerGroup(vmarkers);
+                              overlays["ワクチン"].addEventListener(
+                                "add",
+                                function(e) {
+                                  if (!me.state.pauseEvent) {
+                                    me.state.markerstate[2] = true;
+                                  }
+                                }
+                              );
+                              overlays["ワクチン"].addEventListener(
+                                "remove",
+                                function(e) {
+                                  if (!me.state.pauseEvent) {
+                                    me.state.markerstate[2] = false;
+                                  }
+                                }
+                              );
+                              if (me.state.markerstate[2])
+                                overlays["ワクチン"].addTo(map);
+                            }
+                            return "";
+                          })
+                          .then(_void3 => {
+                            // 最終設定
+                            console.log(overlays);
+                            // 既存のマーカーを削除
+                            if (
+                              this.state.control != undefined &&
+                              this.state.overlays != undefined
+                            ) {
+                              this.state.control.remove();
+                              const ovl = this.state.overlays;
+                              this.state.pauseEvent = true;
+                              Object.keys(ovl).forEach(function(key) {
+                                ovl[key].remove();
+                              });
+                              this.state.pauseEvent = false;
+                            }
 
-      overlays["ワクチン"] = L.layerGroup(vmarkers);
-      overlays["ワクチン"].addEventListener("add", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[2] = true;
-        }
-      });
-      overlays["ワクチン"].addEventListener("remove", function(e) {
-        if (!me.state.pauseEvent) {
-          me.state.markerstate[2] = false;
-        }
-      });
-      if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
-    }
-
-    // 既存のマーカーを削除
-    if (this.state.control != undefined && this.state.overlays != undefined) {
-      this.state.control.remove();
-      const ovl = this.state.overlays;
-      this.state.pauseEvent = true;
-      Object.keys(ovl).forEach(function(key) {
-        ovl[key].remove();
-      });
-      this.state.pauseEvent = false;
-    }
-
-    this.state.overlays = overlays;
-    this.state.control = L.control.layers(undefined, overlays, {
-      collapsed: false
-    });
-    this.state.control.addTo(map);
+                            this.state.overlays = overlays;
+                            this.state.control = L.control.layers(
+                              undefined,
+                              overlays,
+                              {
+                                collapsed: false
+                              }
+                            );
+                            this.state.control.addTo(map);
+                          })
+                          .catch(e => console.log(e));
+                      })
+                      .catch(e => console.log(e));
+                  })
+                  .catch(e => console.log(e));
+              })
+              .catch(e => console.log(e));
+          })
+          .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
   }
 
   map() {
@@ -271,16 +344,16 @@ class MapBase extends React.Component {
       )
       .addTo(this.myMap);
 
-    this.addMarkers(this.myMap, userData.access_token);
+    this.updateMarkers(this.myMap, userData.access_token);
 
     const me = this;
 
     this.myMap.on("moveend", function(e) {
-      me.addMarkers(me.myMap, userData.access_token);
+      me.updateMarkers(me.myMap, userData.access_token);
     });
 
     this.myMap.on("zoomend", function(e) {
-      me.addMarkers(me.myMap, userData.access_token);
+      me.updateMarkers(me.myMap, userData.access_token);
     });
 
     L.control.scale().addTo(this.myMap);
