@@ -39,7 +39,7 @@ class TrapForm extends React.Component {
   // 前へボタンを押したときの処理
   onClickPrev() {
     const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "trap" } }, url);
+    Router.replace({ pathname: url, query: { type: "trap" } }, url);
   }
 
   // 次へボタンを押したときの処理
@@ -61,7 +61,7 @@ class TrapForm extends React.Component {
     // 6 写真?
     // 確認画面に遷移
     const url = "/add/confirm/trap";
-    Router.push(
+    Router.replace(
       {
         pathname: url,
         query: {

@@ -109,7 +109,7 @@ class VaccineConfirmForm extends React.Component {
         const json = res.json().then(data => {
           if (data.commonHeader.resultInfomation == "0") {
             alert("登録が完了しました。\nご協力ありがとうございました。");
-            Router.push("/map");
+            Router.replace("/map");
           } else {
             console.log("Error:", data.commonHeader.systemErrorReport);
             alert("登録に失敗しました。");
@@ -120,7 +120,7 @@ class VaccineConfirmForm extends React.Component {
   }
 
   onClickPrev() {
-    Router.push({
+    Router.replace({
       pathname: "/add/info/vaccine",
       query: { lat: Router.query.lat, lng: Router.query.lng }
     });

@@ -110,7 +110,7 @@ class InfoTypeSelector extends React.Component {
 
   // 前へボタンを押したときの処理
   onClickPrev() {
-    Router.push("/map");
+    Router.replace("/map");
   }
 
   // 次へボタンを押したときの処理
@@ -139,7 +139,7 @@ class InfoTypeSelector extends React.Component {
         window.alert("登録する情報の種類が選択されていません!!");
         return;
     }
-    Router.push({ pathname: url, query: { type: checkedItem } }, url);
+    Router.replace({ pathname: url, query: { type: checkedItem } }, url);
   }
 
   render() {

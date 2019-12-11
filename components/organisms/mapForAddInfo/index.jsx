@@ -55,12 +55,12 @@ class MapForAddInfo extends MapBase {
   }
 
   onClickPrev() {
-    Router.push("/add/select");
+    Router.replace("/add/select");
   }
 
   onClickNext() {
     const url = "/add/info/" + Router.query.type;
-    Router.push(
+    Router.replace(
       {
         pathname: url,
         query: {

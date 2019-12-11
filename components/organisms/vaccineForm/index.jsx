@@ -55,7 +55,7 @@ class VaccineForm extends React.Component {
   // 前へボタンを押したときの処理
   onClickPrev() {
     const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "vaccine" } }, url);
+    Router.replace({ pathname: url, query: { type: "vaccine" } }, url);
   }
 
   // 次へボタンを押したときの処理
@@ -91,7 +91,7 @@ class VaccineForm extends React.Component {
     }
     // 確認画面に遷移
     const url = "/add/confirm/vaccine";
-    Router.push(
+    Router.replace(
       {
         pathname: url,
         query: {
