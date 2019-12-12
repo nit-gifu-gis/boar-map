@@ -1,10 +1,10 @@
 import React from "react";
 import Head from "next/head";
 import Router from "next/router";
-import Detail from "../../components/templates/Detail";
-import SessionManager from "../../utils/session";
+import SessionManager from "../../../../utils/session";
+import EditConfirmBoar from "../../../../components/templates/EditConfirmBoar";
 
-class DetailPage extends React.Component {
+class ConfirmBoarPage extends React.Component {
   static async getInitialProps(ctx) {
     if (!SessionManager.isLogin(ctx)) {
       if (ctx.res) {
@@ -25,12 +25,12 @@ class DetailPage extends React.Component {
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="stylesheet" href="/static/css/leaflet.css" />
-          <title>いのししマップぎふ - スポット詳細</title>
+          <title>いのししマップぎふ - 情報確認</title>
         </Head>
-        <Detail />
+        <EditConfirmBoar />
       </>
     );
   }
 }
 
-export default DetailPage;
+export default ConfirmBoarPage;

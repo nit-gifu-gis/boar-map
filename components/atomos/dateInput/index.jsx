@@ -72,6 +72,17 @@ class DateInput extends React.Component {
   }
 
   render() {
+    let DateY = "";
+    let DateM = "";
+    let DateD = "";
+    if (this.props.date != null) {
+      const date = this.props.date.split(" ")[0].split("/");
+      if (date.length >= 3) {
+        DateY = date[0];
+        DateM = date[1];
+        DateD = date[2];
+      }
+    }
     if (this.isSafari()) {
       return (
         <div className="date_input_for_safari">
@@ -81,6 +92,7 @@ class DateInput extends React.Component {
             step="1"
             id={this.props.id + "Year"}
             placeholder="西暦"
+            defaultValue={DateY}
             onChange={this.setDate.bind(this)}
           />
           年
@@ -90,6 +102,7 @@ class DateInput extends React.Component {
             min="1"
             step="1"
             id={this.props.id + "Month"}
+            defaultValue={DateM}
             onChange={this.setDate.bind(this)}
           />
           月
@@ -99,6 +112,7 @@ class DateInput extends React.Component {
             min="1"
             step="1"
             id={this.props.id + "Day"}
+            defaultValue={DateD}
             onChange={this.setDate.bind(this)}
           />
           日
@@ -108,11 +122,19 @@ class DateInput extends React.Component {
             name={this.props.name}
             id={this.props.id}
             style={{ display: "none" }}
+            defaultValue={DateY + "-" + DateM + "-" + DateD}
           />
         </div>
       );
     } else {
-      return <input type="date" name={this.props.name} id={this.props.id} />;
+      return (
+        <input
+          type="date"
+          name={this.props.name}
+          id={this.props.id}
+          defaultValue={DateY + "-" + DateM + "-" + DateD}
+        />
+      );
     }
   }
 }
