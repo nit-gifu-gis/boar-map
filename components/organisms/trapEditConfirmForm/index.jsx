@@ -60,15 +60,9 @@ class TrapEditConfirmForm extends React.Component {
       features: [
         {
           type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [
-              parseFloat(Router.query.lng),
-              parseFloat(Router.query.lat)
-            ]
-          },
           properties: {
-            入力者: this.state.userData.user_id,
+            ID$: Router.query.id,
+            入力者: this.state.userData.vuser_id,
             設置年月日: Router.query.setDate,
             撤去年月日: Router.query.removeDate,
             位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
@@ -82,7 +76,7 @@ class TrapEditConfirmForm extends React.Component {
     console.log(data);
 
     fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/AddFeatures",
+      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/UpdateFeatures",
       {
         method: "POST",
         headers: {
@@ -96,11 +90,11 @@ class TrapEditConfirmForm extends React.Component {
       .then(function(res) {
         const json = res.json().then(data => {
           if (data.commonHeader.resultInfomation == "0") {
-            alert("登録が完了しました。\nご協力ありがとうございました。");
+            alert("更新が完了しました。\nご協力ありがとうございました。");
             Router.push("/map");
           } else {
             console.log("Error:", data.commonHeader.systemErrorReport);
-            alert("登録に失敗しました。");
+            alert("更新に失敗しました。");
           }
         });
       })
@@ -108,10 +102,13 @@ class TrapEditConfirmForm extends React.Component {
   }
 
   onClickPrev() {
-    Router.push({
-      pathname: "/add/info/trap",
-      query: { lat: Router.query.lat, lng: Router.query.lng }
-    });
+    Router.push(
+      {
+        pathname: "/detail",
+        query: { FeatureID: Router.query.id, type: Router.query.type }
+      },
+      "/detail"
+    );
   }
 
   onClickNext() {
@@ -122,6 +119,7 @@ class TrapEditConfirmForm extends React.Component {
   }
 
   render() {
+    alert("ID: " + Router.query.id);
     return (
       <div className="boar_confirm_form">
         <div className="__title">

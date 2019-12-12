@@ -4,10 +4,14 @@ import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
-const RemoveDateInput = () => (
+const RemoveDateInput = props => (
   <div className="__remove_date">
     <label>撤去年月日</label>
-    <DateInput name="removeDate" id="removeDate" />
+    <DateInput
+      name="removeDate"
+      id="removeDate"
+      date={props["detail"]["properties"]["撤去年月日"]}
+    />
   </div>
 );
 
@@ -38,8 +42,14 @@ class TrapEditForm extends React.Component {
 
   // 前へボタンを押したときの処理
   onClickPrev() {
-    const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "trap" } }, url);
+    const url = "/detail";
+    Router.push(
+      {
+        pathname: url,
+        query: { type: 1, FeatureID: this.props.detail["properties"]["ID$"] }
+      },
+      url
+    );
   }
 
   // 次へボタンを押したときの処理
@@ -50,8 +60,8 @@ class TrapEditForm extends React.Component {
     // 1 設置年月日
     const setDate = form.setDate.value;
     // 3 位置情報
-    const lat = Router.query.lat;
-    const lng = Router.query.lng;
+    const lat = this.props.detail["geometry"]["coordinates"][1];
+    const lng = this.props.detail["geometry"]["coordinates"][0];
     // 4 わなの種類
     const kind = form.kind.options[form.kind.selectedIndex].value;
     // 5 捕獲の有無
@@ -60,11 +70,13 @@ class TrapEditForm extends React.Component {
     const removeDate = capture == "あり" ? form.removeDate.value : null;
     // 6 写真?
     // 確認画面に遷移
-    const url = "/add/confirm/trap";
+    const url = "/edit/confirm/trap";
     Router.push(
       {
         pathname: url,
         query: {
+          id: this.props.detail["properties"]["ID$"],
+          type: 1,
           setDate: setDate,
           removeDate: removeDate,
           lat: lat,
@@ -82,7 +94,9 @@ class TrapEditForm extends React.Component {
     const capture = captureSelect.options[captureSelect.selectedIndex].value;
     if (capture == "あり") {
       this.setState(_ => {
-        return { removeDateInput: <RemoveDateInput /> };
+        return {
+          removeDateInput: <RemoveDateInput detail={this.props.detail} />
+        };
       });
     } else {
       this.setState(_ => {
@@ -92,6 +106,13 @@ class TrapEditForm extends React.Component {
   }
 
   render() {
+    let caught = "なし";
+    if (this.props.detail["properties"]["撤去年月日"] != "") {
+      caught = "あり";
+      this.state.removeDateInput = (
+        <RemoveDateInput detail={this.props.detail} />
+      );
+    }
     return (
       <div className="boarForm">
         <div className="__title">
@@ -102,16 +123,25 @@ class TrapEditForm extends React.Component {
         </div>
         <div className="__form">
           <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
+            位置情報確認：({this.props.detail["geometry"]["coordinates"][1]},{" "}
+            {this.props.detail["geometry"]["coordinates"][0]})
           </p>
           <form name="form">
             <div className="__set_date">
               <label>設置年月日</label>
-              <DateInput name="setDate" id="setDate" />
+              <DateInput
+                name="setDate"
+                id="setDate"
+                date={this.props.detail["properties"]["設置年月日"]}
+              />
             </div>
             <div className="__kind">
               <label>わなの種類</label>
-              <select name="kind" id="kind">
+              <select
+                name="kind"
+                id="kind"
+                defaultValue={this.props.detail["properties"]["罠の種類"]}
+              >
                 <option value="箱わな">箱わな</option>
                 <option value="くくりわな">くくりわな</option>
                 <option value="その他">その他</option>
@@ -123,6 +153,7 @@ class TrapEditForm extends React.Component {
                 name="capture"
                 id="capture"
                 onChange={this.onChangeCapture.bind(this)}
+                defaultValue={caught}
               >
                 <option value="なし">なし</option>
                 <option value="あり">あり</option>
@@ -132,7 +163,7 @@ class TrapEditForm extends React.Component {
           </form>
         </div>
         <AddInfoFooter
-          prevBind={this.onClickPrev}
+          prevBind={this.onClickPrev.bind(this)}
           nextBind={this.onClickNext.bind(this)}
         />
       </div>

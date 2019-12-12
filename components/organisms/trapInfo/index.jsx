@@ -16,7 +16,7 @@ class TrapInfo extends React.Component {
       removediv = (
         <div className="__remove_date">
           <h3>撤去年月日</h3>
-          <p>{this.props.detail["properties"]["撤去年月日"] == ""}</p>
+          <p>{this.props.detail["properties"]["撤去年月日"]}</p>
         </div>
       );
     }

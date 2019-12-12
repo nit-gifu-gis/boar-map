@@ -108,7 +108,6 @@ class BoarEditConfirmForm extends React.Component {
   }
 
   render() {
-    alert("ID: " + Router.query.id);
     return (
       <div className="boar_confirm_form">
         <div className="__title">
