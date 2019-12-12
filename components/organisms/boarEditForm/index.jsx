@@ -4,10 +4,14 @@ import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
-const TrapSelector = () => (
+const TrapSelector = props => (
   <div className="trap_selector">
     <label>わなの種類</label>
-    <select name="trap" id="trap">
+    <select
+      name="trap"
+      id="trap"
+      defaultValue={props["detail"]["properties"]["罠・発見場所"]}
+    >
       <option value="箱わな">箱わな</option>
       <option value="くくりわな">くくりわな</option>
       <option value="その他">その他</option>
@@ -15,10 +19,14 @@ const TrapSelector = () => (
   </div>
 );
 
-const EnvSelector = () => (
+const EnvSelector = props => (
   <div className="env_selector">
     <label>発見場所</label>
-    <select name="env" id="env">
+    <select
+      name="env"
+      id="env"
+      defaultValue={props["detail"]["properties"]["罠・発見場所"]}
+    >
       <option value="山際">山際</option>
       <option value="山地">山地</option>
       <option value="その他">その他</option>
@@ -28,11 +36,14 @@ const EnvSelector = () => (
 
 class BoarEditForm extends React.Component {
   state = {
-    trapOrEnvSelector: <TrapSelector />
+    trapOrEnvSelector: undefined
   };
 
   constructor() {
     super();
+    /*
+    trap Or Envを変える
+    */
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -53,8 +64,14 @@ class BoarEditForm extends React.Component {
 
   // 前へボタンを押したときの処理
   onClickPrev() {
-    const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "boar" } }, url);
+    const url = "/detail";
+    Router.push(
+      {
+        pathname: url,
+        query: { type: 0, FeatureID: this.props.detail["properties"]["ID$"] }
+      },
+      url
+    );
   }
 
   // 次へボタンを押したときの処理
@@ -67,8 +84,8 @@ class BoarEditForm extends React.Component {
     // 2 捕獲年月日
     const date = form.date.value;
     // 3 位置情報
-    const lat = Router.query.lat;
-    const lng = Router.query.lng;
+    const lat = this.props.detail["geometry"]["coordinates"][1];
+    const lng = this.props.detail["geometry"]["coordinates"][0];
     // 4 わなor発見場所
     let trapOrEnv;
     switch (division) {
@@ -88,11 +105,13 @@ class BoarEditForm extends React.Component {
     // 8 歯列画像
     // 9 現地写真
     // 確認画面に遷移
-    const url = "/add/confirm/boar";
+    const url = "/edit/confirm/boar";
     Router.push(
       {
         pathname: url,
         query: {
+          type: 0,
+          id: this.props.detail["properties"]["ID$"],
           division: division,
           date: date,
           lat: lat,
@@ -114,14 +133,18 @@ class BoarEditForm extends React.Component {
     switch (division) {
       case "死亡":
         this.setState(_ => {
-          return { trapOrEnvSelector: <EnvSelector /> };
-        });
+          return {
+            trapOrEnvSelector: <EnvSelector detail={this.props.detail} />
+          };
+        }).bind(this);
         // this.state.trapOrEnvSelector = <EnvSelector />;
         break;
       default:
         this.setState(_ => {
-          return { trapOrEnvSelector: <TrapSelector /> };
-        });
+          return {
+            trapOrEnvSelector: <TrapSelector detail={this.props.detail} />
+          };
+        }).bind(this);
         break;
     }
   }
@@ -157,6 +180,14 @@ class BoarEditForm extends React.Component {
   }
 
   render() {
+    console.log(this.props.detail);
+    if (this.props.detail["properties"]["区分"] == "死亡") {
+      this.state.trapOrEnvSelector = <EnvSelector detail={this.props.detail} />;
+    } else {
+      this.state.trapOrEnvSelector = (
+        <TrapSelector detail={this.props.detail} />
+      );
+    }
     return (
       <div className="boarForm">
         <div className="__title">
@@ -167,7 +198,8 @@ class BoarEditForm extends React.Component {
         </div>
         <div className="__form">
           <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
+            位置情報確認：({this.props.detail["geometry"]["coordinates"][1]},{" "}
+            {this.props.detail["geometry"]["coordinates"][0]})
           </p>
           <form name="form" onSubmit={this.onSubmit}>
             <div className="__division">
@@ -176,6 +208,7 @@ class BoarEditForm extends React.Component {
                 name="division"
                 id="division"
                 onChange={this.onChangeDivision.bind(this)}
+                defaultValue={this.props.detail["properties"]["区分"]}
               >
                 <option value="調査捕獲">調査捕獲</option>
                 <option value="有害捕獲">有害捕獲</option>
@@ -184,18 +217,20 @@ class BoarEditForm extends React.Component {
             </div>
             <div className="__date">
               <label>捕獲年月日</label>
-              {/* <input
-                type="date"
+              <DateInput
                 name="date"
                 id="date"
-                // value={this.state.todayStr}
-              /> */}
-              <DateInput name="date" id="date" />
+                date={this.props.detail["properties"]["捕獲年月日"]}
+              />
             </div>
             <div className="__trap_or_env">{this.state.trapOrEnvSelector}</div>
             <div className="__sex">
               <label>性別</label>
-              <select name="sex" id="sex">
+              <select
+                name="sex"
+                id="sex"
+                defaultValue={this.props.detail["properties"]["性別"]}
+              >
                 <option value="オス">オス</option>
                 <option value="メス">メス</option>
                 <option value="不明">不明</option>
@@ -203,13 +238,18 @@ class BoarEditForm extends React.Component {
             </div>
             <div className="__length">
               <label>体長(cm)</label>
-              <input name="length" type="number" step="1"></input>
+              <input
+                name="length"
+                type="number"
+                step="1"
+                defaultValue={this.props.detail["properties"]["体長"]}
+              ></input>
             </div>
             {/* 体重は体長から計算して送信する（表示しない） */}
           </form>
         </div>
         <AddInfoFooter
-          prevBind={this.onClickPrev}
+          prevBind={this.onClickPrev.bind(this)}
           nextBind={this.onClickNext.bind(this)}
         />
       </div>

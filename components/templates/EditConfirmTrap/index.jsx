@@ -2,12 +2,12 @@ import "./editConfirmTrap.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import TrapConfirmForm from "../../organisms/trapConfirmForm";
+import TrapEditConfirmForm from "../../organisms/trapEditConfirmForm";
 
 const EditConfirmTrap = () => (
   <div>
     <Header />
-    <TrapConfirmForm />
+    <TrapEditConfirmForm />
     <Footer />
   </div>
 );

@@ -2,14 +2,22 @@ import "./editBoar.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import BoarForm from "../../organisms/boarForm";
+import BoarEditForm from "../../organisms/boarEditForm";
+import Router from "next/router";
 
-const EditBoar = () => (
-  <div>
-    <Header />
-    <BoarForm />
-    <Footer />
-  </div>
-);
+class EditBoar extends React.Component {
+  render() {
+    return (
+      <div>
+        <Header />
+        <BoarEditForm
+          detail={JSON.parse(Router.query.detail)}
+          type={Router.query.type}
+        />
+        <Footer />
+      </div>
+    );
+  }
+}
 
 export default EditBoar;

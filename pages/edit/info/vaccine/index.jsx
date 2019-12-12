@@ -24,7 +24,7 @@ class EditVaccinePage extends React.Component {
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>いのししマップぎふ - 詳細情報登録</title>
+          <title>いのししマップぎふ - 詳細情報編集</title>
         </Head>
         <EditVaccine />
       </>

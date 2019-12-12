@@ -2,14 +2,17 @@ import "./editVaccine.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import VaccineForm from "../../organisms/vaccineForm";
+import VaccineEditForm from "../../organisms/vaccineEditForm";
 
-const AddVaccine = () => (
+const EditVaccine = () => (
   <div>
     <Header />
-    <VaccineForm />
+    <VaccineEditForm
+      detail={JSON.parse(Router.query.detail)}
+      type={Router.query.type}
+    />
     <Footer />
   </div>
 );
 
-export default AddVaccine;
+export default EditVaccine;

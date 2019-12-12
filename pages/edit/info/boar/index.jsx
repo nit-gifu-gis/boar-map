@@ -20,11 +20,12 @@ class EditBoarPage extends React.Component {
   }
 
   render() {
+    console.log(Router.query.detail);
     return (
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>いのししマップぎふ - 詳細情報登録</title>
+          <title>いのししマップぎふ - 詳細情報編集</title>
         </Head>
         <EditBoar />
       </>

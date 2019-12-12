@@ -2,12 +2,12 @@ import "./editConfirmBoar.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import BoarConfirmForm from "../../organisms/boarConfirmForm";
+import BoarEditConfirmForm from "../../organisms/boarEditConfirmForm";
 
 const EditConfirmBoar = () => (
   <div>
     <Header />
-    <BoarConfirmForm />
+    <BoarEditConfirmForm />
     <Footer />
   </div>
 );

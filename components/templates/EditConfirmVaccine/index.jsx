@@ -2,12 +2,12 @@ import "./editConfirmVaccine.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import VaccineConfirmForm from "../../organisms/vaccineConfirmForm";
+import VaccineEditConfirmForm from "../../organisms/vaccineEditConfirmForm";
 
 const EditConfirmVaccine = () => (
   <div>
     <Header />
-    <VaccineConfirmForm />
+    <VaccineEditConfirmForm />
     <Footer />
   </div>
 );

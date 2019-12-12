@@ -6,7 +6,7 @@ class DetailFooter extends React.Component {
     return (
       <div className="detailFooter">
         <div className="flex">
-          <h1>詳細用のFooter</h1>
+          <button onClick={this.props.nextHandler}>Edit</button>
         </div>
       </div>
     );

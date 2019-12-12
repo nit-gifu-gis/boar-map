@@ -82,6 +82,27 @@ class Detail extends React.Component {
     this.getFeatureDetail();
   }
 
+  onClickNext() {
+    if (Object.keys(this.state.detail).length != 0) {
+      const type = Router.query.type;
+      let url = "/edit/info/boar";
+      if (type == 1) {
+        url = "/edit/info/trap";
+      } else if (type == 2) {
+        url = "/edit/info/vaccine";
+      }
+      Router.push(
+        {
+          pathname: url,
+          query: { type: type, detail: JSON.stringify(this.state.detail) }
+        },
+        url
+      );
+    } else {
+      alert("情報取得中です");
+    }
+  }
+
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     if (Object.keys(this.state.detail).length != 0) {
@@ -98,7 +119,7 @@ class Detail extends React.Component {
       <div>
         <DetailHeader />
         {detaildiv}
-        <DetailFooter />
+        <DetailFooter nextHandler={this.onClickNext.bind(this)} />
       </div>
     );
   }
