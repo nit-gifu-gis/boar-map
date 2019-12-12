@@ -6,9 +6,7 @@ import TrapForm from "../../organisms/trapForm";
 
 const AddTrap = () => (
   <div>
-    <Header />
     <TrapForm />
-    <Footer />
   </div>
 );
 

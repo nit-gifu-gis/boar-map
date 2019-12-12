@@ -127,15 +127,6 @@ class TrapConfirmForm extends React.Component {
         <div className="__title">
           <h1>わな情報</h1>
         </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={Router.query.lat}
-              lng={Router.query.lng}
-            />
-          </div>
-        </div>
         <div className="__info">
           <div className="__set_date">
             <h3>設置年月日</h3>
@@ -150,7 +141,17 @@ class TrapConfirmForm extends React.Component {
             <p>{Router.query.capture}</p>
           </div>
           {this.state.removeDateDiv}
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={Router.query.lat}
+                lng={Router.query.lng}
+              />
+            </div>
+          </div>
         </div>
+
         <AddInfoFooter
           prevBind={this.onClickPrev}
           nextBind={this.onClickNext.bind(this)}

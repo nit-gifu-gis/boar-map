@@ -2,15 +2,17 @@
   padding: 0;
   margin: 0;
 }
-.__Title{
-  background-color: #e87b15;
-  text-align: center;
-  color: white;
-  padding: 10px 0px;
-}
-.__description{
-  font-size: 20px;
-  padding: 5px 0px 0px 10px;
+.infoTypeSelector{
+  .__Title{
+    background-color: #e87b15;
+    text-align: center;
+    color: white;
+    padding: 10px 0px;
+  }
+  .__description{
+    font-size: 20px;
+    padding: 5px 0px 0px 10px;
+  }
 }
 .boar_div img{
   position: absolute;
@@ -40,6 +42,7 @@
   top: 143px;
   width: 100%;
 }
+
 .vaccine_div{
   position: absolute;
   top: 216px;
@@ -51,11 +54,20 @@
   margin: 5px;
 
 }
+.flex_prev{
+  width:50%;
+}
+.flex_next{
+  width: 50%;
+}
 .InfoTypeItemText p{
   width: 80vw;
   padding: 15px 0px 15px 20vw;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
+}
+.trap_div p{
+  border: none;
 }
 input[type=radio]{
   display: none;
@@ -70,18 +82,14 @@ input[type=radio]:checked + .label p{
   border-radius: 10px;
   padding: 10px 30px;
   font-size: 40px;
-  position: absolute;
-  top: 80%;
   cursor: pointer;
 }
-button:hover{
-  background-color: #d1d1d1;
-}
-.NextButton{
-  right:10%;
-}
-.PrevButton{
-  left: 10%;
+.AddInfoFooter{
+  width: 120%;
+  position: fixed;
+  left: -10%;
+  bottom: 0px;
+  padding-bottom:50px;
 }
 @media screen and (max-width:480px){
   .InfoTypeItemText p{
@@ -90,6 +98,7 @@ button:hover{
   }
   .boar_div{
     top:90px;
+
   }
   .trap_div{
     top:163px;
@@ -124,48 +133,56 @@ button:hover{
   .InfoTypeItemImage{
     z-index: 1;
   }
+  .AddInfoFooter{
+    background-color: white;
+    height: 40px;
+    z-index: 2;
+    box-shadow: 2px;
+    box-shadow: 0px -20px 25px -25px;
+  }
   .NextButton{
-  display: inline-block;
+
+  display: block;
   border-radius: 5px;
   background-color: #e87b15;
   padding: 15px;
   color: white;
   width: 100px;
   font-size: 15px;
+  margin: 0 auto;
+  margin-top: 20px;
 }
 .NextButton::after{
   display: block;
   content: "";
-  position: absolute;
-  top: 50%;
-  right: 10px;
   width: 6px;
   height: 6px;
-  margin: -4px 0 0 0;
+  margin: -14px 0 0 0;
   border-top: solid 2px #fff;
   border-right: solid 2px #fff;
   -webkit-transform: rotate(45deg);
           transform: rotate(45deg);
 }
-  .PrevButton{
-    display: inline-block;
-    border-radius: 5px;
-    padding: 15px;
-    color: black;
-    width: 100px;
-    font-size: 15px;
-  }
-  .PrevButton::after{
-    display: block;
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: 6px;
-    height: 6px;
-    margin: -4px 0 0 0;
-    border-top: solid 2px black;
-    border-right: solid 2px black;
-    -webkit-transform: rotate(225deg);
-          transform: rotate(225deg);
+.PrevButton{
+  display: block;
+  border-radius: 5px;
+  background-color:white;
+  padding: 15px;
+  color: black;
+  width: 100px;
+  font-size: 15px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.PrevButton::after{
+display: block;
+content: "";
+width: 6px;
+height: 6px;
+margin: -14px 0 0 0;
+border-top: solid 2px black;
+border-right: solid 2px black;
+-webkit-transform: rotate(225deg);
+        transform: rotate(225deg);
 }
 }

@@ -6,9 +6,7 @@ import TrapConfirmForm from "../../organisms/trapConfirmForm";
 
 const ConfirmTrap = () => (
   <div>
-    <Header />
     <TrapConfirmForm />
-    <Footer />
   </div>
 );
 

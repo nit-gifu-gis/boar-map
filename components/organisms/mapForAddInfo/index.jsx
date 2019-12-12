@@ -75,8 +75,11 @@ class MapForAddInfo extends MapBase {
   render() {
     return (
       <div className="mapForAddInfo">
+        <div className="__Title">
+          <h1>捕獲情報登録</h1>
+        </div>
         <div className="__description">
-          登録したい地点が地図の中心になるように地図を移動させてください。
+          登録したい地点にピンが立つようにしてください。
         </div>
         <div
           id="mapForAddInfo"

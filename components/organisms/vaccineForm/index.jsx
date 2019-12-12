@@ -139,15 +139,15 @@ class VaccineForm extends React.Component {
             位置情報確認：({Router.query.lat}, {Router.query.lng})
           </p>
           <form name="form">
-            <div className="__mesh_number">
+            <div className="__form __mesh_number">
               <label>メッシュ番号</label>
               <input type="number" name="meshNumber" id="meshNumber" min="0" />
             </div>
-            <div className="__treat_date">
+            <div className="__date">
               <label>散布年月日</label>
               <DateInput name="treatDate" id="treatDate" />
             </div>
-            <div className="__treat_number">
+            <div className="__form __treat_number">
               <label>散布数</label>
               <input
                 type="number"
@@ -156,7 +156,7 @@ class VaccineForm extends React.Component {
                 min="1"
               />
             </div>
-            <div className="__recover">
+            <div className="__form __recover">
               <label>回収</label>
               <input
                 type="checkbox"

@@ -13,9 +13,7 @@ const DynamicMapComponentWithNoSSR = dynamic(
 
 const AddLocation = () => (
   <div>
-    <Header />
     <DynamicMapComponentWithNoSSR />
-    <Footer />
   </div>
 );
 

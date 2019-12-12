@@ -105,11 +105,11 @@ class TrapForm extends React.Component {
             位置情報確認：({Router.query.lat}, {Router.query.lng})
           </p>
           <form name="form">
-            <div className="__set_date">
+            <div className="__date">
               <label>設置年月日</label>
               <DateInput name="setDate" id="setDate" />
             </div>
-            <div className="__kind">
+            <div className="__form __kind">
               <label>わなの種類</label>
               <select name="kind" id="kind">
                 <option value="箱わな">箱わな</option>
@@ -117,7 +117,7 @@ class TrapForm extends React.Component {
                 <option value="その他">その他</option>
               </select>
             </div>
-            <div className="__capture">
+            <div className="__form __capture">
               <label>捕獲の有無</label>
               <select
                 name="capture"
