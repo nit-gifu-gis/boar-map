@@ -103,6 +103,10 @@ class Detail extends React.Component {
     }
   }
 
+  onClickPrev() {
+    Router.push("/map");
+  }
+
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     if (Object.keys(this.state.detail).length != 0) {
@@ -119,7 +123,10 @@ class Detail extends React.Component {
       <div>
         <DetailHeader />
         {detaildiv}
-        <DetailFooter nextHandler={this.onClickNext.bind(this)} />
+        <DetailFooter
+          nextHandler={this.onClickNext.bind(this)}
+          prevHandler={this.onClickPrev}
+        />
       </div>
     );
   }
