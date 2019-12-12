@@ -1,10 +1,10 @@
 import React from "react";
 import Head from "next/head";
 import Router from "next/router";
-import Detail from "../../components/templates/Detail";
-import SessionManager from "../../utils/session";
+import SessionManager from "../../../../utils/session";
+import EditBoar from "../../../../components/templates/EditBoar";
 
-class DetailPage extends React.Component {
+class EditBoarPage extends React.Component {
   static async getInitialProps(ctx) {
     if (!SessionManager.isLogin(ctx)) {
       if (ctx.res) {
@@ -20,17 +20,17 @@ class DetailPage extends React.Component {
   }
 
   render() {
+    console.log(Router.query.detail);
     return (
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="stylesheet" href="/static/css/leaflet.css" />
-          <title>いのししマップぎふ - スポット詳細</title>
+          <title>いのししマップぎふ - 詳細情報編集</title>
         </Head>
-        <Detail />
+        <EditBoar />
       </>
     );
   }
 }
 
-export default DetailPage;
+export default EditBoarPage;

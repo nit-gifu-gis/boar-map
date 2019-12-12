@@ -9,6 +9,25 @@ class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
   myLocIcon = "../../static/images/map/myLoc.png";
 
+  boarIcon = L.icon({
+    iconUrl: "../../static/images/icons/boar.svg",
+    iconRetinaUrl: "../../static/images/icons/boar.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+  trapIcon = L.icon({
+    iconUrl: "../../static/images/icons/trap.svg",
+    iconRetinaUrl: "../../static/images/icons/trap.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+  vaccineIcon = L.icon({
+    iconUrl: "../../static/images/icons/vaccine.svg",
+    iconRetinaUrl: "../../static/images/icons/vaccine.svg",
+    iconSize: [40, 40],
+    iconAnchor: [21, 21]
+  });
+
   map() {
     super.map();
     // 下のon関数の中ではthisが使えないのでコピー
