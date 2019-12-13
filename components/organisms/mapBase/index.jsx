@@ -69,8 +69,8 @@ class MapBase extends React.Component {
         res
           .json()
           .then(rdata => {
+            const bmarkers = [];
             if (rdata["commonHeader"]["resultInfomation"] == "0") {
-              const bmarkers = [];
               const features = rdata["data"]["features"];
               for (let i = 0; i < features.length; i++) {
                 const feature = features[i];
@@ -99,18 +99,18 @@ class MapBase extends React.Component {
                 });
                 bmarkers.push(mapMarker);
               }
-              overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
-              overlays["捕獲いのしし"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[0] = true;
-                }
-              });
-              overlays["捕獲いのしし"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[0] = false;
-                }
-              });
             }
+            overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
+            overlays["捕獲いのしし"].addEventListener("add", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[0] = true;
+              }
+            });
+            overlays["捕獲いのしし"].addEventListener("remove", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[0] = false;
+              }
+            });
             this.state.retry = 0;
             this.getTrap(map, token, me, overlays, data);
           })
@@ -146,8 +146,8 @@ class MapBase extends React.Component {
         res
           .json()
           .then(wdata => {
+            const wmarkers = [];
             if (wdata["commonHeader"]["resultInfomation"] == "0") {
-              const wmarkers = [];
               const features = wdata["data"]["features"];
               for (let i = 0; i < features.length; i++) {
                 const feature = features[i];
@@ -174,18 +174,18 @@ class MapBase extends React.Component {
                 });
                 wmarkers.push(mapMarker);
               }
-              overlays["わな"] = L.layerGroup(wmarkers);
-              overlays["わな"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[1] = true;
-                }
-              });
-              overlays["わな"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[1] = false;
-                }
-              });
             }
+            overlays["わな"] = L.layerGroup(wmarkers);
+            overlays["わな"].addEventListener("add", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[1] = true;
+              }
+            });
+            overlays["わな"].addEventListener("remove", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[1] = false;
+              }
+            });
             this.state.retry = 0;
             this.getVaccine(map, token, me, overlays, data);
           })
@@ -203,54 +203,95 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    this.state.retry++;
-    data.layerId = 5000010;
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
+    const userData = { user_id: "", access_token: "" };
+
+    const r = document.cookie.split(";");
+
+    r.forEach(function(value) {
+      const content = value.split("=");
+      content[0] = content[0].replace(" ", "");
+      if (content[0] == "user_id") {
+        userData.user_id = content[1];
+      } else if (content[0] == "access_token") {
+        userData.access_token = content[1];
       }
-    )
-      .then(res => {
-        res
-          .json()
-          .then(vdata => {
-            if (vdata["commonHeader"]["resultInfomation"] == "0") {
+    });
+    // 本番：ユーザーIDの１文字目からユーザーを識別
+    // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
+    // テスト環境：ユーザーIDから識別
+    // どうして仕様に則ったユーザーIDじゃないの…
+    let userDepartment;
+    switch (userData.user_id) {
+      case "tyousa":
+        userDepartment = "T";
+        break;
+      case "yuugai":
+        userDepartment = "U";
+        break;
+      case "shityouson":
+        userDepartment = "S";
+        break;
+      case "trap":
+        userDepartment = "W";
+        break;
+      case "pref":
+        userDepartment = "K";
+        break;
+      default:
+        userDepartment = null;
+        break;
+    }
+
+    console.log("vaccine");
+    if (userDepartment == "W" || userDepartment == "K") {
+      this.state.retry++;
+      data.layerId = 5000010;
+      fetch(
+        "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Map-Api-Access-Token": token
+          },
+          body: JSON.stringify(data)
+        }
+      )
+        .then(res => {
+          res
+            .json()
+            .then(vdata => {
               const vmarkers = [];
-              const features = vdata["data"]["features"];
+              if (vdata["commonHeader"]["resultInfomation"] == "0") {
+                const features = vdata["data"]["features"];
 
-              for (let i = 0; i < features.length; i++) {
-                const feature = features[i];
-                const Lat = feature["geometry"]["coordinates"][1];
-                const Lng = feature["geometry"]["coordinates"][0];
+                for (let i = 0; i < features.length; i++) {
+                  const feature = features[i];
+                  const Lat = feature["geometry"]["coordinates"][1];
+                  const Lng = feature["geometry"]["coordinates"][0];
 
-                const mapMarker = L.marker([Lat, Lng], {
-                  icon: this.vaccineIcon
-                });
-                mapMarker.bindPopup(
-                  "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
-                );
-                mapMarker.on("click", function(e) {
-                  Router.push(
-                    {
-                      pathname: "/detail",
-                      query: {
-                        FeatureID: feature["properties"]["ID$"],
-                        type: 2
-                      }
-                    },
-                    "/detail"
+                  const mapMarker = L.marker([Lat, Lng], {
+                    icon: this.vaccineIcon
+                  });
+                  mapMarker.bindPopup(
+                    "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
                   );
-                });
-                vmarkers.push(mapMarker);
+                  mapMarker.on("click", function(e) {
+                    Router.push(
+                      {
+                        pathname: "/detail",
+                        query: {
+                          FeatureID: feature["properties"]["ID$"],
+                          type: 2
+                        }
+                      },
+                      "/detail"
+                    );
+                  });
+                  vmarkers.push(mapMarker);
+                }
               }
-
               overlays["ワクチン"] = L.layerGroup(vmarkers);
               overlays["ワクチン"].addEventListener("add", function(e) {
                 if (!me.state.pauseEvent) {
@@ -262,21 +303,24 @@ class MapBase extends React.Component {
                   me.state.markerstate[2] = false;
                 }
               });
-            }
-            this.state.retry = 0;
-            this.applyMarkers(map, token, me, overlays);
-          })
-          .catch(e => {
-            if (this.state.retry <= 5) {
-              this.getVaccine(map, token, me, overlays, data);
-            }
-          });
-      })
-      .catch(e => {
-        if (this.state.retry <= 5) {
-          this.getVaccine(map, token, me, overlays, data);
-        }
-      });
+              this.state.retry = 0;
+              this.applyMarkers(map, token, me, overlays);
+            })
+            .catch(e => {
+              if (this.state.retry <= 5) {
+                this.getVaccine(map, token, me, overlays, data);
+              }
+            });
+        })
+        .catch(e => {
+          if (this.state.retry <= 5) {
+            this.getVaccine(map, token, me, overlays, data);
+          }
+        });
+    } else {
+      this.state.retry = 0;
+      this.applyMarkers(map, token, me, overlays);
+    }
   }
 
   applyMarkers(map, token, me, overlays) {
@@ -293,7 +337,9 @@ class MapBase extends React.Component {
 
     if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
     if (me.state.markerstate[1]) overlays["わな"].addTo(map);
-    if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
+    if (overlays["ワクチン"] != undefined) {
+      if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
+    }
 
     this.state.overlays = overlays;
     this.state.control = L.control.layers(undefined, overlays, {
