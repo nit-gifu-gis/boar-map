@@ -197,76 +197,121 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    this.state.retry++;
-    data.layerId = 5000010;
-    fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => {
-        res
-          .json()
-          .then(vdata => {
-            const vmarkers = [];
-            if (vdata["commonHeader"]["resultInfomation"] == "0") {
-              const features = vdata["data"]["features"];
+    const userData = { user_id: "", access_token: "" };
 
-              for (let i = 0; i < features.length; i++) {
-                const feature = features[i];
-                const Lat = feature["geometry"]["coordinates"][1];
-                const Lng = feature["geometry"]["coordinates"][0];
+    const r = document.cookie.split(";");
 
-                const mapMarker = L.marker([Lat, Lng], {
-                  icon: this.vaccineIcon
-                });
-                mapMarker.bindPopup(
-                  "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
-                );
-                mapMarker.on("click", function(e) {
-                  Router.push(
-                    {
-                      pathname: "/detail",
-                      query: {
-                        FeatureID: feature["properties"]["ID$"],
-                        type: 2
-                      }
-                    },
-                    "/detail"
-                  );
-                });
-                vmarkers.push(mapMarker);
-              }
-            }
-            overlays["ワクチン"] = L.layerGroup(vmarkers);
-            overlays["ワクチン"].addEventListener("add", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[2] = true;
-              }
-            });
-            overlays["ワクチン"].addEventListener("remove", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[2] = false;
-              }
-            });
-            this.state.retry = 0;
-            this.applyMarkers(map, token, me, overlays);
-          })
-          .catch(e => {
-            if (this.state.retry <= 5) {
-              this.getVaccine(map, token, me, overlays, data);
-            }
-          });
+    r.forEach(function(value) {
+      const content = value.split("=");
+      content[0] = content[0].replace(" ", "");
+      if (content[0] == "user_id") {
+        userData.user_id = content[1];
+      } else if (content[0] == "access_token") {
+        userData.access_token = content[1];
+      }
+    });
+    // 本番：ユーザーIDの１文字目からユーザーを識別
+    // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
+    // テスト環境：ユーザーIDから識別
+    // どうして仕様に則ったユーザーIDじゃないの…
+    let userDepartment;
+    switch (userData.user_id) {
+      case "tyousa":
+        userDepartment = "T";
+        break;
+      case "yuugai":
+        userDepartment = "U";
+        break;
+      case "shityouson":
+        userDepartment = "S";
+        break;
+      case "trap":
+        userDepartment = "W";
+        break;
+      case "pref":
+        userDepartment = "K";
+        break;
+      default:
+        userDepartment = null;
+        break;
+    }
+
+    console.log("vaccine");
+    if (userDepartment == "W" || userDepartment == "K") {
+      this.state.retry++;
+      data.layerId = 5000010;
+      fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Map-Api-Access-Token": token
+        },
+        body: JSON.stringify(data)
       })
-      .catch(e => {
-        if (this.state.retry <= 5) {
-          this.getVaccine(map, token, me, overlays, data);
-        }
-      });
+        .then(res => {
+          res
+            .json()
+            .then(vdata => {
+              const vmarkers = [];
+              if (vdata["commonHeader"]["resultInfomation"] == "0") {
+                const features = vdata["data"]["features"];
+
+                for (let i = 0; i < features.length; i++) {
+                  const feature = features[i];
+                  const Lat = feature["geometry"]["coordinates"][1];
+                  const Lng = feature["geometry"]["coordinates"][0];
+
+                  const mapMarker = L.marker([Lat, Lng], {
+                    icon: this.vaccineIcon
+                  });
+                  mapMarker.bindPopup(
+                    "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
+                  );
+                  mapMarker.on("click", function(e) {
+                    Router.push(
+                      {
+                        pathname: "/detail",
+                        query: {
+                          FeatureID: feature["properties"]["ID$"],
+                          type: 2
+                        }
+                      },
+                      "/detail"
+                    );
+                  });
+                  vmarkers.push(mapMarker);
+                }
+              }
+              overlays["ワクチン"] = L.layerGroup(vmarkers);
+              overlays["ワクチン"].addEventListener("add", function(e) {
+                if (!me.state.pauseEvent) {
+                  me.state.markerstate[2] = true;
+                }
+              });
+              overlays["ワクチン"].addEventListener("remove", function(e) {
+                if (!me.state.pauseEvent) {
+                  me.state.markerstate[2] = false;
+                }
+              });
+              this.state.retry = 0;
+              this.applyMarkers(map, token, me, overlays);
+            })
+            .catch(e => {
+              if (this.state.retry <= 5) {
+                this.getVaccine(map, token, me, overlays, data);
+              }
+            });
+        })
+        .catch(e => {
+          if (this.state.retry <= 5) {
+            this.getVaccine(map, token, me, overlays, data);
+          }
+        });
+    } else {
+      this.state.retry = 0;
+      this.applyMarkers(map, token, me, overlays);
+    }
   }
 
   applyMarkers(map, token, me, overlays) {
@@ -283,7 +328,9 @@ class MapBase extends React.Component {
 
     if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
     if (me.state.markerstate[1]) overlays["わな"].addTo(map);
-    if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
+    if (overlays["ワクチン"] != undefined) {
+      if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
+    }
 
     this.state.overlays = overlays;
     this.state.control = L.control.layers(undefined, overlays, {
