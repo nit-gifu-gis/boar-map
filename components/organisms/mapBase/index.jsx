@@ -350,7 +350,7 @@ class MapBase extends React.Component {
 
     const mainLayer = L.tileLayer
       .wmsHeader(
-        "/api/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+        "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
         {
           version: "1.3.0",
           layers: "999999194",
