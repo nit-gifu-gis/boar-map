@@ -64,16 +64,20 @@ class Detail extends React.Component {
             }
           })
           .catch(e => {
-            if (this.state <= 5) {
+            if (this.state.retry <= 5) {
               this.getFeatureDetail();
               console.log("retry");
             }
           });
       })
       .catch(e => {
-        if (this.state <= 5) {
+        if (this.state.retry <= 5) {
           this.getFeatureDetail();
           console.log("retry");
+        } else {
+          this.state.retry = 0;
+          console.log(e);
+          alert("情報の取得に失敗しました。");
         }
       });
   }
