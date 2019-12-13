@@ -136,7 +136,7 @@ class InfoTypeSelector extends React.Component {
       case "trap":
         break;
       default:
-        window.alert("工事中");
+        window.alert("登録する情報の種類が選択されていません!!");
         return;
     }
     Router.push({ pathname: url, query: { type: checkedItem } }, url);
@@ -154,6 +154,13 @@ class InfoTypeSelector extends React.Component {
         <div className="__choices">
           <form name="form">
             <div className="radio">{this.choices}</div>
+            <input
+              type="radio"
+              id="radio4"
+              name="infoType"
+              value="none"
+              style={{ display: "none" }}
+            />
           </form>
         </div>
         <AddInfoFooter
