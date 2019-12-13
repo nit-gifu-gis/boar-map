@@ -69,8 +69,8 @@ class MapBase extends React.Component {
         res
           .json()
           .then(rdata => {
+            const bmarkers = [];
             if (rdata["commonHeader"]["resultInfomation"] == "0") {
-              const bmarkers = [];
               const features = rdata["data"]["features"];
               for (let i = 0; i < features.length; i++) {
                 const feature = features[i];
@@ -99,18 +99,18 @@ class MapBase extends React.Component {
                 });
                 bmarkers.push(mapMarker);
               }
-              overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
-              overlays["捕獲いのしし"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[0] = true;
-                }
-              });
-              overlays["捕獲いのしし"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[0] = false;
-                }
-              });
             }
+            overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
+            overlays["捕獲いのしし"].addEventListener("add", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[0] = true;
+              }
+            });
+            overlays["捕獲いのしし"].addEventListener("remove", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[0] = false;
+              }
+            });
             this.state.retry = 0;
             this.getTrap(map, token, me, overlays, data);
           })
@@ -146,8 +146,8 @@ class MapBase extends React.Component {
         res
           .json()
           .then(wdata => {
+            const wmarkers = [];
             if (wdata["commonHeader"]["resultInfomation"] == "0") {
-              const wmarkers = [];
               const features = wdata["data"]["features"];
               for (let i = 0; i < features.length; i++) {
                 const feature = features[i];
@@ -174,18 +174,18 @@ class MapBase extends React.Component {
                 });
                 wmarkers.push(mapMarker);
               }
-              overlays["わな"] = L.layerGroup(wmarkers);
-              overlays["わな"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[1] = true;
-                }
-              });
-              overlays["わな"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[1] = false;
-                }
-              });
             }
+            overlays["わな"] = L.layerGroup(wmarkers);
+            overlays["わな"].addEventListener("add", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[1] = true;
+              }
+            });
+            overlays["わな"].addEventListener("remove", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[1] = false;
+              }
+            });
             this.state.retry = 0;
             this.getVaccine(map, token, me, overlays, data);
           })
@@ -221,8 +221,8 @@ class MapBase extends React.Component {
         res
           .json()
           .then(vdata => {
+            const vmarkers = [];
             if (vdata["commonHeader"]["resultInfomation"] == "0") {
-              const vmarkers = [];
               const features = vdata["data"]["features"];
 
               for (let i = 0; i < features.length; i++) {
@@ -250,19 +250,18 @@ class MapBase extends React.Component {
                 });
                 vmarkers.push(mapMarker);
               }
-
-              overlays["ワクチン"] = L.layerGroup(vmarkers);
-              overlays["ワクチン"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[2] = true;
-                }
-              });
-              overlays["ワクチン"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[2] = false;
-                }
-              });
             }
+            overlays["ワクチン"] = L.layerGroup(vmarkers);
+            overlays["ワクチン"].addEventListener("add", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[2] = true;
+              }
+            });
+            overlays["ワクチン"].addEventListener("remove", function(e) {
+              if (!me.state.pauseEvent) {
+                me.state.markerstate[2] = false;
+              }
+            });
             this.state.retry = 0;
             this.applyMarkers(map, token, me, overlays);
           })
