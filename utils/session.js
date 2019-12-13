@@ -43,14 +43,11 @@ export default class SessionManager {
       "X-Map-Api-Access-Token": userData.access_token
     };
 
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/DeleteToken",
-      {
-        method: "POST",
-        headers: header,
-        body: JSON.stringify(data)
-      }
-    )
+    fetch("/api/JsonService.asmx/DeleteToken", {
+      method: "POST",
+      headers: header,
+      body: JSON.stringify(data)
+    })
       .then(res =>
         res
           .json()

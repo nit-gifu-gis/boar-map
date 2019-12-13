@@ -41,18 +41,15 @@ class Detail extends React.Component {
       srid: 3857
     };
 
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesById",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": userData.access_token
-        },
-        body: JSON.stringify(data)
-      }
-    )
+    fetch("/api/JsonService.asmx/GetFeaturesById", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Map-Api-Access-Token": userData.access_token
+      },
+      body: JSON.stringify(data)
+    })
       .then(res => {
         res
           .json()
