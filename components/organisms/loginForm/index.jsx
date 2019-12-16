@@ -16,17 +16,14 @@ const OnSubmitting = event => {
     tenantID: "21000S"
   };
 
-  fetch(
-    "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetToken",
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    }
-  )
+  fetch("/api/JsonService.asmx/GetToken", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
     .then(function(res) {
       const time = new Date().getTime();
       const json = res.json().then(data => onLogin(data, time));

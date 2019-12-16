@@ -53,18 +53,15 @@ class MapBase extends React.Component {
   getBoar(map, token, me, data) {
     this.state.retry++;
     const overlays = {};
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
-      }
-    )
+    fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Map-Api-Access-Token": token
+      },
+      body: JSON.stringify(data)
+    })
       .then(res => {
         res
           .json()
@@ -130,18 +127,15 @@ class MapBase extends React.Component {
   getTrap(map, token, me, overlays, data) {
     this.state.retry++;
     data.layerId = 5000009;
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
-      }
-    )
+    fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Map-Api-Access-Token": token
+      },
+      body: JSON.stringify(data)
+    })
       .then(res => {
         res
           .json()
@@ -246,18 +240,15 @@ class MapBase extends React.Component {
     if (userDepartment == "W" || userDepartment == "K") {
       this.state.retry++;
       data.layerId = 5000010;
-      fetch(
-        "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/GetFeaturesByExtent",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-Map-Api-Access-Token": token
-          },
-          body: JSON.stringify(data)
-        }
-      )
+      fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Map-Api-Access-Token": token
+        },
+        body: JSON.stringify(data)
+      })
         .then(res => {
           res
             .json()
