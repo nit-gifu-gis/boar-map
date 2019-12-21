@@ -3,7 +3,7 @@ import "./mapBase.scss";
 import React from "react";
 import L from "leaflet";
 import Router from "next/router";
-import "leaflet-wms-header";
+import "../../../utils/extwms";
 import "leaflet-easybutton";
 import SessionManager from "../../../utils/session";
 import { resolve } from "uri-js";
@@ -395,26 +395,24 @@ class MapBase extends React.Component {
       }
     });
 
-    const mainLayer = L.tileLayer
-      .wmsHeader(
-        "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+    const mainLayer = L.TileLayer.wmsHeader(
+      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+      {
+        version: "1.3.0",
+        layers: "999999194",
+        format: "image/png",
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true
+      },
+      [
         {
-          version: "1.3.0",
-          layers: "999999194",
-          format: "image/png",
-          maxZoom: 18,
-          tileSize: 256,
-          crs: L.CRS.EPSG3857,
-          uppercase: true
-        },
-        [
-          {
-            header: "X-Map-Api-Access-Token",
-            value: userData.access_token
-          }
-        ]
-      )
-      .addTo(this.myMap);
+          header: "X-Map-Api-Access-Token",
+          value: userData.access_token
+        }
+      ]
+    ).addTo(this.myMap);
 
     this.updateMarkers(this.myMap, userData.access_token);
 

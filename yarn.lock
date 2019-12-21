@@ -4497,13 +4497,6 @@ leaflet-easybutton@^2.4.0:
   dependencies:
     leaflet "^1.0.1"
 
-leaflet-wms-header@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/leaflet-wms-header/-/leaflet-wms-header-1.0.7.tgz#d8b1fb699528ef67d7083635bac3f7e78cd7fa64"
-  integrity sha512-adpYh4NpnUOQdCGeJJTOmVKwvLeVqJYUd4nPbzo00+H02Cx6FiJZQBmGh7TBxaL1PxHyo3UUKGWnw4hePq8KtQ==
-  dependencies:
-    typescript "^2.9.2"
-
 leaflet@^1.0.1, leaflet@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.6.0.tgz#aecbb044b949ec29469eeb31c77a88e2f448f308"
@@ -8075,11 +8068,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typescript@^2.9.2:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
-  integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
 
 unfetch@4.1.0:
   version "4.1.0"
