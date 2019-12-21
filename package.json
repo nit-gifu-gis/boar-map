@@ -30,7 +30,8 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "reboot.css": "^1.0.4",
-    "serialize-javascript": "^2.1.1"
+    "serialize-javascript": "^2.1.1",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "@zeit/next-sass": "^1.0.1",
