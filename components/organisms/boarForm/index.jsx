@@ -28,8 +28,19 @@ const EnvSelector = () => (
 
 class BoarForm extends React.Component {
   state = {
-    trapOrEnvSelector: <TrapSelector />
+    trapOrEnvSelector: <TrapSelector />,
+    lat: null,
+    lng: null
   };
+
+  componentDidMount() {
+    if (Router.query.lat != undefined && Router.query.lng != undefined) {
+      this.setState({ lat: Router.query.lat, lng: Router.query.lng });
+    } else {
+      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      Router.push("/map");
+    }
+  }
 
   constructor() {
     super();
@@ -67,8 +78,8 @@ class BoarForm extends React.Component {
     // 2 捕獲年月日
     const date = form.date.value;
     // 3 位置情報
-    const lat = Router.query.lat;
-    const lng = Router.query.lng;
+    const lat = this.state.lat;
+    const lng = this.state.lng;
     // 4 わなor発見場所
     let trapOrEnv;
     switch (division) {
@@ -157,63 +168,73 @@ class BoarForm extends React.Component {
   }
 
   render() {
-    return (
-      <div className="boarForm">
-        <div className="__title">
-          <h1>捕獲いのしし情報</h1>
+    if (this.state.lat != undefined && this.state.lng != undefined) {
+      return (
+        <div className="boarForm">
+          <div className="__title">
+            <h1>捕獲いのしし情報</h1>
+          </div>
+          <div className="__description">
+            <p>各情報を入力してください。</p>
+          </div>
+          <div className="__form">
+            <p>
+              位置情報確認：({this.state.lat}, {this.state.lng})
+            </p>
+            <form name="form" onSubmit={this.onSubmit}>
+              <div className="__division">
+                <label>区分</label>
+                <select
+                  name="division"
+                  id="division"
+                  onChange={this.onChangeDivision.bind(this)}
+                >
+                  <option value="調査捕獲">調査捕獲</option>
+                  <option value="有害捕獲">有害捕獲</option>
+                  <option value="死亡">死亡</option>
+                </select>
+              </div>
+              <div className="__date">
+                <label>捕獲年月日</label>
+                {/* <input
+                  type="date"
+                  name="date"
+                  id="date"
+                  // value={this.state.todayStr}
+                /> */}
+                <DateInput name="date" id="date" />
+              </div>
+              <div className="__trap_or_env">
+                {this.state.trapOrEnvSelector}
+              </div>
+              <div className="__sex">
+                <label>性別</label>
+                <select name="sex" id="sex">
+                  <option value="オス">オス</option>
+                  <option value="メス">メス</option>
+                  <option value="不明">不明</option>
+                </select>
+              </div>
+              <div className="__length">
+                <label>体長(cm)</label>
+                <input name="length" type="number" step="1"></input>
+              </div>
+              {/* 体重は体長から計算して送信する（表示しない） */}
+            </form>
+          </div>
+          <AddInfoFooter
+            prevBind={this.onClickPrev}
+            nextBind={this.onClickNext.bind(this)}
+          />
         </div>
-        <div className="__description">
-          <p>各情報を入力してください。</p>
+      );
+    } else {
+      return (
+        <div className="boarForm">
+          <h1>情報取得中...</h1>
         </div>
-        <div className="__form">
-          <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
-          </p>
-          <form name="form" onSubmit={this.onSubmit}>
-            <div className="__division">
-              <label>区分</label>
-              <select
-                name="division"
-                id="division"
-                onChange={this.onChangeDivision.bind(this)}
-              >
-                <option value="調査捕獲">調査捕獲</option>
-                <option value="有害捕獲">有害捕獲</option>
-                <option value="死亡">死亡</option>
-              </select>
-            </div>
-            <div className="__date">
-              <label>捕獲年月日</label>
-              {/* <input
-                type="date"
-                name="date"
-                id="date"
-                // value={this.state.todayStr}
-              /> */}
-              <DateInput name="date" id="date" />
-            </div>
-            <div className="__trap_or_env">{this.state.trapOrEnvSelector}</div>
-            <div className="__sex">
-              <label>性別</label>
-              <select name="sex" id="sex">
-                <option value="オス">オス</option>
-                <option value="メス">メス</option>
-                <option value="不明">不明</option>
-              </select>
-            </div>
-            <div className="__length">
-              <label>体長(cm)</label>
-              <input name="length" type="number" step="1"></input>
-            </div>
-            {/* 体重は体長から計算して送信する（表示しない） */}
-          </form>
-        </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext.bind(this)}
-        />
-      </div>
-    );
+      );
+    }
   }
 }
 

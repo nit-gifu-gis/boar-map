@@ -1,5 +1,4 @@
 import React from "react";
-import { hidden } from "ansi-colors";
 
 class DateInput extends React.Component {
   isSafari() {
