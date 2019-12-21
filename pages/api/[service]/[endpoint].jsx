@@ -1,6 +1,5 @@
-import fetch from "isomorphic-fetch";
-
 export default (req, res) => {
+  const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
   const service = req["query"]["service"];
   const endpoint = req["query"]["endpoint"];
 
@@ -38,41 +37,29 @@ export default (req, res) => {
     }
   }
 
-  const DebugLog = endpoint != "GetFeaturesByExtent";
-  console.log(DebugLog);
-  if (DebugLog) {
-    console.log(getparam);
-    console.log(headers);
-    console.log(
-      `https://pascali.info-mapping.com/webservices/publicservice/${service}/${endpoint}${getparam}`
+  const url = `https://pascali.info-mapping.com/webservices/publicservice/${service}/${endpoint}${getparam}`;
+  const req2 = new XMLHttpRequest();
+  req2.open(req["method"], url, true);
+  req2.onreadystatechange = function(e) {
+    if (req2.readyState != 4) {
+      return;
+    }
+    if (req2.status !== 200) {
+      res.status(req2.status).end(req2.responseText);
+      return;
+    }
+    res.status(200).end(req2.responseText);
+  };
+  req2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  if (req.headers["content-type"] != undefined) {
+    req2.setRequestHeader("Content-Type", req.headers["content-type"]);
+  }
+  if (req.headers["x-map-api-access-token"] != undefined) {
+    req2.setRequestHeader(
+      "X-Map-Api-Access-Token",
+      req.headers["x-map-api-access-token"]
     );
-    console.log(req["method"]);
-    console.log(body);
   }
 
-  fetch(
-    `https://pascali.info-mapping.com/webservices/publicservice/${service}/${endpoint}${getparam}`,
-    {
-      method: req["method"],
-      headers: headers,
-      body: body
-    }
-  )
-    .then(fres => {
-      fres
-        .text()
-        .then(txt => {
-          if (DebugLog) {
-            console.log(txt);
-          }
-          res.status(200).end(txt);
-        })
-        .catch(e => {
-          res.status(500).end(e.message);
-        });
-    })
-    .catch(e => {
-      console.log(e.message);
-      res.status(500).end(e.message);
-    });
+  req2.send(body);
 };
