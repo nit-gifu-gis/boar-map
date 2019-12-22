@@ -25,16 +25,16 @@ class TrapInfo extends React.Component {
         <div className="__title">
           <h1>わな情報</h1>
         </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={this.props.detail["geometry"]["coordinates"][1]}
-              lng={this.props.detail["geometry"]["coordinates"][0]}
-            />
-          </div>
-        </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={this.props.detail["geometry"]["coordinates"][1]}
+                lng={this.props.detail["geometry"]["coordinates"][0]}
+              />
+            </div>
+          </div>
           <div className="__set_date">
             <h3>設置年月日</h3>
             <p>{this.props.detail["properties"]["設置年月日"]}</p>

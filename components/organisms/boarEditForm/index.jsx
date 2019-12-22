@@ -7,6 +7,7 @@ import DateInput from "../../atomos/dateInput";
 const TrapSelector = props => (
   <div className="trap_selector">
     <label>わなの種類</label>
+    <p></p>
     <select
       name="trap"
       id="trap"
@@ -22,6 +23,7 @@ const TrapSelector = props => (
 const EnvSelector = props => (
   <div className="env_selector">
     <label>発見場所</label>
+    <p></p>
     <select
       name="env"
       id="env"
@@ -189,21 +191,18 @@ class BoarEditForm extends React.Component {
       );
     }
     return (
-      <div className="boarForm">
+      <div className="boar_edit_form">
         <div className="__title">
-          <h1>捕獲いのしし情報</h1>
+          <h1>捕獲情報</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>
         </div>
         <div className="__form">
-          <p>
-            位置情報確認：({this.props.detail["geometry"]["coordinates"][1]},{" "}
-            {this.props.detail["geometry"]["coordinates"][0]})
-          </p>
           <form name="form" onSubmit={this.onSubmit}>
-            <div className="__division">
+            <div className="__form __division">
               <label>区分</label>
+              <p></p>
               <select
                 name="division"
                 id="division"
@@ -217,15 +216,19 @@ class BoarEditForm extends React.Component {
             </div>
             <div className="__date">
               <label>捕獲年月日</label>
+              <p></p>
               <DateInput
                 name="date"
                 id="date"
                 date={this.props.detail["properties"]["捕獲年月日"]}
               />
             </div>
-            <div className="__trap_or_env">{this.state.trapOrEnvSelector}</div>
-            <div className="__sex">
+            <div className="__form __trap_or_env">
+              {this.state.trapOrEnvSelector}
+            </div>
+            <div className="__form __sex">
               <label>性別</label>
+              <p></p>
               <select
                 name="sex"
                 id="sex"
@@ -238,6 +241,7 @@ class BoarEditForm extends React.Component {
             </div>
             <div className="__length">
               <label>体長(cm)</label>
+              <p></p>
               <input
                 name="length"
                 type="number"

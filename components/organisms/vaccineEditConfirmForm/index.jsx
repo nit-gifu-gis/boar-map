@@ -129,20 +129,20 @@ class VaccineEditConfirmForm extends React.Component {
 
   render() {
     return (
-      <div className="vaccine_confirm_form">
+      <div className="vaccine_edit_confirm_form">
         <div className="__title">
           <h1>ワクチン情報</h1>
         </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={Router.query.lat}
-              lng={Router.query.lng}
-            />
-          </div>
-        </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={Router.query.lat}
+                lng={Router.query.lng}
+              />
+            </div>
+          </div>
           <div className="__mesh_number">
             <h3>メッシュ番号</h3>
             <p>{Router.query.meshNumber}</p>
