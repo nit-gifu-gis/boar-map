@@ -81,18 +81,15 @@ class TrapConfirmForm extends React.Component {
 
     console.log(data);
 
-    fetch(
-      "https://pascali.info-mapping.com/webservices/publicservice/JsonService.asmx/AddFeatures",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
-      }
-    )
+    fetch("/api/JsonService.asmx/AddFeatures", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Map-Api-Access-Token": token
+      },
+      body: JSON.stringify(data)
+    })
       .then(function(res) {
         const json = res.json().then(data => {
           if (data.commonHeader.resultInfomation == "0") {

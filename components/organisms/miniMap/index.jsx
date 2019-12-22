@@ -1,6 +1,7 @@
 import "./miniMap.scss";
 import React from "react";
 import L from "leaflet";
+import "../../../utils/extwms";
 import Router from "next/router";
 
 class MiniMap extends React.Component {
@@ -36,26 +37,24 @@ class MiniMap extends React.Component {
       }
     });
 
-    const mainLayer = L.tileLayer
-      .wmsHeader(
-        "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+    const mainLayer = L.TileLayer.wmsHeader(
+      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+      {
+        version: "1.3.0",
+        layers: "999999194",
+        format: "image/png",
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true
+      },
+      [
         {
-          version: "1.3.0",
-          layers: "999999194",
-          format: "image/png",
-          maxZoom: 18,
-          tileSize: 256,
-          crs: L.CRS.EPSG3857,
-          uppercase: true
-        },
-        [
-          {
-            header: "X-Map-Api-Access-Token",
-            value: userData.access_token
-          }
-        ]
-      )
-      .addTo(this.myMap);
+          header: "X-Map-Api-Access-Token",
+          value: userData.access_token
+        }
+      ]
+    ).addTo(this.myMap);
 
     L.control.scale().addTo(this.myMap);
 
