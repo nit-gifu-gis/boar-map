@@ -6,9 +6,7 @@ import VaccineConfirmForm from "../../organisms/vaccineConfirmForm";
 
 const ConfirmVaccine = () => (
   <div>
-    <Header />
     <VaccineConfirmForm />
-    <Footer />
   </div>
 );
 

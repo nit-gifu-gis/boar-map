@@ -6,9 +6,7 @@ import VaccineEditConfirmForm from "../../organisms/vaccineEditConfirmForm";
 
 const EditConfirmVaccine = () => (
   <div>
-    <Header />
     <VaccineEditConfirmForm />
-    <Footer />
   </div>
 );
 

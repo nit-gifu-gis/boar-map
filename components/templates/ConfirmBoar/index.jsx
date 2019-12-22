@@ -6,9 +6,7 @@ import BoarConfirmForm from "../../organisms/boarConfirmForm";
 
 const ConfirmBoar = () => (
   <div>
-    <Header />
     <BoarConfirmForm />
-    <Footer />
   </div>
 );
 

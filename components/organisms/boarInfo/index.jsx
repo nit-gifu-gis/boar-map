@@ -11,18 +11,18 @@ class BoarInfo extends React.Component {
     return (
       <div className="boar_info_form">
         <div className="__title">
-          <h1>捕獲いのしし情報</h1>
-        </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={this.props.detail["geometry"]["coordinates"][1]}
-              lng={this.props.detail["geometry"]["coordinates"][0]}
-            />
-          </div>
+          <h1>捕獲情報</h1>
         </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={this.props.detail["geometry"]["coordinates"][1]}
+                lng={this.props.detail["geometry"]["coordinates"][0]}
+              />
+            </div>
+          </div>
           <div className="__division">
             <h3>区分</h3>
             <p>{this.props.detail["properties"]["区分"]}</p>

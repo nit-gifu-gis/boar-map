@@ -1,6 +1,7 @@
 #mini_map {
-  width: 100%;
+  width: 99%;
   height: 200px;
-  border: solid 1px #999;
+  border: solid 2px #999;
+  z-index: 0;
   overflow: hidden;
 }

@@ -9,12 +9,10 @@ class EditBoar extends React.Component {
   render() {
     return (
       <div>
-        <Header />
         <BoarEditForm
           detail={JSON.parse(Router.query.detail)}
           type={Router.query.type}
         />
-        <Footer />
       </div>
     );
   }

@@ -5,17 +5,19 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
 const RecoverInfoForm = props => (
-  <div className="__recover_info_form">
-    <div className="__recover_date">
+  <div>
+    <div className="__date __recover_date">
       <label>回収年月日</label>
+      <p></p>
       <DateInput
         name="recoverDate"
         id="recoverDate"
         date={props["detail"]["properties"]["回収年月日"]}
       />
     </div>
-    <div className="eaten">
+    <div className="__form __eaten">
       <label>摂食の有無</label>
+      <p></p>
       <select
         name="eaten"
         id="eaten"
@@ -25,8 +27,9 @@ const RecoverInfoForm = props => (
         <option value="あり">あり</option>
       </select>
     </div>
-    <div className="damage">
+    <div className="__form __damage">
       <label>その他の破損</label>
+      <p></p>
       <select
         name="damage"
         id="damage"
@@ -169,21 +172,18 @@ class VaccineEditForm extends React.Component {
       );
     }
     return (
-      <div className="vaccineForm">
+      <div className="vaccine_edit_form">
         <div className="__title">
-          <h1>ワクチン情報</h1>
+          <h1>ワクチン情報編集</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>
         </div>
         <div className="__form">
-          <p>
-            位置情報確認：({this.props.detail["geometry"]["coordinates"][1]},{" "}
-            {this.props.detail["geometry"]["coordinates"][0]})
-          </p>
           <form name="form">
-            <div className="__mesh_number">
+            <div className="__number __mesh_number">
               <label>メッシュ番号</label>
+              <p></p>
               <input
                 type="number"
                 name="meshNumber"
@@ -192,16 +192,18 @@ class VaccineEditForm extends React.Component {
                 defaultValue={this.props.detail["properties"]["メッシュ番号"]}
               />
             </div>
-            <div className="__treat_date">
+            <div className="__date __treat_date">
               <label>散布年月日</label>
+              <p></p>
               <DateInput
                 name="treatDate"
                 id="treatDate"
                 date={this.props.detail["properties"]["散布年月日"]}
               />
             </div>
-            <div className="__treat_number">
+            <div className="__number __treat_number">
               <label>散布数</label>
+              <p></p>
               <input
                 type="number"
                 name="treatNumber"
@@ -210,13 +212,18 @@ class VaccineEditForm extends React.Component {
                 defaultValue={this.props.detail["properties"]["散布数"]}
               />
             </div>
-            <div className="__recover">
-              <label>回収</label>
-              {recoverCheckBox}
+            <div className="__check __recover">
+              <label>
+                回収
+                <p></p>
+                {recoverCheckBox}
+                <span></span>
+              </label>
             </div>
             {this.state.recoverInfoForm}
-            <div className="note">
+            <div className="__textarea note">
               <label>備考</label>
+              <p></p>
               <textarea
                 rows="4"
                 cols="50"

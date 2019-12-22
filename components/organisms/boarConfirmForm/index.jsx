@@ -111,18 +111,18 @@ class BoarConfirmForm extends React.Component {
     return (
       <div className="boar_confirm_form">
         <div className="__title">
-          <h1>捕獲いのしし情報</h1>
-        </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={Router.query.lat}
-              lng={Router.query.lng}
-            />
-          </div>
+          <h1>捕獲情報登録</h1>
         </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={Router.query.lat}
+                lng={Router.query.lng}
+              />
+            </div>
+          </div>
           <div className="__division">
             <h3>区分</h3>
             <p>{Router.query.division}</p>

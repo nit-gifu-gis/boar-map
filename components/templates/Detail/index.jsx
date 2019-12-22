@@ -122,7 +122,7 @@ class Detail extends React.Component {
     }
     return (
       <div>
-        <DetailHeader />
+        {/* <DetailHeader /> */}
         {detaildiv}
         <DetailFooter
           nextHandler={this.onClickNext.bind(this)}

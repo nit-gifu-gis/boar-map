@@ -6,9 +6,7 @@ import BoarEditConfirmForm from "../../organisms/boarEditConfirmForm";
 
 const EditConfirmBoar = () => (
   <div>
-    <Header />
     <BoarEditConfirmForm />
-    <Footer />
   </div>
 );
 

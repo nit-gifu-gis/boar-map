@@ -7,11 +7,11 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 const BoarDiv = () => (
   <div className="boar_div">
     <input type="radio" id="radio1" name="infoType" value="boar" />
-    <label htmlFor="radio1">
+    <label htmlFor="radio1" className="label">
       <InfoTypeItem
         src="../static/images/icons/boar.svg"
         alt="いのししアイコン"
-        text="捕獲いのしし"
+        text="捕獲情報"
       />
     </label>
   </div>
@@ -20,11 +20,11 @@ const BoarDiv = () => (
 const TrapDiv = () => (
   <div className="trap_div">
     <input type="radio" id="radio2" name="infoType" value="trap" />
-    <label htmlFor="radio2">
+    <label htmlFor="radio2" className="label">
       <InfoTypeItem
         src="../static/images/icons/trap.svg"
         alt="わなアイコン"
-        text="わな"
+        text="わな情報"
       />
     </label>
   </div>
@@ -33,11 +33,11 @@ const TrapDiv = () => (
 const VaccineDiv = () => (
   <div className="vaccine_div">
     <input type="radio" id="radio3" name="infoType" value="vaccine" />
-    <label htmlFor="radio3">
+    <label htmlFor="radio3" className="label">
       <InfoTypeItem
         src="../static/images/icons/vaccine.svg"
         alt="ワクチンアイコン"
-        text="ワクチン"
+        text="ワクチン情報"
       />
     </label>
   </div>
@@ -149,7 +149,7 @@ class InfoTypeSelector extends React.Component {
           <h1>情報登録</h1>
         </div>
         <div className="__description">
-          <p>登録する情報を選択し、次へボタンを押してください。</p>
+          <p>情報の種類を選択してください。</p>
         </div>
         <div className="__choices">
           <form name="form">

@@ -6,9 +6,7 @@ import BoarForm from "../../organisms/boarForm";
 
 const AddBoar = () => (
   <div>
-    <Header />
     <BoarForm />
-    <Footer />
   </div>
 );
 

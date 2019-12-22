@@ -33,16 +33,16 @@ class VaccineInfo extends React.Component {
         <div className="__title">
           <h1>ワクチン情報</h1>
         </div>
-        <div className="__location">
-          <h3>場所</h3>
-          <div className="__map_canvas">
-            <DynamicMapComponentWithNoSSR
-              lat={this.props.detail["geometry"]["coordinates"][1]}
-              lng={this.props.detail["geometry"]["coordinates"][0]}
-            />
-          </div>
-        </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={this.props.detail["geometry"]["coordinates"][1]}
+                lng={this.props.detail["geometry"]["coordinates"][0]}
+              />
+            </div>
+          </div>
           <div className="__mesh_number">
             <h3>メッシュ番号</h3>
             <p>{this.props.detail["properties"]["メッシュ番号"]}</p>

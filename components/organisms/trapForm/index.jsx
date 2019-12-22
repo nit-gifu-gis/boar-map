@@ -5,8 +5,9 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
 const RemoveDateInput = () => (
-  <div className="__remove_date">
+  <div className="__date __remove_date">
     <label>撤去年月日</label>
+    <p></p>
     <DateInput name="removeDate" id="removeDate" />
   </div>
 );
@@ -93,23 +94,21 @@ class TrapForm extends React.Component {
 
   render() {
     return (
-      <div className="boarForm">
+      <div className="trapForm">
         <div className="__title">
-          <h1>わな情報</h1>
+          <h1>わな情報登録</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>
         </div>
         <div className="__form">
-          <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
-          </p>
           <form name="form">
-            <div className="__set_date">
+            <div className="__date __set_date">
               <label>設置年月日</label>
+              <p></p>
               <DateInput name="setDate" id="setDate" />
             </div>
-            <div className="__kind">
+            <div className="__form __kind">
               <label>わなの種類</label>
               <select name="kind" id="kind">
                 <option value="箱わな">箱わな</option>
@@ -117,7 +116,7 @@ class TrapForm extends React.Component {
                 <option value="その他">その他</option>
               </select>
             </div>
-            <div className="__capture">
+            <div className="__form __capture">
               <label>捕獲の有無</label>
               <select
                 name="capture"
