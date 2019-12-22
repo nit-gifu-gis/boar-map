@@ -5,7 +5,7 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
 const RemoveDateInput = () => (
-  <div className="__remove_date">
+  <div className="__date __remove_date">
     <label>撤去年月日</label>
     <DateInput name="removeDate" id="removeDate" />
   </div>
@@ -101,11 +101,8 @@ class TrapForm extends React.Component {
           <p>各情報を入力してください。</p>
         </div>
         <div className="__form">
-          <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
-          </p>
           <form name="form">
-            <div className="__date">
+            <div className="__date __set_date">
               <label>設置年月日</label>
               <DateInput name="setDate" id="setDate" />
             </div>
