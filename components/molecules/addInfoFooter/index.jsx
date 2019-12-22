@@ -2,6 +2,7 @@ import Router from "next/router";
 import React from "react";
 import NextButton from "../../atomos/nextButton";
 import PrevButton from "../../atomos/prevButton";
+import "./addInfoFooter.scss";
 
 class AddInfoFooter extends React.Component {
   render() {
@@ -9,10 +10,10 @@ class AddInfoFooter extends React.Component {
       <div className="AddInfoFooter">
         <div className="flex">
           <div className="flex_prev">
-            <PrevButton bind={this.props.prevBind} />
+            <PrevButton className="PrevButton" bind={this.props.prevBind} />
           </div>
           <div className="flex_next">
-            <NextButton bind={this.props.nextBind} />
+            <NextButton className="NextButton" bind={this.props.nextBind} />
           </div>
         </div>
       </div>
