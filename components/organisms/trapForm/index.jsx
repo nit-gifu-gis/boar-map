@@ -95,7 +95,7 @@ class TrapForm extends React.Component {
     return (
       <div className="trapForm">
         <div className="__title">
-          <h1>わな情報</h1>
+          <h1>わな情報登録</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>

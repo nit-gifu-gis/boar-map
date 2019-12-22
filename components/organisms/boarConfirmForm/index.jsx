@@ -111,7 +111,7 @@ class BoarConfirmForm extends React.Component {
     return (
       <div className="boar_confirm_form">
         <div className="__title">
-          <h1>捕獲いのしし情報</h1>
+          <h1>捕獲情報登録</h1>
         </div>
         <div className="__info">
           <div className="__location">

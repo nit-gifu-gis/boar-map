@@ -171,7 +171,7 @@ class VaccineEditForm extends React.Component {
     return (
       <div className="vaccine_edit_form">
         <div className="__title">
-          <h1>ワクチン情報</h1>
+          <h1>ワクチン情報編集</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>

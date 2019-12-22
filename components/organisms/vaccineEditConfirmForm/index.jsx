@@ -131,7 +131,7 @@ class VaccineEditConfirmForm extends React.Component {
     return (
       <div className="vaccine_edit_confirm_form">
         <div className="__title">
-          <h1>ワクチン情報</h1>
+          <h1>ワクチン情報編集</h1>
         </div>
         <div className="__info">
           <div className="__location">

@@ -122,7 +122,7 @@ class TrapConfirmForm extends React.Component {
     return (
       <div className="trap_confirm_form">
         <div className="__title">
-          <h1>わな情報</h1>
+          <h1>わな情報登録</h1>
         </div>
         <div className="__info">
           <div className="__location">

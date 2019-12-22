@@ -119,7 +119,7 @@ class TrapEditConfirmForm extends React.Component {
     return (
       <div className="trap_edit_confirm_form">
         <div className="__title">
-          <h1>わな情報</h1>
+          <h1>わな情報編集</h1>
         </div>
         <div className="__info">
           <div className="__location">

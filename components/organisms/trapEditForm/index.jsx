@@ -116,7 +116,7 @@ class TrapEditForm extends React.Component {
     return (
       <div className="trap_edit_form">
         <div className="__title">
-          <h1>わな情報</h1>
+          <h1>わな情報編集</h1>
         </div>
         <div className="__description">
           <p>各情報を入力してください。</p>
