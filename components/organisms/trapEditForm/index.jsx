@@ -7,6 +7,7 @@ import DateInput from "../../atomos/dateInput";
 const RemoveDateInput = props => (
   <div className="__date __remove_date">
     <label>撤去年月日</label>
+    <p></p>
     <DateInput
       name="removeDate"
       id="removeDate"
@@ -125,6 +126,7 @@ class TrapEditForm extends React.Component {
           <form name="form">
             <div className="__date __set_date">
               <label>設置年月日</label>
+              <p></p>
               <DateInput
                 name="setDate"
                 id="setDate"

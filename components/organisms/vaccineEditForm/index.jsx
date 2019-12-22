@@ -8,6 +8,7 @@ const RecoverInfoForm = props => (
   <div>
     <div className="__date __recover_date">
       <label>回収年月日</label>
+      <p></p>
       <DateInput
         name="recoverDate"
         id="recoverDate"
@@ -16,6 +17,7 @@ const RecoverInfoForm = props => (
     </div>
     <div className="__form __eaten">
       <label>摂食の有無</label>
+      <p></p>
       <select
         name="eaten"
         id="eaten"
@@ -27,6 +29,7 @@ const RecoverInfoForm = props => (
     </div>
     <div className="__form __damage">
       <label>その他の破損</label>
+      <p></p>
       <select
         name="damage"
         id="damage"
