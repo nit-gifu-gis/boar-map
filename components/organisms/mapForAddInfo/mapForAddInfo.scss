@@ -5,14 +5,22 @@
   overflow: hidden;
   z-index: 0;
 }
-.mapForAddInfo{
-  .__Title{
-    background-color: #b50226;
+.mapForAddInfo {
+  .__Title {
     text-align: center;
     color: white;
     padding: 10px 0px;
   }
-  .__description{
+  .__Title[type="boar"] {
+    background-color: #b50226;
+  }
+  .__Title[type="trap"] {
+    background-color: #ffc000;
+  }
+  .__Title[type="vaccine"] {
+    background-color: #00b0f0;
+  }
+  .__description {
     font-size: 100%;
     padding: 5px 0px 0px 10px;
   }

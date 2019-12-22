@@ -92,10 +92,25 @@ class MapForAddInfo extends MapBase {
   }
 
   render() {
+    let title = "";
+    switch (Router.query.type) {
+      case "boar":
+        title = "捕獲情報登録";
+        break;
+      case "trap":
+        title = "わな情報登録";
+        break;
+      case "vaccine":
+        title = "ワクチン情報登録";
+        break;
+      default:
+        title = "位置情報登録";
+        break;
+    }
     return (
       <div className="mapForAddInfo">
-        <div className="__Title">
-          <h1>捕獲情報登録</h1>
+        <div className="__Title" type={Router.query.type}>
+          <h1>{title}</h1>
         </div>
         <div className="__description">
           登録したい地点にピンが立つようにしてください。
