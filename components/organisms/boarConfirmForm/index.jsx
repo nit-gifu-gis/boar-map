@@ -114,6 +114,15 @@ class BoarConfirmForm extends React.Component {
           <h1>捕獲いのしし情報</h1>
         </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={Router.query.lat}
+                lng={Router.query.lng}
+              />
+            </div>
+          </div>
           <div className="__division">
             <h3>区分</h3>
             <p>{Router.query.division}</p>
@@ -137,15 +146,6 @@ class BoarConfirmForm extends React.Component {
           <div className="__weight">
             <h3>体重</h3>
             <p>{Router.query.weight}kg (体長から自動計算)</p>
-          </div>
-          <div className="__location">
-            <h3>場所</h3>
-            <div className="__map_canvas">
-              <DynamicMapComponentWithNoSSR
-                lat={Router.query.lat}
-                lng={Router.query.lng}
-              />
-            </div>
           </div>
         </div>
         <AddInfoFooter

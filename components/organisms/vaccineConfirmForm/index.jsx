@@ -137,6 +137,15 @@ class VaccineConfirmForm extends React.Component {
           <h1>ワクチン情報</h1>
         </div>
         <div className="__info">
+          <div className="__location">
+            <h3>場所</h3>
+            <div className="__map_canvas">
+              <DynamicMapComponentWithNoSSR
+                lat={Router.query.lat}
+                lng={Router.query.lng}
+              />
+            </div>
+          </div>
           <div className="__mesh_number">
             <h3>メッシュ番号</h3>
             <p>{Router.query.meshNumber}</p>
@@ -156,15 +165,6 @@ class VaccineConfirmForm extends React.Component {
               {/* Todo: 改行されないのを修正 */}
               {Router.query.note}
             </p>
-          </div>
-          <div className="__location">
-            <h3>場所</h3>
-            <div className="__map_canvas">
-              <DynamicMapComponentWithNoSSR
-                lat={Router.query.lat}
-                lng={Router.query.lng}
-              />
-            </div>
           </div>
         </div>
         <AddInfoFooter
