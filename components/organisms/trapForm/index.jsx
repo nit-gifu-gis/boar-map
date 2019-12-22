@@ -93,7 +93,7 @@ class TrapForm extends React.Component {
 
   render() {
     return (
-      <div className="boarForm">
+      <div className="trapForm">
         <div className="__title">
           <h1>わな情報</h1>
         </div>
