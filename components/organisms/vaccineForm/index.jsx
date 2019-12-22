@@ -5,19 +5,19 @@ import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
 
 const RecoverInfoForm = () => (
-  <div className="__recover_info_form">
-    <div className="__recover_date">
+  <div>
+    <div className="__date __recover_date">
       <label>回収年月日</label>
       <DateInput name="recoverDate" id="recoverDate" />
     </div>
-    <div className="eaten">
+    <div className="__form __eaten">
       <label>摂食の有無</label>
       <select name="eaten" id="eaten">
         <option value="なし">なし</option>
         <option value="あり">あり</option>
       </select>
     </div>
-    <div className="damage">
+    <div className="__form __damage">
       <label>その他の破損</label>
       <select name="damage" id="damage">
         <option value="なし">なし</option>
@@ -135,20 +135,20 @@ class VaccineForm extends React.Component {
           <p>各情報を入力してください。</p>
         </div>
         <div className="__form">
-          <p>
-            位置情報確認：({Router.query.lat}, {Router.query.lng})
-          </p>
           <form name="form">
-            <div className="__form __mesh_number">
+            <div className="__number __mesh_number">
               <label>メッシュ番号</label>
+              <p></p>
               <input type="number" name="meshNumber" id="meshNumber" min="0" />
             </div>
-            <div className="__date">
+            <div className="__date __treat_date">
               <label>散布年月日</label>
+              <p></p>
               <DateInput name="treatDate" id="treatDate" />
             </div>
-            <div className="__form __treat_number">
+            <div className="__number __treat_number">
               <label>散布数</label>
+              <p></p>
               <input
                 type="number"
                 name="treatNumber"
@@ -156,18 +156,23 @@ class VaccineForm extends React.Component {
                 min="1"
               />
             </div>
-            <div className="__form __recover">
-              <label>回収</label>
-              <input
-                type="checkbox"
-                name="recover"
-                id="recover"
-                onChange={this.onChangeRecover.bind(this)}
-              />
+            <div className="__check __recover">
+              <label>
+                回収
+                <p></p>
+                <input
+                  type="checkbox"
+                  name="recover"
+                  id="recover"
+                  onChange={this.onChangeRecover.bind(this)}
+                />
+                <span></span>
+              </label>
             </div>
             {this.state.recoverInfoForm}
-            <div className="note">
+            <div className="__textarea note">
               <label>備考</label>
+              <p></p>
               <textarea rows="4" cols="50" name="note" id="note" />
             </div>
           </form>
