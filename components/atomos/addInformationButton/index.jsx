@@ -8,7 +8,12 @@ const OnClick = () => {
 const AddInformationButton = () => {
   return (
     <div>
-      <button onClick={OnClick}>新規情報登録</button>
+      <img
+        className="regist__button"
+        src="images/button.png"
+        onClick={OnClick}
+      />
+      <p className="label__regist">新規登録</p>
     </div>
   );
 };

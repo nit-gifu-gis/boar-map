@@ -7,12 +7,10 @@ import Router from "next/router";
 
 const EditTrap = () => (
   <div>
-    <Header />
     <TrapEditForm
       detail={JSON.parse(Router.query.detail)}
       type={Router.query.type}
     />
-    <Footer />
   </div>
 );
 

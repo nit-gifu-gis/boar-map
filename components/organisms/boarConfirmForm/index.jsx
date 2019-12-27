@@ -129,18 +129,18 @@ class BoarConfirmForm extends React.Component {
       return (
         <div className="boar_confirm_form">
           <div className="__title">
-            <h1>捕獲いのしし情報</h1>
-          </div>
-          <div className="__location">
-            <h3>場所</h3>
-            <div className="__map_canvas">
-              <DynamicMapComponentWithNoSSR
-                lat={this.state.lat}
-                lng={this.state.lng}
-              />
-            </div>
+            <h1>捕獲情報登録</h1>
           </div>
           <div className="__info">
+            <div className="__location">
+              <h3>場所</h3>
+              <div className="__map_canvas">
+                <DynamicMapComponentWithNoSSR
+                  lat={this.state.lat}
+                  lng={this.state.lng}
+                />
+              </div>
+            </div>
             <div className="__division">
               <h3>区分</h3>
               <p>{this.state.division}</p>
@@ -167,7 +167,7 @@ class BoarConfirmForm extends React.Component {
             </div>
           </div>
           <AddInfoFooter
-            prevBind={this.onClickPrev}
+            prevBind={this.onClickPrev.bind(this)}
             nextBind={this.onClickNext.bind(this)}
           />
         </div>

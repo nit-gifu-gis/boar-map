@@ -1,0 +1,23 @@
+input {
+  -webkit-appearance: none;
+}
+
+.__date_input {
+  font-size: 24px;
+  padding: 10px 0px;
+  width: 100%;
+  border: none;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.date_input_for_safari {
+  input {
+    font-size: 24px;
+    padding: 10px 0px;
+    width: 20%;
+    border: none;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+}

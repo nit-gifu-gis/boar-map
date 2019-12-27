@@ -6,9 +6,7 @@ import VaccineForm from "../../organisms/vaccineForm";
 
 const AddVaccine = () => (
   <div>
-    <Header />
     <VaccineForm />
-    <Footer />
   </div>
 );
 

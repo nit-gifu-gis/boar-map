@@ -24,20 +24,16 @@ class EditBoar extends React.Component {
     if (this.state.detail != undefined) {
       return (
         <div>
-          <Header />
           <BoarEditForm
             detail={JSON.parse(Router.query.detail)}
             type={Router.query.type}
           />
-          <Footer />
         </div>
       );
     } else {
       return (
         <div>
-          <Header />
           <h1>情報取得中</h1>
-          <Footer />
         </div>
       );
     }

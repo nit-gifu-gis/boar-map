@@ -23,7 +23,7 @@ class DateInput extends React.Component {
       userAgent.indexOf("trident") != -1
     ) {
       console.log("Internet Explorer");
-      return false;
+      return true;
     } else if (userAgent.indexOf("edge") != -1) {
       console.log("Edge");
       return false;
@@ -129,6 +129,7 @@ class DateInput extends React.Component {
       return (
         <input
           type="date"
+          className="__date_input"
           name={this.props.name}
           id={this.props.id}
           defaultValue={DateY + "-" + DateM + "-" + DateD}

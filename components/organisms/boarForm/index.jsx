@@ -7,6 +7,7 @@ import DateInput from "../../atomos/dateInput";
 const TrapSelector = () => (
   <div className="trap_selector">
     <label>わなの種類</label>
+    <p></p>
     <select name="trap" id="trap">
       <option value="箱わな">箱わな</option>
       <option value="くくりわな">くくりわな</option>
@@ -172,18 +173,16 @@ class BoarForm extends React.Component {
       return (
         <div className="boarForm">
           <div className="__title">
-            <h1>捕獲いのしし情報</h1>
+            <h1>捕獲情報登録</h1>
           </div>
           <div className="__description">
             <p>各情報を入力してください。</p>
           </div>
           <div className="__form">
-            <p>
-              位置情報確認：({this.state.lat}, {this.state.lng})
-            </p>
             <form name="form" onSubmit={this.onSubmit}>
-              <div className="__division">
+              <div className="__form __division">
                 <label>区分</label>
+                <p></p>
                 <select
                   name="division"
                   id="division"
@@ -194,21 +193,23 @@ class BoarForm extends React.Component {
                   <option value="死亡">死亡</option>
                 </select>
               </div>
-              <div className="__date">
+              <div className=" __date">
                 <label>捕獲年月日</label>
+                <p></p>
                 {/* <input
-                  type="date"
-                  name="date"
-                  id="date"
-                  // value={this.state.todayStr}
-                /> */}
+                type="date"
+                name="date"
+                id="date"
+                // value={this.state.todayStr}
+              /> */}
                 <DateInput name="date" id="date" />
               </div>
-              <div className="__trap_or_env">
+              <div className="__form __trap_or_env">
                 {this.state.trapOrEnvSelector}
               </div>
-              <div className="__sex">
+              <div className="__form __sex">
                 <label>性別</label>
+                <p></p>
                 <select name="sex" id="sex">
                   <option value="オス">オス</option>
                   <option value="メス">メス</option>
@@ -217,6 +218,7 @@ class BoarForm extends React.Component {
               </div>
               <div className="__length">
                 <label>体長(cm)</label>
+                <p></p>
                 <input name="length" type="number" step="1"></input>
               </div>
               {/* 体重は体長から計算して送信する（表示しない） */}

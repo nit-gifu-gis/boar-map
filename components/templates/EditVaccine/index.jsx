@@ -7,12 +7,10 @@ import Router from "next/router";
 
 const EditVaccine = () => (
   <div>
-    <Header />
     <VaccineEditForm
       detail={JSON.parse(Router.query.detail)}
       type={Router.query.type}
     />
-    <Footer />
   </div>
 );
 

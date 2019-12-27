@@ -1,0 +1,128 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+.infoTypeSelector {
+  .__Title {
+    background-color: #e87b15;
+    text-align: center;
+    color: white;
+    padding: 10px 0px;
+  }
+  .__description {
+    font-size: 20px;
+    padding: 5px 0px 0px 10px;
+  }
+}
+.boar_div img {
+  position: absolute;
+  top: 45px;
+  left: 20px;
+  width: 60px;
+}
+.trap_div img {
+  position: absolute;
+  top: 45px;
+  left: 20px;
+  width: 60px;
+}
+.vaccine_div img {
+  position: absolute;
+  top: 45px;
+  left: 20px;
+  width: 60px;
+}
+.boar_div {
+  position: absolute;
+  top: 70px;
+  width: 100%;
+}
+.trap_div {
+  position: absolute;
+  top: 143px;
+  width: 100%;
+}
+
+.vaccine_div {
+  position: absolute;
+  top: 216px;
+  width: 100%;
+}
+.label {
+  font-size: 28px;
+  width: 100%;
+  margin: 5px;
+}
+.flex_prev {
+  width: 50%;
+}
+.flex_next {
+  width: 50%;
+}
+.InfoTypeItemText p {
+  width: 80vw;
+  padding: 15px 0px 15px 20vw;
+  // border-top: 1px solid black;
+  // border-bottom: 1px solid black;
+}
+.boar_div p {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+.trap_div p {
+  border-bottom: 1px solid black;
+}
+.vaccine_div p {
+  border-bottom: 1px solid black;
+}
+input[type="radio"] {
+  display: none;
+  font-size: 100px;
+  outline: none;
+}
+input[type="radio"]:checked + .label p {
+  border-top: 1px solid black;
+  background-color: #e87b15;
+}
+@media screen and (max-width: 480px) {
+  .InfoTypeItemText p {
+    position: absolute;
+    top: 30%;
+  }
+  .boar_div {
+    top: 90px;
+  }
+  .trap_div {
+    top: 163px;
+  }
+  .vaccine_div {
+    top: 236px;
+  }
+  .boar_div img {
+    width: 50px;
+    top: 33px;
+    left: 12px;
+  }
+  .trap_div img {
+    width: 50px;
+    top: 33px;
+    left: 12px;
+  }
+  .vaccine_div img {
+    width: 50px;
+    top: 33px;
+    left: 12px;
+  }
+  .__description p {
+    position: absolute;
+    font-size: 18px;
+    top: 70px;
+    padding: 3px 0px 0px 5px;
+  }
+  .label {
+    z-index: 0;
+  }
+  .InfoTypeItemImage {
+    z-index: 1;
+  }
+}
