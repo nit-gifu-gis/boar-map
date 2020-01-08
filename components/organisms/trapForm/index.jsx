@@ -14,7 +14,9 @@ const RemoveDateInput = () => (
 
 class TrapForm extends React.Component {
   state = {
-    removeDateInput: null
+    removeDateInput: null,
+    lat: null,
+    lng: null
   };
 
   constructor() {
@@ -37,6 +39,15 @@ class TrapForm extends React.Component {
     }
   }
 
+  componentDidMount() {
+    if (Router.query.lat != undefined && Router.query.lng != undefined) {
+      this.setState({ lat: Router.query.lat, lng: Router.query.lng });
+    } else {
+      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      Router.push("/map");
+    }
+  }
+
   // 前へボタンを押したときの処理
   onClickPrev() {
     const url = "/add/location";
@@ -51,8 +62,8 @@ class TrapForm extends React.Component {
     // 1 設置年月日
     const setDate = form.setDate.value;
     // 3 位置情報
-    const lat = Router.query.lat;
-    const lng = Router.query.lng;
+    const lat = this.state.lat;
+    const lng = this.state.lng;
     // 4 わなの種類
     const kind = form.kind.options[form.kind.selectedIndex].value;
     // 5 捕獲の有無
@@ -93,49 +104,57 @@ class TrapForm extends React.Component {
   }
 
   render() {
-    return (
-      <div className="trapForm">
-        <div className="__title">
-          <h1>わな情報登録</h1>
+    if (this.state.lat != undefined && this.state.lng != undefined) {
+      return (
+        <div className="trapForm">
+          <div className="__title">
+            <h1>わな情報登録</h1>
+          </div>
+          <div className="__description">
+            <p>各情報を入力してください。</p>
+          </div>
+          <div className="__form">
+            <form name="form">
+              <div className="__date __set_date">
+                <label>設置年月日</label>
+                <p></p>
+                <DateInput name="setDate" id="setDate" />
+              </div>
+              <div className="__form __kind">
+                <label>わなの種類</label>
+                <select name="kind" id="kind">
+                  <option value="箱わな">箱わな</option>
+                  <option value="くくりわな">くくりわな</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+              <div className="__form __capture">
+                <label>捕獲の有無</label>
+                <select
+                  name="capture"
+                  id="capture"
+                  onChange={this.onChangeCapture.bind(this)}
+                >
+                  <option value="なし">なし</option>
+                  <option value="あり">あり</option>
+                </select>
+              </div>
+              {this.state.removeDateInput}
+            </form>
+          </div>
+          <AddInfoFooter
+            prevBind={this.onClickPrev}
+            nextBind={this.onClickNext.bind(this)}
+          />
         </div>
-        <div className="__description">
-          <p>各情報を入力してください。</p>
+      );
+    } else {
+      return (
+        <div className="trapForm">
+          <h1>情報取得中...</h1>
         </div>
-        <div className="__form">
-          <form name="form">
-            <div className="__date __set_date">
-              <label>設置年月日</label>
-              <p></p>
-              <DateInput name="setDate" id="setDate" />
-            </div>
-            <div className="__form __kind">
-              <label>わなの種類</label>
-              <select name="kind" id="kind">
-                <option value="箱わな">箱わな</option>
-                <option value="くくりわな">くくりわな</option>
-                <option value="その他">その他</option>
-              </select>
-            </div>
-            <div className="__form __capture">
-              <label>捕獲の有無</label>
-              <select
-                name="capture"
-                id="capture"
-                onChange={this.onChangeCapture.bind(this)}
-              >
-                <option value="なし">なし</option>
-                <option value="あり">あり</option>
-              </select>
-            </div>
-            {this.state.removeDateInput}
-          </form>
-        </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext.bind(this)}
-        />
-      </div>
-    );
+      );
+    }
   }
 }
 

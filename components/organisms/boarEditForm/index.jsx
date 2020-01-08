@@ -134,19 +134,15 @@ class BoarEditForm extends React.Component {
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
       case "死亡":
-        this.setState(_ => {
-          return {
-            trapOrEnvSelector: <EnvSelector detail={this.props.detail} />
-          };
-        }).bind(this);
+        this.setState({
+          trapOrEnvSelector: <EnvSelector detail={this.props.detail} />
+        });
         // this.state.trapOrEnvSelector = <EnvSelector />;
         break;
       default:
-        this.setState(_ => {
-          return {
-            trapOrEnvSelector: <TrapSelector detail={this.props.detail} />
-          };
-        }).bind(this);
+        this.setState({
+          trapOrEnvSelector: <TrapSelector detail={this.props.detail} />
+        });
         break;
     }
   }
@@ -183,12 +179,17 @@ class BoarEditForm extends React.Component {
 
   render() {
     console.log(this.props.detail);
-    if (this.props.detail["properties"]["区分"] == "死亡") {
-      this.state.trapOrEnvSelector = <EnvSelector detail={this.props.detail} />;
-    } else {
-      this.state.trapOrEnvSelector = (
-        <TrapSelector detail={this.props.detail} />
-      );
+    if (!this.state.notfirst) {
+      if (this.props.detail["properties"]["区分"] == "死亡") {
+        this.state.trapOrEnvSelector = (
+          <EnvSelector detail={this.props.detail} />
+        );
+      } else {
+        this.state.trapOrEnvSelector = (
+          <TrapSelector detail={this.props.detail} />
+        );
+      }
+      this.state.notfirst = true;
     }
     return (
       <div className="boar_edit_form">
@@ -217,11 +218,7 @@ class BoarEditForm extends React.Component {
             <div className="__date">
               <label>捕獲年月日</label>
               <p></p>
-              <DateInput
-                name="date"
-                id="date"
-                date={this.props.detail["properties"]["捕獲年月日"]}
-              />
+              <DateInput name="date" id="date" />
             </div>
             <div className="__form __trap_or_env">
               {this.state.trapOrEnvSelector}

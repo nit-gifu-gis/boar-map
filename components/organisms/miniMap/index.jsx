@@ -6,14 +6,16 @@ import Router from "next/router";
 
 class MiniMap extends React.Component {
   state = {
-    lat: this.props.lat,
-    lng: this.props.lng,
+    lat: undefined,
+    lng: undefined,
     zoom: 17
   };
 
   myMap = null;
 
   componentDidMount() {
+    this.state.lat = this.props.lat;
+    this.state.lng = this.props.lng;
     this.map();
   }
 
