@@ -66,7 +66,7 @@ class BoarForm extends React.Component {
   // 前へボタンを押したときの処理
   onClickPrev() {
     const url = "/add/location";
-    Router.replace({ pathname: url, query: { type: "boar" } }, url);
+    Router.push({ pathname: url, query: { type: "boar" } }, url);
   }
 
   // 次へボタンを押したときの処理
@@ -101,7 +101,7 @@ class BoarForm extends React.Component {
     // 9 現地写真
     // 確認画面に遷移
     const url = "/add/confirm/boar";
-    Router.replace(
+    Router.push(
       {
         pathname: url,
         query: {

@@ -70,71 +70,83 @@ class DateInput extends React.Component {
     }
   }
 
+  state = {
+    isBrowser: false
+  };
+
+  componentDidMount() {
+    this.setState({ isBrowser: true });
+  }
+
   render() {
-    let DateY = "";
-    let DateM = "";
-    let DateD = "";
-    if (this.props.date != null) {
-      const date = this.props.date.split(" ")[0].split("/");
-      if (date.length >= 3) {
-        DateY = date[0];
-        DateM = date[1];
-        DateD = date[2];
+    if (this.state.isBrowser) {
+      let DateY = "";
+      let DateM = "";
+      let DateD = "";
+      if (this.props.date != null) {
+        const date = this.props.date.split(" ")[0].split("/");
+        if (date.length >= 3) {
+          DateY = date[0];
+          DateM = date[1];
+          DateD = date[2];
+        }
       }
-    }
-    if (this.isSafari()) {
-      return (
-        <div className="date_input_for_safari">
-          <input
-            type="number"
-            min="1900"
-            step="1"
-            id={this.props.id + "Year"}
-            placeholder="西暦"
-            defaultValue={DateY}
-            onChange={this.setDate.bind(this)}
-          />
-          年
-          <input
-            type="number"
-            max="12"
-            min="1"
-            step="1"
-            id={this.props.id + "Month"}
-            defaultValue={DateM}
-            onChange={this.setDate.bind(this)}
-          />
-          月
-          <input
-            type="number"
-            max="31"
-            min="1"
-            step="1"
-            id={this.props.id + "Day"}
-            defaultValue={DateD}
-            onChange={this.setDate.bind(this)}
-          />
-          日
-          <br />
+      if (this.isSafari()) {
+        return (
+          <div className="date_input_for_safari">
+            <input
+              type="number"
+              min="1900"
+              step="1"
+              id={this.props.id + "Year"}
+              placeholder="西暦"
+              defaultValue={DateY}
+              onChange={this.setDate.bind(this)}
+            />
+            年
+            <input
+              type="number"
+              max="12"
+              min="1"
+              step="1"
+              id={this.props.id + "Month"}
+              defaultValue={DateM}
+              onChange={this.setDate.bind(this)}
+            />
+            月
+            <input
+              type="number"
+              max="31"
+              min="1"
+              step="1"
+              id={this.props.id + "Day"}
+              defaultValue={DateD}
+              onChange={this.setDate.bind(this)}
+            />
+            日
+            <br />
+            <input
+              type="date"
+              name={this.props.name}
+              id={this.props.id}
+              style={{ display: "none" }}
+              defaultValue={DateY + "-" + DateM + "-" + DateD}
+            />
+          </div>
+        );
+      } else {
+        return (
           <input
             type="date"
+            className="__date_input"
             name={this.props.name}
             id={this.props.id}
-            style={{ display: "none" }}
             defaultValue={DateY + "-" + DateM + "-" + DateD}
           />
-        </div>
-      );
+        );
+      }
     } else {
-      return (
-        <input
-          type="date"
-          className="__date_input"
-          name={this.props.name}
-          id={this.props.id}
-          defaultValue={DateY + "-" + DateM + "-" + DateD}
-        />
-      );
+      return <></>;
     }
   }
 }

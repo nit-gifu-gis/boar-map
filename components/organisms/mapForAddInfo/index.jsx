@@ -12,7 +12,7 @@ class MapForAddInfo extends MapBase {
   constructor() {
     super();
     if (Router.query.type == undefined) {
-      Router.replace("/add/select");
+      Router.push("/add/select");
     }
   }
   boarIcon = L.icon({
@@ -80,12 +80,12 @@ class MapForAddInfo extends MapBase {
   }
 
   onClickPrev() {
-    Router.replace("/add/select");
+    Router.push("/add/select");
   }
 
   onClickNext() {
     const url = "/add/info/" + Router.query.type;
-    Router.replace(
+    Router.push(
       {
         pathname: url,
         query: {

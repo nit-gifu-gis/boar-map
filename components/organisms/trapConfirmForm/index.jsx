@@ -106,7 +106,7 @@ class TrapConfirmForm extends React.Component {
         const json = res.json().then(data => {
           if (data.commonHeader.resultInfomation == "0") {
             alert("登録が完了しました。\nご協力ありがとうございました。");
-            Router.replace("/map");
+            Router.push("/map");
           } else {
             console.log("Error:", data.commonHeader.systemErrorReport);
             alert("登録に失敗しました。");
@@ -117,7 +117,7 @@ class TrapConfirmForm extends React.Component {
   }
 
   onClickPrev() {
-    Router.replace({
+    Router.push({
       pathname: "/add/info/trap",
       query: { lat: this.state.lat, lng: this.state.lng }
     });

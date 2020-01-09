@@ -44,7 +44,8 @@ const RecoverInfoForm = props => (
 
 class VaccineEditForm extends React.Component {
   state = {
-    recoverInfoForm: null
+    recoverInfoForm: null,
+    nofirst: false
   };
 
   constructor() {
@@ -139,7 +140,9 @@ class VaccineEditForm extends React.Component {
     const recoverChecked = document.forms.form.recover.checked;
     if (recoverChecked) {
       this.setState(_ => {
-        return { recoverInfoForm: <RecoverInfoForm /> };
+        return {
+          recoverInfoForm: <RecoverInfoForm detail={this.props.detail} />
+        };
       });
     } else {
       this.setState(_ => {
@@ -157,7 +160,10 @@ class VaccineEditForm extends React.Component {
         onChange={this.onChangeRecover.bind(this)}
       />
     );
-    if (this.props.detail["properties"]["回収年月日"] != "") {
+    if (
+      this.props.detail["properties"]["回収年月日"] != "" &&
+      !this.state.nofirst
+    ) {
       this.state.recoverInfoForm = (
         <RecoverInfoForm detail={this.props.detail} />
       );
@@ -170,6 +176,7 @@ class VaccineEditForm extends React.Component {
           defaultChecked
         />
       );
+      this.state.nofirst = true;
     }
     return (
       <div className="vaccine_edit_form">

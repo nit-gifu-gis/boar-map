@@ -55,10 +55,21 @@ class VaccineForm extends React.Component {
     }
   }
 
+  componentDidMount() {
+    if (Router.query.lat != undefined && Router.query.lng != undefined) {
+      this.setState({
+        lat: Router.query.lat,
+        lng: Router.query.lng
+      });
+    } else {
+      Router.push("/map");
+    }
+  }
+
   // 前へボタンを押したときの処理
   onClickPrev() {
     const url = "/add/location";
-    Router.replace({ pathname: url, query: { type: "vaccine" } }, url);
+    Router.push({ pathname: url, query: { type: "vaccine" } }, url);
   }
 
   // 次へボタンを押したときの処理
@@ -67,8 +78,8 @@ class VaccineForm extends React.Component {
     // 送信に必要な情報を集めておく
     // 0 入力者
     // 1 位置情報
-    const lat = Router.query.lat;
-    const lng = Router.query.lng;
+    const lat = this.state.lat;
+    const lng = this.state.lng;
     // 2 メッシュ番号
     const meshNumber = form.meshNumber.value;
     // 3 散布年月日
@@ -94,7 +105,7 @@ class VaccineForm extends React.Component {
     }
     // 確認画面に遷移
     const url = "/add/confirm/vaccine";
-    Router.replace(
+    Router.push(
       {
         pathname: url,
         query: {
@@ -129,63 +140,76 @@ class VaccineForm extends React.Component {
   }
 
   render() {
-    return (
-      <div className="vaccineForm">
-        <div className="__title">
-          <h1>ワクチン情報登録</h1>
-        </div>
-        <div className="__description">
-          <p>各情報を入力してください。</p>
-        </div>
-        <div className="__form">
-          <form name="form">
-            <div className="__number __mesh_number">
-              <label>メッシュ番号</label>
-              <p></p>
-              <input type="number" name="meshNumber" id="meshNumber" min="0" />
-            </div>
-            <div className="__date __treat_date">
-              <label>散布年月日</label>
-              <p></p>
-              <DateInput name="treatDate" id="treatDate" />
-            </div>
-            <div className="__number __treat_number">
-              <label>散布数</label>
-              <p></p>
-              <input
-                type="number"
-                name="treatNumber"
-                id="treatNumber"
-                min="1"
-              />
-            </div>
-            <div className="__check __recover">
-              <label>
-                回収
+    if (this.state.lng != undefined && this.state.lat != undefined) {
+      return (
+        <div className="vaccineForm">
+          <div className="__title">
+            <h1>ワクチン情報登録</h1>
+          </div>
+          <div className="__description">
+            <p>各情報を入力してください。</p>
+          </div>
+          <div className="__form">
+            <form name="form">
+              <div className="__number __mesh_number">
+                <label>メッシュ番号</label>
                 <p></p>
                 <input
-                  type="checkbox"
-                  name="recover"
-                  id="recover"
-                  onChange={this.onChangeRecover.bind(this)}
+                  type="number"
+                  name="meshNumber"
+                  id="meshNumber"
+                  min="0"
                 />
-                <span></span>
-              </label>
-            </div>
-            {this.state.recoverInfoForm}
-            <div className="__textarea note">
-              <label>備考</label>
-              <p></p>
-              <textarea rows="4" cols="50" name="note" id="note" />
-            </div>
-          </form>
+              </div>
+              <div className="__date __treat_date">
+                <label>散布年月日</label>
+                <p></p>
+                <DateInput name="treatDate" id="treatDate" />
+              </div>
+              <div className="__number __treat_number">
+                <label>散布数</label>
+                <p></p>
+                <input
+                  type="number"
+                  name="treatNumber"
+                  id="treatNumber"
+                  min="1"
+                />
+              </div>
+              <div className="__check __recover">
+                <label>
+                  回収
+                  <p></p>
+                  <input
+                    type="checkbox"
+                    name="recover"
+                    id="recover"
+                    onChange={this.onChangeRecover.bind(this)}
+                  />
+                  <span></span>
+                </label>
+              </div>
+              {this.state.recoverInfoForm}
+              <div className="__textarea note">
+                <label>備考</label>
+                <p></p>
+                <textarea rows="4" cols="50" name="note" id="note" />
+              </div>
+            </form>
+          </div>
+          <AddInfoFooter
+            prevBind={this.onClickPrev}
+            nextBind={this.onClickNext.bind(this)}
+          />
         </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext.bind(this)}
-        />
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="vaccineForm">
+          <h1>情報取得中</h1>
+        </div>
+      );
+    }
   }
 }
 

@@ -25,8 +25,8 @@ class EditTrap extends React.Component {
       return (
         <div>
           <TrapEditForm
-            detail={JSON.parse(Router.query.detail)}
-            type={Router.query.type}
+            detail={JSON.parse(this.state.detail)}
+            type={this.state.type}
           />
         </div>
       );
