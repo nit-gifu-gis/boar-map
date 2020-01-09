@@ -35,6 +35,23 @@ class BoarConfirmForm extends React.Component {
     }
   }
 
+  componentDidMount() {
+    if (Router.query.lng != undefined) {
+      this.setState({
+        lng: Router.query.lng,
+        lat: Router.query.lat,
+        division: Router.query.division,
+        date: Router.query.date,
+        trapOrEnv: Router.query.trapOrEnv,
+        sex: Router.query.sex,
+        length: Router.query.length,
+        weight: Router.query.weight
+      });
+    } else {
+      Router.push("/map");
+    }
+  }
+
   submitInfo() {
     const token = this.state.userData.access_token;
     const receiptNumber = Math.floor(Math.random() * 100000);
@@ -50,19 +67,19 @@ class BoarConfirmForm extends React.Component {
           geometry: {
             type: "Point",
             coordinates: [
-              parseFloat(Router.query.lng),
-              parseFloat(Router.query.lat)
+              parseFloat(this.state.lng),
+              parseFloat(this.state.lat)
             ]
           },
           properties: {
             入力者: this.state.userData.user_id,
-            区分: Router.query.division,
-            捕獲年月日: Router.query.date,
-            位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
-            "罠・発見場所": Router.query.trapOrEnv,
-            性別: Router.query.sex,
-            体長: Router.query.length,
-            体重: Router.query.weight
+            区分: this.state.division,
+            捕獲年月日: this.state.date,
+            位置情報: "(" + this.state.lat + "," + this.state.lng + ")",
+            "罠・発見場所": this.state.trapOrEnv,
+            性別: this.state.sex,
+            体長: this.state.length,
+            体重: this.state.weight
           }
         }
       ]
@@ -96,7 +113,7 @@ class BoarConfirmForm extends React.Component {
   onClickPrev() {
     Router.push({
       pathname: "/add/info/boar",
-      query: { lat: Router.query.lat, lng: Router.query.lng }
+      query: { lat: this.state.lat, lng: this.state.lng }
     });
   }
 
@@ -108,52 +125,60 @@ class BoarConfirmForm extends React.Component {
   }
 
   render() {
-    return (
-      <div className="boar_confirm_form">
-        <div className="__title">
-          <h1>捕獲情報登録</h1>
-        </div>
-        <div className="__info">
-          <div className="__location">
-            <h3>場所</h3>
-            <div className="__map_canvas">
-              <DynamicMapComponentWithNoSSR
-                lat={Router.query.lat}
-                lng={Router.query.lng}
-              />
+    if (this.state.lng != undefined) {
+      return (
+        <div className="boar_confirm_form">
+          <div className="__title">
+            <h1>捕獲情報登録</h1>
+          </div>
+          <div className="__info">
+            <div className="__location">
+              <h3>場所</h3>
+              <div className="__map_canvas">
+                <DynamicMapComponentWithNoSSR
+                  lat={this.state.lat}
+                  lng={this.state.lng}
+                />
+              </div>
+            </div>
+            <div className="__division">
+              <h3>区分</h3>
+              <p>{this.state.division}</p>
+            </div>
+            <div className="__date">
+              <h3>捕獲年月日</h3>
+              <p>{this.state.date}</p>
+            </div>
+            <div className="__trap_or_env">
+              <h3>わな・発見場所</h3>
+              <p>{this.state.trapOrEnv}</p>
+            </div>
+            <div className="__sex">
+              <h3>性別</h3>
+              <p>{this.state.sex}</p>
+            </div>
+            <div className="__length">
+              <h3>体長</h3>
+              <p>{this.state.length}cm</p>
+            </div>
+            <div className="__weight">
+              <h3>体重</h3>
+              <p>{this.state.weight}kg (体長から自動計算)</p>
             </div>
           </div>
-          <div className="__division">
-            <h3>区分</h3>
-            <p>{Router.query.division}</p>
-          </div>
-          <div className="__date">
-            <h3>捕獲年月日</h3>
-            <p>{Router.query.date}</p>
-          </div>
-          <div className="__trap_or_env">
-            <h3>わな・発見場所</h3>
-            <p>{Router.query.trapOrEnv}</p>
-          </div>
-          <div className="__sex">
-            <h3>性別</h3>
-            <p>{Router.query.sex}</p>
-          </div>
-          <div className="__length">
-            <h3>体長</h3>
-            <p>{Router.query.length}cm</p>
-          </div>
-          <div className="__weight">
-            <h3>体重</h3>
-            <p>{Router.query.weight}kg (体長から自動計算)</p>
-          </div>
+          <AddInfoFooter
+            prevBind={this.onClickPrev.bind(this)}
+            nextBind={this.onClickNext.bind(this)}
+          />
         </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext.bind(this)}
-        />
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="boar_confirm_form">
+          <h1>情報取得中</h1>
+        </div>
+      );
+    }
   }
 }
 

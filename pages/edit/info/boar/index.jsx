@@ -20,7 +20,6 @@ class EditBoarPage extends React.Component {
   }
 
   render() {
-    console.log(Router.query.detail);
     return (
       <>
         <Head>

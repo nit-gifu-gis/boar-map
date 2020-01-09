@@ -5,8 +5,6 @@ import L from "leaflet";
 import Router from "next/router";
 import "../../../utils/extwms";
 import "leaflet-easybutton";
-import SessionManager from "../../../utils/session";
-import { resolve } from "uri-js";
 
 // 現在地マーカー
 let locMarker = undefined;

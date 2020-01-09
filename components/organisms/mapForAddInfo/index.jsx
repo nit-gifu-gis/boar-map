@@ -9,6 +9,12 @@ class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
   myLocIcon = "../../static/images/map/myLoc.png";
 
+  constructor() {
+    super();
+    if (Router.query.type == undefined) {
+      Router.push("/add/select");
+    }
+  }
   boarIcon = L.icon({
     iconUrl: "../../static/images/icons/boar.svg",
     iconRetinaUrl: "../../static/images/icons/boar.svg",

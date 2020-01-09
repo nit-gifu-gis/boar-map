@@ -9,10 +9,10 @@ const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
   ssr: false
 });
 
-const RemoveDateDiv = () => (
+const RemoveDateDiv = props => (
   <div className="__remove_date">
     <h3>撤去年月日</h3>
-    <p>{Router.query.removeDate}</p>
+    <p>{props.me.state.removeDate}</p>
   </div>
 );
 
@@ -21,6 +21,24 @@ class TrapEditConfirmForm extends React.Component {
     userData: undefined,
     removeDateDiv: null
   };
+
+  componentDidMount() {
+    if (Router.query.lat != undefined && Router.query.lng != undefined) {
+      this.setState({
+        id: Router.query.id,
+        kind: Router.query.kind,
+        setDate: Router.query.setDate,
+        removeDate: Router.query.removeDate,
+        lat: Router.query.lat,
+        lng: Router.query.lng,
+        kind: Router.query.kind,
+        capture: Router.query.capture,
+        type: Router.query.type
+      });
+    } else {
+      Router.push("/map");
+    }
+  }
 
   constructor() {
     super();
@@ -41,11 +59,6 @@ class TrapEditConfirmForm extends React.Component {
     } else {
       return;
     }
-    if (Router.query.capture == "あり") {
-      this.state.removeDateDiv = <RemoveDateDiv />;
-    } else {
-      this.state.removeDateDiv = null;
-    }
   }
 
   submitInfo() {
@@ -61,13 +74,13 @@ class TrapEditConfirmForm extends React.Component {
         {
           type: "Feature",
           properties: {
-            ID$: Router.query.id,
-            入力者: this.state.userData.vuser_id,
-            設置年月日: Router.query.setDate,
-            撤去年月日: Router.query.removeDate,
-            位置情報: "(" + Router.query.lat + "," + Router.query.lng + ")",
-            罠の種類: Router.query.kind,
-            捕獲の有無: Router.query.capture
+            ID$: this.state.id,
+            入力者: this.state.userData.user_id,
+            設置年月日: this.state.setDate,
+            撤去年月日: this.state.removeDate,
+            位置情報: "(" + this.state.lat + "," + this.state.lng + ")",
+            罠の種類: this.state.kind,
+            捕獲の有無: this.state.capture
           }
         }
       ]
@@ -102,7 +115,7 @@ class TrapEditConfirmForm extends React.Component {
     Router.push(
       {
         pathname: "/detail",
-        query: { FeatureID: Router.query.id, type: Router.query.type }
+        query: { FeatureID: this.state.id, type: this.state.type }
       },
       "/detail"
     );
@@ -116,41 +129,54 @@ class TrapEditConfirmForm extends React.Component {
   }
 
   render() {
-    return (
-      <div className="trap_edit_confirm_form">
-        <div className="__title">
-          <h1>わな情報編集</h1>
-        </div>
-        <div className="__info">
-          <div className="__location">
-            <h3>場所</h3>
-            <div className="__map_canvas">
-              <DynamicMapComponentWithNoSSR
-                lat={Router.query.lat}
-                lng={Router.query.lng}
-              />
+    if (this.state.lat != undefined) {
+      if (this.state.capture == "あり") {
+        this.state.removeDateDiv = <RemoveDateDiv me={this} />;
+      } else {
+        this.state.removeDateDiv = null;
+      }
+      return (
+        <div className="trap_edit_confirm_form">
+          <div className="__title">
+            <h1>わな情報編集</h1>
+          </div>
+          <div className="__info">
+            <div className="__location">
+              <h3>場所</h3>
+              <div className="__map_canvas">
+                <DynamicMapComponentWithNoSSR
+                  lat={this.state.lat}
+                  lng={this.state.lng}
+                />
+              </div>
             </div>
+            <div className="__set_date">
+              <h3>設置年月日</h3>
+              <p>{this.state.setDate}</p>
+            </div>
+            <div className="__kind">
+              <h3>わなの種類</h3>
+              <p>{this.state.kind}</p>
+            </div>
+            <div className="__capture">
+              <h3>捕獲の有無</h3>
+              <p>{this.state.capture}</p>
+            </div>
+            {this.state.removeDateDiv}
           </div>
-          <div className="__set_date">
-            <h3>設置年月日</h3>
-            <p>{Router.query.setDate}</p>
-          </div>
-          <div className="__kind">
-            <h3>わなの種類</h3>
-            <p>{Router.query.kind}</p>
-          </div>
-          <div className="__capture">
-            <h3>捕獲の有無</h3>
-            <p>{Router.query.capture}</p>
-          </div>
-          {this.state.removeDateDiv}
+          <AddInfoFooter
+            prevBind={this.onClickPrev.bind(this)}
+            nextBind={this.onClickNext.bind(this)}
+          />
         </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext.bind(this)}
-        />
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="trap_edit_confirm_form">
+          <h1>情報取得中...</h1>
+        </div>
+      );
+    }
   }
 }
 

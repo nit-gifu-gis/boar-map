@@ -94,25 +94,26 @@ class TrapEditForm extends React.Component {
     const captureSelect = document.forms.form.capture;
     const capture = captureSelect.options[captureSelect.selectedIndex].value;
     if (capture == "あり") {
-      this.setState(_ => {
-        return {
-          removeDateInput: <RemoveDateInput detail={this.props.detail} />
-        };
+      this.setState({
+        removeDateInput: <RemoveDateInput detail={this.props.detail} />
       });
     } else {
-      this.setState(_ => {
-        return { removeDateInput: null };
+      this.setState({
+        removeDateInput: null
       });
     }
   }
 
   render() {
-    let caught = "なし";
-    if (this.props.detail["properties"]["撤去年月日"] != "") {
-      caught = "あり";
-      this.state.removeDateInput = (
-        <RemoveDateInput detail={this.props.detail} />
-      );
+    if (!this.state.notfirst) {
+      this.state.caught = "なし";
+      if (this.props.detail["properties"]["撤去年月日"] != "") {
+        this.state.caught = "あり";
+        this.state.removeDateInput = (
+          <RemoveDateInput detail={this.props.detail} />
+        );
+        this.state.notfirst = true;
+      }
     }
     return (
       <div className="trap_edit_form">
@@ -151,7 +152,7 @@ class TrapEditForm extends React.Component {
                 name="capture"
                 id="capture"
                 onChange={this.onChangeCapture.bind(this)}
-                defaultValue={caught}
+                defaultValue={this.state.caught}
               >
                 <option value="なし">なし</option>
                 <option value="あり">あり</option>
