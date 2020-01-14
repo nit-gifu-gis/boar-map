@@ -62,6 +62,7 @@ class VaccineConfirmForm extends React.Component {
         lng: Router.query.lng,
         meshNumber: Router.query.meshNumber,
         treatDate: Router.query.treatDate,
+        treatNumber: Router.query.treatNumber,
         recoverDate: Router.query.recoverDate,
         eaten: Router.query.eaten,
         damage: Router.query.damage,
