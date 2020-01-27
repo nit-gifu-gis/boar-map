@@ -18,26 +18,29 @@ class MenuSelector extends React.Component {
 
   render() {
     return (
-      <div className="menuSelector">
-        <ul>
-          <li>
+      <div className="menu_selector">
+        <div className="__Title">
+          <h1>メニュー</h1>
+        </div>
+        <div className="__List">
+          <p>
             <Link href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link">
               <a>アンケート</a>
             </Link>
-          </li>
-          <li>
+          </p>
+          <p>
             <Link href="#">
               <a className="logout_link" onClick={this.onLogout}>
                 ログアウト
               </a>
             </Link>
-          </li>
-          <li>
+          </p>
+          <p>
             <Link href="../map">
               <a>マップへ戻る</a>
             </Link>
-          </li>
-        </ul>
+          </p>
+        </div>
       </div>
     );
   }
