@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import AddInformationButton from "../../atomos/addInformationButton";
+import Link from "next/link";
 
 const DynamicMapComponentWithNoSSR = dynamic(
   () => import("../../organisms/mapBase"),
@@ -21,9 +22,13 @@ const Map = () => (
         <p className="label__map">マップ</p>
       </i>
 
-      <i className="fa fa-cog">
-        <p className="label__setting">設定</p>
-      </i>
+      <Link href="../menu">
+        <a>
+          <i className="fa fa-cog">
+            <p className="label__setting">設定</p>
+          </i>
+        </a>
+      </Link>
     </div>
   </div>
 );
