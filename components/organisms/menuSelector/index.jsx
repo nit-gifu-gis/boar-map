@@ -41,6 +41,13 @@ class MenuSelector extends React.Component {
             </Link>
           </p>
         </div>
+        <div className="__app_info">
+          <p>Version: 0.8.0</p>
+          <p>
+            Copyright (c) 2019 National Institute of Technology, Gifu College
+            GIS Team
+          </p>
+        </div>
       </div>
     );
   }

@@ -22,4 +22,13 @@
       margin: 10px;
     }
   }
+
+  .__app_info {
+    position: fixed;
+    bottom: 10px;
+    width: 100vw;
+    p {
+      margin: 3px;
+    }
+  }
 }
