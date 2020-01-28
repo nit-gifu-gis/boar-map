@@ -218,7 +218,11 @@ class BoarEditForm extends React.Component {
             <div className="__date">
               <label>捕獲年月日</label>
               <p></p>
-              <DateInput name="date" id="date" />
+              <DateInput
+                name="date"
+                id="date"
+                date={this.props.detail["properties"]["捕獲年月日"]}
+              />
             </div>
             <div className="__form __trap_or_env">
               {this.state.trapOrEnvSelector}
