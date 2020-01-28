@@ -82,7 +82,7 @@ class VaccineEditConfirmForm extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000010,
+      layerId: VACCINE_LAYER_ID,
       srid: 4326,
       features: [
         {
