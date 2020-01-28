@@ -65,29 +65,33 @@ class InfoTypeSelector extends React.Component {
 
     // 本番：ユーザーIDの１文字目からユーザーを識別
     // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
+
     // テスト環境：ユーザーIDから識別
     // どうして仕様に則ったユーザーIDじゃないの…
-    let userDepartment;
-    switch (userData.user_id) {
-      case "tyousa":
-        userDepartment = "T";
-        break;
-      case "yuugai":
-        userDepartment = "U";
-        break;
-      case "shityouson":
-        userDepartment = "S";
-        break;
-      case "trap":
-        userDepartment = "W";
-        break;
-      case "pref":
-        userDepartment = "K";
-        break;
-      default:
-        userDepartment = null;
-        break;
-    }
+    // let userDepartment;
+    // switch (userData.user_id) {
+    //   case "tyousa":
+    //     userDepartment = "T";
+    //     break;
+    //   case "yuugai":
+    //     userDepartment = "U";
+    //     break;
+    //   case "shityouson":
+    //     userDepartment = "S";
+    //     break;
+    //   case "trap":
+    //     userDepartment = "W";
+    //     break;
+    //   case "pref":
+    //     userDepartment = "K";
+    //     break;
+    //   default:
+    //     userDepartment = null;
+    //     break;
+    // }
+
+    // デモ環境：ユーザーが一人
+    const userDepartment = "K";
 
     // userDepartmentに応じて表示するものを変更する
     switch (userDepartment) {

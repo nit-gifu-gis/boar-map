@@ -5,6 +5,11 @@ import LoginLogo from "../../molecules/loginLogo";
 const OnSubmitting = event => {
   event.preventDefault();
   const id = document.getElementById("login__id").value;
+  // デモ環境なので，デモユーザー以外は通さない
+  if (id != "demoino") {
+    window.alert("デモ用ユーザーでログインしてください．");
+    return;
+  }
   const pass = document.getElementById("login__pass").value;
   const receiptNumber = Math.floor(Math.random() * 100000);
   const data = {
