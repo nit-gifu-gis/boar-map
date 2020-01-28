@@ -213,29 +213,32 @@ class MapBase extends React.Component {
     // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
     // テスト環境：ユーザーIDから識別
     // どうして仕様に則ったユーザーIDじゃないの…
-    let userDepartment;
-    switch (userData.user_id) {
-      case "tyousa":
-        userDepartment = "T";
-        break;
-      case "yuugai":
-        userDepartment = "U";
-        break;
-      case "shityouson":
-        userDepartment = "S";
-        break;
-      case "trap":
-        userDepartment = "W";
-        break;
-      case "pref":
-        userDepartment = "K";
-        break;
-      default:
-        userDepartment = null;
-        break;
-    }
+    // let userDepartment;
+    // switch (userData.user_id) {
+    //   case "tyousa":
+    //     userDepartment = "T";
+    //     break;
+    //   case "yuugai":
+    //     userDepartment = "U";
+    //     break;
+    //   case "shityouson":
+    //     userDepartment = "S";
+    //     break;
+    //   case "trap":
+    //     userDepartment = "W";
+    //     break;
+    //   case "pref":
+    //     userDepartment = "K";
+    //     break;
+    //   default:
+    //     userDepartment = null;
+    //     break;
+    // }
 
-    console.log("vaccine");
+    // デモ環境：demoinoのみ
+    const userDepartment = "K";
+
+    // console.log("vaccine");
     if (userDepartment == "W" || userDepartment == "K") {
       this.state.retry++;
       data.layerId = VACCINE_LAYER_ID;
