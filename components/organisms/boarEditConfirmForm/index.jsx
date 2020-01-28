@@ -38,6 +38,7 @@ class BoarEditConfirmForm extends React.Component {
   componentDidMount() {
     if (Router.query.lng != undefined) {
       this.setState({
+        id: Router.query.id,
         lng: Router.query.lng,
         lat: Router.query.lat,
         division: Router.query.division,
