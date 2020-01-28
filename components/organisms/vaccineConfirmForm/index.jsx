@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+import "../../../utils/statics";
 
 const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
   ssr: false
