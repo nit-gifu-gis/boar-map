@@ -69,7 +69,7 @@ const LoginForm = () => {
             <input type="password" id="login__pass" required />
           </div>
           <div className="input_form">
-            <RoundButton>ログイン</RoundButton>
+            <RoundButton color="primary">ログイン</RoundButton>
           </div>
         </form>
         <h2 id="login__error"></h2>
