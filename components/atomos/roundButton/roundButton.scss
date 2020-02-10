@@ -1,0 +1,16 @@
+.round_button {
+  padding: 10px 30px 10px 30px;
+  margin: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #fafafa;
+  background-color: #ff9800;
+  border-radius: 50px;
+  border: 0;
+  filter: drop-shadow(0 0 5px #212121);
+}
+
+.round_button:active {
+  filter: brightness(60%) drop-shadow(0 0 5px #212121);
+}

@@ -1,6 +1,7 @@
 import "./loginForm.scss";
 import Router from "next/router";
 import LoginLogo from "../../molecules/loginLogo";
+import RoundButton from "../../atomos/roundButton";
 
 const OnSubmitting = event => {
   event.preventDefault();
@@ -68,7 +69,7 @@ const LoginForm = () => {
             <input type="password" id="login__pass" required />
           </div>
           <div className="input_form">
-            <button>ログイン</button>
+            <RoundButton>ログイン</RoundButton>
           </div>
         </form>
         <h2 id="login__error"></h2>
