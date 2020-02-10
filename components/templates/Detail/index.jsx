@@ -7,6 +7,7 @@ import VaccineInfo from "../../organisms/vaccineInfo";
 
 import DetailHeader from "../../molecules/detailHeader";
 import DetailFooter from "../../molecules/detailFooter";
+import "../../../utils/statics";
 
 class Detail extends React.Component {
   state = {
@@ -36,7 +37,7 @@ class Detail extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000008 + parseInt(Router.query.type),
+      layerId: BOAR_LAYER_ID + parseInt(Router.query.type),
       shapeIds: [Router.query.FeatureID],
       srid: 3857
     };

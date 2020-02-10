@@ -5,6 +5,7 @@ import L from "leaflet";
 import Router from "next/router";
 import "../../../utils/extwms";
 import "leaflet-easybutton";
+import "../../../utils/statics";
 
 // 現在地マーカー
 let locMarker = undefined;
@@ -124,7 +125,7 @@ class MapBase extends React.Component {
 
   getTrap(map, token, me, overlays, data) {
     this.state.retry++;
-    data.layerId = 5000009;
+    data.layerId = TRAP_LAYER_ID;
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
       method: "POST",
       headers: {
@@ -237,7 +238,7 @@ class MapBase extends React.Component {
     console.log("vaccine");
     if (userDepartment == "W" || userDepartment == "K") {
       this.state.retry++;
-      data.layerId = 5000010;
+      data.layerId = VACCINE_LAYER_ID;
       fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
         method: "POST",
         headers: {
@@ -351,7 +352,7 @@ class MapBase extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000008,
+      layerId: BOAR_LAYER_ID,
       inclusion: 1,
       buffer: 100,
       srid: 4326,
