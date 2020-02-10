@@ -2,6 +2,8 @@ import "./loginForm.scss";
 import Router from "next/router";
 import LoginLogo from "../../molecules/loginLogo";
 import RoundButton from "../../atomos/roundButton";
+import TextInput from "../../atomos/textInput";
+import "../../../utils/global.scss";
 
 const OnSubmitting = event => {
   event.preventDefault();
@@ -41,7 +43,7 @@ const onLogin = (data, time) => {
     document.cookie = `login_time=${time}; path=/`;
     Router.push("/");
   } else {
-    document.getElementById("login__error").innerHTML =
+    document.getElementsByClassName("login_error")[0].innerHTML =
       data.commonHeader.systemErrorReport;
   }
 };
@@ -49,30 +51,44 @@ const onLogin = (data, time) => {
 const LoginForm = () => {
   return (
     <div className="login">
-      <img
-        src="images/logosample.png"
-        alt=""
-        width=""
-        height="80px"
-        border="0"
-        className="title"
-      />
-      <h1 className="title">ログイン</h1>
+      <div className="image_area">
+        <img
+          className="image"
+          src="static/images/login_image.png"
+          alt="いのししマップぎふ"
+        ></img>
+      </div>
+      <div className="title">
+        <span>いのしし</span>
+        <span>マップ</span>
+        <span>ぎふ</span>
+      </div>
+      <div className="sub_title">
+        <span>岐阜県家畜対策公式Webアプリ</span>
+      </div>
       <div className="form">
         <form method="POST" onSubmit={OnSubmitting} className="login__form">
-          <h1>ユーザーID</h1>
-          <div className="input_form">
-            <input type="text" id="login__id" required />
+          <div>
+            <TextInput
+              type="text"
+              id="login__id"
+              placeholder="ユーザーID"
+              required={true}
+            />
           </div>
-          <h1>パスワード</h1>
-          <div className="input_form">
-            <input type="password" id="login__pass" required />
+          <div>
+            <TextInput
+              type="password"
+              id="login__pass"
+              placeholder="パスワード"
+              required={true}
+            />
           </div>
-          <div className="input_form">
+          <div className="login_error"></div>
+          <div className="login_button">
             <RoundButton color="primary">ログイン</RoundButton>
           </div>
         </form>
-        <h2 id="login__error"></h2>
       </div>
     </div>
   );
