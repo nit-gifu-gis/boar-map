@@ -99,7 +99,12 @@ body {
   }
 
   .copy_right {
-    margin-bottom: 5px;
-    width: auto;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 400px;
+    span {
+      display: inline-block;
+    }
   }
 }
