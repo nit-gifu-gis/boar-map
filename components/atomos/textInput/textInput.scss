@@ -1,13 +1,11 @@
 .text_input {
-  margin: var(--margin-tb) var(--margin-lr) var(--margin-tb) var(--margin-lr);
   padding: var(--padding);
-  width: calc(
-    100vw - var(--margin-lr) * 2 - var(--padding) * 2 - var(--border) * 2
-  );
+  width: 100%;
   max-width: 400px;
   font-size: 18pt;
   border: solid var(--border) #bdbdbd;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 // IE
@@ -19,5 +17,6 @@
     font-size: 18pt;
     border: solid 2px #bdbdbd;
     border-radius: 10px;
+    box-sizing: border-box;
   }
 }

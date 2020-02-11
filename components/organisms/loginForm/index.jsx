@@ -68,7 +68,7 @@ const LoginForm = () => {
       </div>
       <div className="form">
         <form method="POST" onSubmit={OnSubmitting} className="login__form">
-          <div>
+          <div className="text_input_area">
             <TextInput
               type="text"
               id="login__id"
@@ -76,7 +76,7 @@ const LoginForm = () => {
               required={true}
             />
           </div>
-          <div>
+          <div className="text_input_area">
             <TextInput
               type="password"
               id="login__pass"
@@ -89,6 +89,10 @@ const LoginForm = () => {
             <RoundButton color="primary">ログイン</RoundButton>
           </div>
         </form>
+      </div>
+      <div className="copy_right">
+        <span>(c) 2019 National Institute of Technology, </span>
+        <span>Gifu College GIS Team</span>
       </div>
     </div>
   );
