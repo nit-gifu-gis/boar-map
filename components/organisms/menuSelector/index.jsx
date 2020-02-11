@@ -25,7 +25,7 @@ class MenuSelector extends React.Component {
         <div className="__List">
           <p>
             <Link href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link">
-              <a>アンケート</a>
+              <a target="_blank">アンケート</a>
             </Link>
           </p>
           <p>
