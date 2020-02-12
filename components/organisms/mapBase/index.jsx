@@ -429,6 +429,10 @@ class MapBase extends React.Component {
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
+    this.myMap.on("resize", function(e) {
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
     L.control.scale().addTo(this.myMap);
 
     // 現在地ボタン追加
@@ -459,8 +463,14 @@ class MapBase extends React.Component {
 
   // 画面リサイズで呼ばれる
   handleResize = () => {
-    const mapHeight = this.calcMapHeight();
-    document.getElementById("map").style.height = mapHeight + "px";
+    // window.alert("resize");
+    setTimeout(
+      function() {
+        const mapHeight = this.calcMapHeight();
+        document.getElementById("map").style.height = mapHeight + "px";
+      }.bind(this),
+      400
+    );
   };
 
   // 描画関数
