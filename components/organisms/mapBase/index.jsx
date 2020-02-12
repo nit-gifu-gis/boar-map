@@ -435,12 +435,39 @@ class MapBase extends React.Component {
 
     L.control.scale().addTo(this.myMap);
 
-    // 現在地ボタン追加
+    L.easyButton({
+      id: "set-location-button",
+      position: "topleft",
+      type: "replace",
+      leafletClasses: true,
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "setLocation",
+          onClick: this.onClickSetLocation,
+          title: "setLocation",
+          icon: "fa-location-arrow"
+        }
+      ]
+    }).addTo(this.myMap);
 
-    L.easyButton(
-      "<img src=" + this.getMyLocBtnIcon + ">",
-      this.onClickSetLocation
-    ).addTo(this.myMap);
+    L.easyButton({
+      id: "reload-button", // an id for the generated button
+      position: "topright", // inherited from L.Control -- the corner it goes in
+      type: "replace", // set to animate when you're comfy with css
+      leafletClasses: true, // use leaflet classes to style the button?
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "reload",
+          onClick: function(button, map) {
+            this.updateMarkers(map, userData.access_token);
+          }.bind(this),
+          title: "reload",
+          icon: "fa-undo"
+        }
+      ]
+    }).addTo(this.myMap);
   }
 
   // 地図のサイズを計算する

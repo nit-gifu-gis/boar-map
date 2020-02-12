@@ -7,6 +7,22 @@
   z-index: 0;
 }
 
+#reload-button {
+  font-size: 20px;
+  padding: 5px;
+  background-color: #fafafa;
+  border: none;
+  border-radius: 3px;
+}
+
+#set-location-button {
+  font-size: 20px;
+  padding: 5px;
+  background-color: #fafafa;
+  border: none;
+  border-radius: 3px;
+}
+
 // IE
 @media all and (-ms-high-contrast: none) {
   #map {
