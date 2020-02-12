@@ -1,6 +1,6 @@
 import React from "react";
 import "./textInput.scss";
-import "../../../utils/global.scss";
+import "../../../public/static/css/global.scss";
 
 class TextInput extends React.Component {
   render() {

@@ -1,6 +1,6 @@
 import React from "react";
 import "./roundButton.scss";
-import "../../../utils/global.scss";
+import "../../../public/static/css/global.scss";
 
 class RoundButton extends React.Component {
   // クリック時の処理は親の方で定義

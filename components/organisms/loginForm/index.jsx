@@ -3,7 +3,7 @@ import Router from "next/router";
 import LoginLogo from "../../molecules/loginLogo";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
-import "../../../utils/global.scss";
+import "../../../public/static/css/global.scss";
 
 const OnSubmitting = event => {
   event.preventDefault();
