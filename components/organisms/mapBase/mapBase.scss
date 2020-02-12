@@ -11,7 +11,7 @@
 @media all and (-ms-high-contrast: none) {
   #map {
     top: 60px;
-    height: 70vh;
+    height: calc(100vh - 60px - 70px);
     top: 60px;
   }
 }
