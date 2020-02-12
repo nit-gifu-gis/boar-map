@@ -25,20 +25,21 @@ class MapBase extends React.Component {
   boarIcon = L.icon({
     iconUrl: "static/images/icons/boar.svg",
     iconRetinaUrl: "static/images/icons/boar.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    // 縦横比＝285:193 ＝ 1:0.67719 〜 37:25
+    iconSize: [37, 25],
+    iconAnchor: [16, 13]
   });
   trapIcon = L.icon({
     iconUrl: "static/images/icons/trap.svg",
     iconRetinaUrl: "static/images/icons/trap.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    iconSize: [25, 25],
+    iconAnchor: [13, 13]
   });
   vaccineIcon = L.icon({
     iconUrl: "static/images/icons/vaccine.svg",
     iconRetinaUrl: "static/images/icons/vaccine.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    iconSize: [25, 25],
+    iconAnchor: [13, 13]
   });
 
   getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
@@ -230,8 +231,10 @@ class MapBase extends React.Component {
       case "pref":
         userDepartment = "K";
         break;
-      default:
+      case "demoino":
         userDepartment = null;
+      default:
+        userDepartment = userData.user_id.substr(0, 1).toUpperCase();
         break;
     }
 
