@@ -6,6 +6,7 @@ import Router from "next/router";
 import "../../../utils/extwms";
 import "leaflet-easybutton";
 import "../../../utils/statics";
+import EventListener from "react-event-listener";
 
 // 現在地マーカー
 let locMarker = undefined;
@@ -438,14 +439,47 @@ class MapBase extends React.Component {
     ).addTo(this.myMap);
   }
 
+  // 地図のサイズを計算する
+  calcMapHeight() {
+    // 地図の高さを調整する
+    const innerHeight = window.innerHeight;
+    const headerHeight = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--header-height"
+      )
+    );
+    const footerHeight = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--footer-height"
+      )
+    );
+    const mapHeight = innerHeight - headerHeight - footerHeight;
+    return mapHeight;
+  }
+
+  // 画面リサイズで呼ばれる
+  handleResize = () => {
+    const mapHeight = this.calcMapHeight();
+    document.getElementById("map").style.height = mapHeight + "px";
+  };
+
+  // 描画関数
   render() {
+    const mapHeight = this.calcMapHeight();
+    // 描画する
     return (
       <div
         id="map"
+        style={{ height: mapHeight }}
         ref={node => {
           this.node = node;
         }}
-      ></div>
+      >
+        <EventListener
+          target="window"
+          onResize={this.handleResize.bind(this)}
+        />
+      </div>
     );
   }
 
