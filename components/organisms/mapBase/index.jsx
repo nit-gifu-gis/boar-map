@@ -463,13 +463,14 @@ class MapBase extends React.Component {
 
   // 画面リサイズで呼ばれる
   handleResize = () => {
-    // window.alert("resize");
     setTimeout(
       function() {
         const mapHeight = this.calcMapHeight();
         document.getElementById("map").style.height = mapHeight + "px";
+        // マップのサイズを確認して修正する
+        this.myMap.invalidateSize();
       }.bind(this),
-      400
+      200
     );
   };
 
