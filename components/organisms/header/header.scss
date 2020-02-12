@@ -81,10 +81,17 @@
 
     .menu_item {
       height: calc(var(--menu-item-height));
+      width: 90%;
+      margin: auto;
+      border-top: solid 1px #fafafa;
       font-size: 14pt;
       display: flex;
       justify-content: center;
       align-items: center;
+
+      a {
+        text-decoration: none;
+      }
 
       a:link {
         color: #fafafa;
