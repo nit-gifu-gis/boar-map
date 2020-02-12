@@ -453,7 +453,7 @@ class MapBase extends React.Component {
         "--footer-height"
       )
     );
-    const mapHeight = innerHeight - headerHeight - footerHeight;
+    const mapHeight = innerHeight - headerHeight - footerHeight + 1;
     return mapHeight;
   }
 
