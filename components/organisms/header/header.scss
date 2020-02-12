@@ -112,7 +112,8 @@
 // ハンバーガーをクリックした後
 .clicked.header {
   height: calc(
-    var(--menu-item-height) * var(--menu-item-num) + var(--header-height)
+    (var(--menu-item-height) + 1pt) * var(--menu-item-num) +
+      var(--header-height)
   );
 
   .ham_line1 {
