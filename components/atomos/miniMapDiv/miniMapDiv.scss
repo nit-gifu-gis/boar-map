@@ -1,5 +1,7 @@
-#mini_map {
+#mini_map_div {
+  box-sizing: border-box;
   width: 100%;
+  margin: 10px 0px 10px 0px;
   height: 200px;
   border: solid 2px #bdbdbd;
   border-radius: 5px;
