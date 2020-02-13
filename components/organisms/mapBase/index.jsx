@@ -63,6 +63,9 @@ class MapBase extends React.Component {
           // specify different icons and responses for your button
           stateName: "reload",
           onClick: function(button, map) {
+            // ローディングのクルクルを出す
+            document.getElementById("loading-mark").style.visibility =
+              "visible";
             this.updateMarkers(map, this.state.userData.access_token);
           }.bind(this),
           title: "reload",
@@ -373,6 +376,9 @@ class MapBase extends React.Component {
     // 再読み込みボタンを再配置
     this.state.reloadButton.remove();
     this.state.reloadButton.addTo(map);
+
+    // ローディングのクルクルを消す
+    document.getElementById("loading-mark").style.visibility = "hidden";
   }
 
   updateMarkers(map, token) {
@@ -512,17 +518,22 @@ class MapBase extends React.Component {
     const mapHeight = this.calcMapHeight();
     // 描画する
     return (
-      <div
-        id="map"
-        style={{ height: mapHeight }}
-        ref={node => {
-          this.node = node;
-        }}
-      >
-        <EventListener
-          target="window"
-          onResize={this.handleResize.bind(this)}
-        />
+      <div>
+        <div
+          id="map"
+          style={{ height: mapHeight }}
+          ref={node => {
+            this.node = node;
+          }}
+        >
+          <EventListener
+            target="window"
+            onResize={this.handleResize.bind(this)}
+          />
+        </div>
+        <div id="loading-mark">
+          <img src="static/images/map/loading.gif" alt="loading" />
+        </div>
       </div>
     );
   }

@@ -23,6 +23,16 @@
   border-radius: 3px;
 }
 
+#loading-mark {
+  position: absolute;
+  top: calc(50% - 16px);
+  left: calc(50% - 18px);
+  z-index: 20;
+  border-radius: 3px;
+  filter: drop-shadow(0 0 3px #212121);
+  visibility: visible;
+}
+
 // IE
 @media all and (-ms-high-contrast: none) {
   #map {
