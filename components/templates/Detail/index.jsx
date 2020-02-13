@@ -8,6 +8,9 @@ import VaccineInfo from "../../organisms/vaccineInfo";
 import DetailHeader from "../../molecules/detailHeader";
 import DetailFooter from "../../molecules/detailFooter";
 import "../../../utils/statics";
+import Header from "../../organisms/header";
+import Footer from "../../organisms/footer";
+import RoundButton from "../../atomos/roundButton";
 
 class Detail extends React.Component {
   state = {
@@ -112,24 +115,36 @@ class Detail extends React.Component {
 
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
+    let color;
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
+        color = "boar";
         detaildiv = <BoarInfo detail={this.state.detail} />;
       } else if (type == 1) {
+        color = "trap";
         detaildiv = <TrapInfo detail={this.state.detail} />;
       } else if (type == 2) {
+        color = "vaccine";
         detaildiv = <VaccineInfo detail={this.state.detail} />;
       }
     }
     return (
       <div>
-        {/* <DetailHeader /> */}
+        <Header color={color}>詳細</Header>
         {detaildiv}
-        <DetailFooter
+        {/* <DetailFooter
           nextHandler={this.onClickNext.bind(this)}
           prevHandler={this.onClickPrev}
-        />
+        /> */}
+        <Footer>
+          <RoundButton color="accent" bind={undefined}>
+            戻る
+          </RoundButton>
+          <RoundButton color="primary" bind={undefined}>
+            進む
+          </RoundButton>
+        </Footer>
       </div>
     );
   }

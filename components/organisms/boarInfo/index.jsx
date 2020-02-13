@@ -13,9 +13,9 @@ class BoarInfo extends React.Component {
   render() {
     return (
       <div className="boar_info_form">
-        <div className="__title">
+        {/* <div className="__title">
           <h1>捕獲情報</h1>
-        </div>
+        </div> */}
         <div className="__info">
           <InfoDiv
             title="場所"
