@@ -12,17 +12,6 @@ import EventListener from "react-event-listener";
 let locMarker = undefined;
 
 class MapBase extends React.Component {
-  state = {
-    lat: 35.367237,
-    lng: 136.637408,
-    zoom: 17,
-    overlays: {},
-    markerstate: [true, true, true],
-    control: undefined,
-    pauseEvent: false,
-    retry: 0
-  };
-
   boarIcon = L.icon({
     iconUrl: "static/images/icons/boar.svg",
     iconRetinaUrl: "static/images/icons/boar.svg",
@@ -46,6 +35,56 @@ class MapBase extends React.Component {
   getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
   myLocIcon = "static/images/map/myLoc.png";
   myMap = null;
+
+  constructor(props) {
+    super(props);
+    // アクセストークンを取得
+    // ユーザーデータ取得(cookieから持ってくる)
+    const userData = { user_id: "", access_token: "" };
+    const r = document.cookie.split(";");
+    r.forEach(function(value) {
+      const content = value.split("=");
+      content[0] = content[0].replace(" ", "");
+      if (content[0] == "user_id") {
+        userData.user_id = content[1];
+      } else if (content[0] == "access_token") {
+        userData.access_token = content[1];
+      }
+    });
+
+    // 再読み込みボタンを押す
+    const reloadButton = L.easyButton({
+      id: "reload-button", // an id for the generated button
+      position: "topright", // inherited from L.Control -- the corner it goes in
+      type: "replace", // set to animate when you're comfy with css
+      leafletClasses: true, // use leaflet classes to style the button?
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "reload",
+          onClick: function(button, map) {
+            this.updateMarkers(map, this.state.userData.access_token);
+          }.bind(this),
+          title: "reload",
+          icon: "fa-undo"
+        }
+      ]
+    });
+
+    // state初期化
+    this.state = {
+      lat: 35.367237,
+      lng: 136.637408,
+      zoom: 17,
+      overlays: {},
+      markerstate: [true, true, true],
+      control: undefined,
+      pauseEvent: false,
+      retry: 0,
+      userData: userData,
+      reloadButton: reloadButton
+    };
+  }
 
   componentDidMount() {
     this.map();
@@ -198,19 +237,8 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    const userData = { user_id: "", access_token: "" };
+    const userData = this.state.userData;
 
-    const r = document.cookie.split(";");
-
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
-      }
-    });
     // 本番：ユーザーIDの１文字目からユーザーを識別
     // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
     // テスト環境：ユーザーIDから識別
@@ -339,7 +367,12 @@ class MapBase extends React.Component {
     this.state.control = L.control.layers(undefined, overlays, {
       collapsed: false
     });
+    // チェックボックスを配置
     this.state.control.addTo(map);
+
+    // 再読み込みボタンを再配置
+    this.state.reloadButton.remove();
+    this.state.reloadButton.addTo(map);
   }
 
   updateMarkers(map, token) {
@@ -385,18 +418,7 @@ class MapBase extends React.Component {
       this.state.zoom
     );
 
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    const r = document.cookie.split(";");
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
-      }
-    });
+    const userData = this.state.userData;
 
     const mainLayer = L.TileLayer.wmsHeader(
       "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
@@ -433,8 +455,10 @@ class MapBase extends React.Component {
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
+    // 拡大縮小ボタン追加
     L.control.scale().addTo(this.myMap);
 
+    // 現在地取得ボタンを作成＋追加
     L.easyButton({
       id: "set-location-button",
       position: "topleft",
@@ -447,24 +471,6 @@ class MapBase extends React.Component {
           onClick: this.onClickSetLocation,
           title: "setLocation",
           icon: "fa-location-arrow"
-        }
-      ]
-    }).addTo(this.myMap);
-
-    L.easyButton({
-      id: "reload-button", // an id for the generated button
-      position: "topright", // inherited from L.Control -- the corner it goes in
-      type: "replace", // set to animate when you're comfy with css
-      leafletClasses: true, // use leaflet classes to style the button?
-      states: [
-        {
-          // specify different icons and responses for your button
-          stateName: "reload",
-          onClick: function(button, map) {
-            this.updateMarkers(map, userData.access_token);
-          }.bind(this),
-          title: "reload",
-          icon: "fa-undo"
         }
       ]
     }).addTo(this.myMap);
