@@ -32,8 +32,7 @@ class MapBase extends React.Component {
     iconAnchor: [13, 13]
   });
 
-  getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
-  myLocIcon = "static/images/map/myLoc.png";
+  myLocIcon = "static/images/map/location_marker.svg";
   myMap = null;
 
   constructor(props) {
