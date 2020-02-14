@@ -1,13 +1,6 @@
 import "./boarInfo.scss";
 import React from "react";
-import dynamic from "next/dynamic";
 import InfoDiv from "../../molecules/infoDiv";
-import InfoTitle from "../../atomos/infoTitle";
-import InfoText from "../../atomos/infoText";
-
-const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
-  ssr: false
-});
 
 class BoarInfo extends React.Component {
   render() {
