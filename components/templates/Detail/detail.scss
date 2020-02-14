@@ -6,3 +6,17 @@
 body {
   margin: 0;
 }
+
+.detail-div {
+  position: absolute;
+  top: var(--header-height);
+  bottom: var(--footer-height);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 100vw;
+
+  .footer-adjustment {
+    height: var(--footer-height);
+  }
+}

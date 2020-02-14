@@ -13,10 +13,10 @@
   overflow: hidden;
   filter: drop-shadow(0 0 5px #212121);
 
-  &__text {
-    font-size: 30px;
-    font-weight: bold;
-    color: #212121;
+  &__child {
+    padding: 5vw;
+    box-sizing: border-box;
+    text-align: center;
   }
 }
 

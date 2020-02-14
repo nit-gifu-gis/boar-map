@@ -1,13 +1,14 @@
 .round_button {
-  padding: 8px 30px 8px 30px;
-  margin: 20px;
-  font-size: 24px;
+  padding: 8px 20px 8px 20px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
   color: #fafafa;
   border-radius: 50px;
   border: 0;
   filter: drop-shadow(0 0 5px #212121);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .round_button:active {

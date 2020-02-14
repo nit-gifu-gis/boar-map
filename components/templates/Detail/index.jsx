@@ -115,34 +115,37 @@ class Detail extends React.Component {
 
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
-    let color;
+    let header = <Header color="primary">詳細情報</Header>;
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
-        color = "boar";
+        header = <Header color="boar">捕獲情報</Header>;
         detaildiv = <BoarInfo detail={this.state.detail} />;
       } else if (type == 1) {
-        color = "trap";
+        header = <Header color="trap">わな情報</Header>;
         detaildiv = <TrapInfo detail={this.state.detail} />;
       } else if (type == 2) {
-        color = "vaccine";
+        header = <Header color="vaccine">ワクチン情報</Header>;
         detaildiv = <VaccineInfo detail={this.state.detail} />;
       }
     }
     return (
       <div>
-        <Header color={color}>詳細</Header>
-        {detaildiv}
+        {header}
+        <div className="detail-div">
+          {detaildiv}
+          <div className="footer-adjustment"></div>
+        </div>
         {/* <DetailFooter
           nextHandler={this.onClickNext.bind(this)}
           prevHandler={this.onClickPrev}
         /> */}
         <Footer>
-          <RoundButton color="accent" bind={undefined}>
-            戻る
+          <RoundButton color="accent" bind={this.onClickPrev}>
+            ＜ 戻る
           </RoundButton>
-          <RoundButton color="primary" bind={undefined}>
-            進む
+          <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
+            編集 ＞
           </RoundButton>
         </Footer>
       </div>
