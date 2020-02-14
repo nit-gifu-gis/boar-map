@@ -10,7 +10,7 @@ class Footer extends React.Component {
     if (Array.isArray(this.props.children)) {
       const len = this.props.children.length;
       const width = "calc(100vw / " + len + ")";
-      console.log("width", width);
+      // console.log("width", width);
       children = [];
       this.props.children.forEach(c => {
         const div = (

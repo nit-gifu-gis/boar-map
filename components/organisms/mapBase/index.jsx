@@ -51,7 +51,7 @@ class MapBase extends React.Component {
       }
     });
 
-    // 再読み込みボタンを押す
+    // 再読み込みボタンを作る
     const reloadButton = L.easyButton({
       id: "reload-button", // an id for the generated button
       position: "topright", // inherited from L.Control -- the corner it goes in
@@ -93,6 +93,7 @@ class MapBase extends React.Component {
   }
 
   getBoar(map, token, me, data) {
+    console.log("boar");
     this.state.retry++;
     const overlays = {};
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
@@ -167,6 +168,7 @@ class MapBase extends React.Component {
   }
 
   getTrap(map, token, me, overlays, data) {
+    console.log("trap");
     this.state.retry++;
     data.layerId = TRAP_LAYER_ID;
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
@@ -331,12 +333,14 @@ class MapBase extends React.Component {
               this.applyMarkers(map, token, me, overlays);
             })
             .catch(e => {
+              console.log("E1", e);
               if (this.state.retry <= 5) {
                 this.getVaccine(map, token, me, overlays, data);
               }
             });
         })
         .catch(e => {
+          console.log("E2", e);
           if (this.state.retry <= 5) {
             this.getVaccine(map, token, me, overlays, data);
           }
@@ -348,6 +352,7 @@ class MapBase extends React.Component {
   }
 
   applyMarkers(map, token, me, overlays) {
+    console.log("applyMarkers");
     // 既存のマーカーを削除
     if (this.state.control != undefined && this.state.overlays != undefined) {
       this.state.control.remove();
@@ -377,10 +382,14 @@ class MapBase extends React.Component {
     this.state.reloadButton.addTo(map);
 
     // ローディングのクルクルを消す
-    document.getElementById("loading-mark").style.visibility = "hidden";
+    if (document.getElementById("loading-mark") != null) {
+      document.getElementById("loading-mark").style.visibility = "hidden";
+    }
   }
 
   updateMarkers(map, token) {
+    console.log(this.myMap);
+    console.log("updateMarkers");
     const me = this;
 
     const bounds = map.getBounds();
@@ -449,14 +458,17 @@ class MapBase extends React.Component {
     const me = this;
 
     this.myMap.on("moveend", function(e) {
+      console.log("map-moveend");
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
     this.myMap.on("zoomend", function(e) {
+      console.log("map-zoomend");
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
     this.myMap.on("resize", function(e) {
+      console.log("map-resize");
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
@@ -506,6 +518,7 @@ class MapBase extends React.Component {
         const mapHeight = this.calcMapHeight();
         document.getElementById("map").style.height = mapHeight + "px";
         // マップのサイズを確認して修正する
+        console.log("handleResize");
         this.myMap.invalidateSize();
       }.bind(this),
       200

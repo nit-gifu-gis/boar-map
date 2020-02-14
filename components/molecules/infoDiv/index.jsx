@@ -41,7 +41,6 @@ class InfoDiv extends React.Component {
           dataDiv = <InfoText>{num + " " + unit}</InfoText>;
           break;
         case "location":
-          console.log(this.props.data);
           const lat = this.props.data.lat;
           const lng = this.props.data.lng;
           dataDiv = <DynamicMiniMapComponentWithNoSSR lat={lat} lng={lng} />;
