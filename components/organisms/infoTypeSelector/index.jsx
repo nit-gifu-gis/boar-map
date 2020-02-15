@@ -46,6 +46,9 @@ const VaccineDiv = () => (
 class InfoTypeSelector extends React.Component {
   constructor() {
     super();
+    this.state = {
+      selected: null
+    };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -108,13 +111,7 @@ class InfoTypeSelector extends React.Component {
     }
   }
 
-  // 前へボタンを押したときの処理
-  onClickPrev() {
-    Router.push("/map");
-  }
-
-  // 次へボタンを押したときの処理
-  onClickNext() {
+  getSelectedItem() {
     // フォーム取得
     const infoTypeSelect = document.form.infoType;
     let checkedItem = null;
@@ -124,34 +121,16 @@ class InfoTypeSelector extends React.Component {
         break;
       }
     }
-    if (!checkedItem) {
-      window.alert("登録する情報の種類が選択されていません!!");
-      return;
-    }
-    // チェックが有る場合
-    const url = "/add/location";
-    switch (checkedItem) {
-      case "boar":
-      case "vaccine":
-      case "trap":
-        break;
-      default:
-        window.alert("登録する情報の種類が選択されていません!!");
-        return;
-    }
-    Router.push({ pathname: url, query: { type: checkedItem } }, url);
+    return checkedItem;
   }
 
   render() {
     return (
-      <div className="infoTypeSelector">
-        <div className="__Title">
-          <h1>情報登録</h1>
-        </div>
-        <div className="__description">
+      <div className="info-type-selector">
+        <div className="description">
           <p>情報の種類を選択してください。</p>
         </div>
-        <div className="__choices">
+        <div className="choices">
           <form name="form">
             <div className="radio">{this.choices}</div>
             <input
@@ -163,10 +142,6 @@ class InfoTypeSelector extends React.Component {
             />
           </form>
         </div>
-        <AddInfoFooter
-          prevBind={this.onClickPrev}
-          nextBind={this.onClickNext}
-        />
       </div>
     );
   }

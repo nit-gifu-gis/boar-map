@@ -5,8 +5,6 @@ import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
 
-import DetailHeader from "../../molecules/detailHeader";
-import DetailFooter from "../../molecules/detailFooter";
 import "../../../utils/statics";
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
