@@ -11,6 +11,7 @@
   right: 0;
   bottom: var(--footer-height);
   margin: auto;
+  max-width: 400px;
 
   .description {
     margin: 15px var(--margin-lr) var(--margin-tb) var(--margin-lr);
@@ -18,6 +19,56 @@
 
   .choices {
     margin: var(--margin-tb) var(--margin-lr) var(--margin-tb) var(--margin-lr);
+    position: relative;
+
+    .select-div {
+      position: relative;
+    }
+
+    input {
+      display: none;
+    }
+
+    input + label::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: calc(50% - 11px);
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #757575;
+      border-radius: 50%;
+    }
+
+    input:checked + label::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: calc(50% - 11px);
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ff9800;
+      border-radius: 50%;
+    }
+
+    input:checked + label {
+      color: #ff9800;
+      font-weight: bold;
+    }
+
+    input:checked + label::after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: calc(50% - 11px + 5px);
+      left: 5px;
+      width: 14px;
+      height: 14px;
+      background: #ff9800;
+      border-radius: 50%;
+    }
   }
 }
 
@@ -26,5 +77,13 @@
   .info-type-selector {
     top: 60px;
     bottom: 70px;
+  }
+
+  .description {
+    margin: 15px 15px 5px 15px;
+  }
+
+  .choices {
+    margin: 5px 15px 5px 15px;
   }
 }

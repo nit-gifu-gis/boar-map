@@ -5,7 +5,7 @@ import InfoTypeItem from "../../molecules/InfoTypeItem";
 import AddInfoFooter from "../../molecules/addInfoFooter";
 
 const BoarDiv = () => (
-  <div className="boar_div">
+  <div className="boar-div select-div">
     <input type="radio" id="radio1" name="infoType" value="boar" />
     <label htmlFor="radio1" className="label">
       <InfoTypeItem
@@ -18,7 +18,7 @@ const BoarDiv = () => (
 );
 
 const TrapDiv = () => (
-  <div className="trap_div">
+  <div className="trap-div select-div">
     <input type="radio" id="radio2" name="infoType" value="trap" />
     <label htmlFor="radio2" className="label">
       <InfoTypeItem
@@ -31,7 +31,7 @@ const TrapDiv = () => (
 );
 
 const VaccineDiv = () => (
-  <div className="vaccine_div">
+  <div className="vaccine-div select-div">
     <input type="radio" id="radio3" name="infoType" value="vaccine" />
     <label htmlFor="radio3" className="label">
       <InfoTypeItem
