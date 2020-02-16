@@ -1,0 +1,10 @@
+.footer-adjustment {
+  height: var(--footer-height);
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .footer-adjustment {
+    height: 70px;
+  }
+}

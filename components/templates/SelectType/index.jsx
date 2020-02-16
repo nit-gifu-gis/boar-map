@@ -6,6 +6,7 @@ import Header from "../../organisms/header";
 import InfoTypeSelector from "../../organisms/infoTypeSelector";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
+import FooterAdjustment from "../../organisms/footerAdjustment";
 
 class SelectType extends React.Component {
   constructor(props) {
@@ -44,7 +45,10 @@ class SelectType extends React.Component {
     return (
       <div className="select-type">
         <Header color="primary">情報登録</Header>
-        <InfoTypeSelector />
+        <div className="selector">
+          <InfoTypeSelector />
+          <FooterAdjustment />
+        </div>
         <Footer>
           <RoundButton color="accent" bind={this.onClickPrev}>
             ＜ 戻る

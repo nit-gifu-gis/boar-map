@@ -4,15 +4,6 @@
 }
 
 .info-type-selector {
-  background-color: #fafafa;
-  position: absolute;
-  top: var(--header-height);
-  left: 0;
-  right: 0;
-  bottom: var(--footer-height);
-  margin: auto;
-  max-width: 400px;
-
   .description {
     margin: 15px var(--margin-lr) var(--margin-tb) var(--margin-lr);
   }

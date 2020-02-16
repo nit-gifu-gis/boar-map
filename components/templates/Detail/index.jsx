@@ -9,6 +9,7 @@ import "../../../utils/statics";
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
+import FooterAdjustment from "../../organisms/footerAdjustment";
 
 class Detail extends React.Component {
   state = {
@@ -132,7 +133,7 @@ class Detail extends React.Component {
         {header}
         <div className="detail-div">
           {detaildiv}
-          <div className="footer-adjustment"></div>
+          <FooterAdjustment />
         </div>
         {/* <DetailFooter
           nextHandler={this.onClickNext.bind(this)}
