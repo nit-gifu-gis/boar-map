@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
+import "../../../utils/statics";
 
 const DynamicMapComponentWithNoSSR = dynamic(() => import("../miniMap"), {
   ssr: false
@@ -81,7 +82,7 @@ class VaccineConfirmForm extends React.Component {
       commonHeader: {
         receiptNumber: receiptNumber
       },
-      layerId: 5000010,
+      layerId: VACCINE_LAYER_ID,
       srid: 4326,
       features: [
         {
