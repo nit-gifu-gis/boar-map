@@ -86,6 +86,7 @@ class Detail extends React.Component {
 
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
+      console.log(JSON.stringify(this.state.detail));
       const type = Router.query.type;
       let url = "/edit/info/boar";
       if (type == 1) {
