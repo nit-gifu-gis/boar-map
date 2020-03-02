@@ -9,8 +9,8 @@ class MapForAddInfo extends MapBase {
   getMyLocBtnIcon = "../../static/images/map/my_location-24px.svg";
   myLocIcon = "../../static/images/map/myLoc.png";
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     if (Router.query.type == undefined) {
       Router.push("/add/select");
     }
@@ -70,13 +70,19 @@ class MapForAddInfo extends MapBase {
       centerCross.setLatLng(mapObj.getCenter());
     });
     // 動かし終わったらピンを戻す
-    mapObj.on("moveend", function(e) {
-      centerPin.setLatLng(mapObj.getCenter());
-    });
+    mapObj.on(
+      "moveend",
+      function(e) {
+        const center = mapObj.getCenter();
+        centerPin.setLatLng(center);
+        // 親コンポーネントにセンターを送る
+        this.props.saveCenterMethod(center);
+      }.bind(this)
+    );
   }
 
   getMapCenter() {
-    return this.myMap.getCenter();
+    return { lat: this.state.lat, lng: this.state.lng };
   }
 
   onClickPrev() {

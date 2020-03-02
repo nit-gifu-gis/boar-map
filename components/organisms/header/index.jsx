@@ -22,10 +22,18 @@ class Header extends React.Component {
 
   render() {
     const bgColor = getColorCode(this.props.color);
+    // フォントサイズ決定（要修正）
+    const textLength = this.props.children.length;
+    let textFontSize = 30;
+    if (textLength >= 8) {
+      textFontSize = 25;
+    }
     return (
       <div className="header" id="header" style={{ backgroundColor: bgColor }}>
         <div className="title">
-          <div className="text">{this.props.children}</div>
+          <div className="text" style={{ fontSize: textFontSize }}>
+            {this.props.children}
+          </div>
           <div
             className="hamburger_button"
             id="ham"
