@@ -58,3 +58,19 @@
   filter: drop-shadow(0 0 3px #212121);
   visibility: visible;
 }
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .mapForAddInfo {
+    top: calc(60px - 1px);
+    bottom: 70px;
+
+    .description {
+      margin: 15px 15px 5px 15px;
+    }
+
+    .mapForAddInfoDiv {
+      margin: 5px 15px 15px 15px;
+    }
+  }
+}
