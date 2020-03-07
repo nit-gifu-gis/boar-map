@@ -30,13 +30,15 @@ class AddLocation extends React.Component {
   }
 
   onClickNext() {
-    const url = "/add/info/" + Router.query.type;
+    // const url = "/add/info/" + Router.query.type;
+    const url = "/add/info";
     Router.push(
       {
         pathname: url,
         query: {
           lat: this.state.lat,
-          lng: this.state.lng
+          lng: this.state.lng,
+          type: Router.query.type
         }
       },
       url
