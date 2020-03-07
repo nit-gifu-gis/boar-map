@@ -60,15 +60,19 @@ class AddInfo extends React.Component {
   render() {
     // ヘッダーの色を決定
     let header = <Header color="primary">位置情報登録</Header>;
+    let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
+        form = <BoarForm />;
         break;
       case "trap":
         header = <Header color="trap">わな情報登録</Header>;
+        form = <TrapForm />;
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報登録</Header>;
+        form = <VaccineForm />;
         break;
       default:
         break;
@@ -77,10 +81,7 @@ class AddInfo extends React.Component {
       <div className="add-info">
         {header}
         <div className="form-div">
-          {/* ここにform */}
-          <p>lat: {this.state.lat}</p>
-          <p>lng: {this.state.lng}</p>
-          <p>type: {this.state.type}</p>
+          {form}
           <FooterAdjustment />
         </div>
         <Footer>

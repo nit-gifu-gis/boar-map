@@ -1,30 +1,35 @@
 import "./boarForm.scss";
+import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import AddInfoFooter from "../../molecules/addInfoFooter";
 import DateInput from "../../atomos/dateInput";
+import TextInput from "../../atomos/textInput";
+import InfoInput from "../../molecules/infoInput";
 
 const TrapSelector = () => (
-  <div className="trap_selector">
-    <label>わなの種類</label>
-    <p></p>
-    <select name="trap" id="trap">
-      <option value="箱わな">箱わな</option>
-      <option value="くくりわな">くくりわな</option>
-      <option value="その他">その他</option>
-    </select>
-  </div>
+  <InfoInput title="わなの種類" type="number" name="trap" />
+  // <div className="trap-selector form-parts">
+  //   <label>わなの種類</label>
+  //   <p></p>
+  //   <select name="trap" id="trap">
+  //     <option value="箱わな">箱わな</option>
+  //     <option value="くくりわな">くくりわな</option>
+  //     <option value="その他">その他</option>
+  //   </select>
+  // </div>
 );
 
 const EnvSelector = () => (
-  <div className="env_selector">
-    <label>発見場所</label>
-    <select name="env" id="env">
-      <option value="山際">山際</option>
-      <option value="山地">山地</option>
-      <option value="その他">その他</option>
-    </select>
-  </div>
+  <InfoInput title="発見場所" type="number" name="env" />
+  // <div className="env-selector form-parts">
+  //   <label>発見場所</label>
+  //   <select name="env" id="env">
+  //     <option value="山際">山際</option>
+  //     <option value="山地">山地</option>
+  //     <option value="その他">その他</option>
+  //   </select>
+  // </div>
 );
 
 class BoarForm extends React.Component {
@@ -171,16 +176,14 @@ class BoarForm extends React.Component {
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
       return (
-        <div className="boarForm">
-          <div className="__title">
-            <h1>捕獲情報登録</h1>
-          </div>
-          <div className="__description">
+        <div className="boar-form">
+          <div className="description">
             <p>各情報を入力してください。</p>
           </div>
-          <div className="__form">
+          <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
-              <div className="__form __division">
+              <InfoInput title="区分" type="number" name="division" />
+              {/* <div className="division form-parts">
                 <label>区分</label>
                 <p></p>
                 <select
@@ -192,22 +195,22 @@ class BoarForm extends React.Component {
                   <option value="有害捕獲">有害捕獲</option>
                   <option value="死亡">死亡</option>
                 </select>
-              </div>
-              <div className=" __date">
+              </div> */}
+              <InfoInput title="捕獲年月日" type="number" name="date" />
+              {/* <div className="date form-parts">
                 <label>捕獲年月日</label>
                 <p></p>
-                {/* <input
+                <input
                 type="date"
                 name="date"
                 id="date"
                 // value={this.state.todayStr}
-              /> */}
+              />
                 <DateInput name="date" id="date" />
-              </div>
-              <div className="__form __trap_or_env">
-                {this.state.trapOrEnvSelector}
-              </div>
-              <div className="__form __sex">
+              </div> */}
+              {this.state.trapOrEnvSelector}
+              <InfoInput title="性別" type="number" name="sex" />
+              {/* <div className="sex form-parts">
                 <label>性別</label>
                 <p></p>
                 <select name="sex" id="sex">
@@ -215,24 +218,27 @@ class BoarForm extends React.Component {
                   <option value="メス">メス</option>
                   <option value="不明">不明</option>
                 </select>
-              </div>
-              <div className="__length">
-                <label>体長(cm)</label>
-                <p></p>
-                <input name="length" type="number" step="1"></input>
-              </div>
+              </div> */}
+              <InfoInput title="体長 (cm)" type="number" name="length" />
+              {/* <div className="length form-parts">
+                <label>体長 (cm)</label>
+                <div className="input-area">
+                  <TextInput
+                    type="number"
+                    name="length"
+                    placeholder="数字で入力"
+                    required={true}
+                  />
+                </div>
+              </div> */}
               {/* 体重は体長から計算して送信する（表示しない） */}
             </form>
           </div>
-          <AddInfoFooter
-            prevBind={this.onClickPrev}
-            nextBind={this.onClickNext.bind(this)}
-          />
         </div>
       );
     } else {
       return (
-        <div className="boarForm">
+        <div className="boar-form">
           <h1>情報取得中...</h1>
         </div>
       );
