@@ -7,7 +7,6 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import Router from "next/router";
 import RoundButton from "../../atomos/roundButton";
-import MapForAddInfo from "../../organisms/mapForAddInfo";
 
 const DynamicMapComponentWithNoSSR = dynamic(
   () => import("../../organisms/mapForAddInfo"),
