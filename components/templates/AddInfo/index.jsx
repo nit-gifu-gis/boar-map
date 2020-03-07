@@ -58,7 +58,21 @@ class AddInfo extends React.Component {
   }
 
   render() {
-    const header = <Header color="primary">情報登録</Header>;
+    // ヘッダーの色を決定
+    let header = <Header color="primary">位置情報登録</Header>;
+    switch (this.state.type) {
+      case "boar":
+        header = <Header color="boar">捕獲情報登録</Header>;
+        break;
+      case "trap":
+        header = <Header color="trap">わな情報登録</Header>;
+        break;
+      case "vaccine":
+        header = <Header color="vaccine">ワクチン情報登録</Header>;
+        break;
+      default:
+        break;
+    }
     return (
       <div className="add-info">
         {header}
