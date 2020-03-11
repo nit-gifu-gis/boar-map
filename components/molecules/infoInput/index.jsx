@@ -2,7 +2,7 @@ import React from "react";
 import "./infoInput.scss";
 import "../../../public/static/css/global.scss";
 import TextInput from "../../atomos/textInput";
-import InfoTitle from "../../atomos/infoTitle";
+import DateInput from "../../atomos/dateInput";
 
 class InfoInput extends React.Component {
   render() {
@@ -18,7 +18,9 @@ class InfoInput extends React.Component {
           />
         );
         break;
-
+      case "date":
+        input = <DateInput name={this.props.name} id={this.props.name} />;
+        break;
       default:
         break;
     }

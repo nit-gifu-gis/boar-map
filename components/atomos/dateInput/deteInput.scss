@@ -2,22 +2,85 @@ input {
   -webkit-appearance: none;
 }
 
-.__date_input {
-  font-size: 24px;
-  padding: 10px 0px;
+.date-input {
+  padding: var(--padding);
   width: 100%;
-  border: none;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  max-width: 400px;
+  font-size: 18px;
+  border: solid var(--border) #bdbdbd;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
-.date_input_for_safari {
-  input {
-    font-size: 24px;
-    padding: 10px 0px;
-    width: 20%;
-    border: none;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+.date-input-for-safari {
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+  font-size: 18px;
+  display: flex;
+
+  .date-form-element {
+    display: flex;
+    align-items: center;
+  }
+
+  .year-element {
+    flex-grow: 5;
+    // background-color: red;
+  }
+
+  .month-element {
+    flex-grow: 3;
+    margin-left: 15px;
+    margin-right: 15px;
+    // background-color: green;
+  }
+
+  .day-element {
+    flex-grow: 3;
+    // background-color: blue;
+  }
+
+  .year-input {
+    // width: 5em;
+  }
+  .month-input {
+    // width: 4em;
+  }
+  .day-input {
+    // width: 4em;
+  }
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .year-element {
+    // flex: 5 0 auto;
+    // width: 12em;
+    // background-color: red;
+  }
+
+  .month-element {
+    // flex: 3 0 auto;
+    // width: 7em;
+    margin-left: 15px;
+    margin-right: 15px;
+    // background-color: green;
+  }
+
+  .day-element {
+    // flex: 3 0 auto;
+    // width: 7em;
+    // background-color: blue;
+  }
+
+  .year-input {
+    width: 5em;
+  }
+  .month-input {
+    width: 4em;
+  }
+  .day-input {
+    width: 4em;
   }
 }

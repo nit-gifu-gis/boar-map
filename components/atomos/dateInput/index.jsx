@@ -1,4 +1,7 @@
 import React from "react";
+import "./deteInput.scss";
+import "../../../public/static/css/global.scss";
+import TextInput from "../textInput";
 
 class DateInput extends React.Component {
   isSafari() {
@@ -50,7 +53,7 @@ class DateInput extends React.Component {
     const mm = document.getElementById(this.props.id + "Month").value;
     const dd = document.getElementById(this.props.id + "Day").value;
     const date = yyyy + "-" + mm + "-" + dd;
-    // console.log(date);
+    // window.alert(date);
     if (yyyy != "" && mm != "" && dd != "") {
       // 全部空文字じゃ無いなら日付として正しいか判定
       const dt = new Date(yyyy, mm - 1, dd);
@@ -90,11 +93,17 @@ class DateInput extends React.Component {
           DateM = date[1];
           DateD = date[2];
         }
+      } else {
+        const today = new Date();
+        DateY = today.getFullYear();
+        DateM = today.getMonth() + 1;
+        DateD = today.getDate();
       }
       if (this.isSafari()) {
         return (
-          <div className="date_input_for_safari">
-            <input
+          <div className="date-input-for-safari">
+            {/* <input
+              className="year-input"
               type="number"
               min="1900"
               step="1"
@@ -102,9 +111,23 @@ class DateInput extends React.Component {
               placeholder="西暦"
               defaultValue={DateY}
               onChange={this.setDate.bind(this)}
-            />
-            年
-            <input
+            /> */}
+            <div className="date-form-element year-element">
+              <div className="year-input">
+                <TextInput
+                  type="number"
+                  min="1900"
+                  step="1"
+                  id={this.props.id + "Year"}
+                  placeholder="西暦"
+                  defaultValue={DateY}
+                  onChange={this.setDate.bind(this)}
+                />
+              </div>
+              年
+            </div>
+            {/* <input
+              className="month-input"
               type="number"
               max="12"
               min="1"
@@ -112,9 +135,23 @@ class DateInput extends React.Component {
               id={this.props.id + "Month"}
               defaultValue={DateM}
               onChange={this.setDate.bind(this)}
-            />
-            月
-            <input
+            /> */}
+            <div className="date-form-element month-element">
+              <div className="month-input">
+                <TextInput
+                  type="number"
+                  max="12"
+                  min="1"
+                  step="1"
+                  id={this.props.id + "Month"}
+                  defaultValue={DateM}
+                  onChange={this.setDate.bind(this)}
+                />
+              </div>
+              月
+            </div>
+            {/* <input
+              className="day-input"
               type="number"
               max="31"
               min="1"
@@ -122,8 +159,21 @@ class DateInput extends React.Component {
               id={this.props.id + "Day"}
               defaultValue={DateD}
               onChange={this.setDate.bind(this)}
-            />
-            日
+            /> */}
+            <div className="date-form-element day-element">
+              <div className="day-input">
+                <TextInput
+                  type="number"
+                  max="31"
+                  min="1"
+                  step="1"
+                  id={this.props.id + "Day"}
+                  defaultValue={DateD}
+                  onChange={this.setDate.bind(this)}
+                />
+              </div>
+              日
+            </div>
             <br />
             <input
               type="date"
@@ -138,10 +188,17 @@ class DateInput extends React.Component {
         return (
           <input
             type="date"
-            className="__date_input"
+            className="date-input"
             name={this.props.name}
             id={this.props.id}
-            defaultValue={DateY + "-" + DateM + "-" + DateD}
+            defaultValue={
+              DateY +
+              "-" +
+              ("0" + DateM).slice(-2) +
+              "-" +
+              ("0" + DateD).slice(-2)
+            }
+            placeholder={"年/月/日"}
           />
         );
       }

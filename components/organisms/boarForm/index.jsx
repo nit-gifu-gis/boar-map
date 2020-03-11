@@ -196,7 +196,7 @@ class BoarForm extends React.Component {
                   <option value="死亡">死亡</option>
                 </select>
               </div> */}
-              <InfoInput title="捕獲年月日" type="number" name="date" />
+              <InfoInput title="捕獲年月日" type="date" name="date" />
               {/* <div className="date form-parts">
                 <label>捕獲年月日</label>
                 <p></p>

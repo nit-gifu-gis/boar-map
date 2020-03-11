@@ -12,6 +12,11 @@ class TextInput extends React.Component {
           name={this.props.name}
           id={this.props.id}
           placeholder={this.props.placeholder}
+          defaultValue={this.props.defaultValue}
+          max={this.props.max}
+          min={this.props.min}
+          step={this.props.step}
+          onChange={this.props.onChange}
           required
         />
       );
@@ -23,6 +28,11 @@ class TextInput extends React.Component {
           name={this.props.name}
           id={this.props.id}
           placeholder={this.props.placeholder}
+          defaultValue={this.props.defaultValue}
+          max={this.props.max}
+          min={this.props.min}
+          step={this.props.step}
+          onChange={this.props.onChange}
         />
       );
     }
