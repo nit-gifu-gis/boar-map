@@ -156,20 +156,22 @@ class DateInput extends React.Component {
         );
       } else {
         return (
-          <input
-            type="date"
-            className="date-input"
-            name={this.props.name}
-            id={this.props.id}
-            defaultValue={
-              DateY +
-              "-" +
-              ("0" + DateM).slice(-2) +
-              "-" +
-              ("0" + DateD).slice(-2)
-            }
-            placeholder={"年/月/日"}
-          />
+          <div className="date-input-div">
+            <input
+              type="date"
+              className="date-input"
+              name={this.props.name}
+              id={this.props.id}
+              defaultValue={
+                DateY +
+                "-" +
+                ("0" + DateM).slice(-2) +
+                "-" +
+                ("0" + DateD).slice(-2)
+              }
+              placeholder={"年/月/日"}
+            />
+          </div>
         );
       }
     } else {
