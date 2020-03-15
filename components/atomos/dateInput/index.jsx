@@ -8,42 +8,42 @@ class DateInput extends React.Component {
     const userAgent = window.navigator.userAgent.toLowerCase();
 
     if (userAgent.indexOf("iphone") != -1) {
-      console.log("iPhone");
+      // console.log("iPhone");
       return false;
     } else if (userAgent.indexOf("ipad") != -1) {
-      console.log("iPad");
+      // console.log("iPad");
       return false;
     } else if (userAgent.indexOf("android") != -1) {
       if (userAgent.indexOf("mobile") != -1) {
-        console.log("android");
+        // console.log("android");
         return false;
       } else {
-        console.log("android");
+        // console.log("android");
         return false;
       }
     } else if (
       userAgent.indexOf("msie") != -1 ||
       userAgent.indexOf("trident") != -1
     ) {
-      console.log("Internet Explorer");
+      // console.log("Internet Explorer");
       return true;
     } else if (userAgent.indexOf("edge") != -1) {
-      console.log("Edge");
+      // console.log("Edge");
       return false;
     } else if (userAgent.indexOf("chrome") != -1) {
-      console.log("Google Chrome");
+      // console.log("Google Chrome");
       return false;
     } else if (userAgent.indexOf("safari") != -1) {
-      console.log("Safari");
+      // console.log("Safari");
       return true;
     } else if (userAgent.indexOf("firefox") != -1) {
-      console.log("FireFox");
+      // console.log("FireFox");
       return false;
     } else if (userAgent.indexOf("opera") != -1) {
-      console.log("Opera");
+      // console.log("Opera");
       return false;
     } else {
-      console.log("不明なブラウザ");
+      // console.log("不明なブラウザ");
       return false;
     }
   }
@@ -102,16 +102,6 @@ class DateInput extends React.Component {
       if (this.isSafari()) {
         return (
           <div className="date-input-for-safari">
-            {/* <input
-              className="year-input"
-              type="number"
-              min="1900"
-              step="1"
-              id={this.props.id + "Year"}
-              placeholder="西暦"
-              defaultValue={DateY}
-              onChange={this.setDate.bind(this)}
-            /> */}
             <div className="date-form-element year-element">
               <div className="year-input">
                 <TextInput
@@ -126,16 +116,6 @@ class DateInput extends React.Component {
               </div>
               年
             </div>
-            {/* <input
-              className="month-input"
-              type="number"
-              max="12"
-              min="1"
-              step="1"
-              id={this.props.id + "Month"}
-              defaultValue={DateM}
-              onChange={this.setDate.bind(this)}
-            /> */}
             <div className="date-form-element month-element">
               <div className="month-input">
                 <TextInput
@@ -150,16 +130,6 @@ class DateInput extends React.Component {
               </div>
               月
             </div>
-            {/* <input
-              className="day-input"
-              type="number"
-              max="31"
-              min="1"
-              step="1"
-              id={this.props.id + "Day"}
-              defaultValue={DateD}
-              onChange={this.setDate.bind(this)}
-            /> */}
             <div className="date-form-element day-element">
               <div className="day-input">
                 <TextInput
