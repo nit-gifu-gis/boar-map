@@ -8,7 +8,12 @@ import TextInput from "../../atomos/textInput";
 import InfoInput from "../../molecules/infoInput";
 
 const TrapSelector = () => (
-  <InfoInput title="わなの種類" type="number" name="trap" />
+  <InfoInput
+    title="わなの種類"
+    type="select"
+    name="trap"
+    options={["箱わな", "くくりわな", "その他"]}
+  />
   // <div className="trap-selector form-parts">
   //   <label>わなの種類</label>
   //   <p></p>
@@ -21,7 +26,12 @@ const TrapSelector = () => (
 );
 
 const EnvSelector = () => (
-  <InfoInput title="発見場所" type="number" name="env" />
+  <InfoInput
+    title="発見場所"
+    type="select"
+    name="env"
+    options={["山際", "山地", "その他"]}
+  />
   // <div className="env-selector form-parts">
   //   <label>発見場所</label>
   //   <select name="env" id="env">
@@ -126,6 +136,7 @@ class BoarForm extends React.Component {
 
   // 区分が変更されたときに呼ばれる
   onChangeDivision() {
+    console.log("change");
     const divisonSelect = document.forms.form.division;
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
@@ -182,7 +193,13 @@ class BoarForm extends React.Component {
           </div>
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
-              <InfoInput title="区分" type="number" name="division" />
+              <InfoInput
+                title="区分"
+                type="select"
+                name="division"
+                options={["調査捕獲", "有害捕獲", "死亡"]}
+                onChange={this.onChangeDivision.bind(this)}
+              />
               {/* <div className="division form-parts">
                 <label>区分</label>
                 <p></p>
@@ -209,7 +226,12 @@ class BoarForm extends React.Component {
                 <DateInput name="date" id="date" />
               </div> */}
               {this.state.trapOrEnvSelector}
-              <InfoInput title="性別" type="number" name="sex" />
+              <InfoInput
+                title="性別"
+                type="select"
+                name="sex"
+                options={["オス", "メス", "不明"]}
+              />
               {/* <div className="sex form-parts">
                 <label>性別</label>
                 <p></p>
