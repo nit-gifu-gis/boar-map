@@ -78,11 +78,52 @@ class BoarForm extends React.Component {
     }
   }
 
-  // 前へボタンを押したときの処理
-  onClickPrev() {
-    const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "boar" } }, url);
+  // データを作る
+  createData() {
+    const form = document.forms.form;
+    // 送信に必要な情報を集めておく
+    // 0 入力者
+    // 1 区分
+    const division = form.division.options[form.division.selectedIndex].value;
+    // 2 捕獲年月日
+    const date = form.date.value;
+    // // 3 位置情報
+    // const lat = this.state.lat;
+    // const lng = this.state.lng;
+    // 4 わなor発見場所
+    let trapOrEnv;
+    switch (division) {
+      case "死亡":
+        trapOrEnv = form.env.options[form.env.selectedIndex].value;
+        break;
+      default:
+        trapOrEnv = form.trap.options[form.trap.selectedIndex].value;
+        break;
+    }
+    // 5 性別
+    const sex = form.sex.options[form.sex.selectedIndex].value;
+    // 6 体長
+    const length = form.length.value;
+    // 7 体重
+    const weight = this.weigh(Number(length));
+    // 8 歯列画像
+    // 9 現地写真
+
+    return {
+      division: division,
+      date: date,
+      trapOrEnv: trapOrEnv,
+      sex: sex,
+      length: length,
+      weight: weight
+    };
   }
+
+  // // 前へボタンを押したときの処理
+  // onClickPrev() {
+  //   const url = "/add/location";
+  //   Router.push({ pathname: url, query: { type: "boar" } }, url);
+  // }
 
   // 次へボタンを押したときの処理
   onClickNext() {

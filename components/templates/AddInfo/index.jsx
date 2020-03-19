@@ -19,12 +19,13 @@ class AddInfo extends React.Component {
       type: null,
       data: null
     };
+    this.formRef = React.createRef();
   }
 
   componentDidMount() {
     if (
-      Router.query.lat != undefined &&
-      Router.query.lng != undefined &&
+      Router.query.lat != undefined ||
+      Router.query.lng != undefined ||
       Router.query.type != undefined
     ) {
       this.setState({
@@ -53,7 +54,25 @@ class AddInfo extends React.Component {
     );
   }
 
+  // formから情報を取得して次のページに遷移する
+  // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
+  // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
+    const data = this.formRef.current.createData();
+    console.log(data);
+    const url = "/add/confirm";
+    // Router.push(
+    //   {
+    //     pathname: url,
+    //     query: {
+    //       lat: this.state.lat,
+    //       lng: this.state.lng,
+    //       type: this.state.type,
+    //       data: data
+    //     }
+    //   },
+    //   url
+    // );
     window.alert("工事中");
   }
 
@@ -64,15 +83,15 @@ class AddInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
-        form = <BoarForm />;
+        form = <BoarForm ref={this.formRef} />;
         break;
       case "trap":
         header = <Header color="trap">わな情報登録</Header>;
-        form = <TrapForm />;
+        form = <TrapForm ref={this.formRef} />;
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報登録</Header>;
-        form = <VaccineForm />;
+        form = <VaccineForm ref={this.formRef} />;
         break;
       default:
         break;
