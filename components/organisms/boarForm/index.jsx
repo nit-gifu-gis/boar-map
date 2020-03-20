@@ -92,6 +92,8 @@ class BoarForm extends React.Component {
     // 8 歯列画像
     // 9 現地写真
 
+    // [todo] ここにバリデーション [todo]
+
     return {
       division: division,
       date: date,
