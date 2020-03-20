@@ -2,9 +2,6 @@ import "./boarForm.scss";
 import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
-import AddInfoFooter from "../../molecules/addInfoFooter";
-import DateInput from "../../atomos/dateInput";
-import TextInput from "../../atomos/textInput";
 import InfoInput from "../../molecules/infoInput";
 
 const TrapSelector = () => (
@@ -106,7 +103,7 @@ class BoarForm extends React.Component {
 
   // 区分が変更されたときに呼ばれる
   onChangeDivision() {
-    console.log("change");
+    // console.log("change");
     const divisonSelect = document.forms.form.division;
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
