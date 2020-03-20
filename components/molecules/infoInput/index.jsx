@@ -15,12 +15,24 @@ class InfoInput extends React.Component {
             type="number"
             name={this.props.name}
             id={this.props.name}
+            max={this.props.max}
+            min={this.props.min}
+            defaultValue={this.props.defaultValue}
+            step={this.props.step}
+            onChange={this.props.onChange}
             placeholder="数字で入力"
           />
         );
         break;
       case "date":
-        input = <DateInput name={this.props.name} id={this.props.name} />;
+        input = (
+          <DateInput
+            name={this.props.name}
+            id={this.props.name}
+            date={this.props.defaultValue}
+            onChange={this.props.onChange}
+          />
+        );
         break;
       case "select":
         input = (
