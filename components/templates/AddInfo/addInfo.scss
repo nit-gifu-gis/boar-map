@@ -17,6 +17,10 @@ body {
   margin: 0 auto;
   width: 100%;
   max-width: 400px;
+
+  .description {
+    margin: 15px var(--margin-lr) var(--margin-tb) var(--margin-lr);
+  }
 }
 
 // IE
@@ -24,5 +28,9 @@ body {
   .form-div {
     top: 60px;
     bottom: 70px;
+
+    .description {
+      margin: 15px 15px 5px 15px;
+    }
   }
 }

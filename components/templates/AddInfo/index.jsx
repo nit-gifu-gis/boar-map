@@ -100,6 +100,9 @@ class AddInfo extends React.Component {
       <div className="add-info">
         {header}
         <div className="form-div">
+          <div className="description">
+            <p>各情報を入力してください。</p>
+          </div>
           {form}
           <FooterAdjustment />
         </div>

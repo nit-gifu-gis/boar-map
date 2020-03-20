@@ -158,9 +158,6 @@ class BoarForm extends React.Component {
     if (this.state.lat != undefined && this.state.lng != undefined) {
       return (
         <div className="boar-form">
-          <div className="description">
-            <p>各情報を入力してください。</p>
-          </div>
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
               <InfoInput
