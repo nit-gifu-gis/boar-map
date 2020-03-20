@@ -4,6 +4,7 @@ import "../../../public/static/css/global.scss";
 import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
 import SelectInput from "../../atomos/selectInput";
+import TextAreaInput from "../../atomos/textAreaInput";
 
 class InfoInput extends React.Component {
   render() {
@@ -40,6 +41,19 @@ class InfoInput extends React.Component {
             name={this.props.name}
             id={this.props.name}
             options={this.props.options}
+            onChange={this.props.onChange}
+          />
+        );
+        break;
+      case "text-area":
+        input = (
+          <TextAreaInput
+            name={this.props.name}
+            id={this.props.name}
+            cols={this.props.cols}
+            rows={this.props.rows}
+            maxLength={this.props.maxLength}
+            placeholder={this.props.placeholder}
             onChange={this.props.onChange}
           />
         );
