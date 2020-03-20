@@ -25,7 +25,7 @@ class Map extends React.Component {
     return (
       <div>
         <Header color="primary">マップ</Header>
-        <DynamicMapComponentWithNoSSR />
+        <DynamicMapComponentWithNoSSR isMainMap={true} />
         <Footer>
           <RoundButton
             color="primary"

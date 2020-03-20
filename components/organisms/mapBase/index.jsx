@@ -84,7 +84,8 @@ class MapBase extends React.Component {
       pauseEvent: false,
       retry: 0,
       userData: userData,
-      reloadButton: reloadButton
+      reloadButton: reloadButton,
+      isMainMap: false
     };
   }
 
@@ -125,18 +126,20 @@ class MapBase extends React.Component {
                     feature["properties"]["ID$"] +
                     "<br>種類: 捕獲いのしし"
                 );
-                mapMarker.on("click", function(e) {
-                  Router.push(
-                    {
-                      pathname: "/detail",
-                      query: {
-                        FeatureID: feature["properties"]["ID$"],
-                        type: 0
-                      }
-                    },
-                    "/detail"
-                  );
-                });
+                if (this.state.isMainMap) {
+                  mapMarker.on("click", function(e) {
+                    Router.push(
+                      {
+                        pathname: "/detail",
+                        query: {
+                          FeatureID: feature["properties"]["ID$"],
+                          type: 0
+                        }
+                      },
+                      "/detail"
+                    );
+                  });
+                }
                 bmarkers.push(mapMarker);
               }
             }
@@ -198,18 +201,20 @@ class MapBase extends React.Component {
                 mapMarker.bindPopup(
                   "ID: " + feature["properties"]["ID$"] + "<br>種類: わな"
                 );
-                mapMarker.on("click", function(e) {
-                  Router.push(
-                    {
-                      pathname: "/detail",
-                      query: {
-                        FeatureID: feature["properties"]["ID$"],
-                        type: 1
-                      }
-                    },
-                    "/detail"
-                  );
-                });
+                if (this.state.isMainMap) {
+                  mapMarker.on("click", function(e) {
+                    Router.push(
+                      {
+                        pathname: "/detail",
+                        query: {
+                          FeatureID: feature["properties"]["ID$"],
+                          type: 1
+                        }
+                      },
+                      "/detail"
+                    );
+                  });
+                }
                 wmarkers.push(mapMarker);
               }
             }
@@ -303,18 +308,20 @@ class MapBase extends React.Component {
                   mapMarker.bindPopup(
                     "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
                   );
-                  mapMarker.on("click", function(e) {
-                    Router.push(
-                      {
-                        pathname: "/detail",
-                        query: {
-                          FeatureID: feature["properties"]["ID$"],
-                          type: 2
-                        }
-                      },
-                      "/detail"
-                    );
-                  });
+                  if (this.state.isMainMap) {
+                    mapMarker.on("click", function(e) {
+                      Router.push(
+                        {
+                          pathname: "/detail",
+                          query: {
+                            FeatureID: feature["properties"]["ID$"],
+                            type: 2
+                          }
+                        },
+                        "/detail"
+                      );
+                    });
+                  }
                   vmarkers.push(mapMarker);
                 }
               }
@@ -433,6 +440,10 @@ class MapBase extends React.Component {
     );
 
     const userData = this.state.userData;
+
+    if (this.props.isMainMap != undefined) {
+      this.state.isMainMap = this.props.isMainMap;
+    }
 
     const mainLayer = L.TileLayer.wmsHeader(
       "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
