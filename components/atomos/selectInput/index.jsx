@@ -32,6 +32,7 @@ class SelectInput extends React.Component {
             name={this.props.name}
             id={this.props.id}
             onChange={this.props.onChange}
+            defaultValue={this.props.defalutValue}
           >
             {options}
           </select>

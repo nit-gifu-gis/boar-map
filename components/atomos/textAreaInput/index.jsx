@@ -14,6 +14,7 @@ class TextAreaInput extends React.Component {
           rows={this.props.rows}
           maxLength={this.props.maxLength}
           placeholder={this.props.placeholder}
+          defaultValue={this.props.defaultValue}
           onChange={this.props.onChange}
           required
         >
@@ -30,6 +31,7 @@ class TextAreaInput extends React.Component {
           rows={this.props.rows}
           maxLength={this.props.maxLength}
           placeholder={this.props.placeholder}
+          defaultValue={this.props.defaultValue}
           onChange={this.props.onChange}
         >
           {this.props.children}

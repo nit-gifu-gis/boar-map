@@ -42,6 +42,7 @@ class InfoInput extends React.Component {
             id={this.props.name}
             options={this.props.options}
             onChange={this.props.onChange}
+            defaultValue={this.props.defaultValue}
           />
         );
         break;
@@ -54,6 +55,7 @@ class InfoInput extends React.Component {
             rows={this.props.rows}
             maxLength={this.props.maxLength}
             placeholder={this.props.placeholder}
+            defaultValue={this.props.defaultValue}
             onChange={this.props.onChange}
           />
         );
