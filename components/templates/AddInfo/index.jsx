@@ -59,21 +59,22 @@ class AddInfo extends React.Component {
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
     const data = this.formRef.current.createData();
-    console.log(data);
+    // console.log(this.state);
+    // console.log(data);
     const url = "/add/confirm";
-    // Router.push(
-    //   {
-    //     pathname: url,
-    //     query: {
-    //       lat: this.state.lat,
-    //       lng: this.state.lng,
-    //       type: this.state.type,
-    //       data: data
-    //     }
-    //   },
-    //   url
-    // );
-    window.alert("工事中");
+    Router.push(
+      {
+        pathname: url,
+        query: {
+          lat: this.state.lat,
+          lng: this.state.lng,
+          type: this.state.type,
+          data: JSON.stringify(data)
+        }
+      },
+      url
+    );
+    // window.alert("工事中");
   }
 
   render() {

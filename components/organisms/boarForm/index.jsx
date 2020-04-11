@@ -23,12 +23,6 @@ const EnvSelector = () => (
 );
 
 class BoarForm extends React.Component {
-  state = {
-    trapOrEnvSelector: <TrapSelector />,
-    lat: null,
-    lng: null
-  };
-
   componentDidMount() {
     if (Router.query.lat != undefined && Router.query.lng != undefined) {
       this.setState({ lat: Router.query.lat, lng: Router.query.lng });
@@ -38,8 +32,14 @@ class BoarForm extends React.Component {
     }
   }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      trapOrEnvSelector: <TrapSelector />,
+      lat: null,
+      lng: null,
+      userData: null
+    };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -53,6 +53,7 @@ class BoarForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userData = userData;
     } else {
       return;
     }
@@ -63,13 +64,14 @@ class BoarForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
+    const user = this.state.userData.user_id;
     // 1 区分
     const division = form.division.options[form.division.selectedIndex].value;
     // 2 捕獲年月日
     const date = form.date.value;
     // // 3 位置情報
-    // const lat = this.state.lat;
-    // const lng = this.state.lng;
+    const lat = this.state.lat;
+    const lng = this.state.lng;
     // 4 わなor発見場所
     let trapOrEnv;
     switch (division) {
@@ -92,12 +94,21 @@ class BoarForm extends React.Component {
     // [todo] ここにバリデーション [todo]
 
     return {
-      division: division,
-      date: date,
-      trapOrEnv: trapOrEnv,
-      sex: sex,
-      length: length,
-      weight: weight
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      },
+      properties: {
+        入力者: user,
+        区分: division,
+        捕獲年月日: date,
+        位置情報: "(" + lat + "," + lng + ")",
+        "罠・発見場所": trapOrEnv,
+        性別: sex,
+        体長: length,
+        体重: weight
+      }
     };
   }
 
