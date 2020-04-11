@@ -46,15 +46,15 @@ const RecoverInfoForm = () => (
 );
 
 class VaccineForm extends React.Component {
-  state = {
-    recover: false,
-    recoverInfoForm: null,
-    lat: null,
-    lng: null
-  };
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      recover: false,
+      recoverInfoForm: null,
+      lat: null,
+      lng: null,
+      userData: null
+    };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -68,6 +68,7 @@ class VaccineForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userData = userData;
     } else {
       return;
     }
@@ -89,6 +90,7 @@ class VaccineForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
+    const user = this.state.userData.user_id;
     // 1 位置情報
     const lat = this.state.lat;
     const lng = this.state.lng;
@@ -119,14 +121,22 @@ class VaccineForm extends React.Component {
     // [todo] ここにバリデーション [todo]
 
     return {
-      meshNumber: meshNumber,
-      treatDate: treatDate,
-      treatNumber: treatNumber,
-      recover: recover,
-      recoverDate: recoverDate,
-      eaten: eaten,
-      damage: damage,
-      note: note
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      },
+      properties: {
+        入力者: user,
+        位置情報: "(" + lat + "," + lng + ")",
+        メッシュ番号: meshNumber,
+        散布年月日: treatDate,
+        散布数: treatNumber,
+        回収年月日: recoverDate,
+        摂食の有無: eaten,
+        その他破損: damage,
+        備考: note
+      }
     };
   }
 
