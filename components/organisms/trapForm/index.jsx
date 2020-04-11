@@ -9,14 +9,14 @@ const RemoveDateInput = () => (
 );
 
 class TrapForm extends React.Component {
-  state = {
-    removeDateInput: null,
-    lat: null,
-    lng: null
-  };
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      removeDateInput: null,
+      lat: null,
+      lng: null,
+      userData: null
+    };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -30,6 +30,7 @@ class TrapForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userData = userData;
     } else {
       return;
     }
@@ -49,26 +50,36 @@ class TrapForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
+    const user = this.state.userData.user_id;
     // 1 設置年月日
     const setDate = form.setDate.value;
     // // 3 位置情報
-    // const lat = this.state.lat;
-    // const lng = this.state.lng;
+    const lat = this.state.lat;
+    const lng = this.state.lng;
     // 4 わなの種類
     const kind = form.kind.options[form.kind.selectedIndex].value;
     // 5 捕獲の有無
     const capture = form.capture.options[form.capture.selectedIndex].value;
     // 2 捕獲年月日
-    const removeDate = capture == "あり" ? form.removeDate.value : null;
+    const removeDate = capture == "あり" ? form.removeDate.value : "";
     // 6 写真?
 
     // [todo] ここにバリデーション [todo]
 
     return {
-      setDate: setDate,
-      removeDate: removeDate,
-      kind: kind,
-      capture: capture
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
+      },
+      properties: {
+        入力者: user,
+        設置年月日: setDate,
+        撤去年月日: removeDate,
+        位置情報: "(" + lat + "," + lng + ")",
+        罠の種類: kind,
+        捕獲の有無: capture
+      }
     };
   }
 
