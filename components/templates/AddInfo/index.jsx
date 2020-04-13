@@ -17,7 +17,7 @@ class AddInfo extends React.Component {
       lat: null,
       lng: null,
       type: null,
-      data: null
+      detail: null
     };
     this.formRef = React.createRef();
   }
@@ -69,7 +69,7 @@ class AddInfo extends React.Component {
           lat: this.state.lat,
           lng: this.state.lng,
           type: this.state.type,
-          data: JSON.stringify(data)
+          detail: JSON.stringify(data)
         }
       },
       url

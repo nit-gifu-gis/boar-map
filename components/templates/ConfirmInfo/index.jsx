@@ -20,7 +20,7 @@ class ConfirmInfo extends React.Component {
       lat: null,
       lng: null,
       type: null,
-      data: null
+      detail: null
     };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
@@ -46,14 +46,14 @@ class ConfirmInfo extends React.Component {
       Router.query.lat != undefined ||
       Router.query.lng != undefined ||
       Router.query.type != undefined ||
-      Router.query.data != undefined
+      Router.query.detail != undefined
     ) {
       console.log("confirm", Router.query);
       this.setState({
         lat: Router.query.lat,
         lng: Router.query.lng,
         type: Router.query.type,
-        data: JSON.parse(Router.query.data)
+        detail: JSON.parse(Router.query.detail)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -85,7 +85,7 @@ class ConfirmInfo extends React.Component {
       },
       layerId: layerId,
       srid: 4326,
-      features: [this.state.data]
+      features: [this.state.detail]
     };
 
     console.log(data);
@@ -122,7 +122,7 @@ class ConfirmInfo extends React.Component {
           lat: this.state.lat,
           lng: this.state.lng,
           type: this.state.type,
-          data: JSON.stringify(this.state.data)
+          detail: JSON.stringify(this.state.detail)
         }
       },
       url
@@ -142,15 +142,15 @@ class ConfirmInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
-        detaildiv = <BoarInfo detail={this.state.data} />;
+        detaildiv = <BoarInfo detail={this.state.detail} />;
         break;
       case "trap":
         header = <Header color="trap">わな情報登録</Header>;
-        detaildiv = <TrapInfo detail={this.state.data} />;
+        detaildiv = <TrapInfo detail={this.state.detail} />;
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報登録</Header>;
-        detaildiv = <VaccineInfo detail={this.state.data} />;
+        detaildiv = <VaccineInfo detail={this.state.detail} />;
         break;
       default:
         break;
