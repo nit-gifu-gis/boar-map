@@ -37,9 +37,16 @@ class AddInfo extends React.Component {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
+    // console.log(Router.query.detail);
+    if (Router.query.detail != "") {
+      this.setState({
+        detail: JSON.parse(Router.query.detail)
+      });
+    }
   }
 
   onClickPrev() {
+    const data = this.formRef.current.createDetail();
     const url = "/add/location";
     Router.push(
       {
@@ -47,7 +54,8 @@ class AddInfo extends React.Component {
         query: {
           lat: this.state.lat,
           lng: this.state.lng,
-          type: Router.query.type
+          type: this.state.type,
+          detail: JSON.stringify(data)
         }
       },
       url
@@ -58,7 +66,7 @@ class AddInfo extends React.Component {
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
-    const data = this.formRef.current.createData();
+    const data = this.formRef.current.createDetail();
     // console.log(this.state);
     // console.log(data);
     const url = "/add/confirm";
@@ -84,15 +92,15 @@ class AddInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
-        form = <BoarForm ref={this.formRef} />;
+        form = <BoarForm ref={this.formRef} detail={this.state.detail} />;
         break;
       case "trap":
         header = <Header color="trap">わな情報登録</Header>;
-        form = <TrapForm ref={this.formRef} />;
+        form = <TrapForm ref={this.formRef} detail={this.state.detail} />;
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報登録</Header>;
-        form = <VaccineForm ref={this.formRef} />;
+        form = <VaccineForm ref={this.formRef} detail={this.state.detail} />;
         break;
       default:
         break;

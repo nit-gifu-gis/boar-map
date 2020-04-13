@@ -32,8 +32,11 @@ class MapForAddInfo extends MapBase {
 
   constructor(props) {
     super(props);
-    if (Router.query.type == undefined) {
-      Router.push("/add/select");
+    console.log(this.props.lat);
+    if (this.props.lat != null && this.props.lng != null) {
+      console.log("check");
+      this.state.lat = this.props.lat;
+      this.state.lng = this.props.lng;
     }
   }
 

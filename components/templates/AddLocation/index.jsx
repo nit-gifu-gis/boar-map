@@ -20,9 +20,20 @@ class AddLocation extends React.Component {
     super(props);
     this.state = {
       lat: 35.367237,
-      lng: 136.637408
+      lng: 136.637408,
+      detail: null
     };
     this.saveCenter.bind(this);
+    console.log("Router.query.lat", Router.query.lat);
+    if (Router.query.lat != null || Router.query.lng != null) {
+      console.log("ccheck");
+      this.state.lat = Router.query.lat;
+      this.state.lng = Router.query.lng;
+    }
+    // detailが設定されている場合は保存しておく（戻ってきた人用）
+    if (Router.query.detail != null) {
+      this.state.detail = Router.query.detail;
+    }
   }
 
   onClickPrev() {
@@ -38,7 +49,8 @@ class AddLocation extends React.Component {
         query: {
           lat: this.state.lat,
           lng: this.state.lng,
-          type: Router.query.type
+          type: Router.query.type,
+          detail: this.state.detail
         }
       },
       url
@@ -72,6 +84,8 @@ class AddLocation extends React.Component {
         {header}
         <DynamicMapComponentWithNoSSR
           saveCenterMethod={center => this.saveCenter(center)}
+          lat={this.state.lat}
+          lng={this.state.lng}
         />
         <Footer>
           <RoundButton color="accent" bind={this.onClickPrev}>

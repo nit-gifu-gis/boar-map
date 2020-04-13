@@ -4,8 +4,13 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 
-const RemoveDateInput = () => (
-  <InfoInput title="撤去年月日" type="date" name="removeDate" />
+const RemoveDateInput = props => (
+  <InfoInput
+    title="撤去年月日"
+    type="date"
+    name="removeDate"
+    defaultValue={props.defaultValue}
+  />
 );
 
 class TrapForm extends React.Component {
@@ -15,8 +20,13 @@ class TrapForm extends React.Component {
       removeDateInput: null,
       lat: null,
       lng: null,
-      userData: null
+      userData: null,
+      detail: null
     };
+    // データが与えられた場合は保存しておく
+    if (props.detail != null) {
+      this.state.detail = props.detail;
+    }
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -43,10 +53,30 @@ class TrapForm extends React.Component {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
+    // detailが与えられた場合
+    if (this.state.detail != null) {
+      const detail = this.state.detail;
+      const capture = detail["properties"]["捕獲の有無"];
+      if (capture == "あり") {
+        this.setState(_ => {
+          return {
+            removeDateInput: (
+              <RemoveDateInput
+                defaultValue={detail["properties"]["撤去年月日"]}
+              />
+            )
+          };
+        });
+      } else {
+        this.setState(_ => {
+          return { removeDateInput: null };
+        });
+      }
+    }
   }
 
   // データを作る
-  createData() {
+  createDetail() {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
@@ -108,12 +138,26 @@ class TrapForm extends React.Component {
         <div className="trap-form">
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
-              <InfoInput title="設置年月日" type="date" name="setDate" />
+              <InfoInput
+                title="設置年月日"
+                type="date"
+                name="setDate"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["設置年月日"]
+                    : null
+                }
+              />
               <InfoInput
                 title="わなの種類"
                 type="select"
                 name="kind"
                 options={["箱わな", "くくりわな", "その他"]}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["罠の種類"]
+                    : null
+                }
               />
               <InfoInput
                 title="捕獲の有無"
@@ -121,6 +165,11 @@ class TrapForm extends React.Component {
                 name="capture"
                 onChange={this.onChangeCapture.bind(this)}
                 options={["なし", "あり"]}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["捕獲の有無"]
+                    : null
+                }
               />
               {this.state.removeDateInput}
             </form>
