@@ -40,7 +40,7 @@ const onLogin = (data, time) => {
     document.cookie = `user_id=${data.data.userId}; path=/`;
     document.cookie = `access_token=${data.data.accessToken}; path=/`;
     document.cookie = `login_time=${time}; path=/`;
-    Router.push("/");
+    Router.push("/map");
   } else {
     document.getElementsByClassName("login_error")[0].innerHTML =
       data.commonHeader.systemErrorReport;
