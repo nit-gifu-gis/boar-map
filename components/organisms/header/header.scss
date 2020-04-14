@@ -151,7 +151,7 @@
       left: 0;
       right: 0;
       width: 100%;
-      height: calc(40px * 3);
+      height: calc(40px * 4);
       text-align: center;
       visibility: hidden;
       transition: all 0.3s;
@@ -165,7 +165,7 @@
 
   // ハンバーガーをクリックした後
   .clicked.header {
-    height: calc((40px + 1px) * 3 + 60px);
+    height: calc((40px + 1px) * 4 + 60px);
 
     .ham_line1 {
       transform: rotate(45deg);

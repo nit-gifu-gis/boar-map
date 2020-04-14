@@ -43,3 +43,10 @@
     }
   }
 }
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .version-info-contents {
+    margin: 5px 15px 5px 15px;
+  }
+}

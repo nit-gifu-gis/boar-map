@@ -46,9 +46,9 @@ class VersionInfo extends React.Component {
         <div className="version version-info-contents">{this.state.latest}</div>
         <div className="logo version-info-contents">
           <img
-            src="static/images/team_logo.svg"
+            src="static/images/team_logo.png"
             alt="岐阜高専GIS開発部"
-            height="100px"
+            height="100"
           />
         </div>
         <div className="description version-info-contents">
