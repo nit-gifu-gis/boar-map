@@ -49,12 +49,17 @@ class Header extends React.Component {
         </div>
         <div className="menu">
           <div className="menu_item">
+            <Link href="/map">
+              <a>トップ</a>
+            </Link>
+          </div>
+          <div className="menu_item">
             <Link href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link">
               <a target="_blank">アンケート</a>
             </Link>
           </div>
           <div className="menu_item">
-            <Link href="#">
+            <Link href="/version">
               <a>バージョン情報</a>
             </Link>
           </div>
