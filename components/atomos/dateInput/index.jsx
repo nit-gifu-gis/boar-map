@@ -87,11 +87,18 @@ class DateInput extends React.Component {
       let DateM = "";
       let DateD = "";
       if (this.props.date != null) {
-        const date = this.props.date.split(" ")[0].split("-");
-        if (date.length >= 3) {
+        let date = this.props.date.split(" ")[0].split("-");
+        if (date.length == 3) {
           DateY = date[0];
           DateM = date[1];
           DateD = date[2];
+        } else {
+          date = date[0].split("/");
+          if (date.length == 3) {
+            DateY = date[0];
+            DateM = date[1];
+            DateD = date[2];
+          }
         }
       } else {
         const today = new Date();

@@ -1,4 +1,4 @@
-import "./addInfo.scss";
+import "./editInfo.scss";
 
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
@@ -10,53 +10,59 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
-class AddInfo extends React.Component {
+class EditInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      lat: null,
-      lng: null,
       type: null,
-      detail: null
+      detail: null,
+      id: null,
+      lat: null,
+      lng: null
     };
     this.formRef = React.createRef();
   }
 
   componentDidMount() {
-    if (
-      Router.query.lat != undefined ||
-      Router.query.lng != undefined ||
-      Router.query.type != undefined
-    ) {
+    if (Router.query.type != undefined || Router.query.detail != undefined) {
+      const detail = JSON.parse(Router.query.detail);
       this.setState({
-        lat: Router.query.lat,
-        lng: Router.query.lng,
-        type: Router.query.type
+        type: Router.query.type,
+        detail: detail,
+        id: detail["properties"]["ID$"],
+        lat: detail["geometry"]["coordinates"][1],
+        lng: detail["geometry"]["coordinates"][0]
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
     // console.log(Router.query.detail);
-    if (Router.query.detail != "") {
-      this.setState({
-        detail: JSON.parse(Router.query.detail)
-      });
-    }
   }
 
   onClickPrev() {
-    const data = this.formRef.current.createDetail();
-    const url = "/add/location";
+    // const data = this.formRef.current.createDetail();
+    const url = "/detail";
+    const type_str = this.state.type;
+    let type = null;
+    switch (type_str) {
+      case "boar":
+        type = 0;
+        break;
+      case "trap":
+        type = 1;
+        break;
+      case "vaccine":
+        type = 2;
+        break;
+      default:
+        console.log("err");
+        break;
+    }
     Router.push(
       {
         pathname: url,
-        query: {
-          lat: this.state.lat,
-          lng: this.state.lng,
-          type: this.state.type,
-          detail: JSON.stringify(data)
-        }
+        query: { type: type, FeatureID: this.state.id }
       },
       url
     );
@@ -69,15 +75,14 @@ class AddInfo extends React.Component {
     const data = this.formRef.current.createDetail();
     // console.log(this.state);
     // console.log(data);
-    const url = "/add/confirm";
+    const url = "/edit/confirm";
     Router.push(
       {
         pathname: url,
         query: {
-          lat: this.state.lat,
-          lng: this.state.lng,
           type: this.state.type,
-          detail: JSON.stringify(data)
+          detail: JSON.stringify(data),
+          id: this.state.id
         }
       },
       url
@@ -87,11 +92,11 @@ class AddInfo extends React.Component {
 
   render() {
     // ヘッダーの色を決定
-    let header = <Header color="primary">位置情報登録</Header>;
+    let header = <Header color="primary">登録情報編集</Header>;
     let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
       case "boar":
-        header = <Header color="boar">捕獲情報登録</Header>;
+        header = <Header color="boar">捕獲情報編集</Header>;
         form = (
           <BoarForm
             ref={this.formRef}
@@ -102,7 +107,7 @@ class AddInfo extends React.Component {
         );
         break;
       case "trap":
-        header = <Header color="trap">わな情報登録</Header>;
+        header = <Header color="trap">わな情報編集</Header>;
         form = (
           <TrapForm
             ref={this.formRef}
@@ -113,7 +118,7 @@ class AddInfo extends React.Component {
         );
         break;
       case "vaccine":
-        header = <Header color="vaccine">ワクチン情報登録</Header>;
+        header = <Header color="vaccine">ワクチン情報編集</Header>;
         form = (
           <VaccineForm
             ref={this.formRef}
@@ -127,7 +132,7 @@ class AddInfo extends React.Component {
         break;
     }
     return (
-      <div className="add-info">
+      <div className="edit-info">
         {header}
         <div className="form-div">
           <div className="description">
@@ -149,4 +154,4 @@ class AddInfo extends React.Component {
   }
 }
 
-export default AddInfo;
+export default EditInfo;

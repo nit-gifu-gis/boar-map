@@ -37,8 +37,8 @@ class VaccineForm extends React.Component {
     this.state = {
       recover: false,
       recoverInfoForm: null,
-      lat: null,
-      lng: null,
+      lat: props.lat,
+      lng: props.lng,
       userData: null
     };
     // データが与えられた場合は保存しておく
@@ -65,12 +65,6 @@ class VaccineForm extends React.Component {
   }
 
   componentDidMount() {
-    if (Router.query.lat != undefined && Router.query.lng != undefined) {
-      this.setState({ lat: Router.query.lat, lng: Router.query.lng });
-    } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/map");
-    }
     // detailが与えられた場合
     if (this.state.detail != null) {
       const detail = this.state.detail;

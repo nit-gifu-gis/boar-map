@@ -89,13 +89,18 @@ class Detail extends React.Component {
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
-      const type = Router.query.type;
-      let url = "/edit/info/boar";
-      if (type == 1) {
-        url = "/edit/info/trap";
-      } else if (type == 2) {
-        url = "/edit/info/vaccine";
+      const type_num = Router.query.type;
+      // console.log(type_num);
+      let type = "";
+      if (type_num == 0) {
+        type = "boar";
+      } else if (type_num == 1) {
+        type = "trap";
+      } else if (type_num == 2) {
+        type = "vaccine";
       }
+      // console.log(type);
+      const url = "/edit/info";
       Router.push(
         {
           pathname: url,
