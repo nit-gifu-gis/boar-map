@@ -5,9 +5,11 @@ import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
 
-import DetailHeader from "../../molecules/detailHeader";
-import DetailFooter from "../../molecules/detailFooter";
 import "../../../utils/statics";
+import Header from "../../organisms/header";
+import Footer from "../../organisms/footer";
+import RoundButton from "../../atomos/roundButton";
+import FooterAdjustment from "../../organisms/footerAdjustment";
 
 class Detail extends React.Component {
   state = {
@@ -87,13 +89,18 @@ class Detail extends React.Component {
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
-      const type = Router.query.type;
-      let url = "/edit/info/boar";
-      if (type == 1) {
-        url = "/edit/info/trap";
-      } else if (type == 2) {
-        url = "/edit/info/vaccine";
+      const type_num = Router.query.type;
+      // console.log(type_num);
+      let type = "";
+      if (type_num == 0) {
+        type = "boar";
+      } else if (type_num == 1) {
+        type = "trap";
+      } else if (type_num == 2) {
+        type = "vaccine";
       }
+      // console.log(type);
+      const url = "/edit/info";
       Router.push(
         {
           pathname: url,
@@ -112,24 +119,35 @@ class Detail extends React.Component {
 
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
+    let header = <Header color="primary">詳細情報</Header>;
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
+        header = <Header color="boar">捕獲情報</Header>;
         detaildiv = <BoarInfo detail={this.state.detail} />;
       } else if (type == 1) {
+        header = <Header color="trap">わな情報</Header>;
         detaildiv = <TrapInfo detail={this.state.detail} />;
       } else if (type == 2) {
+        header = <Header color="vaccine">ワクチン情報</Header>;
         detaildiv = <VaccineInfo detail={this.state.detail} />;
       }
     }
     return (
       <div>
-        {/* <DetailHeader /> */}
-        {detaildiv}
-        <DetailFooter
-          nextHandler={this.onClickNext.bind(this)}
-          prevHandler={this.onClickPrev}
-        />
+        {header}
+        <div className="detail-div">
+          {detaildiv}
+          <FooterAdjustment />
+        </div>
+        <Footer>
+          <RoundButton color="accent" bind={this.onClickPrev}>
+            ＜ 戻る
+          </RoundButton>
+          <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
+            編集 ＞
+          </RoundButton>
+        </Footer>
       </div>
     );
   }

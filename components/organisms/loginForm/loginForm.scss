@@ -1,100 +1,115 @@
-* {
-  font-family: sans-serif;
+body {
+  background-color: #fafafa;
   padding: 0;
   margin: 0;
+  height: 100%;
 }
 
 .login {
-  overflow: hidden;
-  padding: 10vh 0px 25vh 0px;;
-  box-sizing: border-box;
-  background-color: #e87b15;
+  // 中の要素を左右中央揃え(最大幅400)
+  margin: 0 auto;
+  width: calc(100vw - var(--margin-lr) * 2);
+  max-width: 400px;
 
-  .title {
-    color:white;
-    padding-top: 10px;
+  .image_area {
+    text-align: center;
+    margin-top: var(--margin-tb);
+  }
+
+  .image {
+    width: 100%;
     text-align: center;
   }
-  img{
-    display: block;
-      margin: auto;
+
+  .title {
+    width: auto;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: #ff9800;
+    span {
+      display: inline-block;
+    }
+  }
+
+  .sub_title {
+    width: auto;
+    text-align: center;
+    font-size: 20px;
+    color: #212121;
+    span {
+      display: inline-block;
+    }
   }
 
   .form {
-    background-color: white;
-    font-size: 10px;
-    margin: 0 auto;
-    margin-top: 20px;
-    padding: 15px 0px;
-    width: 400px;
-    border: 2px solid #d1d1d1;
-    border-radius: 3px;
-
-    h1, h2 {
-      padding: 10px 30px;
+    width: auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center;
+    .text_input_area {
+      margin-top: 15px;
     }
-
-    h2 {
-      color:red;
-    }
-
-    input {
-        font-size: 20px;
-        padding: 10px;
-        margin-left: 30px;
-        width: 80%;
-        outline: none;
-        border-radius: 3px;
-        border: 2px solid #d1d1d1;
-
-        &:focus {
-          border: 2px solid #2a75de;
-      }
-    }
-
-    button {
+    .login_error {
+      margin-top: 20px;
       font-size: 20px;
-      padding: 10px;
-      margin: 25px 0px 20px 30px;
-      width: 86%;
-      color: white;
-      border: 2px solid #e87b15;
-      border-radius: 3px;
-      background-image: linear-gradient(-180deg,#f5d0ae,#e37107 90%);
-
-      &:hover {
-        background-image: linear-gradient(-180deg,#e37107,#f5d0ae 90%);
-      }
-
-      &:active {
-        background-image: none;
-        background-color: #e87b15;
-      }
+      color: #ff0000;
     }
-
+    .login_button {
+      margin: 30px auto;
+      width: 75vw;
+      max-width: 300px;
+    }
   }
 }
 
-@media screen and (max-width:400px){
+// 高さが680px未満
+@media screen and (max-height: 680px) {
+  .copy_right {
+    margin-top: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: auto;
+    span {
+      display: inline-block;
+    }
+  }
+}
+
+@media screen and (min-height: 680px) {
+  .copy_right {
+    width: calc(100vw - var(--margin-lr) * 2);
+    position: absolute;
+    bottom: 10px;
+    left: var(--margin-lr);
+    right: var(--margin-lr);
+    text-align: center;
+    span {
+      display: inline-block;
+    }
+  }
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
   .login {
-    .form {
-      width: 90vw;
-      border: none;
+    // 中の要素を左右中央揃え(最大幅400)
+    margin: 0 auto;
+    width: 400px;
+  }
 
-      .input_form {
-        text-align: center;
+  .image_area {
+    text-align: center;
+    margin-top: 5px;
+  }
 
-        input {
-          margin: 0;
-          width: 70vw;
-        }
-      }
-
-      button {
-        margin: 25px 0px 20px 0px;
-        width: 78vw;
-        text-align: center;
-      }
+  .copy_right {
+    margin-top: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 400px;
+    span {
+      display: inline-block;
     }
   }
 }

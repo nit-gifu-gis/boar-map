@@ -1,23 +1,123 @@
-input {
-  -webkit-appearance: none;
-}
-
-.__date_input {
-  font-size: 24px;
-  padding: 10px 0px;
+.date-input-div {
+  position: relative;
   width: 100%;
-  border: none;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  max-width: 400px;
+
+  .date-input {
+    padding: var(--padding);
+    width: 100%;
+    font-size: 18px;
+    border: solid var(--border) #bdbdbd;
+    border-radius: 10px;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #ffffff;
+  }
+
+  input {
+    -webkit-appearance: none;
+  }
+
+  input[type="date"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type="date"]::-webkit-clear-button {
+    -webkit-appearance: none;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    opacity: 0;
+    z-index: 1;
+  }
 }
 
-.date_input_for_safari {
-  input {
-    font-size: 24px;
-    padding: 10px 0px;
-    width: 20%;
-    border: none;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+.date-input-div::after {
+  content: "▼";
+  color: #757575;
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.date-input-for-safari {
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+  font-size: 18px;
+  display: flex;
+
+  .date-form-element {
+    display: flex;
+    align-items: center;
+  }
+
+  .year-element {
+    flex-grow: 5;
+    // background-color: red;
+  }
+
+  .month-element {
+    flex-grow: 3;
+    margin-left: 15px;
+    margin-right: 15px;
+    // background-color: green;
+  }
+
+  .day-element {
+    flex-grow: 3;
+    // background-color: blue;
+  }
+
+  .year-input {
+    // width: 5em;
+  }
+  .month-input {
+    // width: 4em;
+  }
+  .day-input {
+    // width: 4em;
+  }
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .year-element {
+    // flex: 5 0 auto;
+    // width: 12em;
+    // background-color: red;
+  }
+
+  .month-element {
+    // flex: 3 0 auto;
+    // width: 7em;
+    margin-left: 15px;
+    margin-right: 15px;
+    // background-color: green;
+  }
+
+  .day-element {
+    // flex: 3 0 auto;
+    // width: 7em;
+    // background-color: blue;
+  }
+
+  .year-input {
+    width: 5em;
+  }
+  .month-input {
+    width: 4em;
+  }
+  .day-input {
+    width: 4em;
   }
 }

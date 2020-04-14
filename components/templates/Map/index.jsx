@@ -3,8 +3,9 @@ import "./map.scss";
 import dynamic from "next/dynamic";
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
-import AddInformationButton from "../../atomos/addInformationButton";
+import RoundButton from "../../atomos/roundButton";
 import Link from "next/link";
+import Router from "next/router";
 
 const DynamicMapComponentWithNoSSR = dynamic(
   () => import("../../organisms/mapBase"),
@@ -13,24 +14,28 @@ const DynamicMapComponentWithNoSSR = dynamic(
   }
 );
 
-const Map = () => (
-  <div>
-    <DynamicMapComponentWithNoSSR isMainMap={true} />
-    <AddInformationButton />
-    <div className="footer-nav">
-      <i className="fa fa-map">
-        <p className="label__map">マップ</p>
-      </i>
+// 文字化け回避の文字列だよ
+class Map extends React.Component {
+  onClickAddInformationButton() {
+    Router.push("/add/select");
+  }
 
-      <Link href="../menu">
-        <a>
-          <i className="fa fa-cog">
-            <p className="label__setting">設定</p>
-          </i>
-        </a>
-      </Link>
-    </div>
-  </div>
-);
+  render() {
+    return (
+      <div>
+        <Header color="primary">マップ</Header>
+        <DynamicMapComponentWithNoSSR isMainMap={true} />
+        <Footer>
+          <RoundButton
+            color="primary"
+            bind={this.onClickAddInformationButton.bind(this)}
+          >
+            新規情報登録
+          </RoundButton>
+        </Footer>
+      </div>
+    );
+  }
+}
 
 export default Map;

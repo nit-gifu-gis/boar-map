@@ -6,51 +6,95 @@ import Router from "next/router";
 import "../../../utils/extwms";
 import "leaflet-easybutton";
 import "../../../utils/statics";
+import EventListener from "react-event-listener";
 
 // 現在地マーカー
 let locMarker = undefined;
 
 class MapBase extends React.Component {
-  state = {
-    lat: 35.367237,
-    lng: 136.637408,
-    zoom: 17,
-    overlays: {},
-    markerstate: [true, true, true],
-    control: undefined,
-    pauseEvent: false,
-    retry: 0,
-    isMainMap: false
-  };
-
   boarIcon = L.icon({
     iconUrl: "static/images/icons/boar.svg",
     iconRetinaUrl: "static/images/icons/boar.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    // 縦横比＝285:193 ＝ 1:0.67719 〜 37:25
+    iconSize: [37, 25],
+    iconAnchor: [16, 13]
   });
   trapIcon = L.icon({
     iconUrl: "static/images/icons/trap.svg",
     iconRetinaUrl: "static/images/icons/trap.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    iconSize: [25, 25],
+    iconAnchor: [13, 13]
   });
   vaccineIcon = L.icon({
     iconUrl: "static/images/icons/vaccine.svg",
     iconRetinaUrl: "static/images/icons/vaccine.svg",
-    iconSize: [40, 40],
-    iconAnchor: [21, 21]
+    iconSize: [25, 25],
+    iconAnchor: [13, 13]
   });
 
-  getMyLocBtnIcon = "static/images/map/my_location-24px.svg";
-  myLocIcon = "static/images/map/myLoc.png";
+  myLocIcon = "static/images/map/location_marker.svg";
   myMap = null;
+
+  constructor(props) {
+    super(props);
+    // アクセストークンを取得
+    // ユーザーデータ取得(cookieから持ってくる)
+    const userData = { user_id: "", access_token: "" };
+    const r = document.cookie.split(";");
+    r.forEach(function(value) {
+      const content = value.split("=");
+      content[0] = content[0].replace(" ", "");
+      if (content[0] == "user_id") {
+        userData.user_id = content[1];
+      } else if (content[0] == "access_token") {
+        userData.access_token = content[1];
+      }
+    });
+
+    // 再読み込みボタンを作る
+    const reloadButton = L.easyButton({
+      id: "reload-button", // an id for the generated button
+      position: "topright", // inherited from L.Control -- the corner it goes in
+      type: "replace", // set to animate when you're comfy with css
+      leafletClasses: true, // use leaflet classes to style the button?
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "reload",
+          onClick: function(button, map) {
+            // ローディングのクルクルを出す
+            document.getElementById("loading-mark").style.visibility =
+              "visible";
+            this.updateMarkers(map, this.state.userData.access_token);
+          }.bind(this),
+          title: "reload",
+          icon: "fa-undo"
+        }
+      ]
+    });
+
+    // state初期化
+    this.state = {
+      lat: 35.367237,
+      lng: 136.637408,
+      zoom: 17,
+      overlays: {},
+      markerstate: [true, true, true],
+      control: undefined,
+      pauseEvent: false,
+      retry: 0,
+      userData: userData,
+      reloadButton: reloadButton,
+      isMainMap: false
+    };
+  }
 
   componentDidMount() {
     this.map();
   }
 
   getBoar(map, token, me, data) {
+    console.log("boar");
     this.state.retry++;
     const overlays = {};
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
@@ -127,6 +171,7 @@ class MapBase extends React.Component {
   }
 
   getTrap(map, token, me, overlays, data) {
+    console.log("trap");
     this.state.retry++;
     data.layerId = TRAP_LAYER_ID;
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
@@ -201,19 +246,8 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    const userData = { user_id: "", access_token: "" };
+    const userData = this.state.userData;
 
-    const r = document.cookie.split(";");
-
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
-      }
-    });
     // 本番：ユーザーIDの１文字目からユーザーを識別
     // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
     // テスト環境：ユーザーIDから識別
@@ -235,8 +269,10 @@ class MapBase extends React.Component {
       case "pref":
         userDepartment = "K";
         break;
-      default:
+      case "demoino":
         userDepartment = null;
+      default:
+        userDepartment = userData.user_id.substr(0, 1).toUpperCase();
         break;
     }
 
@@ -304,12 +340,14 @@ class MapBase extends React.Component {
               this.applyMarkers(map, token, me, overlays);
             })
             .catch(e => {
+              console.log("E1", e);
               if (this.state.retry <= 5) {
                 this.getVaccine(map, token, me, overlays, data);
               }
             });
         })
         .catch(e => {
+          console.log("E2", e);
           if (this.state.retry <= 5) {
             this.getVaccine(map, token, me, overlays, data);
           }
@@ -321,6 +359,7 @@ class MapBase extends React.Component {
   }
 
   applyMarkers(map, token, me, overlays) {
+    console.log("applyMarkers");
     // 既存のマーカーを削除
     if (this.state.control != undefined && this.state.overlays != undefined) {
       this.state.control.remove();
@@ -342,10 +381,22 @@ class MapBase extends React.Component {
     this.state.control = L.control.layers(undefined, overlays, {
       collapsed: false
     });
+    // チェックボックスを配置
     this.state.control.addTo(map);
+
+    // 再読み込みボタンを再配置
+    this.state.reloadButton.remove();
+    this.state.reloadButton.addTo(map);
+
+    // ローディングのクルクルを消す
+    if (document.getElementById("loading-mark") != null) {
+      document.getElementById("loading-mark").style.visibility = "hidden";
+    }
   }
 
   updateMarkers(map, token) {
+    console.log(this.myMap);
+    console.log("updateMarkers");
     const me = this;
 
     const bounds = map.getBounds();
@@ -388,22 +439,11 @@ class MapBase extends React.Component {
       this.state.zoom
     );
 
+    const userData = this.state.userData;
+
     if (this.props.isMainMap != undefined) {
       this.state.isMainMap = this.props.isMainMap;
     }
-
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    const r = document.cookie.split(";");
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
-      }
-    });
 
     const mainLayer = L.TileLayer.wmsHeader(
       "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
@@ -429,31 +469,95 @@ class MapBase extends React.Component {
     const me = this;
 
     this.myMap.on("moveend", function(e) {
+      console.log("map-moveend");
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
     this.myMap.on("zoomend", function(e) {
+      console.log("map-zoomend");
       me.updateMarkers(me.myMap, userData.access_token);
     });
 
+    this.myMap.on("resize", function(e) {
+      console.log("map-resize");
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    // 拡大縮小ボタン追加
     L.control.scale().addTo(this.myMap);
 
-    // 現在地ボタン追加
-
-    L.easyButton(
-      "<img src=" + this.getMyLocBtnIcon + ">",
-      this.onClickSetLocation
-    ).addTo(this.myMap);
+    // 現在地取得ボタンを作成＋追加
+    L.easyButton({
+      id: "set-location-button",
+      position: "topleft",
+      type: "replace",
+      leafletClasses: true,
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "setLocation",
+          onClick: this.onClickSetLocation,
+          title: "setLocation",
+          icon: "fa-location-arrow"
+        }
+      ]
+    }).addTo(this.myMap);
   }
 
+  // 地図のサイズを計算する
+  calcMapHeight() {
+    // 地図の高さを調整する
+    const innerHeight = window.innerHeight;
+    const headerHeight = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--header-height"
+      )
+    );
+    const footerHeight = parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--footer-height"
+      )
+    );
+    const mapHeight = innerHeight - headerHeight - footerHeight + 1;
+    return mapHeight;
+  }
+
+  // 画面リサイズで呼ばれる
+  handleResize = () => {
+    setTimeout(
+      function() {
+        const mapHeight = this.calcMapHeight();
+        document.getElementById("map").style.height = mapHeight + "px";
+        // マップのサイズを確認して修正する
+        console.log("handleResize");
+        this.myMap.invalidateSize();
+      }.bind(this),
+      200
+    );
+  };
+
+  // 描画関数
   render() {
+    const mapHeight = this.calcMapHeight();
+    // 描画する
     return (
-      <div
-        id="map"
-        ref={node => {
-          this.node = node;
-        }}
-      ></div>
+      <div>
+        <div
+          id="map"
+          style={{ height: mapHeight }}
+          ref={node => {
+            this.node = node;
+          }}
+        >
+          <EventListener
+            target="window"
+            onResize={this.handleResize.bind(this)}
+          />
+        </div>
+        <div id="loading-mark">
+          <img src="static/images/map/loading.gif" alt="loading" />
+        </div>
+      </div>
     );
   }
 

@@ -10,11 +10,11 @@ class LoginPage extends React.Component {
     if (SessionManager.isLogin(ctx)) {
       if (ctx.res) {
         ctx.res.writeHead(302, {
-          Location: "/"
+          Location: "/map"
         });
         ctx.res.end();
       } else {
-        Router.push("/");
+        Router.push("/map");
       }
     }
     return { isLogin: true };

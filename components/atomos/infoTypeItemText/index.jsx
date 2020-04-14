@@ -4,7 +4,7 @@ import "./infoTypeItemText.scss";
 class InfoTypeItemText extends React.Component {
   render() {
     return (
-      <span className="InfoTypeItemText">
+      <span className="info-type-item-text">
         <p>{this.props.text}</p>
       </span>
     );

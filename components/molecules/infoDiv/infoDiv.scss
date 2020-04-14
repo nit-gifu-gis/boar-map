@@ -1,0 +1,16 @@
+.info-div {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 var(--margin-lr) 0 var(--margin-lr);
+}
+
+.info-div + .info-div {
+  border-top: solid 2px #bdbdbd;
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .info-div {
+    padding: 0 15px 0 15px;
+  }
+}

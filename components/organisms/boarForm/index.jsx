@@ -1,50 +1,43 @@
 import "./boarForm.scss";
+import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
-import AddInfoFooter from "../../molecules/addInfoFooter";
-import DateInput from "../../atomos/dateInput";
+import InfoInput from "../../molecules/infoInput";
 
-const TrapSelector = () => (
-  <div className="trap_selector">
-    <label>わなの種類</label>
-    <p></p>
-    <select name="trap" id="trap">
-      <option value="箱わな">箱わな</option>
-      <option value="くくりわな">くくりわな</option>
-      <option value="その他">その他</option>
-    </select>
-  </div>
+const TrapSelector = props => (
+  <InfoInput
+    title="わなの種類"
+    type="select"
+    name="trap"
+    options={["箱わな", "くくりわな", "その他"]}
+    defaultValue={props.defaultValue}
+  />
 );
 
-const EnvSelector = () => (
-  <div className="env_selector">
-    <label>発見場所</label>
-    <select name="env" id="env">
-      <option value="山際">山際</option>
-      <option value="山地">山地</option>
-      <option value="その他">その他</option>
-    </select>
-  </div>
+const EnvSelector = props => (
+  <InfoInput
+    title="発見場所"
+    type="select"
+    name="env"
+    options={["山際", "山地", "その他"]}
+    defaultValue={props.defaultValue}
+  />
 );
 
 class BoarForm extends React.Component {
-  state = {
-    trapOrEnvSelector: <TrapSelector />,
-    lat: null,
-    lng: null
-  };
-
-  componentDidMount() {
-    if (Router.query.lat != undefined && Router.query.lng != undefined) {
-      this.setState({ lat: Router.query.lat, lng: Router.query.lng });
-    } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/map");
+  constructor(props) {
+    super(props);
+    this.state = {
+      trapOrEnvSelector: <TrapSelector />,
+      lat: props.lat,
+      lng: props.lng,
+      userData: null,
+      detail: null
+    };
+    // データが与えられた場合は保存しておく
+    if (props.detail != null) {
+      this.state.detail = props.detail;
     }
-  }
-
-  constructor() {
-    super();
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -58,27 +51,55 @@ class BoarForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userData = userData;
     } else {
       return;
     }
   }
 
-  // 前へボタンを押したときの処理
-  onClickPrev() {
-    const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "boar" } }, url);
+  componentDidMount() {
+    // detailが与えられた場合
+    if (this.state.detail != null) {
+      const detail = this.state.detail;
+      const division = detail["properties"]["区分"];
+      switch (division) {
+        case "死亡":
+          this.setState(_ => {
+            return {
+              trapOrEnvSelector: (
+                <EnvSelector
+                  defaultValue={detail["properties"]["罠・発見場所"]}
+                />
+              )
+            };
+          });
+          break;
+        default:
+          this.setState(_ => {
+            return {
+              trapOrEnvSelector: (
+                <TrapSelector
+                  defaultValue={detail["properties"]["罠・発見場所"]}
+                />
+              )
+            };
+          });
+          break;
+      }
+    }
   }
 
-  // 次へボタンを押したときの処理
-  onClickNext() {
+  // データを作る
+  createDetail() {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
+    const user = this.state.userData.user_id;
     // 1 区分
     const division = form.division.options[form.division.selectedIndex].value;
     // 2 捕獲年月日
     const date = form.date.value;
-    // 3 位置情報
+    // // 3 位置情報
     const lat = this.state.lat;
     const lng = this.state.lng;
     // 4 わなor発見場所
@@ -99,24 +120,26 @@ class BoarForm extends React.Component {
     const weight = this.weigh(Number(length));
     // 8 歯列画像
     // 9 現地写真
-    // 確認画面に遷移
-    const url = "/add/confirm/boar";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          division: division,
-          date: date,
-          lat: lat,
-          lng: lng,
-          trapOrEnv: trapOrEnv,
-          sex: sex,
-          length: length,
-          weight: weight
-        }
+
+    // [todo] ここにバリデーション [todo]
+
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
       },
-      url
-    );
+      properties: {
+        入力者: user,
+        区分: division,
+        捕獲年月日: date,
+        位置情報: "(" + lat + "," + lng + ")",
+        "罠・発見場所": trapOrEnv,
+        性別: sex,
+        体長: length,
+        体重: weight
+      }
+    };
   }
 
   // 区分が変更されたときに呼ばれる
@@ -128,7 +151,6 @@ class BoarForm extends React.Component {
         this.setState(_ => {
           return { trapOrEnvSelector: <EnvSelector /> };
         });
-        // this.state.trapOrEnvSelector = <EnvSelector />;
         break;
       default:
         this.setState(_ => {
@@ -171,68 +193,61 @@ class BoarForm extends React.Component {
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
       return (
-        <div className="boarForm">
-          <div className="__title">
-            <h1>捕獲情報登録</h1>
-          </div>
-          <div className="__description">
-            <p>各情報を入力してください。</p>
-          </div>
-          <div className="__form">
+        <div className="boar-form">
+          <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
-              <div className="__form __division">
-                <label>区分</label>
-                <p></p>
-                <select
-                  name="division"
-                  id="division"
-                  onChange={this.onChangeDivision.bind(this)}
-                >
-                  <option value="調査捕獲">調査捕獲</option>
-                  <option value="有害捕獲">有害捕獲</option>
-                  <option value="死亡">死亡</option>
-                </select>
-              </div>
-              <div className=" __date">
-                <label>捕獲年月日</label>
-                <p></p>
-                {/* <input
+              <InfoInput
+                title="区分"
+                type="select"
+                name="division"
+                options={["調査捕獲", "有害捕獲", "死亡"]}
+                onChange={this.onChangeDivision.bind(this)}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["区分"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="捕獲年月日"
                 type="date"
                 name="date"
-                id="date"
-                // value={this.state.todayStr}
-              /> */}
-                <DateInput name="date" id="date" />
-              </div>
-              <div className="__form __trap_or_env">
-                {this.state.trapOrEnvSelector}
-              </div>
-              <div className="__form __sex">
-                <label>性別</label>
-                <p></p>
-                <select name="sex" id="sex">
-                  <option value="オス">オス</option>
-                  <option value="メス">メス</option>
-                  <option value="不明">不明</option>
-                </select>
-              </div>
-              <div className="__length">
-                <label>体長(cm)</label>
-                <p></p>
-                <input name="length" type="number" step="1"></input>
-              </div>
-              {/* 体重は体長から計算して送信する（表示しない） */}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["捕獲年月日"]
+                    : null
+                }
+              />
+              {this.state.trapOrEnvSelector}
+              <InfoInput
+                title="性別"
+                type="select"
+                name="sex"
+                options={["オス", "メス", "不明"]}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["性別"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="体長 (cm)"
+                type="number"
+                name="length"
+                min="1"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["体長"]
+                    : null
+                }
+              />
             </form>
           </div>
-          <AddInfoFooter
-            prevBind={this.onClickPrev}
-            nextBind={this.onClickNext.bind(this)}
-          />
         </div>
       );
     } else {
       return (
-        <div className="boarForm">
+        <div className="boar-form">
           <h1>情報取得中...</h1>
         </div>
       );

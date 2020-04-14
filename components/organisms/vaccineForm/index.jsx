@@ -1,42 +1,48 @@
 import "./vaccineForm.scss";
+import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
-import AddInfoFooter from "../../molecules/addInfoFooter";
-import DateInput from "../../atomos/dateInput";
+import InfoInput from "../../molecules/infoInput";
 
-const RecoverInfoForm = () => (
+const RecoverInfoForm = props => (
   <div>
-    <div className="__date __recover_date">
-      <label>回収年月日</label>
-      <p></p>
-      <DateInput name="recoverDate" id="recoverDate" />
-    </div>
-    <div className="__form __eaten">
-      <label>摂食の有無</label>
-      <p></p>
-      <select name="eaten" id="eaten">
-        <option value="なし">なし</option>
-        <option value="あり">あり</option>
-      </select>
-    </div>
-    <div className="__form __damage">
-      <label>その他の破損</label>
-      <p></p>
-      <select name="damage" id="damage">
-        <option value="なし">なし</option>
-        <option value="あり">あり</option>
-      </select>
-    </div>
+    <InfoInput
+      title="回収年月日"
+      type="date"
+      name="recoverDate"
+      defaultValue={props.recoverDate}
+    />
+    <InfoInput
+      title="摂食の有無"
+      type="select"
+      name="eaten"
+      options={["なし", "あり"]}
+      defaultValue={props.eaten}
+    />
+    <InfoInput
+      title="その他の破損"
+      type="select"
+      name="damage"
+      options={["なし", "あり"]}
+      defaultValue={props.damage}
+    />
   </div>
 );
 
 class VaccineForm extends React.Component {
-  state = {
-    recoverInfoForm: null
-  };
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      recover: false,
+      recoverInfoForm: null,
+      lat: props.lat,
+      lng: props.lng,
+      userData: null
+    };
+    // データが与えられた場合は保存しておく
+    if (props.detail != null) {
+      this.state.detail = props.detail;
+    }
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
     if (process.browser) {
@@ -50,33 +56,44 @@ class VaccineForm extends React.Component {
           userData.access_token = content[1];
         }
       });
+      this.state.userData = userData;
     } else {
       return;
     }
   }
 
   componentDidMount() {
-    if (Router.query.lat != undefined && Router.query.lng != undefined) {
-      this.setState({
-        lat: Router.query.lat,
-        lng: Router.query.lng
-      });
-    } else {
-      Router.push("/map");
+    // detailが与えられた場合
+    if (this.state.detail != null) {
+      const detail = this.state.detail;
+      const recover = detail["properties"]["回収年月日"];
+      if (recover != "") {
+        this.setState(_ => {
+          return {
+            recoverInfoForm: (
+              <RecoverInfoForm
+                recoverDate={detail["properties"]["回収年月日"]}
+                eaten={detail["properties"]["摂食の有無"]}
+                damage={detail["properties"]["その他破損"]}
+              />
+            ),
+            recover: true
+          };
+        });
+      } else {
+        this.setState(_ => {
+          return { recoverInfoForm: null, recover: false };
+        });
+      }
     }
   }
 
-  // 前へボタンを押したときの処理
-  onClickPrev() {
-    const url = "/add/location";
-    Router.push({ pathname: url, query: { type: "vaccine" } }, url);
-  }
-
-  // 次へボタンを押したときの処理
-  onClickNext() {
+  // データを作る
+  createDetail() {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
+    const user = this.state.userData.user_id;
     // 1 位置情報
     const lat = this.state.lat;
     const lng = this.state.lng;
@@ -87,7 +104,7 @@ class VaccineForm extends React.Component {
     // 4 散布数
     const treatNumber = form.treatNumber.value;
     // 隠し情報 回収済みかどうか
-    const recover = form.recover.checked;
+    const recover = this.state.recover;
     // 5 回収年月日
     let recoverDate = "";
     // 6 摂食の有無
@@ -103,104 +120,110 @@ class VaccineForm extends React.Component {
       eaten = form.eaten.options[form.eaten.selectedIndex].value;
       damage = form.damage.options[form.damage.selectedIndex].value;
     }
-    // 確認画面に遷移
-    const url = "/add/confirm/vaccine";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          lat: lat,
-          lng: lng,
-          meshNumber: meshNumber,
-          treatDate: treatDate,
-          treatNumber: treatNumber,
-          recover: recover,
-          recoverDate: recoverDate,
-          eaten: eaten,
-          damage: damage,
-          note: note
-        }
+
+    // [todo] ここにバリデーション [todo]
+
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [parseFloat(lng), parseFloat(lat)]
       },
-      url
-    );
+      properties: {
+        入力者: user,
+        位置情報: "(" + lat + "," + lng + ")",
+        メッシュ番号: meshNumber,
+        散布年月日: treatDate,
+        散布数: treatNumber,
+        回収年月日: recoverDate,
+        摂食の有無: eaten,
+        その他破損: damage,
+        備考: note
+      }
+    };
   }
 
   // 回収が変更されたときに呼ばれる
   onChangeRecover() {
-    const recoverChecked = document.forms.form.recover.checked;
-    if (recoverChecked) {
+    const recoverSelect = document.forms.form.recover;
+    const recover = recoverSelect.options[recoverSelect.selectedIndex].value;
+    if (recover == "回収済") {
       this.setState(_ => {
-        return { recoverInfoForm: <RecoverInfoForm /> };
+        return { recoverInfoForm: <RecoverInfoForm />, recover: true };
       });
     } else {
       this.setState(_ => {
-        return { recoverInfoForm: null };
+        return { recoverInfoForm: null, recover: false };
       });
     }
   }
 
+  onSubmit(e) {
+    // エンターキーで送信されるのを防ぐ
+    e.preventDefault();
+  }
+
   render() {
+    console.log("check");
     if (this.state.lng != undefined && this.state.lat != undefined) {
       return (
-        <div className="vaccineForm">
-          <div className="__title">
-            <h1>ワクチン情報登録</h1>
-          </div>
-          <div className="__description">
-            <p>各情報を入力してください。</p>
-          </div>
-          <div className="__form">
-            <form name="form">
-              <div className="__number __mesh_number">
-                <label>メッシュ番号</label>
-                <p></p>
-                <input
-                  type="number"
-                  name="meshNumber"
-                  id="meshNumber"
-                  min="0"
-                />
-              </div>
-              <div className="__date __treat_date">
-                <label>散布年月日</label>
-                <p></p>
-                <DateInput name="treatDate" id="treatDate" />
-              </div>
-              <div className="__number __treat_number">
-                <label>散布数</label>
-                <p></p>
-                <input
-                  type="number"
-                  name="treatNumber"
-                  id="treatNumber"
-                  min="1"
-                />
-              </div>
-              <div className="__check __recover">
-                <label>
-                  回収
-                  <p></p>
-                  <input
-                    type="checkbox"
-                    name="recover"
-                    id="recover"
-                    onChange={this.onChangeRecover.bind(this)}
-                  />
-                  <span></span>
-                </label>
-              </div>
+        <div className="vaccine-form">
+          <div className="form">
+            <form name="form" onSubmit={this.onSubmit}>
+              <InfoInput
+                title="メッシュ番号"
+                type="number"
+                name="meshNumber"
+                min="0"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["メッシュ番号"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="散布年月日"
+                type="date"
+                name="treatDate"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["散布年月日"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="散布数"
+                type="number"
+                name="treatNumber"
+                min="1"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["散布数"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="回収状況"
+                type="select"
+                name="recover"
+                onChange={this.onChangeRecover.bind(this)}
+                options={["未回収", "回収済"]}
+                defaultValue={this.state.recover ? "回収済" : "未回収"}
+              />
               {this.state.recoverInfoForm}
-              <div className="__textarea note">
-                <label>備考</label>
-                <p></p>
-                <textarea rows="4" cols="50" name="note" id="note" />
-              </div>
+              <InfoInput
+                title="備考"
+                type="text-area"
+                rows="4"
+                name="note"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["備考"]
+                    : null
+                }
+              />
             </form>
           </div>
-          <AddInfoFooter
-            prevBind={this.onClickPrev}
-            nextBind={this.onClickNext.bind(this)}
-          />
         </div>
       );
     } else {

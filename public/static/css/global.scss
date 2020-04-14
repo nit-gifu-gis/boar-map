@@ -1,0 +1,21 @@
+* {
+  font-family: "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Arial",
+    "Yu Gothic", sans-serif;
+}
+
+body {
+  background-color: #fafafa;
+}
+
+:root {
+  --margin-tb: 5px;
+  --margin-lr: 15px;
+  --border: 2px;
+  --padding: 10px;
+
+  --header-height: 60px;
+  --footer-height: 70px;
+
+  --menu-item-height: 40px;
+  --menu-item-num: 4;
+}
