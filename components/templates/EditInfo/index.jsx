@@ -59,6 +59,8 @@ class EditInfo extends React.Component {
         console.log("err");
         break;
     }
+    console.log(type);
+    console.log(this.state.id);
     Router.push(
       {
         pathname: url,
@@ -73,7 +75,9 @@ class EditInfo extends React.Component {
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
     const data = this.formRef.current.createDetail();
-    // console.log(this.state);
+    // 編集時はIDを付け足す
+    data["properties"]["ID$"] = this.state.id;
+    // console.log(this.state.id);
     // console.log(data);
     const url = "/edit/confirm";
     Router.push(
@@ -81,8 +85,7 @@ class EditInfo extends React.Component {
         pathname: url,
         query: {
           type: this.state.type,
-          detail: JSON.stringify(data),
-          id: this.state.id
+          detail: JSON.stringify(data)
         }
       },
       url
