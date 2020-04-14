@@ -1,0 +1,45 @@
+.version-info {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: #fafafa;
+
+  .version-info-contents {
+    text-align: center;
+    margin: var(--margin-tb) var(--margin-lr) var(--margin-tb) var(--margin-lr);
+    color: #212121;
+  }
+
+  .version {
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  .history {
+    margin-top: 30px;
+    text-align: left;
+
+    .history-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .history-contents {
+      h3 {
+        font-weight: 400;
+        line-height: 200%;
+      }
+      ul,
+      ol {
+        margin: 0 0 0 24px;
+        padding: 0;
+        li {
+          color: #757575;
+          font-size: 14px;
+          line-height: 120%;
+          margin-bottom: 5px;
+        }
+      }
+    }
+  }
+}

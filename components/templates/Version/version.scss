@@ -1,0 +1,24 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.page-contents {
+  background-color: #fafafa;
+  position: absolute;
+  top: var(--header-height);
+  bottom: var(--footer-height);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+// IE
+@media all and (-ms-high-contrast: none) {
+  .page-contentsc {
+    top: 60px;
+    bottom: 70px;
+  }
+}

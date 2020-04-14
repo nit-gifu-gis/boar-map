@@ -26,7 +26,7 @@ class Header extends React.Component {
     let textFontSize = 30;
     if (typeof this.props.children == "string") {
       const textLength = this.props.children.length;
-      if (textLength != null && textLength >= 8) {
+      if (textLength != null && textLength >= 7) {
         textFontSize = 25;
       }
     }
