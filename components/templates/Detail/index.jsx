@@ -140,10 +140,6 @@ class Detail extends React.Component {
           {detaildiv}
           <FooterAdjustment />
         </div>
-        {/* <DetailFooter
-          nextHandler={this.onClickNext.bind(this)}
-          prevHandler={this.onClickPrev}
-        /> */}
         <Footer>
           <RoundButton color="accent" bind={this.onClickPrev}>
             ＜ 戻る

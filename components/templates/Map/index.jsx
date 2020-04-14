@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
-import AddInformationButton from "../../atomos/addInformationButton";
 import Link from "next/link";
 import Router from "next/router";
 

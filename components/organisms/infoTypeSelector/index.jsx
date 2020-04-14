@@ -2,7 +2,6 @@ import "./infoTypeSelector.scss";
 import Router from "next/router";
 import React from "react";
 import InfoTypeItem from "../../molecules/InfoTypeItem";
-import AddInfoFooter from "../../molecules/addInfoFooter";
 
 const BoarDiv = () => (
   <div className="boar-div select-div">

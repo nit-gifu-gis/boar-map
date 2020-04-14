@@ -3,8 +3,6 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
-import AddInfoFooter from "../../molecules/addInfoFooter";
-import DateInput from "../../atomos/dateInput";
 
 const RecoverInfoForm = props => (
   <div>

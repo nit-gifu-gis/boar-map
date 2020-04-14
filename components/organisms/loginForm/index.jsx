@@ -1,6 +1,5 @@
 import "./loginForm.scss";
 import Router from "next/router";
-import LoginLogo from "../../molecules/loginLogo";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
 import "../../../public/static/css/global.scss";
