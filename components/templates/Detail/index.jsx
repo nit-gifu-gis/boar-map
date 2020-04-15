@@ -89,14 +89,14 @@ class Detail extends React.Component {
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
-      const type_num = Router.query.type;
-      // console.log(type_num);
+      const typeNum = Router.query.type;
+      // console.log(typeNum);
       let type = "";
-      if (type_num == 0) {
+      if (typeNum == 0) {
         type = "boar";
-      } else if (type_num == 1) {
+      } else if (typeNum == 1) {
         type = "trap";
-      } else if (type_num == 2) {
+      } else if (typeNum == 2) {
         type = "vaccine";
       }
       // console.log(type);
