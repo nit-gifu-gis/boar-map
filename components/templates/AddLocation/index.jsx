@@ -21,18 +21,29 @@ class AddLocation extends React.Component {
     this.state = {
       lat: 35.367237,
       lng: 136.637408,
+      type: null,
       detail: null
     };
     this.saveCenter.bind(this);
-    console.log("Router.query.lat", Router.query.lat);
+  }
+
+  componentDidMount() {
     if (Router.query.lat != null || Router.query.lng != null) {
-      console.log("ccheck");
       this.state.lat = Router.query.lat;
       this.state.lng = Router.query.lng;
     }
     // detailが設定されている場合は保存しておく（戻ってきた人用）
     if (Router.query.detail != null) {
       this.state.detail = Router.query.detail;
+    }
+    console.log(Router.query);
+    if (Router.query.type != null) {
+      this.setState({
+        type: Router.query.type
+      });
+    } else {
+      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      Router.push("/add/select");
     }
   }
 
@@ -49,7 +60,7 @@ class AddLocation extends React.Component {
         query: {
           lat: this.state.lat,
           lng: this.state.lng,
-          type: Router.query.type,
+          type: this.state.type,
           detail: this.state.detail
         }
       },
@@ -66,7 +77,7 @@ class AddLocation extends React.Component {
   render() {
     // ヘッダーの色を決定
     let header = <Header color="primary">位置情報登録</Header>;
-    switch (Router.query.type) {
+    switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
         break;
