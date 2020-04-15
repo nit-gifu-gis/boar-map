@@ -9,6 +9,7 @@ import BoarForm from "../../organisms/boarForm";
 import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
+import ImageBox from "../../organisms/imageBox";
 
 class AddInfo extends React.Component {
   constructor(props) {
@@ -17,9 +18,62 @@ class AddInfo extends React.Component {
       lat: null,
       lng: null,
       type: null,
-      detail: null
+      detail: null,
+      formData: null
     };
     this.formRef = React.createRef();
+  }
+
+  fileChanged(data) {
+    this.state.formData = data;
+  }
+
+  callback(data, res, error) {
+    const url = "/add/confirm";
+    Router.push(
+      {
+        pathname: url,
+        query: {
+          lat: this.state.lat,
+          lng: this.state.lng,
+          type: this.state.type,
+          detail: JSON.stringify(data),
+          formData: JSON.stringify(res)
+        }
+      },
+      url
+    );
+  }
+
+  upload() {
+    const data = this.formRef.current.createDetail();
+    if (this.state.formData == null) {
+      this.callback(data, [], null);
+    }
+    const res = [];
+
+    fetch(IMAGE_SERVER_URI + "/upload.php?type=boar", {
+      credentials: "include",
+      method: "POST",
+      body: this.state.formData,
+      header: {
+        "Content-Type": "multipart/form-data"
+      }
+    }).then(response =>
+      response.json().then(json => {
+        if (json["status"] == 200) {
+          json["results"].forEach(element => {
+            res.push({
+              id: element["id"],
+              error: 0
+            });
+          });
+          this.callback(data, res, null);
+        } else {
+          this.callback(data, [], json["message"]);
+        }
+      })
+    );
   }
 
   componentDidMount() {
@@ -66,22 +120,7 @@ class AddInfo extends React.Component {
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
-    const data = this.formRef.current.createDetail();
-    // console.log(this.state);
-    // console.log(data);
-    const url = "/add/confirm";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          lat: this.state.lat,
-          lng: this.state.lng,
-          type: this.state.type,
-          detail: JSON.stringify(data)
-        }
-      },
-      url
-    );
+    this.upload();
     // window.alert("工事中");
   }
 
@@ -134,6 +173,9 @@ class AddInfo extends React.Component {
             <p>各情報を入力してください。</p>
           </div>
           {form}
+          <div className="pic-form">
+            <ImageBox type="boar" onChanged={this.fileChanged.bind(this)} />
+          </div>
           <FooterAdjustment />
         </div>
         <Footer>
