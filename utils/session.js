@@ -1,5 +1,6 @@
 import Router from "next/router";
 import cookies from "next-cookies";
+import "./statics";
 
 export default class SessionManager {
   static isLogin(ctx) {
@@ -49,18 +50,26 @@ export default class SessionManager {
       body: JSON.stringify(data)
     })
       .then(res =>
-        res
-          .json()
-          .then(
-            data => console.log(data),
-            (document.cookie =
-              "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
-            (document.cookie =
-              "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
-            (document.cookie =
-              "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT"),
-            Router.push("/login")
-          )
+        res.json().then(data => {
+          console.log(data);
+          fetch(IMAGE_SERVER_URI + "/logout.php", {
+            credentials: "include"
+          })
+            .then(res2 =>
+              res2.json().then(data2 => {
+                if (data2["status"] === 200) {
+                  document.cookie =
+                    "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                  document.cookie =
+                    "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                  document.cookie =
+                    "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                  Router.push("/login");
+                }
+              })
+            )
+            .catch(error => alert("Error: ", error));
+        })
       )
       .catch(error => alert("Error: ", error));
   }

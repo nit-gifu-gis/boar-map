@@ -15,7 +15,6 @@ const Index = () => (
     <Link href="/map">
       <a>マップ</a>
     </Link>
-    自動デプロイテスト
     <Footer />
   </div>
 );
