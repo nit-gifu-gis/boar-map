@@ -9,7 +9,7 @@ import BoarForm from "../../organisms/boarForm";
 import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
-import ImageBox from "../../organisms/imageBox";
+import ImageInput from "../../organisms/imageInput";
 
 class AddInfo extends React.Component {
   constructor(props) {
@@ -52,7 +52,7 @@ class AddInfo extends React.Component {
     }
     const res = [];
 
-    fetch(IMAGE_SERVER_URI + "/upload.php?type=boar", {
+    fetch(IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type, {
       credentials: "include",
       method: "POST",
       body: this.state.formData,
@@ -174,7 +174,10 @@ class AddInfo extends React.Component {
           </div>
           {form}
           <div className="pic-form">
-            <ImageBox type="boar" onChanged={this.fileChanged.bind(this)} />
+            <ImageInput
+              type={this.state.type}
+              onChanged={this.fileChanged.bind(this)}
+            />
           </div>
           <FooterAdjustment />
         </div>

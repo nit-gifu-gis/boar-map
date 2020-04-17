@@ -4,6 +4,7 @@ import Router from "next/router";
 import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
+import ImageView from "../../organisms/imageView";
 
 import "../../../utils/statics";
 import Header from "../../organisms/header";
@@ -14,7 +15,8 @@ import FooterAdjustment from "../../organisms/footerAdjustment";
 class Detail extends React.Component {
   state = {
     detail: {},
-    retry: 0
+    retry: 0,
+    type: undefined
   };
   async getFeatureDetail() {
     this.state.retry++;
@@ -120,15 +122,23 @@ class Detail extends React.Component {
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
+
+    //
+    // TODO: 画像ID取得処理
+    //
+    const imgIds = ["pAPEkMR1SB7dTRrB", "pBCTlxf6M8NTVdHJ", "pKextLnNrzHvgM1n"];
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
+        this.state.type = "boar";
         header = <Header color="boar">捕獲情報</Header>;
         detaildiv = <BoarInfo detail={this.state.detail} />;
       } else if (type == 1) {
+        this.state.type = "trap";
         header = <Header color="trap">わな情報</Header>;
         detaildiv = <TrapInfo detail={this.state.detail} />;
       } else if (type == 2) {
+        this.state.type = "vaccine";
         header = <Header color="vaccine">ワクチン情報</Header>;
         detaildiv = <VaccineInfo detail={this.state.detail} />;
       }
@@ -138,6 +148,7 @@ class Detail extends React.Component {
         {header}
         <div className="detail-div">
           {detaildiv}
+          <ImageView type={this.state.type} imgs={imgIds} />
           <FooterAdjustment />
         </div>
         <Footer>

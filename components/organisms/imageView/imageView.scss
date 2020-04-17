@@ -1,0 +1,19 @@
+.imageView {
+    width: 95vw;
+    margin: 0 auto;
+    max-width: 400px;
+
+    &__box {
+        max-width: 400px;
+        width: 95vw;
+        overflow-x: scroll;
+        white-space: nowrap;
+    }
+    
+    &__box__image {
+        width: 80vw;
+        margin: 0 5px;
+        max-width: 360px;
+        display: inline-block;
+    }
+}

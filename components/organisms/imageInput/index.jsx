@@ -1,7 +1,7 @@
-import "./imageBox.scss";
+import "./imageInput.scss";
 import "../../../utils/statics";
 
-class ImageBox extends React.Component {
+class ImageInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,7 +20,7 @@ class ImageBox extends React.Component {
   }
 
   formChanged() {
-    const input = document.imagebox__form.file;
+    const input = document.imageinput__form.file;
     const data = new FormData();
     data.append("MAX_FILE_SIZE", MAX_UPLOAD_SIZE);
     for (const file of input.files) {
@@ -32,9 +32,9 @@ class ImageBox extends React.Component {
   render() {
     if (this.props.type != undefined) {
       return (
-        <div className="imagebox">
-          <h1 className="imagebox__title">写真の添付</h1>
-          <form name="imagebox__form" className="imagebox__form">
+        <div className="imageinput">
+          <h1 className="imageinput__title">写真の添付</h1>
+          <form name="imageinput__form" className="imageinput__form">
             <input
               type="file"
               name="file"
@@ -52,4 +52,4 @@ class ImageBox extends React.Component {
   }
 }
 
-export default ImageBox;
+export default ImageInput;
