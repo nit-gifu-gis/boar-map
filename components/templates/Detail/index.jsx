@@ -16,7 +16,8 @@ class Detail extends React.Component {
   state = {
     detail: {},
     retry: 0,
-    type: undefined
+    type: undefined,
+    ids: []
   };
   async getFeatureDetail() {
     this.state.retry++;
@@ -62,7 +63,17 @@ class Detail extends React.Component {
             this.state.retry = 0;
             if (rdata["data"]["features"].length != 0) {
               const feature = rdata["data"]["features"][0];
-              this.setState({ detail: feature });
+              //
+              // TODO: 画像ID取得処理
+              //
+              this.setState({
+                detail: feature,
+                ids: [
+                  "pAPEkMR1SB7dTRrB",
+                  "pBCTlxf6M8NTVdHJ",
+                  "pKextLnNrzHvgM1n"
+                ]
+              });
             }
           })
           .catch(e => {
@@ -106,7 +117,11 @@ class Detail extends React.Component {
       Router.push(
         {
           pathname: url,
-          query: { type: type, detail: JSON.stringify(this.state.detail) }
+          query: {
+            type: type,
+            detail: JSON.stringify(this.state.detail),
+            ids: JSON.stringify(this.state.ids)
+          }
         },
         url
       );
@@ -123,10 +138,7 @@ class Detail extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
 
-    //
-    // TODO: 画像ID取得処理
-    //
-    const imgIds = ["pAPEkMR1SB7dTRrB", "pBCTlxf6M8NTVdHJ", "pKextLnNrzHvgM1n"];
+    const imgIds = this.state.ids;
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {

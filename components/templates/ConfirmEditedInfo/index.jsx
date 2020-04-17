@@ -18,7 +18,10 @@ class ConfirmEditedInfo extends React.Component {
     super(props);
     this.state = {
       type: null,
-      detail: null
+      detail: null,
+      ids: null,
+      formData: null,
+      picCount: 0
     };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
@@ -44,7 +47,10 @@ class ConfirmEditedInfo extends React.Component {
       // console.log("confirm", Router.query);
       this.setState({
         type: Router.query.type,
-        detail: JSON.parse(Router.query.detail)
+        detail: JSON.parse(Router.query.detail),
+        ids: JSON.parse(Router.query.ids),
+        formData: JSON.parse(Router.query.formData),
+        picCount: JSON.parse(Router.query.formData).length
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -81,27 +87,44 @@ class ConfirmEditedInfo extends React.Component {
 
     console.log(data);
 
-    fetch("/api/JsonService.asmx/UpdateFeatures", {
+    //
+    // TODO: DBへの登録処理
+    //
+
+    console.log(this.state.formData);
+    console.log(this.state.ids);
+
+    fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
+      credentials: "include",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
+      body: JSON.stringify(this.state.formData)
     })
-      .then(function(res) {
-        const json = res.json().then(data => {
-          if (data.commonHeader.resultInfomation == "0") {
-            alert("更新が完了しました。\nご協力ありがとうございました。");
-            Router.push("/map");
-          } else {
-            console.log("Error:", data.commonHeader.systemErrorReport);
-            alert("更新に失敗しました。");
-          }
-        });
+      .then(res => {
+        fetch("/api/JsonService.asmx/UpdateFeatures", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Map-Api-Access-Token": token
+          },
+          body: JSON.stringify(data)
+        })
+          .then(function(res) {
+            const json = res.json().then(data => {
+              if (data.commonHeader.resultInfomation == "0") {
+                alert("更新が完了しました。\nご協力ありがとうございました。");
+                Router.push("/map");
+              } else {
+                console.log("Error:", data.commonHeader.systemErrorReport);
+                alert("更新に失敗しました。");
+              }
+            });
+          })
+          .catch(error => console.log("Error:", error));
       })
-      .catch(error => console.log("Error:", error));
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   onClickPrev() {
@@ -153,6 +176,9 @@ class ConfirmEditedInfo extends React.Component {
             <p>情報に不備がないかご確認ください。</p>
           </div>
           {detaildiv}
+          <div className="fileCount">
+            <p>{this.state.picCount}枚の画像がアップロードされました。</p>
+          </div>
           <FooterAdjustment />
         </div>
         <Footer>

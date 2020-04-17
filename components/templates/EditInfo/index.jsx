@@ -10,6 +10,8 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
+import ImageInput from "../../organisms/imageInput";
+
 class EditInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -18,9 +20,63 @@ class EditInfo extends React.Component {
       detail: null,
       id: null,
       lat: null,
-      lng: null
+      lng: null,
+      ids: []
     };
     this.formRef = React.createRef();
+  }
+
+  fileChanged(data) {
+    this.state.formData = data;
+  }
+
+  upload() {
+    const data = this.formRef.current.createDetail();
+    // 編集時はIDを付け足す
+    data["properties"]["ID$"] = this.state.id;
+    if (this.state.formData == null) {
+      this.callback(data, [], null);
+    }
+    const res = [];
+
+    fetch(IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type, {
+      credentials: "include",
+      method: "POST",
+      body: this.state.formData,
+      header: {
+        "Content-Type": "multipart/form-data"
+      }
+    }).then(response =>
+      response.json().then(json => {
+        if (json["status"] == 200) {
+          json["results"].forEach(element => {
+            res.push({
+              id: element["id"],
+              error: 0
+            });
+          });
+          this.callback(data, res, null);
+        } else {
+          this.callback(data, [], json["message"]);
+        }
+      })
+    );
+  }
+
+  callback(data, res, error) {
+    const url = "/edit/confirm";
+    Router.push(
+      {
+        pathname: url,
+        query: {
+          type: this.state.type,
+          detail: JSON.stringify(data),
+          ids: this.state.ids,
+          formData: JSON.stringify(res)
+        }
+      },
+      url
+    );
   }
 
   componentDidMount() {
@@ -31,7 +87,8 @@ class EditInfo extends React.Component {
         detail: detail,
         id: detail["properties"]["ID$"],
         lat: detail["geometry"]["coordinates"][1],
-        lng: detail["geometry"]["coordinates"][0]
+        lng: detail["geometry"]["coordinates"][0],
+        ids: Router.query.ids
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -74,22 +131,10 @@ class EditInfo extends React.Component {
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
-    const data = this.formRef.current.createDetail();
-    // 編集時はIDを付け足す
-    data["properties"]["ID$"] = this.state.id;
+    this.upload();
     // console.log(this.state.id);
     // console.log(data);
-    const url = "/edit/confirm";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          type: this.state.type,
-          detail: JSON.stringify(data)
-        }
-      },
-      url
-    );
+
     // window.alert("工事中");
   }
 
@@ -142,6 +187,12 @@ class EditInfo extends React.Component {
             <p>各情報を入力してください。</p>
           </div>
           {form}
+          <div className="pic-form">
+            <ImageInput
+              type={this.state.type}
+              onChanged={this.fileChanged.bind(this)}
+            />
+          </div>
           <FooterAdjustment />
         </div>
         <Footer>
