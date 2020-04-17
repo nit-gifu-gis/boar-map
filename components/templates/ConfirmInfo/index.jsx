@@ -95,6 +95,15 @@ class ConfirmInfo extends React.Component {
     //
     // TODO: DBへの登録処理
     //
+    const reg_ids = [];
+    for(let i = 0; i < this.state.formData.length; i++) {
+      const data = this.state.formData[i];
+      if(data["id"] !== "") {
+        reg_ids.push(data["id"]);
+      }
+    }
+
+    //reg_ids の DBへの送信
 
     fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
       credentials: "include",
