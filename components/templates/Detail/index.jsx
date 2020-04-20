@@ -63,16 +63,14 @@ class Detail extends React.Component {
             this.state.retry = 0;
             if (rdata["data"]["features"].length != 0) {
               const feature = rdata["data"]["features"][0];
-              //
-              // TODO: 画像ID取得処理
-              //
+              let ids = feature["properties"]["画像ID"].split(",");
+              if (ids.length == 1 && ids[0] === "") {
+                ids = [];
+              }
+              console.log(ids);
               this.setState({
                 detail: feature,
-                ids: [
-                  "pAPEkMR1SB7dTRrB",
-                  "pBCTlxf6M8NTVdHJ",
-                  "pKextLnNrzHvgM1n"
-                ]
+                ids: ids
               });
             }
           })

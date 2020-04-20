@@ -83,6 +83,18 @@ class ConfirmInfo extends React.Component {
         break;
     }
 
+    const reg_ids = [];
+    for (let i = 0; i < this.state.formData.length; i++) {
+      const data = this.state.formData[i];
+      if (data["id"] !== "") {
+        reg_ids.push(data["id"]);
+      }
+    }
+
+    const send_ids = reg_ids.join(",");
+
+    this.state.detail["properties"]["画像ID"] = send_ids;
+
     const data = {
       commonHeader: {
         receiptNumber: receiptNumber
@@ -91,19 +103,6 @@ class ConfirmInfo extends React.Component {
       srid: 4326,
       features: [this.state.detail]
     };
-
-    //
-    // TODO: DBへの登録処理
-    //
-    const reg_ids = [];
-    for(let i = 0; i < this.state.formData.length; i++) {
-      const data = this.state.formData[i];
-      if(data["id"] !== "") {
-        reg_ids.push(data["id"]);
-      }
-    }
-
-    //reg_ids の DBへの送信
 
     fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
       credentials: "include",
