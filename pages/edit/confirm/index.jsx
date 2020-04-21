@@ -9,7 +9,7 @@ class ConfirmEditedInfoPage extends React.Component {
     if (!SessionManager.isLogin(ctx)) {
       if (ctx.res) {
         ctx.res.writeHead(302, {
-          Location: "/login",
+          Location: "/login"
         });
         ctx.res.end();
       } else {

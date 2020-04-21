@@ -3,6 +3,7 @@ import Router from "next/router";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
 import "../../../public/static/css/global.scss";
+import "../../../utils/statics";
 
 const OnSubmitting = event => {
   event.preventDefault();
@@ -30,20 +31,50 @@ const OnSubmitting = event => {
       const time = new Date().getTime();
       const json = res.json().then(data => onLogin(data, time));
     })
-    .catch(error => console.log("Error: " + error));
+    .catch(error => {
+      document.getElementsByClassName("login_error")[0].innerHTML =
+        "処理中にエラーが発生しました [1]";
+      console.log(error);
+    });
 };
 
 const onLogin = (data, time) => {
-  console.log(data);
-  console.log(data["commonHeader"].resultInfomation);
   if (data["commonHeader"].resultInfomation == "0") {
+    const imgdata = {
+      token: data.data.accessToken,
+      user: data.data.userId,
+      expires_in: time * 6 * 60 * 60 * 1000
+    };
+    fetch(IMAGE_SERVER_URI + "/auth.php", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(imgdata)
+    })
+      .then(function(res) {
+        res.json().then(rdata => onLogin2(data, rdata, time));
+      })
+      .catch(error => {
+        document.getElementsByClassName("login_error")[0].innerHTML =
+          "処理中にエラーが発生しました [2]";
+        console.log(error);
+      });
+  } else {
+    document.getElementsByClassName("login_error")[0].innerHTML =
+      data.commonHeader.systemErrorReport;
+  }
+};
+
+const onLogin2 = (data, res, time) => {
+  console.log(data);
+  console.log(res);
+  if (res["status"] == 200) {
     document.cookie = `user_id=${data.data.userId}; path=/`;
     document.cookie = `access_token=${data.data.accessToken}; path=/`;
     document.cookie = `login_time=${time}; path=/`;
     Router.push("/map");
   } else {
     document.getElementsByClassName("login_error")[0].innerHTML =
-      data.commonHeader.systemErrorReport;
+      "画像サーバーへのログインに失敗しました。";
   }
 };
 

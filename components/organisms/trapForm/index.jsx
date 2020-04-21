@@ -133,6 +133,11 @@ class TrapForm extends React.Component {
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
               <InfoInput
+                title="画像"
+                type="images"
+                onChanged={this.props.onChangedImages}
+              />
+              <InfoInput
                 title="設置年月日"
                 type="date"
                 name="setDate"

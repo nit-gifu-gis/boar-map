@@ -197,6 +197,11 @@ class BoarForm extends React.Component {
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
               <InfoInput
+                title="画像"
+                type="images"
+                onChanged={this.props.onChangedImages}
+              />
+              <InfoInput
                 title="区分"
                 type="select"
                 name="division"

@@ -14,7 +14,9 @@ import FooterAdjustment from "../../organisms/footerAdjustment";
 class Detail extends React.Component {
   state = {
     detail: {},
-    retry: 0
+    retry: 0,
+    type: undefined,
+    ids: []
   };
   async getFeatureDetail() {
     this.state.retry++;
@@ -60,7 +62,15 @@ class Detail extends React.Component {
             this.state.retry = 0;
             if (rdata["data"]["features"].length != 0) {
               const feature = rdata["data"]["features"][0];
-              this.setState({ detail: feature });
+              let ids = feature["properties"]["画像ID"].split(",");
+              if (ids.length == 1 && ids[0] === "") {
+                ids = [];
+              }
+              console.log(ids);
+              this.setState({
+                detail: feature,
+                ids: ids
+              });
             }
           })
           .catch(e => {
@@ -89,14 +99,14 @@ class Detail extends React.Component {
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
-      const type_num = Router.query.type;
-      // console.log(type_num);
+      const typeNum = Router.query.type;
+      // console.log(typeNum);
       let type = "";
-      if (type_num == 0) {
+      if (typeNum == 0) {
         type = "boar";
-      } else if (type_num == 1) {
+      } else if (typeNum == 1) {
         type = "trap";
-      } else if (type_num == 2) {
+      } else if (typeNum == 2) {
         type = "vaccine";
       }
       // console.log(type);
@@ -104,7 +114,11 @@ class Detail extends React.Component {
       Router.push(
         {
           pathname: url,
-          query: { type: type, detail: JSON.stringify(this.state.detail) }
+          query: {
+            type: type,
+            detail: JSON.stringify(this.state.detail),
+            ids: JSON.stringify(this.state.ids)
+          }
         },
         url
       );
@@ -120,17 +134,22 @@ class Detail extends React.Component {
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
+
+    const imgIds = this.state.ids;
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
+        this.state.type = "boar";
         header = <Header color="boar">捕獲情報</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} />;
+        detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
       } else if (type == 1) {
+        this.state.type = "trap";
         header = <Header color="trap">わな情報</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} />;
+        detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
       } else if (type == 2) {
+        this.state.type = "vaccine";
         header = <Header color="vaccine">ワクチン情報</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} />;
+        detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
       }
     }
     return (

@@ -1,5 +1,8 @@
 // 定数一覧
 
+IMAGE_SERVER_URI = "https://api-gis-dev.junki-t.net";
+MAX_UPLOAD_SIZE = 20 * (1024 * 1024);
+
 BOAR_LAYER_ID = 5000008;
 TRAP_LAYER_ID = 5000009;
 VACCINE_LAYER_ID = 5000010;

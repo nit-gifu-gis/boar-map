@@ -20,7 +20,9 @@ class ConfirmInfo extends React.Component {
       lat: null,
       lng: null,
       type: null,
-      detail: null
+      detail: null,
+      formData: null,
+      picCount: 0
     };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
@@ -53,7 +55,9 @@ class ConfirmInfo extends React.Component {
         lat: Router.query.lat,
         lng: Router.query.lng,
         type: Router.query.type,
-        detail: JSON.parse(Router.query.detail)
+        detail: JSON.parse(Router.query.detail),
+        formData: JSON.parse(Router.query.formData),
+        picCount: JSON.parse(Router.query.formData).length
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -79,6 +83,18 @@ class ConfirmInfo extends React.Component {
         break;
     }
 
+    const reg_ids = [];
+    for (let i = 0; i < this.state.formData.length; i++) {
+      const data = this.state.formData[i];
+      if (data["id"] !== "") {
+        reg_ids.push(data["id"]);
+      }
+    }
+
+    const send_ids = reg_ids.join(",");
+
+    this.state.detail["properties"]["画像ID"] = send_ids;
+
     const data = {
       commonHeader: {
         receiptNumber: receiptNumber
@@ -88,29 +104,37 @@ class ConfirmInfo extends React.Component {
       features: [this.state.detail]
     };
 
-    console.log(data);
-
-    fetch("/api/JsonService.asmx/AddFeatures", {
+    fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
+      credentials: "include",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
+      body: JSON.stringify(this.state.formData)
     })
-      .then(function(res) {
-        const json = res.json().then(data => {
-          if (data.commonHeader.resultInfomation == "0") {
-            alert("登録が完了しました。\nご協力ありがとうございました。");
-            Router.push("/map");
-          } else {
-            console.log("Error:", data.commonHeader.systemErrorReport);
-            alert("登録に失敗しました。");
-          }
-        });
+      .then(res => {
+        fetch("/api/JsonService.asmx/AddFeatures", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Map-Api-Access-Token": token
+          },
+          body: JSON.stringify(data)
+        })
+          .then(function(res) {
+            const json = res.json().then(data => {
+              if (data.commonHeader.resultInfomation == "0") {
+                alert("登録が完了しました。\nご協力ありがとうございました。");
+                Router.push("/map");
+              } else {
+                console.log("Error:", data.commonHeader.systemErrorReport);
+                alert("登録に失敗しました。");
+              }
+            });
+          })
+          .catch(error => console.log("Error:", error));
       })
-      .catch(error => console.log("Error:", error));
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   onClickPrev() {
@@ -142,15 +166,30 @@ class ConfirmInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報登録</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} />;
+        detaildiv = (
+          <BoarInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "trap":
         header = <Header color="trap">わな情報登録</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} />;
+        detaildiv = (
+          <TrapInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報登録</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} />;
+        detaildiv = (
+          <VaccineInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       default:
         break;

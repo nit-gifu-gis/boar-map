@@ -171,6 +171,11 @@ class VaccineForm extends React.Component {
           <div className="form">
             <form name="form" onSubmit={this.onSubmit}>
               <InfoInput
+                title="画像"
+                type="images"
+                onChanged={this.props.onChangedImages}
+              />
+              <InfoInput
                 title="メッシュ番号"
                 type="number"
                 name="meshNumber"

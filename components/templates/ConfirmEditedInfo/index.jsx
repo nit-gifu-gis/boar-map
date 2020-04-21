@@ -18,7 +18,10 @@ class ConfirmEditedInfo extends React.Component {
     super(props);
     this.state = {
       type: null,
-      detail: null
+      detail: null,
+      ids: null,
+      formData: null,
+      picCount: 0
     };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
@@ -44,7 +47,10 @@ class ConfirmEditedInfo extends React.Component {
       // console.log("confirm", Router.query);
       this.setState({
         type: Router.query.type,
-        detail: JSON.parse(Router.query.detail)
+        detail: JSON.parse(Router.query.detail),
+        ids: JSON.parse(Router.query.ids),
+        formData: JSON.parse(Router.query.formData),
+        picCount: JSON.parse(Router.query.formData).length
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -70,6 +76,18 @@ class ConfirmEditedInfo extends React.Component {
         break;
     }
 
+    const reg_ids = [].concat(this.state.ids);
+    for (let i = 0; i < this.state.formData.length; i++) {
+      const data = this.state.formData[i];
+      if (data["id"] !== "") {
+        reg_ids.push(data["id"]);
+      }
+    }
+
+    const send_ids = reg_ids.join(",");
+
+    this.state.detail["properties"]["画像ID"] = send_ids;
+
     const data = {
       commonHeader: {
         receiptNumber: receiptNumber
@@ -79,29 +97,37 @@ class ConfirmEditedInfo extends React.Component {
       features: [this.state.detail]
     };
 
-    console.log(data);
-
-    fetch("/api/JsonService.asmx/UpdateFeatures", {
+    fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
+      credentials: "include",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
+      body: JSON.stringify(this.state.formData)
     })
-      .then(function(res) {
-        const json = res.json().then(data => {
-          if (data.commonHeader.resultInfomation == "0") {
-            alert("更新が完了しました。\nご協力ありがとうございました。");
-            Router.push("/map");
-          } else {
-            console.log("Error:", data.commonHeader.systemErrorReport);
-            alert("更新に失敗しました。");
-          }
-        });
+      .then(res => {
+        fetch("/api/JsonService.asmx/UpdateFeatures", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Map-Api-Access-Token": token
+          },
+          body: JSON.stringify(data)
+        })
+          .then(function(res) {
+            const json = res.json().then(data => {
+              if (data.commonHeader.resultInfomation == "0") {
+                alert("更新が完了しました。\nご協力ありがとうございました。");
+                Router.push("/map");
+              } else {
+                console.log("Error:", data.commonHeader.systemErrorReport);
+                alert("更新に失敗しました。");
+              }
+            });
+          })
+          .catch(error => console.log("Error:", error));
       })
-      .catch(error => console.log("Error:", error));
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   onClickPrev() {
@@ -132,15 +158,30 @@ class ConfirmEditedInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報編集</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} />;
+        detaildiv = (
+          <BoarInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "trap":
         header = <Header color="trap">わな情報編集</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} />;
+        detaildiv = (
+          <TrapInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報編集</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} />;
+        detaildiv = (
+          <VaccineInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       default:
         break;
