@@ -4,6 +4,7 @@ import "../../../public/static/css/global.scss";
 import InfoTitle from "../../atomos/infoTitle";
 import InfoText from "../../atomos/infoText";
 import dynamic from "next/dynamic";
+import ImagesDiv from "../../atomos/imagesDiv";
 
 const DynamicMiniMapComponentWithNoSSR = dynamic(
   () => import("../../atomos/miniMapDiv"),
@@ -44,6 +45,18 @@ class InfoDiv extends React.Component {
           const lat = this.props.data.lat;
           const lng = this.props.data.lng;
           dataDiv = <DynamicMiniMapComponentWithNoSSR lat={lat} lng={lng} />;
+          break;
+        case "images":
+          const imgs = this.props.data.imgs;
+          const type = this.props.data.type;
+          const waitingPublish = this.props.data.waitingPublish;
+          dataDiv = (
+            <ImagesDiv
+              type={type}
+              imgs={imgs}
+              waitingPublish={waitingPublish}
+            />
+          );
           break;
         default:
           dataDiv = <InfoText>{this.props.data}</InfoText>;

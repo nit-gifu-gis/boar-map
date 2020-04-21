@@ -1,0 +1,53 @@
+.imagesDiv {
+  width: 100%;
+  margin: 10px 0px 10px 0px;
+  box-sizing: border-box;
+  font-size: 18px;
+  position: relative;
+
+  &__description {
+    text-align: center;
+    color: #212121;
+  }
+
+  &__noImageDescription {
+    text-align: center;
+    color: #757575;
+  }
+
+  &__singleBox {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  &__singleBox__image {
+    max-height: 400px;
+    max-width: 100%;
+    border: solid 2px #bdbdbd;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  &__multiBox {
+    width: 100%;
+    overflow-x: scroll;
+    white-space: nowrap;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+  }
+
+  &__multiBox__image {
+    max-height: 400px;
+    max-width: 85%;
+    display: inline-block;
+    border: solid 2px #bdbdbd;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  &__multiBox__image + &__multiBox__image {
+    margin-left: 10px;
+  }
+}

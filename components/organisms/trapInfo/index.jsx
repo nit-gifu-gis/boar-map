@@ -28,6 +28,15 @@ class TrapInfo extends React.Component {
           }}
         />
         <InfoDiv
+          title="画像"
+          type="images"
+          data={{
+            type: "trap",
+            imgs: this.props.imgs,
+            waitingPublish: this.props.waitingPublish
+          }}
+        />
+        <InfoDiv
           title="設置年月日"
           type="date"
           data={this.props.detail["properties"]["設置年月日"]}

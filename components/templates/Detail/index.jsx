@@ -4,7 +4,6 @@ import Router from "next/router";
 import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
-import ImageView from "../../organisms/imageView";
 
 import "../../../utils/statics";
 import Header from "../../organisms/header";
@@ -142,15 +141,15 @@ class Detail extends React.Component {
       if (type == 0) {
         this.state.type = "boar";
         header = <Header color="boar">捕獲情報</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} />;
+        detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
       } else if (type == 1) {
         this.state.type = "trap";
         header = <Header color="trap">わな情報</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} />;
+        detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
       } else if (type == 2) {
         this.state.type = "vaccine";
         header = <Header color="vaccine">ワクチン情報</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} />;
+        detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
       }
     }
     return (
@@ -158,7 +157,6 @@ class Detail extends React.Component {
         {header}
         <div className="detail-div">
           {detaildiv}
-          <ImageView type={this.state.type} imgs={imgIds} />
           <FooterAdjustment />
         </div>
         <Footer>

@@ -14,6 +14,15 @@ class BoarInfo extends React.Component {
             lng: this.props.detail["geometry"]["coordinates"][0]
           }}
         />
+        <InfoDiv
+          title="画像"
+          type="images"
+          data={{
+            type: "boar",
+            imgs: this.props.imgs,
+            waitingPublish: this.props.waitingPublish
+          }}
+        />
         <InfoDiv title="区分" data={this.props.detail["properties"]["区分"]} />
         <InfoDiv
           title="捕獲年月日"

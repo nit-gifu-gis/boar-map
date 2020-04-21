@@ -35,6 +35,15 @@ class VaccineInfo extends React.Component {
           }}
         />
         <InfoDiv
+          title="画像"
+          type="images"
+          data={{
+            type: "vaccine",
+            imgs: this.props.imgs,
+            waitingPublish: this.props.waitingPublish
+          }}
+        />
+        <InfoDiv
           title="メッシュ番号"
           type="number"
           data={this.props.detail["properties"]["メッシュ番号"]}

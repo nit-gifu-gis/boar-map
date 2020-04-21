@@ -158,15 +158,30 @@ class ConfirmEditedInfo extends React.Component {
     switch (this.state.type) {
       case "boar":
         header = <Header color="boar">捕獲情報編集</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} />;
+        detaildiv = (
+          <BoarInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "trap":
         header = <Header color="trap">わな情報編集</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} />;
+        detaildiv = (
+          <TrapInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       case "vaccine":
         header = <Header color="vaccine">ワクチン情報編集</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} />;
+        detaildiv = (
+          <VaccineInfo
+            detail={this.state.detail}
+            waitingPublish={this.state.picCount}
+          />
+        );
         break;
       default:
         break;
@@ -179,9 +194,6 @@ class ConfirmEditedInfo extends React.Component {
             <p>情報に不備がないかご確認ください。</p>
           </div>
           {detaildiv}
-          <div className="fileCount">
-            <p>{this.state.picCount}枚の画像がアップロードされました。</p>
-          </div>
           <FooterAdjustment />
         </div>
         <Footer>
