@@ -5,6 +5,7 @@ import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
 import SelectInput from "../../atomos/selectInput";
 import TextAreaInput from "../../atomos/textAreaInput";
+import ImagesInput from "../../atomos/imagesInput";
 
 class InfoInput extends React.Component {
   render() {
@@ -59,6 +60,9 @@ class InfoInput extends React.Component {
             onChange={this.props.onChange}
           />
         );
+        break;
+      case "images":
+        input = <ImagesInput onChanged={this.props.onChanged} />;
         break;
       default:
         break;

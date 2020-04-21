@@ -137,6 +137,7 @@ class AddInfo extends React.Component {
             detail={this.state.detail}
             lat={this.state.lat}
             lng={this.state.lng}
+            onChangedImages={this.fileChanged.bind(this)}
           />
         );
         break;
@@ -148,6 +149,7 @@ class AddInfo extends React.Component {
             detail={this.state.detail}
             lat={this.state.lat}
             lng={this.state.lng}
+            onChangedImages={this.fileChanged.bind(this)}
           />
         );
         break;
@@ -159,6 +161,7 @@ class AddInfo extends React.Component {
             detail={this.state.detail}
             lat={this.state.lat}
             lng={this.state.lng}
+            onChangedImages={this.fileChanged.bind(this)}
           />
         );
         break;
@@ -173,12 +176,6 @@ class AddInfo extends React.Component {
             <p>各情報を入力してください。</p>
           </div>
           {form}
-          <div className="pic-form">
-            <ImageInput
-              type={this.state.type}
-              onChanged={this.fileChanged.bind(this)}
-            />
-          </div>
           <FooterAdjustment />
         </div>
         <Footer>
