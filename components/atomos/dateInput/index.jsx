@@ -49,9 +49,12 @@ class DateInput extends React.Component {
   }
 
   setDate() {
-    const yyyy = document.getElementById(this.props.id + "Year").value;
-    const mm = document.getElementById(this.props.id + "Month").value;
-    const dd = document.getElementById(this.props.id + "Day").value;
+    const yearValue = document.getElementById(this.props.id + "Year").value;
+    const monthValue = document.getElementById(this.props.id + "Month").value;
+    const dayValue = document.getElementById(this.props.id + "Day").value;
+    const yyyy = ("0000" + yearValue).slice(-4);
+    const mm = ("00" + monthValue).slice(-2);
+    const dd = ("00" + dayValue).slice(-2);
     const date = yyyy + "-" + mm + "-" + dd;
     // window.alert(date);
     if (yyyy != "" && mm != "" && dd != "") {
@@ -102,9 +105,9 @@ class DateInput extends React.Component {
         }
       } else {
         const today = new Date();
-        DateY = today.getFullYear();
-        DateM = today.getMonth() + 1;
-        DateD = today.getDate();
+        DateY = ("0000" + today.getFullYear()).slice(-4);
+        DateM = ("00" + (today.getMonth() + 1)).slice(-2);
+        DateD = ("00" + today.getDate()).slice(-2);
       }
       if (this.isSafari()) {
         return (
