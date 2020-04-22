@@ -14,3 +14,7 @@
 .round_button:active {
   filter: brightness(60%) drop-shadow(0 0 5px #212121);
 }
+
+.round_button:disabled {
+  background-color: #bdbdbd;
+}
