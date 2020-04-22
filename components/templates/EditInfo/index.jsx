@@ -21,7 +21,8 @@ class EditInfo extends React.Component {
       id: null,
       lat: null,
       lng: null,
-      ids: []
+      ids: [],
+      isProcessing: false
     };
     this.formRef = React.createRef();
   }
@@ -131,6 +132,7 @@ class EditInfo extends React.Component {
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
+    this.setState({ isProcessing: true });
     this.upload();
     // console.log(this.state.id);
     // console.log(data);
@@ -196,9 +198,19 @@ class EditInfo extends React.Component {
           <RoundButton color="accent" bind={this.onClickPrev.bind(this)}>
             ＜ 戻る
           </RoundButton>
-          <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
-            進む ＞
-          </RoundButton>
+          {this.state.isProcessing == false ? (
+            <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
+              進む ＞
+            </RoundButton>
+          ) : (
+            <RoundButton
+              color="primary"
+              bind={this.onClickNext.bind(this)}
+              enabled={false}
+            >
+              処理中
+            </RoundButton>
+          )}
         </Footer>
       </div>
     );
