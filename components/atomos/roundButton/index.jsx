@@ -4,6 +4,9 @@ import "../../../public/static/css/global.scss";
 
 class RoundButton extends React.Component {
   // クリック時の処理は親の方で定義
+  constructor(props) {
+    super(props);
+  }
 
   render() {
     let bgColor = "#ff9800";
@@ -21,15 +24,25 @@ class RoundButton extends React.Component {
         break;
     }
 
-    return (
-      <button
-        className="round_button"
-        onClick={this.props.bind}
-        style={{ backgroundColor: bgColor }}
-      >
-        {this.props.children}
-      </button>
-    );
+    console.log(this.props.enabled);
+
+    if (this.props.enabled == false) {
+      return (
+        <button className="round_button" onClick={this.props.bind} disabled>
+          {this.props.children}
+        </button>
+      );
+    } else {
+      return (
+        <button
+          className="round_button"
+          onClick={this.props.bind}
+          style={{ backgroundColor: bgColor }}
+        >
+          {this.props.children}
+        </button>
+      );
+    }
   }
 }
 

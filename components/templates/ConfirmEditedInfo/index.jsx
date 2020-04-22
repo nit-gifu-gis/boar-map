@@ -21,7 +21,8 @@ class ConfirmEditedInfo extends React.Component {
       detail: null,
       ids: null,
       formData: null,
-      picCount: 0
+      picCount: 0,
+      isProcessing: false
     };
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = { user_id: "", access_token: "" };
@@ -146,6 +147,7 @@ class ConfirmEditedInfo extends React.Component {
   }
 
   onClickNext() {
+    this.setState({ isProcessing: true });
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();
@@ -200,9 +202,19 @@ class ConfirmEditedInfo extends React.Component {
           <RoundButton color="accent" bind={this.onClickPrev.bind(this)}>
             ＜ 戻る
           </RoundButton>
-          <RoundButton color="danger" bind={this.onClickNext.bind(this)}>
-            登録 ＞
-          </RoundButton>
+          {this.state.isProcessing == false ? (
+            <RoundButton color="danger" bind={this.onClickNext.bind(this)}>
+              登録 ＞
+            </RoundButton>
+          ) : (
+            <RoundButton
+              color="danger"
+              bind={this.onClickNext.bind(this)}
+              enabled={false}
+            >
+              処理中
+            </RoundButton>
+          )}
         </Footer>
       </div>
     );
