@@ -40,6 +40,22 @@ ex) `メイン画面の実装 #1`
 3. 作業をする
 4. プルリクを作成する 
 
+## アップデートログの更新方法(masterブランチのみ対応)
+マージ時のコメントに次の形式のデータを含める。
+```
+[meta]
+[version]Version x.x.x[/version]
+[contents]
+内容1
+内容2
+[/contents]
+[/meta]
+```
+
+## デプロイ先
+1. https://boar-map.nit-gifu-gis.now.sh/
+2. https://app-gis-dev.junki-t.net/
+
 ## その他
 - [homebrewのインストール方法](https://brew.sh/)
 - [yarnのインストール方法](https://yarnpkg.com/lang/ja/docs/install/#mac-stable)
