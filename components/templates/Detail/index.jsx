@@ -31,7 +31,7 @@ class Detail extends React.Component {
     // W,K以外でワクチン情報を表示しようとするのは禁止
     if (this.state.userDepartment != "W" && this.state.userDepartment != "K") {
       if (Router.query.type == "2") {
-        console.errer("Permission Denied: ワクチン情報にはアクセスできません");
+        console.log("Permission Denied: ワクチン情報にはアクセスできません");
         return;
       }
     }

@@ -53,16 +53,43 @@ class ConfirmInfo extends React.Component {
 
   submitInfo() {
     const token = this.state.userData.access_token;
+    const userDepartment = UserData.getUserDepartment();
     const receiptNumber = Math.floor(Math.random() * 100000);
     let layerId = null;
+    // レイヤーIDを選択すると同時に，書き込み権限をチェック
     switch (this.state.type) {
       case "boar":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = BOAR_LAYER_ID;
         break;
       case "trap":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = TRAP_LAYER_ID;
         break;
       case "vaccine":
+        if (userDepartment != "W" && userDepartment != "K") {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = VACCINE_LAYER_ID;
         break;
       default:
