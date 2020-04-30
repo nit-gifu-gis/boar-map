@@ -17,7 +17,8 @@ class Detail extends React.Component {
     detail: {},
     retry: 0,
     type: undefined,
-    ids: []
+    ids: [],
+    userDepartment: UserData.getUserDepartment()
   };
   async getFeatureDetail() {
     this.state.retry++;
@@ -26,6 +27,14 @@ class Detail extends React.Component {
       return;
     }
     const userData = UserData.getUserData();
+
+    // W,K以外でワクチン情報を表示しようとするのは禁止
+    if (this.state.userDepartment != "W" && this.state.userDepartment != "K") {
+      if (Router.query.type == "2") {
+        console.errer("Permission Denied: ワクチン情報にはアクセスできません");
+        return;
+      }
+    }
 
     const receiptNumber = Math.floor(Math.random() * 100000);
     const data = {

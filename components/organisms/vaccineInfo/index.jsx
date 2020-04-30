@@ -1,9 +1,19 @@
 import "./vaccineInfo.scss";
 import React from "react";
 import InfoDiv from "../../molecules/infoDiv";
+import UserData from "../../../utils/userData";
 
 class VaccineInfo extends React.Component {
   render() {
+    // W,K以外には表示しない
+    const userDepartment = UserData.getUserDepartment();
+    if (userDepartment != "W" && userDepartment != "K") {
+      return (
+        <div className="vaccine_info_form">
+          エラー：情報を表示する権限がありません。
+        </div>
+      );
+    }
     let recoverdiv = undefined;
     if (this.props.detail["properties"]["回収年月日"] != "") {
       recoverdiv = [
