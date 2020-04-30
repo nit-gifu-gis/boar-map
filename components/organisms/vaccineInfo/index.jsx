@@ -6,7 +6,8 @@ import UserData from "../../../utils/userData";
 class VaccineInfo extends React.Component {
   render() {
     // W,K以外には表示しない
-    const userDepartment = UserData.getUserDepartment();
+    const userData = UserData.getUserData();
+    const userDepartment = userData.department;
     if (userDepartment != "W" && userDepartment != "K") {
       return (
         <div className="vaccine_info_form">

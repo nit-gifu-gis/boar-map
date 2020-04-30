@@ -47,27 +47,9 @@ class InfoTypeSelector extends React.Component {
   constructor() {
     super();
     this.state = {
-      selected: null
+      userData: UserData.getUserData(),
+      selected: []
     };
-
-    const userDepartment = UserData.getUserDepartment();
-    // userDepartmentに応じて表示するものを変更する
-    switch (userDepartment) {
-      case "T":
-      case "U":
-      case "S":
-        this.choices = [<BoarDiv />, <TrapDiv />];
-        break;
-      case "W":
-        this.choices = [<VaccineDiv />];
-        break;
-      case "K":
-        this.choices = [<BoarDiv />, <TrapDiv />, <VaccineDiv />];
-        break;
-      default:
-        this.choices = [];
-        break;
-    }
   }
 
   getSelectedItem() {
@@ -84,6 +66,28 @@ class InfoTypeSelector extends React.Component {
   }
 
   render() {
+    let choices = [];
+
+    if (this.state.userData) {
+      // userDepartmentに応じて表示するものを変更する
+      switch (this.state.userData.department) {
+        case "T":
+        case "U":
+        case "S":
+          choices = [<BoarDiv />, <TrapDiv />];
+          break;
+        case "W":
+          choices = [<VaccineDiv />];
+          break;
+        case "K":
+          choices = [<BoarDiv />, <TrapDiv />, <VaccineDiv />];
+          break;
+        default:
+          choices = [];
+          break;
+      }
+    }
+
     return (
       <div className="info-type-selector">
         <div className="description">
@@ -91,7 +95,7 @@ class InfoTypeSelector extends React.Component {
         </div>
         <div className="choices">
           <form name="form">
-            <div className="radio">{this.choices}</div>
+            <div className="radio">{choices}</div>
             <input
               type="radio"
               id="radio4"

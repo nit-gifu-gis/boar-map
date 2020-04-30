@@ -32,7 +32,7 @@ class TrapForm extends React.Component {
 
   componentDidMount() {
     // T, U, S, K以外は登録不可
-    const userDepartment = UserData.getUserDepartment();
+    const userDepartment = this.state.userData.department;
     if (
       userDepartment != "T" &&
       userDepartment != "U" &&

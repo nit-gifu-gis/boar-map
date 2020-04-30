@@ -43,12 +43,11 @@ class BoarForm extends React.Component {
 
   componentDidMount() {
     // T, U, S, K以外は登録不可
-    const userDepartment = UserData.getUserDepartment();
     if (
-      userDepartment != "T" &&
-      userDepartment != "U" &&
-      userDepartment != "S" &&
-      userDepartment != "K"
+      this.state.userData.department != "T" &&
+      this.state.userData.department != "U" &&
+      this.state.userData.department != "S" &&
+      this.state.userData.department != "K"
     ) {
       console.log("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");

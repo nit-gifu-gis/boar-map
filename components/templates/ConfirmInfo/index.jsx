@@ -54,7 +54,7 @@ class ConfirmInfo extends React.Component {
   submitInfo() {
     this.setState({ isProcessing: true });
     const token = this.state.userData.access_token;
-    const userDepartment = UserData.getUserDepartment();
+    const userDepartment = this.state.userData.department;
     const receiptNumber = Math.floor(Math.random() * 100000);
     let layerId = null;
     // レイヤーIDを選択すると同時に，書き込み権限をチェック

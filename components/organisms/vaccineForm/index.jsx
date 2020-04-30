@@ -48,7 +48,7 @@ class VaccineForm extends React.Component {
 
   componentDidMount() {
     // W, K以外は登録不可
-    const userDepartment = UserData.getUserDepartment();
+    const userDepartment = this.state.userData.department;
     if (userDepartment != "W" && userDepartment != "K") {
       console.log("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");

@@ -237,7 +237,7 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    const userDepartment = UserData.getUserDepartment();
+    const userDepartment = this.state.userData.department;
 
     console.log("vaccine");
     if (userDepartment == "W" || userDepartment == "K") {
