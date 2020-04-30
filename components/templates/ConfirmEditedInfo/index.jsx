@@ -12,6 +12,7 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
+import UserData from "../../../utils/userData";
 
 class ConfirmEditedInfo extends React.Component {
   constructor(props) {
@@ -22,25 +23,9 @@ class ConfirmEditedInfo extends React.Component {
       ids: null,
       formData: null,
       picCount: 0,
-      isProcessing: false
+      isProcessing: false,
+      userData: UserData.getUserData()
     };
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    if (process.browser) {
-      const r = document.cookie.split(";");
-      r.forEach(function(value) {
-        const content = value.split("=");
-        content[0] = content[0].replace(" ", "");
-        if (content[0] == "user_id") {
-          userData.user_id = content[1];
-        } else if (content[0] == "access_token") {
-          userData.access_token = content[1];
-        }
-      });
-      this.state.userData = userData;
-    } else {
-      return;
-    }
   }
 
   componentDidMount() {
