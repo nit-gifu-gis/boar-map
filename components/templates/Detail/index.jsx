@@ -136,20 +136,45 @@ class Detail extends React.Component {
     let header = <Header color="primary">詳細情報</Header>;
 
     const imgIds = this.state.ids;
+
+    // 区分に応じて「編集」ボタンを有効化
+    // （通常であれば，Wがboarとtrapを編集出来ないだけ）
+    const userDepartment = UserData.getUserDepartment();
+    let editEnabled = false;
+
     if (Object.keys(this.state.detail).length != 0) {
       const type = Router.query.type;
       if (type == 0) {
         this.state.type = "boar";
         header = <Header color="boar">捕獲情報</Header>;
         detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
+        if (
+          userDepartment == "T" ||
+          userDepartment == "U" ||
+          userDepartment == "S" ||
+          userDepartment == "K"
+        ) {
+          editEnabled = true;
+        }
       } else if (type == 1) {
         this.state.type = "trap";
         header = <Header color="trap">わな情報</Header>;
         detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
+        if (
+          userDepartment == "T" ||
+          userDepartment == "U" ||
+          userDepartment == "S" ||
+          userDepartment == "K"
+        ) {
+          editEnabled = true;
+        }
       } else if (type == 2) {
         this.state.type = "vaccine";
         header = <Header color="vaccine">ワクチン情報</Header>;
         detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
+        if (userDepartment == "W" || userDepartment == "K") {
+          editEnabled = true;
+        }
       }
     }
     return (
@@ -163,7 +188,11 @@ class Detail extends React.Component {
           <RoundButton color="accent" bind={this.onClickPrev}>
             ＜ 戻る
           </RoundButton>
-          <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
+          <RoundButton
+            color="primary"
+            bind={this.onClickNext.bind(this)}
+            enabled={editEnabled}
+          >
             編集 ＞
           </RoundButton>
         </Footer>
