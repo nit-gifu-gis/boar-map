@@ -45,6 +45,7 @@ class ConfirmEditedInfo extends React.Component {
   }
 
   submitInfo() {
+    this.setState({ isProcessing: true });
     const token = this.state.userData.access_token;
     const receiptNumber = Math.floor(Math.random() * 100000);
     let layerId = null;
@@ -132,7 +133,6 @@ class ConfirmEditedInfo extends React.Component {
   }
 
   onClickNext() {
-    this.setState({ isProcessing: true });
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();

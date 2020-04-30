@@ -52,6 +52,7 @@ class ConfirmInfo extends React.Component {
   }
 
   submitInfo() {
+    this.setState({ isProcessing: true });
     const token = this.state.userData.access_token;
     const userDepartment = UserData.getUserDepartment();
     const receiptNumber = Math.floor(Math.random() * 100000);
@@ -167,7 +168,6 @@ class ConfirmInfo extends React.Component {
   }
 
   onClickNext() {
-    this.setState({ isProcessing: true });
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();
