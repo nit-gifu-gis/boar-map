@@ -9,10 +9,24 @@ class MiniMapDiv extends React.Component {
 
   constructor(props) {
     super(props);
+
+    // もしCookieにlast_xxがあったら読み込む
+    let defaultZoom = 17;
+    if (process.browser) {
+      const r = document.cookie.split(";");
+      r.forEach(value => {
+        const content = value.split("=");
+        content[0] = content[0].replace(" ", "");
+        if (content[0] == "last_zoom") {
+          defaultZoom = parseFloat(content[1]);
+        }
+      });
+    }
+
     this.state = {
       lat: this.props.lat,
       lng: this.props.lng,
-      zoom: 17,
+      zoom: defaultZoom,
       myMap: null
     };
   }

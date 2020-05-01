@@ -73,11 +73,30 @@ class MapBase extends React.Component {
       ]
     });
 
+    // もしCookieにlast_xxがあったら読み込む
+    let defaultLat = 35.367237;
+    let defautlLng = 136.637408;
+    let defaultZoom = 17;
+    if (process.browser) {
+      const r = document.cookie.split(";");
+      r.forEach(value => {
+        const content = value.split("=");
+        content[0] = content[0].replace(" ", "");
+        if (content[0] == "last_lat") {
+          defaultLat = parseFloat(content[1]);
+        } else if (content[0] == "last_lng") {
+          defautlLng = parseFloat(content[1]);
+        } else if (content[0] == "last_zoom") {
+          defaultZoom = parseFloat(content[1]);
+        }
+      });
+    }
+
     // state初期化
     this.state = {
-      lat: 35.367237,
-      lng: 136.637408,
-      zoom: 17,
+      lat: defaultLat,
+      lng: defautlLng,
+      zoom: defaultZoom,
       overlays: {},
       markerstate: [true, true, true],
       control: undefined,
@@ -91,6 +110,81 @@ class MapBase extends React.Component {
 
   componentDidMount() {
     this.map();
+  }
+
+  map() {
+    const node = this.node;
+    this.myMap = L.map(node).setView(
+      [this.state.lat, this.state.lng],
+      this.state.zoom
+    );
+
+    const userData = this.state.userData;
+
+    if (this.props.isMainMap != undefined) {
+      this.state.isMainMap = this.props.isMainMap;
+    }
+
+    const mainLayer = L.TileLayer.wmsHeader(
+      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+      {
+        version: "1.3.0",
+        layers: "999999194",
+        format: "image/png",
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true
+      },
+      [
+        {
+          header: "X-Map-Api-Access-Token",
+          value: userData.access_token
+        }
+      ]
+    ).addTo(this.myMap);
+
+    this.updateMarkers(this.myMap, userData.access_token);
+
+    const me = this;
+
+    this.myMap.on("moveend", function(e) {
+      console.log("map-moveend");
+      me.saveMapState(me.myMap);
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    this.myMap.on("zoomend", function(e) {
+      console.log("map-zoomend");
+      me.saveMapState(me.myMap);
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    this.myMap.on("resize", function(e) {
+      console.log("map-resize");
+      me.saveMapState(me.myMap);
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    // 拡大縮小ボタン追加
+    L.control.scale().addTo(this.myMap);
+
+    // 現在地取得ボタンを作成＋追加
+    L.easyButton({
+      id: "set-location-button",
+      position: "topleft",
+      type: "replace",
+      leafletClasses: true,
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "setLocation",
+          onClick: this.onClickSetLocation,
+          title: "setLocation",
+          icon: "fa-location-arrow"
+        }
+      ]
+    }).addTo(this.myMap);
   }
 
   getBoar(map, token, me, data) {
@@ -432,78 +526,6 @@ class MapBase extends React.Component {
     this.getBoar(map, token, me, data);
   }
 
-  map() {
-    const node = this.node;
-    this.myMap = L.map(node).setView(
-      [this.state.lat, this.state.lng],
-      this.state.zoom
-    );
-
-    const userData = this.state.userData;
-
-    if (this.props.isMainMap != undefined) {
-      this.state.isMainMap = this.props.isMainMap;
-    }
-
-    const mainLayer = L.TileLayer.wmsHeader(
-      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
-      {
-        version: "1.3.0",
-        layers: "999999194",
-        format: "image/png",
-        maxZoom: 18,
-        tileSize: 256,
-        crs: L.CRS.EPSG3857,
-        uppercase: true
-      },
-      [
-        {
-          header: "X-Map-Api-Access-Token",
-          value: userData.access_token
-        }
-      ]
-    ).addTo(this.myMap);
-
-    this.updateMarkers(this.myMap, userData.access_token);
-
-    const me = this;
-
-    this.myMap.on("moveend", function(e) {
-      console.log("map-moveend");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    this.myMap.on("zoomend", function(e) {
-      console.log("map-zoomend");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    this.myMap.on("resize", function(e) {
-      console.log("map-resize");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    // 拡大縮小ボタン追加
-    L.control.scale().addTo(this.myMap);
-
-    // 現在地取得ボタンを作成＋追加
-    L.easyButton({
-      id: "set-location-button",
-      position: "topleft",
-      type: "replace",
-      leafletClasses: true,
-      states: [
-        {
-          // specify different icons and responses for your button
-          stateName: "setLocation",
-          onClick: this.onClickSetLocation,
-          title: "setLocation",
-          icon: "fa-location-arrow"
-        }
-      ]
-    }).addTo(this.myMap);
-  }
-
   // 地図のサイズを計算する
   calcMapHeight() {
     // 地図の高さを調整する
@@ -536,33 +558,13 @@ class MapBase extends React.Component {
     );
   };
 
-  // 描画関数
-  render() {
-    const mapHeight = this.calcMapHeight();
-    // 描画する
-    return (
-      <div>
-        <div
-          id="map"
-          style={{ height: mapHeight }}
-          ref={node => {
-            this.node = node;
-          }}
-        >
-          <EventListener
-            target="window"
-            onResize={this.handleResize.bind(this)}
-          />
-        </div>
-        <div id="loading-mark">
-          <img src="static/images/map/loading.gif" alt="loading" />
-        </div>
-      </div>
-    );
-  }
-
   // 現在地取得ボタンをクリックしたときの処理
   onClickSetLocation = (btn, map) => {
+    this.getCurrentLocation(map);
+  };
+
+  // 現在地取得関数
+  getCurrentLocation(map) {
     if (navigator.geolocation == false) {
       alert("現在地を取得できませんでした．");
       return;
@@ -594,7 +596,43 @@ class MapBase extends React.Component {
     };
 
     navigator.geolocation.getCurrentPosition(success, error);
-  };
+  }
+
+  // 現在の表示状態（中心座標，ズームレベル）を記録する
+  saveMapState(map) {
+    if (process.browser) {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      document.cookie = `last_lat=${center.lat}; path=/`;
+      document.cookie = `last_lng=${center.lng}; path=/`;
+      document.cookie = `last_zoom=${zoom}; path=/`;
+    }
+  }
+
+  // 描画関数
+  render() {
+    const mapHeight = this.calcMapHeight();
+    // 描画する
+    return (
+      <div>
+        <div
+          id="map"
+          style={{ height: mapHeight }}
+          ref={node => {
+            this.node = node;
+          }}
+        >
+          <EventListener
+            target="window"
+            onResize={this.handleResize.bind(this)}
+          />
+        </div>
+        <div id="loading-mark">
+          <img src="static/images/map/loading.gif" alt="loading" />
+        </div>
+      </div>
+    );
+  }
 }
 
 export default MapBase;
