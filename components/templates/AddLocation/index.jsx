@@ -18,9 +18,26 @@ const DynamicMapComponentWithNoSSR = dynamic(
 class AddLocation extends React.Component {
   constructor(props) {
     super(props);
+
+    // もしCookieにlast_xxがあったら読み込む
+    let defaultLat = 35.367237;
+    let defautlLng = 136.637408;
+    if (process.browser) {
+      const r = document.cookie.split(";");
+      r.forEach(value => {
+        const content = value.split("=");
+        content[0] = content[0].replace(" ", "");
+        if (content[0] == "last_lat") {
+          defaultLat = parseFloat(content[1]);
+        } else if (content[0] == "last_lng") {
+          defautlLng = parseFloat(content[1]);
+        }
+      });
+    }
+
     this.state = {
-      lat: 35.367237,
-      lng: 136.637408,
+      lat: defaultLat,
+      lng: defautlLng,
       type: null,
       detail: null
     };
