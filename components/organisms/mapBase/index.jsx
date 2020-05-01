@@ -93,6 +93,78 @@ class MapBase extends React.Component {
     this.map();
   }
 
+  map() {
+    const node = this.node;
+    this.myMap = L.map(node).setView(
+      [this.state.lat, this.state.lng],
+      this.state.zoom
+    );
+
+    const userData = this.state.userData;
+
+    if (this.props.isMainMap != undefined) {
+      this.state.isMainMap = this.props.isMainMap;
+    }
+
+    const mainLayer = L.TileLayer.wmsHeader(
+      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+      {
+        version: "1.3.0",
+        layers: "999999194",
+        format: "image/png",
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true
+      },
+      [
+        {
+          header: "X-Map-Api-Access-Token",
+          value: userData.access_token
+        }
+      ]
+    ).addTo(this.myMap);
+
+    this.updateMarkers(this.myMap, userData.access_token);
+
+    const me = this;
+
+    this.myMap.on("moveend", function(e) {
+      console.log("map-moveend");
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    this.myMap.on("zoomend", function(e) {
+      console.log("map-zoomend");
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    this.myMap.on("resize", function(e) {
+      console.log("map-resize");
+      me.updateMarkers(me.myMap, userData.access_token);
+    });
+
+    // 拡大縮小ボタン追加
+    L.control.scale().addTo(this.myMap);
+
+    // 現在地取得ボタンを作成＋追加
+    L.easyButton({
+      id: "set-location-button",
+      position: "topleft",
+      type: "replace",
+      leafletClasses: true,
+      states: [
+        {
+          // specify different icons and responses for your button
+          stateName: "setLocation",
+          onClick: this.onClickSetLocation,
+          title: "setLocation",
+          icon: "fa-location-arrow"
+        }
+      ]
+    }).addTo(this.myMap);
+  }
+
   getBoar(map, token, me, data) {
     console.log("boar");
     this.state.retry++;
@@ -432,78 +504,6 @@ class MapBase extends React.Component {
     this.getBoar(map, token, me, data);
   }
 
-  map() {
-    const node = this.node;
-    this.myMap = L.map(node).setView(
-      [this.state.lat, this.state.lng],
-      this.state.zoom
-    );
-
-    const userData = this.state.userData;
-
-    if (this.props.isMainMap != undefined) {
-      this.state.isMainMap = this.props.isMainMap;
-    }
-
-    const mainLayer = L.TileLayer.wmsHeader(
-      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
-      {
-        version: "1.3.0",
-        layers: "999999194",
-        format: "image/png",
-        maxZoom: 18,
-        tileSize: 256,
-        crs: L.CRS.EPSG3857,
-        uppercase: true
-      },
-      [
-        {
-          header: "X-Map-Api-Access-Token",
-          value: userData.access_token
-        }
-      ]
-    ).addTo(this.myMap);
-
-    this.updateMarkers(this.myMap, userData.access_token);
-
-    const me = this;
-
-    this.myMap.on("moveend", function(e) {
-      console.log("map-moveend");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    this.myMap.on("zoomend", function(e) {
-      console.log("map-zoomend");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    this.myMap.on("resize", function(e) {
-      console.log("map-resize");
-      me.updateMarkers(me.myMap, userData.access_token);
-    });
-
-    // 拡大縮小ボタン追加
-    L.control.scale().addTo(this.myMap);
-
-    // 現在地取得ボタンを作成＋追加
-    L.easyButton({
-      id: "set-location-button",
-      position: "topleft",
-      type: "replace",
-      leafletClasses: true,
-      states: [
-        {
-          // specify different icons and responses for your button
-          stateName: "setLocation",
-          onClick: this.onClickSetLocation,
-          title: "setLocation",
-          icon: "fa-location-arrow"
-        }
-      ]
-    }).addTo(this.myMap);
-  }
-
   // 地図のサイズを計算する
   calcMapHeight() {
     // 地図の高さを調整する
@@ -536,33 +536,13 @@ class MapBase extends React.Component {
     );
   };
 
-  // 描画関数
-  render() {
-    const mapHeight = this.calcMapHeight();
-    // 描画する
-    return (
-      <div>
-        <div
-          id="map"
-          style={{ height: mapHeight }}
-          ref={node => {
-            this.node = node;
-          }}
-        >
-          <EventListener
-            target="window"
-            onResize={this.handleResize.bind(this)}
-          />
-        </div>
-        <div id="loading-mark">
-          <img src="static/images/map/loading.gif" alt="loading" />
-        </div>
-      </div>
-    );
-  }
-
   // 現在地取得ボタンをクリックしたときの処理
   onClickSetLocation = (btn, map) => {
+    this.getCurrentLocation(map);
+  };
+
+  // 現在地取得関数
+  getCurrentLocation(map) {
     if (navigator.geolocation == false) {
       alert("現在地を取得できませんでした．");
       return;
@@ -594,7 +574,32 @@ class MapBase extends React.Component {
     };
 
     navigator.geolocation.getCurrentPosition(success, error);
-  };
+  }
+
+  // 描画関数
+  render() {
+    const mapHeight = this.calcMapHeight();
+    // 描画する
+    return (
+      <div>
+        <div
+          id="map"
+          style={{ height: mapHeight }}
+          ref={node => {
+            this.node = node;
+          }}
+        >
+          <EventListener
+            target="window"
+            onResize={this.handleResize.bind(this)}
+          />
+        </div>
+        <div id="loading-mark">
+          <img src="static/images/map/loading.gif" alt="loading" />
+        </div>
+      </div>
+    );
+  }
 }
 
 export default MapBase;
