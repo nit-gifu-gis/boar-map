@@ -10,13 +10,15 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
+import UserData from "../../../utils/userData";
 
 class Detail extends React.Component {
   state = {
     detail: {},
     retry: 0,
     type: undefined,
-    ids: []
+    ids: [],
+    userData: UserData.getUserData()
   };
   async getFeatureDetail() {
     this.state.retry++;
@@ -24,17 +26,18 @@ class Detail extends React.Component {
       Router.push("/map");
       return;
     }
-    const userData = { user_id: "", access_token: "" };
-    const r = document.cookie.split(";");
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
+    const userData = UserData.getUserData();
+
+    // W,K以外でワクチン情報を表示しようとするのは禁止
+    if (
+      this.state.userData.department != "W" &&
+      this.state.userData.department != "K"
+    ) {
+      if (Router.query.type == "2") {
+        console.log("Permission Denied: ワクチン情報にはアクセスできません");
+        return;
       }
-    });
+    }
 
     const receiptNumber = Math.floor(Math.random() * 100000);
     const data = {
@@ -136,39 +139,72 @@ class Detail extends React.Component {
     let header = <Header color="primary">詳細情報</Header>;
 
     const imgIds = this.state.ids;
-    if (Object.keys(this.state.detail).length != 0) {
-      const type = Router.query.type;
-      if (type == 0) {
-        this.state.type = "boar";
-        header = <Header color="boar">捕獲情報</Header>;
-        detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
-      } else if (type == 1) {
-        this.state.type = "trap";
-        header = <Header color="trap">わな情報</Header>;
-        detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
-      } else if (type == 2) {
-        this.state.type = "vaccine";
-        header = <Header color="vaccine">ワクチン情報</Header>;
-        detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
+
+    // 区分に応じて「編集」ボタンを有効化
+    // （通常であれば，Wがboarとtrapを編集出来ないだけ）
+    if (this.state.userData) {
+      const userDepartment = this.state.userData.department;
+      let editEnabled = false;
+
+      if (Object.keys(this.state.detail).length != 0) {
+        const type = Router.query.type;
+        if (type == 0) {
+          this.state.type = "boar";
+          header = <Header color="boar">捕獲情報</Header>;
+          detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
+          if (
+            userDepartment == "T" ||
+            userDepartment == "U" ||
+            userDepartment == "S" ||
+            userDepartment == "K"
+          ) {
+            editEnabled = true;
+          }
+        } else if (type == 1) {
+          this.state.type = "trap";
+          header = <Header color="trap">わな情報</Header>;
+          detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
+          if (
+            userDepartment == "T" ||
+            userDepartment == "U" ||
+            userDepartment == "S" ||
+            userDepartment == "K"
+          ) {
+            editEnabled = true;
+          }
+        } else if (type == 2) {
+          this.state.type = "vaccine";
+          header = <Header color="vaccine">ワクチン情報</Header>;
+          detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
+          if (userDepartment == "W" || userDepartment == "K") {
+            editEnabled = true;
+          }
+        }
       }
-    }
-    return (
-      <div>
-        {header}
-        <div className="detail-div">
-          {detaildiv}
-          <FooterAdjustment />
+      return (
+        <div>
+          {header}
+          <div className="detail-div">
+            {detaildiv}
+            <FooterAdjustment />
+          </div>
+          <Footer>
+            <RoundButton color="accent" bind={this.onClickPrev}>
+              ＜ 戻る
+            </RoundButton>
+            <RoundButton
+              color="primary"
+              bind={this.onClickNext.bind(this)}
+              enabled={editEnabled}
+            >
+              編集 ＞
+            </RoundButton>
+          </Footer>
         </div>
-        <Footer>
-          <RoundButton color="accent" bind={this.onClickPrev}>
-            ＜ 戻る
-          </RoundButton>
-          <RoundButton color="primary" bind={this.onClickNext.bind(this)}>
-            編集 ＞
-          </RoundButton>
-        </Footer>
-      </div>
-    );
+      );
+    } else {
+      return <></>;
+    }
   }
 }
 

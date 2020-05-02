@@ -3,6 +3,7 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
+import UserData from "../../../utils/userData";
 
 const TrapSelector = props => (
   <InfoInput
@@ -31,33 +32,28 @@ class BoarForm extends React.Component {
       trapOrEnvSelector: <TrapSelector />,
       lat: props.lat,
       lng: props.lng,
-      userData: null,
+      userData: UserData.getUserData(),
       detail: null
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    if (process.browser) {
-      const r = document.cookie.split(";");
-      r.forEach(function(value) {
-        const content = value.split("=");
-        content[0] = content[0].replace(" ", "");
-        if (content[0] == "user_id") {
-          userData.user_id = content[1];
-        } else if (content[0] == "access_token") {
-          userData.access_token = content[1];
-        }
-      });
-      this.state.userData = userData;
-    } else {
-      return;
-    }
   }
 
   componentDidMount() {
+    // T, U, S, K以外は登録不可
+    if (
+      this.state.userData.department != "T" &&
+      this.state.userData.department != "U" &&
+      this.state.userData.department != "S" &&
+      this.state.userData.department != "K"
+    ) {
+      console.log("Permission Denied: この情報にはアクセスできません");
+      Router.push("/map");
+      return;
+    }
+
     // detailが与えられた場合
     if (this.state.detail != null) {
       const detail = this.state.detail;

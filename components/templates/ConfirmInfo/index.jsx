@@ -12,6 +12,7 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
+import UserData from "../../../utils/userData";
 
 class ConfirmInfo extends React.Component {
   constructor(props) {
@@ -23,25 +24,9 @@ class ConfirmInfo extends React.Component {
       detail: null,
       formData: null,
       picCount: 0,
-      isProcessing: false
+      isProcessing: false,
+      userData: UserData.getUserData()
     };
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    if (process.browser) {
-      const r = document.cookie.split(";");
-      r.forEach(function(value) {
-        const content = value.split("=");
-        content[0] = content[0].replace(" ", "");
-        if (content[0] == "user_id") {
-          userData.user_id = content[1];
-        } else if (content[0] == "access_token") {
-          userData.access_token = content[1];
-        }
-      });
-      this.state.userData = userData;
-    } else {
-      return;
-    }
   }
 
   componentDidMount() {
@@ -67,17 +52,45 @@ class ConfirmInfo extends React.Component {
   }
 
   submitInfo() {
+    this.setState({ isProcessing: true });
     const token = this.state.userData.access_token;
+    const userDepartment = this.state.userData.department;
     const receiptNumber = Math.floor(Math.random() * 100000);
     let layerId = null;
+    // レイヤーIDを選択すると同時に，書き込み権限をチェック
     switch (this.state.type) {
       case "boar":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = BOAR_LAYER_ID;
         break;
       case "trap":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = TRAP_LAYER_ID;
         break;
       case "vaccine":
+        if (userDepartment != "W" && userDepartment != "K") {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = VACCINE_LAYER_ID;
         break;
       default:
@@ -155,7 +168,6 @@ class ConfirmInfo extends React.Component {
   }
 
   onClickNext() {
-    this.setState({ isProcessing: true });
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
       this.submitInfo();

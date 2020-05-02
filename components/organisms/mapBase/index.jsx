@@ -7,6 +7,7 @@ import "../../../utils/extwms";
 import "leaflet-easybutton";
 import "../../../utils/statics";
 import EventListener from "react-event-listener";
+import UserData from "../../../utils/userData";
 
 // 現在地マーカー
 let locMarker = undefined;
@@ -39,17 +40,7 @@ class MapBase extends React.Component {
     super(props);
     // アクセストークンを取得
     // ユーザーデータ取得(cookieから持ってくる)
-    const userData = { user_id: "", access_token: "" };
-    const r = document.cookie.split(";");
-    r.forEach(function(value) {
-      const content = value.split("=");
-      content[0] = content[0].replace(" ", "");
-      if (content[0] == "user_id") {
-        userData.user_id = content[1];
-      } else if (content[0] == "access_token") {
-        userData.access_token = content[1];
-      }
-    });
+    const userData = UserData.getUserData();
 
     // 再読み込みボタンを作る
     const reloadButton = L.easyButton({
@@ -340,35 +331,7 @@ class MapBase extends React.Component {
   }
 
   getVaccine(map, token, me, overlays, data) {
-    const userData = this.state.userData;
-
-    // 本番：ユーザーIDの１文字目からユーザーを識別
-    // const userDepartment = userData.user_id.substr(0, 1).toUpperCase();
-    // テスト環境：ユーザーIDから識別
-    // どうして仕様に則ったユーザーIDじゃないの…
-    let userDepartment;
-    switch (userData.user_id) {
-      case "tyousa":
-        userDepartment = "T";
-        break;
-      case "yuugai":
-        userDepartment = "U";
-        break;
-      case "shityouson":
-        userDepartment = "S";
-        break;
-      case "trap":
-        userDepartment = "W";
-        break;
-      case "pref":
-        userDepartment = "K";
-        break;
-      case "demoino":
-        userDepartment = null;
-      default:
-        userDepartment = userData.user_id.substr(0, 1).toUpperCase();
-        break;
-    }
+    const userDepartment = this.state.userData.department;
 
     console.log("vaccine");
     if (userDepartment == "W" || userDepartment == "K") {
