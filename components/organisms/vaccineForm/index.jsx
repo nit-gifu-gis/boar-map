@@ -177,6 +177,7 @@ class VaccineForm extends React.Component {
                     : null
                 }
               />
+              <InfoInput title="メッシュ番号" type="mesh-num" name="meshNum" />
               <InfoInput
                 title="散布年月日"
                 type="date"

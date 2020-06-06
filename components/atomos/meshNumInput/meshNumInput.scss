@@ -1,0 +1,35 @@
+.mesh_num_input {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+
+  .city_input {
+    box-sizing: border-box;
+    width: 130px;
+    margin-right: 1%;
+    // flex-grow: 3;
+  }
+
+  .num1_input {
+    input {
+      text-align: center;
+    }
+    // flex-grow: 1;
+  }
+
+  .hyphen {
+    text-align: center;
+    width: 5%;
+    // flex-grow: 0.3;
+  }
+
+  .num2_input {
+    input {
+      text-align: center;
+    }
+    // flex-grow: 1;
+  }
+}
