@@ -1,5 +1,5 @@
 import React from "react";
-import "./meshNumInput.scss";
+import "./meshNoInput.scss";
 import "../../../public/static/css/global.scss";
 import SelectInput from "../selectInput";
 import TextInput from "../textInput";
@@ -54,7 +54,7 @@ const CITY_LIST = [
   "輪之内町"
 ];
 
-class MeshNumInput extends React.Component {
+class MeshNoInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -175,4 +175,4 @@ class MeshNumInput extends React.Component {
   }
 }
 
-export default MeshNumInput;
+export default MeshNoInput;

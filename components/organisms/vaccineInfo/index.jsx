@@ -56,8 +56,8 @@ class VaccineInfo extends React.Component {
         />
         <InfoDiv
           title="メッシュ番号"
-          type="number"
-          data={this.props.detail["properties"]["メッシュ番号"]}
+          type="text"
+          data={this.props.detail["properties"]["メッシュNO"]}
         />
         <InfoDiv
           title="散布年月日"

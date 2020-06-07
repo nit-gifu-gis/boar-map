@@ -89,8 +89,7 @@ class VaccineForm extends React.Component {
     const lat = this.state.lat;
     const lng = this.state.lng;
     // 2 メッシュ番号
-    const meshNumber = form.meshNumber.value;
-    const meshNum = form.meshNum.value;
+    const meshNo = form.meshNo.value;
     // 3 散布年月日
     const treatDate = form.treatDate.value;
     // 4 散布数
@@ -124,8 +123,7 @@ class VaccineForm extends React.Component {
       properties: {
         入力者: user,
         位置情報: "(" + lat + "," + lng + ")",
-        メッシュ番号: meshNumber,
-        メッシュ番: meshNum,
+        メッシュNO: meshNo,
         散布年月日: treatDate,
         散布数: treatNumber,
         回収年月日: recoverDate,
@@ -170,22 +168,11 @@ class VaccineForm extends React.Component {
               />
               <InfoInput
                 title="メッシュ番号"
-                type="number"
-                name="meshNumber"
-                min="0"
-                defaultValue={
-                  this.state.detail != null
-                    ? this.state.detail["properties"]["メッシュ番号"]
-                    : null
-                }
-              />
-              <InfoInput
-                title="メッシュ番号"
                 type="mesh-num"
-                name="meshNum"
+                name="meshNo"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["メッシュ番"]
+                    ? this.state.detail["properties"]["メッシュNO"]
                     : null
                 }
               />

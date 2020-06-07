@@ -15,7 +15,7 @@ class InfoDiv extends React.Component {
   render() {
     let dataDiv;
     // データが無い時
-    if (this.props.data == "") {
+    if (!this.props.data) {
       dataDiv = <InfoText>&nbsp;</InfoText>;
     }
     // ある時
