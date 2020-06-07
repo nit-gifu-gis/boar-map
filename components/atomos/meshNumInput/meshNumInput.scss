@@ -4,25 +4,30 @@
   max-width: 400px;
   font-size: 18px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 
   .city_input {
     box-sizing: border-box;
-    width: 130px;
-    margin-right: 1%;
-    // flex-grow: 3;
+    flex-basis: 140px;
+    flex-grow: 3;
+  }
+
+  .city_num1_break {
+    flex-basis: 3px;
   }
 
   .num1_input {
     input {
       text-align: center;
     }
-    // flex-grow: 1;
+    flex-basis: 80px;
+    flex-grow: 1;
   }
 
   .hyphen {
     text-align: center;
-    width: 5%;
+    flex-basis: 15px;
     // flex-grow: 0.3;
   }
 
@@ -30,6 +35,7 @@
     input {
       text-align: center;
     }
-    // flex-grow: 1;
+    flex-basis: 50px;
+    flex-grow: 0.7;
   }
 }

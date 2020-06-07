@@ -78,6 +78,7 @@ class MeshNumInput extends React.Component {
             defaultValue={"選択..."}
           />
         </div>
+        <div className="city_num1_break"></div>
         <div className="num1_input">
           <TextInput
             type="number"
