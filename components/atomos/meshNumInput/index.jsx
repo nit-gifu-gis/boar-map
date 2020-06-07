@@ -60,11 +60,72 @@ class MeshNumInput extends React.Component {
     this.state = {
       value: null
     };
+    this.onChangeVaule.bind(this);
+    this.setValue.bind(this);
+    this.initForm.bind(this);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    if (this.props.defaultValue != null) {
+      // 正規表現でcity, num1, num2を抽出
+      const regexp = new RegExp("(\\D+)(\\d{1,4})-(\\d{1,2})", "gu");
+      const result = regexp.exec(this.props.defaultValue);
+      if (result == null) {
+        // 正規表現に引っかからなかったら，初期値がないときと同じ処理をして終了
+        this.initForm();
+        return;
+      }
+      // 正規表現に引っかかったらそれぞれを取り出して
+      const cityValue = result[1];
+      // cityが一覧に無かったら不正
+      if (CITY_LIST.indexOf(cityValue) === -1) {
+        // 初期値がないときと同じ処理をして終了
+        this.initForm();
+        return;
+      }
+      const num1Value = result[2];
+      const num2Value = result[3];
+      // 内部データのセットと
+      this.setValue(cityValue, num1Value, num2Value);
+      // 表示をセット
+      document.getElementById(this.props.id + "City").value = cityValue;
+      document.getElementById(this.props.id + "Num1").value = num1Value;
+      document.getElementById(this.props.id + "Num2").value = num2Value;
+    } else {
+      this.initForm();
+    }
+  }
 
-  onChangeVaule() {}
+  initForm() {
+    this.setValue(null, null, null);
+  }
+
+  onChangeVaule() {
+    // 入力情報からメッシュIDを作る
+    const cityValue = document.getElementById(this.props.id + "City").value;
+    const num1Value = document.getElementById(this.props.id + "Num1").value;
+    const num2Value = document.getElementById(this.props.id + "Num2").value;
+    // 有効な桁数の時のみセット
+    if (num1Value.length <= 4 && num2Value.length <= 2) {
+      this.setValue(cityValue, num1Value, num2Value);
+    } else {
+      this.setValue(null, null, null);
+    }
+  }
+
+  setValue(cityValue, num1Value, num2Value) {
+    // どこかがnullなら全体もnull
+    let meshIdValue = null;
+    if (cityValue && num1Value && num2Value) {
+      // 市町村名＋４桁数値＋半角ハイフン＋２桁数値
+      meshIdValue = cityValue;
+      meshIdValue += ("0000" + num1Value).slice(-4);
+      meshIdValue += "-";
+      meshIdValue += ("00" + num2Value).slice(-2);
+    }
+    console.log(meshIdValue);
+    document.getElementById(this.props.id).value = meshIdValue;
+  }
 
   render() {
     return (
@@ -74,8 +135,7 @@ class MeshNumInput extends React.Component {
             name={this.props.name + "City"}
             id={this.props.id + "City"}
             options={CITY_LIST}
-            onChange={this.onChangeVaule}
-            defaultValue={"選択..."}
+            onChange={this.onChangeVaule.bind(this)}
           />
         </div>
         <div className="city_num1_break"></div>
@@ -87,8 +147,7 @@ class MeshNumInput extends React.Component {
             max="9999"
             id={this.props.id + "Num1"}
             placeholder="4桁"
-            defaultValue={9999}
-            onChange={this.onChangeVaule}
+            onChange={this.onChangeVaule.bind(this)}
           />
         </div>
         <div className="hyphen">-</div>
@@ -100,8 +159,7 @@ class MeshNumInput extends React.Component {
             max="99"
             id={this.props.id + "Num2"}
             placeholder="2桁"
-            defaultValue={99}
-            onChange={this.onChangeVaule}
+            onChange={this.onChangeVaule.bind(this)}
           />
         </div>
         <br />

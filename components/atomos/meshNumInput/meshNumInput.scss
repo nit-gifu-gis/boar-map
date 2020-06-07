@@ -21,6 +21,16 @@
     input {
       text-align: center;
     }
+    // Chrome、Safariの上下ボタン非表示
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    // Firefox、IEの上下ボタン非表示
+    input[type="number"] {
+      -moz-appearance:textfield;
+    }
     flex-basis: 80px;
     flex-grow: 1;
   }
@@ -34,6 +44,16 @@
   .num2_input {
     input {
       text-align: center;
+    }
+    // Chrome、Safariの上下ボタン非表示
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    // Firefox、IEの上下ボタン非表示
+    input[type="number"] {
+      -moz-appearance:textfield;
     }
     flex-basis: 50px;
     flex-grow: 0.7;

@@ -66,7 +66,14 @@ class InfoInput extends React.Component {
         input = <ImagesInput onChanged={this.props.onChanged} />;
         break;
       case "mesh-num":
-        input = <MeshNumInput name={this.props.name} id={this.props.id} />;
+        input = (
+          <MeshNumInput
+            name={this.props.name}
+            id={this.props.name}
+            defaultValue={this.props.defaultValue}
+            onChange={this.props.onChange}
+          />
+        );
         break;
       default:
         break;
