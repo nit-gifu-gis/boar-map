@@ -91,6 +91,8 @@ class BoarForm extends React.Component {
     // 送信に必要な情報を集めておく
     // 0 入力者
     const user = this.state.userData.user_id;
+    // 0-1 メッシュ番号
+    const meshNo = form.meshNo.value;
     // 1 区分
     const division = form.division.options[form.division.selectedIndex].value;
     // 2 捕獲年月日
@@ -114,6 +116,8 @@ class BoarForm extends React.Component {
     const length = form.length.value;
     // 7 体重
     const weight = this.weigh(Number(length));
+    // 7-1 備考
+    const note = form.note.value;
     // 8 歯列画像
     // 9 現地写真
 
@@ -127,13 +131,15 @@ class BoarForm extends React.Component {
       },
       properties: {
         入力者: user,
+        メッシュ番号: meshNo,
         区分: division,
         捕獲年月日: date,
         位置情報: "(" + lat + "," + lng + ")",
         "罠・発見場所": trapOrEnv,
         性別: sex,
         体長: length,
-        体重: weight
+        体重: weight,
+        備考: note
       }
     };
   }
@@ -198,6 +204,16 @@ class BoarForm extends React.Component {
                 onChanged={this.props.onChangedImages}
               />
               <InfoInput
+                title="メッシュ番号"
+                type="mesh-num"
+                name="meshNo"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["メッシュ番号"]
+                    : null
+                }
+              />
+              <InfoInput
                 title="区分"
                 type="select"
                 name="division"
@@ -239,6 +255,17 @@ class BoarForm extends React.Component {
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["体長"]
+                    : null
+                }
+              />
+              <InfoInput
+                title="備考"
+                type="text-area"
+                rows="4"
+                name="note"
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["備考"]
                     : null
                 }
               />
