@@ -16,12 +16,25 @@ class SelectInput extends React.Component {
     // jsのfor-inは要素が順番に取り出されるとは限らないらしい…
     for (let i = 0; i < this.props.options.length; i++) {
       // console.log(this.props.options[i]);
-      const o = (
-        <option value={this.props.options[i]} key={this.props.options[i]}>
-          {this.props.options[i]}
-        </option>
-      );
-      options.push(o);
+      if (this.props.options[i] === this.props.defaultValue) {
+        const o = (
+          <option
+            value={this.props.options[i]}
+            key={this.props.options[i]}
+            selected
+          >
+            {this.props.options[i]}
+          </option>
+        );
+        options.push(o);
+      } else {
+        const o = (
+          <option value={this.props.options[i]} key={this.props.options[i]}>
+            {this.props.options[i]}
+          </option>
+        );
+        options.push(o);
+      }
     }
 
     // console.log(options);
@@ -33,7 +46,6 @@ class SelectInput extends React.Component {
             name={this.props.name}
             id={this.props.id}
             onChange={this.props.onChange}
-            defaultValue={this.props.defaultValue}
           >
             {options}
           </select>
