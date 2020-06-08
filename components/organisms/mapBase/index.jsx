@@ -65,9 +65,10 @@ class MapBase extends React.Component {
     });
 
     // もしCookieにlast_xxがあったら読み込む
-    let defaultLat = 35.367237;
-    let defautlLng = 136.637408;
+    let defaultLat = 35.3911666;
+    let defautlLng = 136.7134442;
     let defaultZoom = 17;
+    let isDefault = true;
     if (process.browser) {
       const r = document.cookie.split(";");
       r.forEach(value => {
@@ -75,6 +76,7 @@ class MapBase extends React.Component {
         content[0] = content[0].replace(" ", "");
         if (content[0] == "last_lat") {
           defaultLat = parseFloat(content[1]);
+          isDefault = false;
         } else if (content[0] == "last_lng") {
           defautlLng = parseFloat(content[1]);
         } else if (content[0] == "last_zoom") {
@@ -88,6 +90,7 @@ class MapBase extends React.Component {
       lat: defaultLat,
       lng: defautlLng,
       zoom: defaultZoom,
+      isDefault: isDefault,
       overlays: {},
       markerstate: [true, true, true],
       control: undefined,
@@ -109,6 +112,11 @@ class MapBase extends React.Component {
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
+
+    if (this.state.isDefault) {
+      // 県庁の場合位置情報を取得する。
+      this.getCurrentLocation(this.myMap);
+    }
 
     const userData = this.state.userData;
 
@@ -523,13 +531,15 @@ class MapBase extends React.Component {
 
   // 現在地取得ボタンをクリックしたときの処理
   onClickSetLocation = (btn, map) => {
-    this.getCurrentLocation(map);
+    this.getCurrentLocation(map, true);
   };
 
   // 現在地取得関数
-  getCurrentLocation(map) {
+  getCurrentLocation(map, alert) {
     if (navigator.geolocation == false) {
-      alert("現在地を取得できませんでした．");
+      if (alert) {
+        alert("現在地を取得できませんでした．");
+      }
       return;
     }
 
@@ -555,7 +565,9 @@ class MapBase extends React.Component {
     };
 
     const error = () => {
-      alert("現在地を取得できませんでした．");
+      if (alert) {
+        alert("現在地を取得できませんでした．");
+      }
     };
 
     navigator.geolocation.getCurrentPosition(success, error);

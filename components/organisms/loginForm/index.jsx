@@ -94,6 +94,12 @@ class LoginForm extends React.Component {
       document.cookie = `user_id=${data.data.userId}; path=/`;
       document.cookie = `access_token=${data.data.accessToken}; path=/`;
       document.cookie = `login_time=${time}; path=/`;
+      document.cookie =
+        "last_lat=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      document.cookie =
+        "last_lng=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+      document.cookie =
+        "last_zoom=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
       Router.push("/map");
     } else {
       document.getElementsByClassName("login_error")[0].innerHTML =
