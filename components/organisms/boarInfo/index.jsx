@@ -23,16 +23,17 @@ class BoarInfo extends React.Component {
             waitingPublish: this.props.waitingPublish
           }}
         />
+        <InfoDiv
+          title="メッシュ番号"
+          type="text"
+          data={this.props.detail["properties"]["メッシュ番号"]}
+        />
         <InfoDiv title="区分" data={this.props.detail["properties"]["区分"]} />
         <InfoDiv
           title="捕獲年月日"
           type="date"
           data={this.props.detail["properties"]["捕獲年月日"]}
         />
-        {/* <h3>捕獲年月日</h3>
-            <p>{this.props.detail["properties"]["捕獲年月日"]}</p> */}
-        {/* </div>
-          <div className="__trap_or_env"> */}
         <InfoDiv
           title="わな・発見場所"
           data={this.props.detail["properties"]["罠・発見場所"]}
@@ -53,6 +54,11 @@ class BoarInfo extends React.Component {
           type="number"
           data={this.props.detail["properties"]["体重"]}
           unit="kg"
+        />
+        <InfoDiv
+          title="備考"
+          type="longText"
+          data={this.props.detail["properties"]["備考"]}
         />
       </div>
     );

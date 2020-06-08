@@ -20,8 +20,8 @@ class AddLocation extends React.Component {
     super(props);
 
     // もしCookieにlast_xxがあったら読み込む
-    let defaultLat = 35.367237;
-    let defautlLng = 136.637408;
+    let defaultLat = 35.3911666;
+    let defautlLng = 136.7134442;
     if (process.browser) {
       const r = document.cookie.split(";");
       r.forEach(value => {
