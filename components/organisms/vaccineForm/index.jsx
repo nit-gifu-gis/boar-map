@@ -14,18 +14,20 @@ const RecoverInfoForm = props => (
       defaultValue={props.recoverDate}
     />
     <InfoInput
-      title="摂食の有無"
-      type="select"
-      name="eaten"
-      options={["なし", "あり"]}
-      defaultValue={props.eaten}
+      title="摂食数"
+      type="number"
+      name="eatenNum"
+      min={0}
+      step={1}
+      defaultValue={props.eatenNum}
     />
     <InfoInput
-      title="その他の破損"
-      type="select"
-      name="damage"
-      options={["なし", "あり"]}
-      defaultValue={props.damage}
+      title="その他の破損数"
+      type="number"
+      name="damageNum"
+      min={0}
+      step={1}
+      defaultValue={props.damageNum}
     />
   </div>
 );
@@ -58,14 +60,14 @@ class VaccineForm extends React.Component {
     if (this.state.detail != null) {
       const detail = this.state.detail;
       const recover = detail["properties"]["回収年月日"];
-      if (recover != "") {
+      if (recover) {
         this.setState(_ => {
           return {
             recoverInfoForm: (
               <RecoverInfoForm
                 recoverDate={detail["properties"]["回収年月日"]}
-                eaten={detail["properties"]["摂食の有無"]}
-                damage={detail["properties"]["その他破損"]}
+                eatenNum={detail["properties"]["摂食数"]}
+                damageNum={detail["properties"]["その他の破損数"]}
               />
             ),
             recover: true
@@ -98,18 +100,20 @@ class VaccineForm extends React.Component {
     const recover = this.state.recover;
     // 5 回収年月日
     let recoverDate = "";
-    // 6 摂食の有無
-    let eaten = "";
-    // 7 その他破損
-    let damage = "";
+    // 6 摂食数
+    let eatenNum = "";
+    // 7 その他の破損数
+    let damageNum = "";
     // 8 破損なし
     // 多分構成ミスなので無し
     // 9 備考
     const note = form.note.value;
     if (recover) {
       recoverDate = form.recoverDate.value;
-      eaten = form.eaten.options[form.eaten.selectedIndex].value;
-      damage = form.damage.options[form.damage.selectedIndex].value;
+      // eaten = form.eaten.options[form.eaten.selectedIndex].value;
+      eatenNum = form.eatenNum.value;
+      // damage = form.damage.options[form.damage.selectedIndex].value;
+      damageNum = form.damageNum.value;
     }
 
     // [todo] ここにバリデーション [todo]
@@ -127,8 +131,8 @@ class VaccineForm extends React.Component {
         散布年月日: treatDate,
         散布数: treatNumber,
         回収年月日: recoverDate,
-        摂食の有無: eaten,
-        その他破損: damage,
+        摂食数: eatenNum,
+        その他の破損数: damageNum,
         備考: note
       }
     };
