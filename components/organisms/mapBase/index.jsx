@@ -65,8 +65,8 @@ class MapBase extends React.Component {
     });
 
     // もしCookieにlast_xxがあったら読み込む
-    let defaultLat = 35.3911666;
-    let defautlLng = 136.7134442;
+    let defaultLat = 35.39135;
+    let defautlLng = 136.722418;
     let defaultZoom = 17;
     let isDefault = true;
     if (process.browser) {
