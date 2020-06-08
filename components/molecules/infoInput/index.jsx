@@ -6,6 +6,7 @@ import DateInput from "../../atomos/dateInput";
 import SelectInput from "../../atomos/selectInput";
 import TextAreaInput from "../../atomos/textAreaInput";
 import ImagesInput from "../../atomos/imagesInput";
+import MeshNoInput from "../../atomos/meshNoInput";
 
 class InfoInput extends React.Component {
   render() {
@@ -63,6 +64,16 @@ class InfoInput extends React.Component {
         break;
       case "images":
         input = <ImagesInput onChanged={this.props.onChanged} />;
+        break;
+      case "mesh-num":
+        input = (
+          <MeshNoInput
+            name={this.props.name}
+            id={this.props.name}
+            defaultValue={this.props.defaultValue}
+            onChange={this.props.onChange}
+          />
+        );
         break;
       default:
         break;
