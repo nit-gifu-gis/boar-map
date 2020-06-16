@@ -64,7 +64,7 @@ class LoginForm extends React.Component {
       const imgdata = {
         token: data.data.accessToken,
         user: data.data.userId,
-        expires_in: (time / 1000) + 6 * 60 * 60
+        expires_in: time / 1000 + 6 * 60 * 60
       };
       fetch(IMAGE_SERVER_URI + "/auth.php", {
         method: "POST",

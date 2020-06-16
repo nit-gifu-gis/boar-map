@@ -14,7 +14,7 @@ const RecoverInfoForm = props => (
       defaultValue={props.recoverDate}
     />
     <InfoInput
-      title="摂食数"
+      title="いのししの摂食数"
       type="number"
       name="eatenNum"
       min={0}
