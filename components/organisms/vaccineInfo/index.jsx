@@ -24,14 +24,19 @@ class VaccineInfo extends React.Component {
           data={this.props.detail["properties"]["回収年月日"]}
         />,
         <InfoDiv
-          title="摂食数"
+          title="いのししの摂食数"
           type="text"
           data={this.props.detail["properties"]["摂食数"]}
         />,
         <InfoDiv
-          title="その他の損傷数"
+          title="その他の破損数"
           type="text"
           data={this.props.detail["properties"]["その他の破損数"]}
+        />,
+        <InfoDiv
+          title="破損なし"
+          type="text"
+          data={this.props.detail["properties"]["破損なし"]}
         />
       ];
     }
