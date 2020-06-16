@@ -29,6 +29,14 @@ const RecoverInfoForm = props => (
       step={1}
       defaultValue={props.damageNum}
     />
+    <InfoInput
+      title="破損なし"
+      type="number"
+      name="noDamageNum"
+      min={0}
+      step={1}
+      defaultValue={props.noDamageNum}
+    />
   </div>
 );
 
@@ -68,6 +76,7 @@ class VaccineForm extends React.Component {
                 recoverDate={detail["properties"]["回収年月日"]}
                 eatenNum={detail["properties"]["摂食数"]}
                 damageNum={detail["properties"]["その他の破損数"]}
+                noDamageNum={detail["properties"]["破損なし"]}
               />
             ),
             recover: true
@@ -105,15 +114,14 @@ class VaccineForm extends React.Component {
     // 7 その他の破損数
     let damageNum = "";
     // 8 破損なし
-    // 多分構成ミスなので無し
+    let noDamageNum = "";
     // 9 備考
     const note = form.note.value;
     if (recover) {
       recoverDate = form.recoverDate.value;
-      // eaten = form.eaten.options[form.eaten.selectedIndex].value;
       eatenNum = form.eatenNum.value;
-      // damage = form.damage.options[form.damage.selectedIndex].value;
       damageNum = form.damageNum.value;
+      noDamageNum = form.noDamageNum.value;
     }
 
     // [todo] ここにバリデーション [todo]
@@ -133,6 +141,7 @@ class VaccineForm extends React.Component {
         回収年月日: recoverDate,
         摂食数: eatenNum,
         その他の破損数: damageNum,
+        破損なし: noDamageNum,
         備考: note
       }
     };
