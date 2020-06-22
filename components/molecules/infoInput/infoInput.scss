@@ -1,11 +1,19 @@
-.info-input {
-  margin: 15px var(--margin-lr) 15px var(--margin-lr);
+@import "../../../public/static/css/global";
 
-  .title {
+.info-input {
+  margin: 15px $margin-lr 15px $margin-lr;
+
+  &__title {
     width: 100%;
     margin: 15px 0px 5px 0px;
     font-size: 18px;
-    color: #212121;
+    color: $text-color;
     font-weight: bold;
+  }
+
+  &__required-mark {
+    margin-left: 5px;
+    font-weight: bold;
+    color: $danger-color;
   }
 }
