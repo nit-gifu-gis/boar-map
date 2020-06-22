@@ -18,10 +18,11 @@ $boar-color: #842929;
 $trap-color: #fbc02d;
 $vaccine-color: #0288d1;
 $danger-color: #ff0000;
-$danger-background-color: #ffcccc;
 $background-color: #fafafa;
 $border-color: #bdbdbd;
 
+$input-background-color: #ffffff;
+$input-error-background-color: #ffcccc;
 
 * {
   font-family: "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Arial",
@@ -40,6 +41,7 @@ body {
   border: solid $border-weight $border-color;
   border-radius: 10px;
   box-sizing: border-box;
+  background-color: $input-background-color;
 }
 
 %input {
@@ -49,7 +51,7 @@ body {
 %input-error {
   @extend %input-base;
   border: solid $border-weight $danger-color;
-  background-color: $danger-background-color;
+  background-color: $input-error-background-color;
 }
 
 :root {
