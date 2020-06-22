@@ -9,8 +9,12 @@ class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isErrorForSafari: false
+      isErrorForSafari: false,
+      onChange: function changed() {}
     };
+    if (this.props.onChange != undefined) {
+      this.state.onChange = this.props.onChange;
+    }
   }
 
   isSafari() {
@@ -70,6 +74,7 @@ class DateInput extends React.Component {
       this.setState({
         isErrorForSafari: true
       });
+      this.state.onChange();
       return;
     }
     const yyyy = ("0000" + yearValue).slice(-4);
@@ -89,11 +94,13 @@ class DateInput extends React.Component {
       this.setState({
         isErrorForSafari: false
       });
+      this.state.onChange();
     } else {
       document.getElementById(this.props.id).value = null;
       this.setState({
         isErrorForSafari: true
       });
+      this.state.onChange();
     }
   }
 
@@ -213,6 +220,7 @@ class DateInput extends React.Component {
                 ("0" + DateD).slice(-2)
               }
               placeholder={"年/月/日"}
+              onChange={this.state.onChange}
             />
           </div>
         );

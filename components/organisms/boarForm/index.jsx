@@ -4,6 +4,7 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
+import "../../../utils/date";
 
 const TrapSelector = props => (
   <InfoInput
@@ -33,7 +34,10 @@ class BoarForm extends React.Component {
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
-      detail: null
+      detail: null,
+      error: {
+        date: null
+      }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -85,6 +89,26 @@ class BoarForm extends React.Component {
     }
   }
 
+  // バリデーション
+  checkDate() {
+    const form = document.forms.form;
+    const date_str = form.date.value;
+    const date = new Date(date_str);
+    // 日付が不正
+    if (date.toString() === "Invalid Date") {
+      this.setState({ error: { date: "日付が入力されていません。" } });
+      return;
+    }
+    // 今日の日付
+    const today = new Date();
+    if (compareDate(date, today) > 0) {
+      // 未来の日付だったら不正
+      this.setState({ error: { date: "未来の日付が入っています。" } });
+    } else {
+      this.setState({ error: { date: null } });
+    }
+  }
+
   // データを作る
   createDetail() {
     const form = document.forms.form;
@@ -122,6 +146,17 @@ class BoarForm extends React.Component {
     // 9 現地写真
 
     // [todo] ここにバリデーション [todo]
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    console.log(valid);
+    if (!valid) {
+      return null;
+    }
 
     return {
       type: "Feature",
@@ -235,6 +270,8 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["捕獲年月日"]
                     : null
                 }
+                onChange={this.checkDate.bind(this)}
+                error={this.state.error.date != null}
               />
               {this.state.trapOrEnvSelector}
               <InfoInput

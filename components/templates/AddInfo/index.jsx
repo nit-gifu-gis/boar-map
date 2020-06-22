@@ -46,8 +46,7 @@ class AddInfo extends React.Component {
     );
   }
 
-  upload() {
-    const data = this.formRef.current.createDetail();
+  upload(data) {
     if (this.state.formData == null) {
       this.callback(data, [], null);
     }
@@ -121,8 +120,13 @@ class AddInfo extends React.Component {
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
   onClickNext() {
-    this.setState({ isProcessing: true });
-    this.upload();
+    const data = this.formRef.current.createDetail();
+    if (data != null) {
+      this.setState({ isProcessing: true });
+      this.upload(data);
+    } else {
+      this.setState({ isProcessing: false });
+    }
     // window.alert("工事中");
   }
 
