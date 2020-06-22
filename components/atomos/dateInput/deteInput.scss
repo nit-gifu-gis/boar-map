@@ -37,7 +37,7 @@
 
 .date-input-div::after {
   content: "▼";
-  color: #757575;
+  color: $small-text-color;
   font-size: 12px;
   position: absolute;
   top: 0;
