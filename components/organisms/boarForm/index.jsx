@@ -201,7 +201,7 @@ class BoarForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
-                onChanged={this.props.onChangedImages}
+                onChange={this.props.onChangedImages}
               />
               <InfoInput
                 title="メッシュ番号"
@@ -212,6 +212,7 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["メッシュ番号"]
                     : null
                 }
+                required={true}
               />
               <InfoInput
                 title="区分"

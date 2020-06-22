@@ -69,7 +69,7 @@ class InfoInput extends React.Component {
       case "images":
         input = (
           <ImagesInput
-            onChanged={this.props.onChanged}
+            onChange={this.props.onChange}
             error={this.props.error}
           />
         );

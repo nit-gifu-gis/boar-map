@@ -177,7 +177,7 @@ class VaccineForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
-                onChanged={this.props.onChangedImages}
+                onChange={this.props.onChangedImages}
               />
               <InfoInput
                 title="メッシュ番号"

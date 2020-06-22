@@ -7,11 +7,11 @@ class ImagesInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      onChanged: function changed(data) {}
+      onChange: function changed(data) {}
     };
 
-    if (this.props.onChanged != undefined) {
-      this.state.onChanged = this.props.onChanged;
+    if (this.props.onChange != undefined) {
+      this.state.onChange = this.props.onChange;
     }
   }
 
@@ -39,7 +39,7 @@ class ImagesInput extends React.Component {
       img.setAttribute("src", window.URL.createObjectURL(file));
       preview.appendChild(img);
     }
-    this.state.onChanged(data);
+    this.state.onChange(data);
   }
 
   onClickButton() {
