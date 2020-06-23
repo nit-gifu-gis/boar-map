@@ -24,8 +24,6 @@ class RoundButton extends React.Component {
         break;
     }
 
-    console.log(this.props.enabled);
-
     if (this.props.enabled == false) {
       return (
         <button className="round_button" onClick={this.props.bind} disabled>
