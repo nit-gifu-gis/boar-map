@@ -119,15 +119,20 @@ class AddInfo extends React.Component {
   // formから情報を取得して次のページに遷移する
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
-  onClickNext() {
-    const data = this.formRef.current.createDetail();
-    if (data != null) {
-      this.setState({ isProcessing: true });
-      this.upload(data);
+  async onClickNext() {
+    // バリデーションをチェック
+    if (await this.formRef.current.validateDetail()) {
+      const data = this.formRef.current.createDetail();
+      if (data != null) {
+        this.setState({ isProcessing: true });
+        this.upload(data);
+      } else {
+        this.setState({ isProcessing: false });
+      }
     } else {
+      window.alert("エラーを確認してください。");
       this.setState({ isProcessing: false });
     }
-    // window.alert("工事中");
   }
 
   render() {

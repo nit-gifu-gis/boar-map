@@ -5,6 +5,7 @@ import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
 import "../../../utils/date";
+import "../../../utils/dict";
 
 const TrapSelector = props => (
   <InfoInput
@@ -36,13 +37,18 @@ class BoarForm extends React.Component {
       userData: UserData.getUserData(),
       detail: null,
       error: {
-        date: null
+        date: null,
+        meshNo: null
       }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
+    this.updateError.bind(this);
+    this.validateDate.bind(this);
+    this.validateMeshNo.bind(this);
+    this.validateDetail.bind(this);
   }
 
   componentDidMount() {
@@ -89,24 +95,58 @@ class BoarForm extends React.Component {
     }
   }
 
+  async updateError(key, value) {
+    const e = deepClone(this.state.error);
+    e[key] = value;
+    this.setState({ error: e });
+  }
+
   // バリデーション
-  checkDate() {
+  async validateMeshNo() {
+    const form = document.forms.form;
+    const meshNo = form.meshNo.value;
+    // データが無いならエラー
+    if (meshNo === "") {
+      await this.updateError("meshNo", "メッシュ番号が入力されていません。");
+    } else {
+      await this.updateError("meshNo", null);
+    }
+  }
+
+  async validateDate() {
     const form = document.forms.form;
     const date_str = form.date.value;
     const date = new Date(date_str);
     // 日付が不正
     if (date.toString() === "Invalid Date") {
-      this.setState({ error: { date: "日付が入力されていません。" } });
+      await this.updateError("date", "日付が入力されていません。");
       return;
     }
     // 今日の日付
     const today = new Date();
     if (compareDate(date, today) > 0) {
       // 未来の日付だったら不正
-      this.setState({ error: { date: "未来の日付が入っています。" } });
+      await this.updateError("date", "未来の日付が入っています。");
     } else {
-      this.setState({ error: { date: null } });
+      await this.updateError("date", null);
     }
+  }
+
+  // バリデーションをする
+  async validateDetail() {
+    // 全部チェックしていく
+    await this.validateMeshNo();
+    await this.validateDate();
+
+    // エラー一覧を表示
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   // データを作る
@@ -144,19 +184,6 @@ class BoarForm extends React.Component {
     const note = form.note.value;
     // 8 歯列画像
     // 9 現地写真
-
-    // [todo] ここにバリデーション [todo]
-    let valid = true;
-    Object.keys(this.state.error).forEach(key => {
-      if (this.state.error[key] != null) {
-        console.error(this.state.error[key]);
-        valid = false;
-      }
-    });
-    console.log(valid);
-    if (!valid) {
-      return null;
-    }
 
     return {
       type: "Feature",
@@ -248,6 +275,8 @@ class BoarForm extends React.Component {
                     : null
                 }
                 required={true}
+                onChange={this.validateMeshNo.bind(this)}
+                errorMessage={this.state.error.meshNo}
               />
               <InfoInput
                 title="区分"
@@ -270,10 +299,8 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["捕獲年月日"]
                     : null
                 }
-                onChange={this.checkDate.bind(this)}
-                errorMessage={
-                  this.state.error.date != null ? this.state.error.date : null
-                }
+                onChange={this.validateDate.bind(this)}
+                errorMessage={this.state.error.date}
               />
               {this.state.trapOrEnvSelector}
               <InfoInput

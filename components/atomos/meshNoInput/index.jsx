@@ -59,8 +59,12 @@ class MeshNoInput extends React.Component {
     super(props);
     this.state = {
       value: null,
-      isError: false
+      isError: false,
+      onChange: function changed() {}
     };
+    if (this.props.onChange != undefined) {
+      this.state.onChange = this.props.onChange;
+    }
     this.onChangeVaule.bind(this);
     this.setValue.bind(this);
     this.initForm.bind(this);
@@ -114,6 +118,7 @@ class MeshNoInput extends React.Component {
     } else {
       this.setValue(null, null, null);
     }
+    this.state.onChange();
   }
 
   setValue(cityValue, num1Value, num2Value) {
@@ -127,7 +132,6 @@ class MeshNoInput extends React.Component {
       meshIdValue += "-";
       meshIdValue += ("00" + num2Value).slice(-2);
     }
-    console.log(meshIdValue);
     document.getElementById(this.props.id).value = meshIdValue;
     // この時，全体がnullならエラー
     if (meshIdValue == null) {
