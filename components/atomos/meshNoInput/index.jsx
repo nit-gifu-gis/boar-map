@@ -99,6 +99,8 @@ class MeshNoInput extends React.Component {
 
   initForm() {
     this.setValue(null, null, null);
+    // 初回読み込み時はエラーにしない
+    this.setState({ isError: false });
   }
 
   onChangeVaule() {
