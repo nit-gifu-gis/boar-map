@@ -38,7 +38,8 @@ class BoarForm extends React.Component {
       detail: null,
       error: {
         date: null,
-        meshNo: null
+        meshNo: null,
+        length: null
       }
     };
     // データが与えられた場合は保存しておく
@@ -48,6 +49,7 @@ class BoarForm extends React.Component {
     this.updateError.bind(this);
     this.validateDate.bind(this);
     this.validateMeshNo.bind(this);
+    this.validateLength.bind(this);
     this.validateDetail.bind(this);
   }
 
@@ -132,11 +134,29 @@ class BoarForm extends React.Component {
     }
   }
 
+  async validateLength() {
+    const form = document.forms.form;
+    const length = form.length.value;
+    // 未入力
+    if (length == "") {
+      await this.updateError("length", "入力してください。");
+      return;
+    }
+    const length_num = parseFloat(length);
+    console.log(length_num);
+    if (length_num <= 0) {
+      await this.updateError("length", "正の数を入れてください。");
+      return;
+    }
+    await this.updateError("length", null);
+  }
+
   // バリデーションをする
   async validateDetail() {
     // 全部チェックしていく
     await this.validateMeshNo();
     await this.validateDate();
+    await this.validateLength();
 
     // エラー一覧を表示
     let valid = true;
@@ -301,6 +321,7 @@ class BoarForm extends React.Component {
                 }
                 onChange={this.validateDate.bind(this)}
                 errorMessage={this.state.error.date}
+                required={true}
               />
               {this.state.trapOrEnvSelector}
               <InfoInput
@@ -311,7 +332,7 @@ class BoarForm extends React.Component {
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["性別"]
-                    : null
+                    : "不明"
                 }
               />
               <InfoInput
@@ -324,6 +345,9 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["体長"]
                     : null
                 }
+                required={true}
+                onChange={this.validateLength.bind(this)}
+                errorMessage={this.state.error.length}
               />
               <InfoInput
                 title="備考"
