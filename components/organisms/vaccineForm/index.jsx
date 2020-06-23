@@ -53,15 +53,20 @@ class VaccineForm extends React.Component {
     super(props);
     this.state = {
       recover: false,
-      recoverInfoForm: null,
       lat: props.lat,
       lng: props.lng,
-      userData: UserData.getUserData()
+      userData: UserData.getUserData(),
+      error: {
+        treatDate: null
+      }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
+    this.updateError.bind(this);
+    this.validateTreatDate.bind(this);
+    this.validateDetail.bind(this);
   }
 
   componentDidMount() {
@@ -78,25 +83,57 @@ class VaccineForm extends React.Component {
       const recover = detail["properties"]["回収年月日"];
       if (recover) {
         this.setState(_ => {
-          return {
-            recoverInfoForm: (
-              <RecoverInfoForm
-                recoverDate={detail["properties"]["回収年月日"]}
-                eatenNum={detail["properties"]["摂食数"]}
-                damageNum={detail["properties"]["その他の破損数"]}
-                noDamageNum={detail["properties"]["破損なし"]}
-                lostNum={detail["properties"]["ロスト数"]}
-              />
-            ),
-            recover: true
-          };
+          return { recover: true };
         });
       } else {
         this.setState(_ => {
-          return { recoverInfoForm: null, recover: false };
+          return { recover: false };
         });
       }
     }
+  }
+
+  async updateError(key, value) {
+    const e = deepClone(this.state.error);
+    e[key] = value;
+    this.setState({ error: e });
+  }
+
+  async validateTreatDate() {
+    const form = document.forms.form;
+    const treatDateStr = form.treatDate.value;
+    const date = new Date(treatDateStr);
+    // 日付が不正
+    if (date.toString() === "Invalid Date") {
+      await this.updateError("treatDate", "日付が入力されていません。");
+      return;
+    }
+    // 今日の日付
+    const today = new Date();
+    if (compareDate(date, today) > 0) {
+      // 未来の日付だったら不正
+      await this.updateError("treatDate", "未来の日付が入っています。");
+    } else {
+      await this.updateError("treatDate", null);
+    }
+  }
+
+  async validateTreatNumber() {}
+
+  // バリデーションをする
+  async validateDetail() {
+    // 全部チェックしていく
+    this.validateTreatDate();
+
+    // エラー一覧を表示
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   // データを作る
@@ -166,11 +203,11 @@ class VaccineForm extends React.Component {
     const recover = recoverSelect.options[recoverSelect.selectedIndex].value;
     if (recover == "回収済") {
       this.setState(_ => {
-        return { recoverInfoForm: <RecoverInfoForm />, recover: true };
+        return { recover: true };
       });
     } else {
       this.setState(_ => {
-        return { recoverInfoForm: null, recover: false };
+        return { recover: false };
       });
     }
   }
@@ -181,8 +218,39 @@ class VaccineForm extends React.Component {
   }
 
   render() {
-    console.log("check");
     if (this.state.lng != undefined && this.state.lat != undefined) {
+      let recoverInfoForm = null;
+      if (this.state.recover) {
+        recoverInfoForm = (
+          <RecoverInfoForm
+            recoverDate={
+              this.state.detail != null
+                ? this.state.detail["properties"]["回収年月日"]
+                : null
+            }
+            eatenNum={
+              this.state.detail != null
+                ? this.state.detail["properties"]["摂食数"]
+                : null
+            }
+            damageNum={
+              this.state.detail != null
+                ? this.state.detail["properties"]["その他の破損数"]
+                : null
+            }
+            noDamageNum={
+              this.state.detail != null
+                ? this.state.detail["properties"]["破損なし"]
+                : null
+            }
+            lostNum={
+              this.state.detail != null
+                ? this.state.detail["properties"]["ロスト数"]
+                : null
+            }
+          />
+        );
+      }
       return (
         <div className="vaccine-form">
           <div className="form">
@@ -211,6 +279,9 @@ class VaccineForm extends React.Component {
                     ? this.state.detail["properties"]["散布年月日"]
                     : null
                 }
+                required={true}
+                onChange={this.validateTreatDate.bind(this)}
+                errorMessage={this.state.error.treatDate}
               />
               <InfoInput
                 title="散布数"
@@ -231,7 +302,7 @@ class VaccineForm extends React.Component {
                 options={["未回収", "回収済"]}
                 defaultValue={this.state.recover ? "回収済" : "未回収"}
               />
-              {this.state.recoverInfoForm}
+              {recoverInfoForm}
               <InfoInput
                 title="備考"
                 type="text-area"
