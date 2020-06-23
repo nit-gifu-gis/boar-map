@@ -130,7 +130,7 @@ class AddInfo extends React.Component {
         this.setState({ isProcessing: false });
       }
     } else {
-      window.alert("エラーを確認してください。");
+      window.alert("入力内容にエラーがあります。ご確認ください。");
       this.setState({ isProcessing: false });
     }
   }
