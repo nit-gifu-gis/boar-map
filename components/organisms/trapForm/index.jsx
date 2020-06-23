@@ -5,29 +5,29 @@ import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
 
-const RemoveDateInput = props => (
-  <InfoInput
-    title="撤去年月日"
-    type="date"
-    name="removeDate"
-    defaultValue={props.defaultValue}
-  />
-);
-
 class TrapForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      removeDateInput: null,
+      captured: false,
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
-      detail: null
+      detail: null,
+      error: {
+        setDate: null,
+        removeDate: null
+      }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
+    this.updateError.bind(this);
+    this.validateSetDate.bind(this);
+    this.validateRemoveDate.bind(this);
+    this.validateDates.bind(this);
+    this.validateDetail.bind(this);
   }
 
   componentDidMount() {
@@ -48,21 +48,110 @@ class TrapForm extends React.Component {
       const detail = this.state.detail;
       const capture = detail["properties"]["捕獲の有無"];
       if (capture == "あり") {
-        this.setState(_ => {
-          return {
-            removeDateInput: (
-              <RemoveDateInput
-                defaultValue={detail["properties"]["撤去年月日"]}
-              />
-            )
-          };
+        this.setState({
+          captured: true
         });
       } else {
-        this.setState(_ => {
-          return { removeDateInput: null };
+        this.setState({
+          captured: false
         });
       }
     }
+  }
+
+  async updateError(key, value) {
+    const e = deepClone(this.state.error);
+    console.log(e);
+    e[key] = value;
+    this.setState({ error: e });
+  }
+
+  async validateSetDate() {
+    const form = document.forms.form;
+    const setDateStr = form.setDate.value;
+    const date = new Date(setDateStr);
+    // 日付が不正
+    if (date.toString() === "Invalid Date") {
+      await this.updateError("setDate", "日付が入力されていません。");
+      return;
+    }
+    // 今日の日付
+    const today = new Date();
+    if (compareDate(date, today) > 0) {
+      // 未来の日付だったら不正
+      await this.updateError("setDate", "未来の日付が入っています。");
+      return;
+    }
+    await this.updateError("setDate", null);
+  }
+
+  async validateRemoveDate() {
+    if (!this.state.captured) {
+      // 撤去していない場合はエラーなし
+      await this.updateError("removeDate", null);
+      return;
+    }
+    const form = document.forms.form;
+    const removeDateStr = form.removeDate.value;
+    const date = new Date(removeDateStr);
+    // 日付が不正
+    if (date.toString() === "Invalid Date") {
+      await this.updateError("removeDate", "日付が入力されていません。");
+      return;
+    }
+    // 今日の日付
+    const today = new Date();
+    if (compareDate(date, today) > 0) {
+      // 未来の日付だったら不正
+      await this.updateError("removeDate", "未来の日付が入っています。");
+      return;
+    }
+    await this.updateError("removeDate", null);
+  }
+
+  async validateDates() {
+    if (!this.state.captured) {
+      return;
+    }
+    if (
+      this.state.error.setDate != null ||
+      this.state.error.removeDate != null
+    ) {
+      // そもそも日付がエラーなら確認するまでもない
+      return;
+    }
+    const form = document.forms.form;
+    const setDateStr = form.setDate.value;
+    const removeDateStr = form.removeDate.value;
+    const setDate = new Date(setDateStr);
+    const removeDate = new Date(removeDateStr);
+    // 設置年月日 > 撤去年月日ならエラー
+    if (compareDate(setDate, removeDate) > 0) {
+      await this.updateError(
+        "removeDate",
+        "設置年月日との整合性が取れません。"
+      );
+      return;
+    }
+    await this.updateError("setDate", null);
+    await this.updateError("removeDate", null);
+  }
+
+  async validateDetail() {
+    // 全部チェックしていく
+    await this.validateSetDate();
+    await this.validateRemoveDate();
+    await this.validateDates();
+
+    // エラー一覧を表示
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   // データを作る
@@ -83,8 +172,6 @@ class TrapForm extends React.Component {
     // 2 捕獲年月日
     const removeDate = capture == "あり" ? form.removeDate.value : "";
     // 6 写真?
-
-    // [todo] ここにバリデーション [todo]
 
     return {
       type: "Feature",
@@ -108,11 +195,11 @@ class TrapForm extends React.Component {
     const capture = captureSelect.options[captureSelect.selectedIndex].value;
     if (capture == "あり") {
       this.setState(_ => {
-        return { removeDateInput: <RemoveDateInput /> };
+        return { captured: true };
       });
     } else {
       this.setState(_ => {
-        return { removeDateInput: null };
+        return { captured: false };
       });
     }
   }
@@ -124,6 +211,24 @@ class TrapForm extends React.Component {
 
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
+      let removeDateInput = null;
+      if (this.state.captured) {
+        removeDateInput = (
+          <InfoInput
+            title="撤去年月日"
+            type="date"
+            name="removeDate"
+            defaultValue={
+              this.state.detail != null
+                ? this.state.detail["properties"]["撤去年月日"]
+                : null
+            }
+            onChange={this.validateRemoveDate.bind(this)}
+            errorMessage={this.state.error.removeDate}
+            required={true}
+          />
+        );
+      }
       return (
         <div className="trap-form">
           <div className="form">
@@ -142,6 +247,9 @@ class TrapForm extends React.Component {
                     ? this.state.detail["properties"]["設置年月日"]
                     : null
                 }
+                required={true}
+                onChange={this.validateSetDate.bind(this)}
+                errorMessage={this.state.error.setDate}
               />
               <InfoInput
                 title="わなの種類"
@@ -166,7 +274,7 @@ class TrapForm extends React.Component {
                     : null
                 }
               />
-              {this.state.removeDateInput}
+              {removeDateInput}
             </form>
           </div>
         </div>

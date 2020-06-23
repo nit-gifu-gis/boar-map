@@ -109,7 +109,7 @@ class BoarForm extends React.Component {
     const meshNo = form.meshNo.value;
     // データが無いならエラー
     if (meshNo === "") {
-      await this.updateError("meshNo", "メッシュ番号が入力されていません。");
+      await this.updateError("meshNo", "入力されていません。");
     } else {
       await this.updateError("meshNo", null);
     }
@@ -139,7 +139,7 @@ class BoarForm extends React.Component {
     const length = form.length.value;
     // 未入力
     if (length == "") {
-      await this.updateError("length", "入力してください。");
+      await this.updateError("length", "入力されていません。");
       return;
     }
     const length_num = parseFloat(length);
