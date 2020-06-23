@@ -4,7 +4,7 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
-import "../../../utils/date";
+import "../../../utils/validateData";
 import "../../../utils/dict";
 
 const TrapSelector = props => (
@@ -117,33 +117,24 @@ class BoarForm extends React.Component {
 
   async validateDate() {
     const form = document.forms.form;
-    const date_str = form.date.value;
-    const date = new Date(date_str);
-    // 日付が不正
-    if (date.toString() === "Invalid Date") {
-      await this.updateError("date", "日付が入力されていません。");
+    const dateStr = form.date.value;
+    const error = checkDateError(dateStr);
+    if (error != null) {
+      await this.updateError("date", error);
       return;
     }
-    // 今日の日付
-    const today = new Date();
-    if (compareDate(date, today) > 0) {
-      // 未来の日付だったら不正
-      await this.updateError("date", "未来の日付が入っています。");
-    } else {
-      await this.updateError("date", null);
-    }
+    await this.updateError("date", null);
   }
 
   async validateLength() {
     const form = document.forms.form;
     const length = form.length.value;
-    // 未入力
-    if (length == "") {
-      await this.updateError("length", "入力されていません。");
+    const error = checkNumberError(length);
+    if (error != null) {
+      await this.updateError("length", error);
       return;
     }
     const length_num = parseFloat(length);
-    console.log(length_num);
     if (length_num <= 0) {
       await this.updateError("length", "正の数を入れてください。");
       return;

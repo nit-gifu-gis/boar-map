@@ -4,6 +4,7 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
+import "../../../utils/validateData";
 
 class TrapForm extends React.Component {
   constructor(props) {
@@ -69,17 +70,9 @@ class TrapForm extends React.Component {
   async validateSetDate() {
     const form = document.forms.form;
     const setDateStr = form.setDate.value;
-    const date = new Date(setDateStr);
-    // 日付が不正
-    if (date.toString() === "Invalid Date") {
-      await this.updateError("setDate", "日付が入力されていません。");
-      return;
-    }
-    // 今日の日付
-    const today = new Date();
-    if (compareDate(date, today) > 0) {
-      // 未来の日付だったら不正
-      await this.updateError("setDate", "未来の日付が入っています。");
+    const error = checkDateError(setDateStr);
+    if (error != null) {
+      await this.updateError("setDate", error);
       return;
     }
     await this.updateError("setDate", null);
@@ -93,17 +86,9 @@ class TrapForm extends React.Component {
     }
     const form = document.forms.form;
     const removeDateStr = form.removeDate.value;
-    const date = new Date(removeDateStr);
-    // 日付が不正
-    if (date.toString() === "Invalid Date") {
-      await this.updateError("removeDate", "日付が入力されていません。");
-      return;
-    }
-    // 今日の日付
-    const today = new Date();
-    if (compareDate(date, today) > 0) {
-      // 未来の日付だったら不正
-      await this.updateError("removeDate", "未来の日付が入っています。");
+    const error = checkDateError(removeDateStr);
+    if (error != null) {
+      await this.updateError("removeDate", error);
       return;
     }
     await this.updateError("removeDate", null);
@@ -170,7 +155,10 @@ class TrapForm extends React.Component {
     // 5 捕獲の有無
     const capture = form.capture.options[form.capture.selectedIndex].value;
     // 2 捕獲年月日
-    const removeDate = capture == "あり" ? form.removeDate.value : "";
+    let removeDate = "";
+    if (this.state.captured) {
+      removeDate = form.removeDate.value;
+    }
     // 6 写真?
 
     return {
