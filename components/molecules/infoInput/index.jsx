@@ -24,7 +24,7 @@ class InfoInput extends React.Component {
             step={this.props.step}
             onChange={this.props.onChange}
             placeholder="数字で入力"
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -35,7 +35,7 @@ class InfoInput extends React.Component {
             id={this.props.name}
             date={this.props.defaultValue}
             onChange={this.props.onChange}
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -47,7 +47,7 @@ class InfoInput extends React.Component {
             options={this.props.options}
             onChange={this.props.onChange}
             defaultValue={this.props.defaultValue}
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -62,7 +62,7 @@ class InfoInput extends React.Component {
             placeholder={this.props.placeholder}
             defaultValue={this.props.defaultValue}
             onChange={this.props.onChange}
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -70,7 +70,7 @@ class InfoInput extends React.Component {
         input = (
           <ImagesInput
             onChange={this.props.onChange}
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -81,7 +81,7 @@ class InfoInput extends React.Component {
             id={this.props.name}
             defaultValue={this.props.defaultValue}
             onChange={this.props.onChange}
-            error={this.props.error}
+            error={this.props.errorMessage != null}
           />
         );
         break;
@@ -89,16 +89,23 @@ class InfoInput extends React.Component {
         break;
     }
     // 必須項目にはマークを付ける
-    let required_mark = null;
+    let requiredMark = null;
     if (this.props.required) {
-      required_mark = <span className="info-input__required-mark">*</span>;
+      requiredMark = <span className="info-input__required-mark">*</span>;
+    }
+    let errorMessage = null;
+    if (this.props.errorMessage) {
+      errorMessage = (
+        <div className="info-input__error">{this.props.errorMessage}</div>
+      );
     }
     return (
       <div className="info-input">
         <div className="info-input__title">
           {this.props.title}
-          {required_mark}
+          {requiredMark}
         </div>
+        {errorMessage}
         <div className="info-input__input-area">{input}</div>
       </div>
     );

@@ -271,7 +271,9 @@ class BoarForm extends React.Component {
                     : null
                 }
                 onChange={this.checkDate.bind(this)}
-                error={this.state.error.date != null}
+                errorMessage={
+                  this.state.error.date != null ? this.state.error.date : null
+                }
               />
               {this.state.trapOrEnvSelector}
               <InfoInput

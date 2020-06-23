@@ -11,6 +11,13 @@
     font-weight: bold;
   }
 
+  &__error {
+    width: 100%;
+    margin: -5px 0px 5px 0px;
+    font-size: 14px;
+    color: $danger-color;
+  }
+
   &__required-mark {
     margin-left: 5px;
     font-weight: bold;
