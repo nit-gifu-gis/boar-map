@@ -9,14 +9,18 @@ class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isSafari: false,
       onChange: function changed() {}
     };
     if (this.props.onChange != undefined) {
       this.state.onChange = this.props.onChange;
     }
+    this.onChangeValueForSafari.bind(this);
+    this.setDate.bind(this);
+    this.initForm.bind(this);
   }
 
-  isSafari() {
+  confirmSafari() {
     const userAgent = window.navigator.userAgent.toLowerCase();
 
     if (userAgent.indexOf("iphone") != -1) {
@@ -60,22 +64,25 @@ class DateInput extends React.Component {
     }
   }
 
-  setDateForSafari() {
+  onChangeValueForSafari() {
     const yearValue = document.getElementById(this.props.id + "Year").value;
     const monthValue = document.getElementById(this.props.id + "Month").value;
     const dayValue = document.getElementById(this.props.id + "Day").value;
+    this.setDate(yearValue, monthValue, dayValue);
+    this.state.onChange();
+  }
+
+  setDate(year, month, day) {
     // 空文字がある場合はエラー
     // 年が4桁じゃ無いのもエラー
-    if (yearValue.length != 4 || monthValue == "" || dayValue == "") {
+    if ((year + "").length != 4 || month + "" == "" || day + "" == "") {
       // 未入力欄がある場合
       document.getElementById(this.props.id).value = null;
-      console.log("未入力がある");
-      this.state.onChange();
       return;
     }
-    const yyyy = ("0000" + yearValue).slice(-4);
-    const mm = ("00" + monthValue).slice(-2);
-    const dd = ("00" + dayValue).slice(-2);
+    const yyyy = ("0000" + year).slice(-4);
+    const mm = ("00" + month).slice(-2);
+    const dd = ("00" + day).slice(-2);
     const date = yyyy + "-" + mm + "-" + dd;
     // window.alert(date);
     // 全部空文字じゃ無いなら日付として正しいか判定
@@ -87,136 +94,131 @@ class DateInput extends React.Component {
       dt.getDate() == dd
     ) {
       document.getElementById(this.props.id).value = date;
-      this.state.onChange();
     } else {
       document.getElementById(this.props.id).value = null;
-      this.state.onChange();
     }
   }
 
-  state = {
-    isBrowser: false
-  };
+  async componentDidMount() {
+    await this.setState({ isSafari: this.confirmSafari() });
+    // 初期値の確認
+    if (this.props.date != null) {
+      // 正規表現でチェック，区切りは"-"または"/"
+      const regexp = new RegExp("(\\d{4})[/-](\\d{1,2})[/-](\\d{1,2})", "gu");
+      const result = regexp.exec(this.props.date);
+      console.log(result);
+      if (result == null) {
+        console.log("check");
+        // 正規表現に引っかからないなら，初期値なしのときの処理
+        this.initForm();
+        return;
+      }
+      // 引っかかったらそれぞれ取り出して
+      const yearValue = result[1];
+      const monthValue = result[2];
+      const dayValue = result[3];
+      // 内部データセット
+      this.setDate(yearValue, monthValue, dayValue);
+      // safariは見た目もセット
+      if (this.state.isSafari) {
+        document.getElementById(this.props.id + "Year").value = yearValue;
+        document.getElementById(this.props.id + "Month").value = monthValue;
+        document.getElementById(this.props.id + "Day").value = dayValue;
+      }
+      return;
+    } else {
+      // 初期値なし
+      this.initForm();
+      return;
+    }
+  }
 
-  componentDidMount() {
-    this.setState({ isBrowser: true });
+  initForm() {
+    const today = new Date();
+    const yearValue = ("0000" + today.getFullYear()).slice(-4);
+    const monthValue = ("00" + (today.getMonth() + 1)).slice(-2);
+    const dayValue = ("00" + today.getDate()).slice(-2);
+    this.setDate(yearValue, monthValue, dayValue);
+    if (this.state.isSafari) {
+      document.getElementById(this.props.id + "Year").value = yearValue;
+      document.getElementById(this.props.id + "Month").value = monthValue;
+      document.getElementById(this.props.id + "Day").value = dayValue;
+    }
   }
 
   render() {
     let className;
-    if (this.state.isBrowser) {
-      // 初期値設定
-      let DateY = "";
-      let DateM = "";
-      let DateD = "";
-      if (this.props.date != null) {
-        // 外部から初期値が指定されている場合
-        // "-"区切りと"/"区切りに対応
-        let date = this.props.date.split(" ")[0].split("-");
-        if (date.length == 3) {
-          DateY = date[0];
-          DateM = date[1];
-          DateD = date[2];
-        } else {
-          date = date[0].split("/");
-          if (date.length == 3) {
-            DateY = date[0];
-            DateM = date[1];
-            DateD = date[2];
-          }
-        }
-      } else {
-        // 初期値が設定されていない場合は今日の日付をセット
-        const today = new Date();
-        DateY = ("0000" + today.getFullYear()).slice(-4);
-        DateM = ("00" + (today.getMonth() + 1)).slice(-2);
-        DateD = ("00" + today.getDate()).slice(-2);
-      }
-      if (this.isSafari()) {
-        return (
-          <div className="date-input-for-safari">
-            <div className="date-form-element year-element">
-              <div className="year-input">
-                <TextInput
-                  type="number"
-                  min="1900"
-                  step="1"
-                  id={this.props.id + "Year"}
-                  placeholder="西暦"
-                  defaultValue={DateY}
-                  onChange={this.setDateForSafari.bind(this)}
-                  error={this.props.error}
-                />
-              </div>
-              年
+    if (this.state.isSafari) {
+      return (
+        <div className="date-input-for-safari">
+          <div className="date-form-element year-element">
+            <div className="year-input">
+              <TextInput
+                type="number"
+                min="1900"
+                step="1"
+                id={this.props.id + "Year"}
+                placeholder="西暦"
+                onChange={this.onChangeValueForSafari.bind(this)}
+                error={this.props.error}
+              />
             </div>
-            <div className="date-form-element month-element">
-              <div className="month-input">
-                <TextInput
-                  type="number"
-                  max="12"
-                  min="1"
-                  step="1"
-                  id={this.props.id + "Month"}
-                  defaultValue={DateM}
-                  onChange={this.setDateForSafari.bind(this)}
-                  error={this.props.error}
-                />
-              </div>
-              月
-            </div>
-            <div className="date-form-element day-element">
-              <div className="day-input">
-                <TextInput
-                  type="number"
-                  max="31"
-                  min="1"
-                  step="1"
-                  id={this.props.id + "Day"}
-                  defaultValue={DateD}
-                  onChange={this.setDateForSafari.bind(this)}
-                  error={this.props.error}
-                />
-              </div>
-              日
-            </div>
-            <br />
-            <input
-              type="date"
-              name={this.props.name}
-              id={this.props.id}
-              style={{ display: "none" }}
-              defaultValue={DateY + "-" + DateM + "-" + DateD}
-            />
+            年
           </div>
-        );
-      } else {
-        className = "date-input-div__input";
-        if (this.props.error) {
-          className += "--error";
-        }
-        return (
-          <div className="date-input-div">
-            <input
-              type="date"
-              className={className}
-              name={this.props.name}
-              id={this.props.id}
-              defaultValue={
-                DateY +
-                "-" +
-                ("0" + DateM).slice(-2) +
-                "-" +
-                ("0" + DateD).slice(-2)
-              }
-              placeholder={"年/月/日"}
-              onChange={this.state.onChange}
-            />
+          <div className="date-form-element month-element">
+            <div className="month-input">
+              <TextInput
+                type="number"
+                max="12"
+                min="1"
+                step="1"
+                id={this.props.id + "Month"}
+                onChange={this.onChangeValueForSafari.bind(this)}
+                error={this.props.error}
+              />
+            </div>
+            月
           </div>
-        );
-      }
+          <div className="date-form-element day-element">
+            <div className="day-input">
+              <TextInput
+                type="number"
+                max="31"
+                min="1"
+                step="1"
+                id={this.props.id + "Day"}
+                onChange={this.onChangeValueForSafari.bind(this)}
+                error={this.props.error}
+              />
+            </div>
+            日
+          </div>
+          <br />
+          <input
+            type="date"
+            name={this.props.name}
+            id={this.props.id}
+            style={{ display: "none" }}
+          />
+        </div>
+      );
     } else {
-      return <></>;
+      className = "date-input-div__input";
+      if (this.props.error) {
+        className += "--error";
+      }
+      return (
+        <div className="date-input-div">
+          <input
+            type="date"
+            className={className}
+            name={this.props.name}
+            id={this.props.id}
+            placeholder={"年/月/日"}
+            onChange={this.state.onChange}
+          />
+        </div>
+      );
     }
   }
 }
