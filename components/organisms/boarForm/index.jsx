@@ -7,6 +7,9 @@ import UserData from "../../../utils/userData";
 import "../../../utils/validateData";
 import "../../../utils/dict";
 
+const TRAP = 1;
+const ENV = 2;
+
 const TrapSelector = props => (
   <InfoInput
     title="わなの種類"
@@ -31,7 +34,7 @@ class BoarForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      trapOrEnvSelector: <TrapSelector />,
+      trapOrEnv: TRAP,
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
@@ -74,22 +77,14 @@ class BoarForm extends React.Component {
         case "死亡":
           this.setState(_ => {
             return {
-              trapOrEnvSelector: (
-                <EnvSelector
-                  defaultValue={detail["properties"]["罠・発見場所"]}
-                />
-              )
+              trapOrEnv: ENV
             };
           });
           break;
         default:
           this.setState(_ => {
             return {
-              trapOrEnvSelector: (
-                <TrapSelector
-                  defaultValue={detail["properties"]["罠・発見場所"]}
-                />
-              )
+              trapOrEnv: TRAP
             };
           });
           break;
@@ -136,7 +131,7 @@ class BoarForm extends React.Component {
     }
     const length_num = parseFloat(length);
     if (length_num <= 0) {
-      await this.updateError("length", "正の数を入れてください。");
+      await this.updateError("length", "0以下の数値が入力されています。");
       return;
     }
     await this.updateError("length", null);
@@ -224,12 +219,12 @@ class BoarForm extends React.Component {
     switch (division) {
       case "死亡":
         this.setState(_ => {
-          return { trapOrEnvSelector: <EnvSelector /> };
+          return { trapOrEnv: ENV };
         });
         break;
       default:
         this.setState(_ => {
-          return { trapOrEnvSelector: <TrapSelector /> };
+          return { trapOrEnv: TRAP };
         });
         break;
     }
@@ -267,6 +262,26 @@ class BoarForm extends React.Component {
 
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
+      let trapOrEnvSelector = (
+        <TrapSelector
+          defaultValue={
+            this.state.detail != null
+              ? this.state.detail["properties"]["罠・発見場所"]
+              : null
+          }
+        />
+      );
+      if (this.state.trapOrEnv === ENV) {
+        trapOrEnvSelector = (
+          <EnvSelector
+            defaultValue={
+              this.state.detail != null
+                ? this.state.detail["properties"]["罠・発見場所"]
+                : null
+            }
+          />
+        );
+      }
       return (
         <div className="boar-form">
           <div className="form">
@@ -314,7 +329,7 @@ class BoarForm extends React.Component {
                 errorMessage={this.state.error.date}
                 required={true}
               />
-              {this.state.trapOrEnvSelector}
+              {trapOrEnvSelector}
               <InfoInput
                 title="性別"
                 type="select"
