@@ -59,7 +59,6 @@ class MeshNoInput extends React.Component {
     super(props);
     this.state = {
       value: null,
-      isError: false,
       onChange: function changed() {}
     };
     if (this.props.onChange != undefined) {
@@ -103,8 +102,6 @@ class MeshNoInput extends React.Component {
 
   initForm() {
     this.setValue(null, null, null);
-    // 初回読み込み時はエラーにしない
-    this.setState({ isError: false });
   }
 
   onChangeVaule() {
@@ -133,12 +130,6 @@ class MeshNoInput extends React.Component {
       meshIdValue += ("00" + num2Value).slice(-2);
     }
     document.getElementById(this.props.id).value = meshIdValue;
-    // この時，全体がnullならエラー
-    if (meshIdValue == null) {
-      this.setState({ isError: true });
-    } else {
-      this.setState({ isError: false });
-    }
   }
 
   render() {
@@ -150,7 +141,7 @@ class MeshNoInput extends React.Component {
             id={this.props.id + "City"}
             options={CITY_LIST}
             onChange={this.onChangeVaule.bind(this)}
-            error={this.state.isError || this.props.error}
+            error={this.props.error}
           />
         </div>
         <div className="mesh-num-input__city-num1-break"></div>
@@ -163,7 +154,7 @@ class MeshNoInput extends React.Component {
             id={this.props.id + "Num1"}
             placeholder="4桁"
             onChange={this.onChangeVaule.bind(this)}
-            error={this.state.isError || this.props.error}
+            error={this.props.error}
           />
         </div>
         <div className="mesh-num-input__hyphen">-</div>
@@ -176,7 +167,7 @@ class MeshNoInput extends React.Component {
             id={this.props.id + "Num2"}
             placeholder="2桁"
             onChange={this.onChangeVaule.bind(this)}
-            error={this.state.isError || this.props.error}
+            error={this.props.error}
           />
         </div>
         <br />

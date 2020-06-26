@@ -9,7 +9,6 @@ class DateInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isErrorForSafari: false,
       onChange: function changed() {}
     };
     if (this.props.onChange != undefined) {
@@ -71,9 +70,6 @@ class DateInput extends React.Component {
       // 未入力欄がある場合
       document.getElementById(this.props.id).value = null;
       console.log("未入力がある");
-      this.setState({
-        isErrorForSafari: true
-      });
       this.state.onChange();
       return;
     }
@@ -91,15 +87,9 @@ class DateInput extends React.Component {
       dt.getDate() == dd
     ) {
       document.getElementById(this.props.id).value = date;
-      this.setState({
-        isErrorForSafari: false
-      });
       this.state.onChange();
     } else {
       document.getElementById(this.props.id).value = null;
-      this.setState({
-        isErrorForSafari: true
-      });
       this.state.onChange();
     }
   }
@@ -155,7 +145,7 @@ class DateInput extends React.Component {
                   placeholder="西暦"
                   defaultValue={DateY}
                   onChange={this.setDateForSafari.bind(this)}
-                  error={this.state.isErrorForSafari || this.props.error}
+                  error={this.props.error}
                 />
               </div>
               年
@@ -170,7 +160,7 @@ class DateInput extends React.Component {
                   id={this.props.id + "Month"}
                   defaultValue={DateM}
                   onChange={this.setDateForSafari.bind(this)}
-                  error={this.state.isErrorForSafari || this.props.error}
+                  error={this.props.error}
                 />
               </div>
               月
@@ -185,7 +175,7 @@ class DateInput extends React.Component {
                   id={this.props.id + "Day"}
                   defaultValue={DateD}
                   onChange={this.setDateForSafari.bind(this)}
-                  error={this.state.isErrorForSafari || this.props.error}
+                  error={this.props.error}
                 />
               </div>
               日
