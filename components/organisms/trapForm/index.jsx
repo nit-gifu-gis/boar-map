@@ -71,22 +71,27 @@ class TrapForm extends React.Component {
     const error = checkDateError(dateStr);
     if (error != null) {
       await this.updateError(name, error);
-      return;
+      return false;
     }
     await this.updateError(name, null);
+    return true;
   }
 
   async validateDates() {
+    // 設置年月日がエラー
+    if (!(await this.validateEachDate("setDate"))) {
+      return false;
+    }
+    // 捕獲済みではない
     if (!this.state.captured) {
-      return;
+      await this.updateError("removeDate", null);
+      return true;
     }
-    if (
-      this.state.error.setDate != null ||
-      this.state.error.removeDate != null
-    ) {
-      // そもそも日付がエラーなら確認するまでもない
-      return;
+    // 捕獲済みなら撤去年月日をチェック
+    if (!(await this.validateEachDate("removeDate"))) {
+      return false;
     }
+    // ここまできたら，それぞれの日付はOK
     const form = document.forms.form;
     const setDateStr = form.setDate.value;
     const removeDateStr = form.removeDate.value;
@@ -102,19 +107,16 @@ class TrapForm extends React.Component {
         "removeDate",
         "設置年月日よりも前の日付が入力されています。"
       );
-      return;
+      return false;
     }
     await this.updateError("setDate", null);
     await this.updateError("removeDate", null);
+    return true;
   }
 
   async validateDetail() {
     // 全部チェックしていく
-    await this.validateEachDate("setDate");
-    if (this.state.captured) {
-      await this.validateEachDate("removeDate");
-      await this.validateDates();
-    }
+    await this.validateDates();
 
     // エラー一覧を表示
     let valid = true;

@@ -74,8 +74,10 @@ class VaccineForm extends React.Component {
     // データが無いならエラー
     if (meshNo === "") {
       await this.updateError("meshNo", "入力されていません。");
+      return false;
     } else {
       await this.updateError("meshNo", null);
+      return true;
     }
   }
 
@@ -85,9 +87,10 @@ class VaccineForm extends React.Component {
     const error = checkDateError(dateStr);
     if (error != null) {
       await this.updateError(name, error);
-      return;
+      return false;
     }
     await this.updateError(name, null);
+    return true;
   }
 
   async validateTreatNumber() {
@@ -96,14 +99,15 @@ class VaccineForm extends React.Component {
     const error = checkNumberError(numberStr);
     if (error != null) {
       await this.updateError("treatNumber", error);
-      return;
+      return false;
     }
     const num = parseInt(numberStr);
     if (num <= 0) {
       await this.updateError("treatNumber", "0以下の数値が入力されています。");
-      return;
+      return false;
     }
     await this.updateError("treatNumber", null);
+    return true;
   }
 
   async validateEachNumber(name) {
@@ -112,27 +116,32 @@ class VaccineForm extends React.Component {
     const error = checkNumberError(numberStr);
     if (error != null) {
       await this.updateError(name, error);
-      return;
+      return false;
     }
     const num = parseInt(numberStr);
     if (num < 0) {
       await this.updateError(name, "0未満の数値が入力されています。");
-      return;
+      return false;
     }
     await this.updateError(name, null);
+    return true;
   }
 
   async validateDates() {
+    // 散布年月日をチェック
+    if (!(await this.validateEachDate("treatDate"))) {
+      return false;
+    }
+    // 未回収なら，それ以外のエラーを消して終了
     if (!this.state.recover) {
-      return;
+      await this.updateError("recoverDate", null);
+      return true;
     }
-    if (
-      this.state.error.treatDate != null ||
-      this.state.error.recoverDate != null
-    ) {
-      // どっちかがエラーなら確認の必要なし
-      return;
+    // 回収済みなら，回収年月日をチェック
+    if (!(await this.validateEachDate("recoverDate"))) {
+      return false;
     }
+    // ここまできたら，それぞれの日付はOK，前後関係を確認する
     const form = document.forms.form;
     const treatDateStr = form.treatDate.value;
     const recoverDateStr = form.recoverDate.value;
@@ -142,26 +151,36 @@ class VaccineForm extends React.Component {
         "recoverDate",
         "散布年月日よりも前の日付が入力されています。"
       );
-      return;
+      return false;
     }
     await this.updateError("treatDate", null);
     await this.updateError("removeDate", null);
+    return true;
   }
 
   async validateNumbers() {
+    // 散布数をチェック
+    if (!(await this.validateTreatNumber())) {
+      return false;
+    }
+    // 未回収なら，それ以外のエラーを消して終了
     if (!this.state.recover) {
-      return;
+      this.updateError("treatNumber", null);
+      this.updateError("eatenNumber", null);
+      this.updateError("damageNumber", null);
+      this.updateError("noDamageNumber", null);
+      this.updateError("lostNumber", null);
+      return true;
     }
-    if (
-      this.state.error.treatNumber != null ||
-      this.state.error.eatenNumber != null ||
-      this.state.error.damageNumber != null ||
-      this.state.error.noDamageNumber != null ||
-      this.state.error.lostNumber != null
-    ) {
-      // 数値にエラーがあれば確認しない
-      return;
+    // 回収済みなら，各種エラーをチェック
+    let pass = await this.validateEachNumber("eatenNumber");
+    pass &= await this.validateEachNumber("damageNumber");
+    pass &= await this.validateEachNumber("noDamageNumber");
+    pass &= await this.validateEachNumber("lostNumber");
+    if (!pass) {
+      return false;
     }
+    // ここまできたら，各種数値はOK
     const form = document.forms.form;
     const treatNumber = parseInt(form.treatNumber.value);
     const eatenNumber = parseInt(form.eatenNumber.value);
@@ -197,18 +216,9 @@ class VaccineForm extends React.Component {
   // バリデーションをする
   async validateDetail() {
     // 全部チェックしていく
-    await this.validateEachDate("treatDate");
-    await this.validateTreatNumber();
+    await this.validateDates();
     await this.validateMeshNo();
-    if (this.state.recover) {
-      await this.validateEachDate("recoverDate");
-      await this.validateDates();
-      await this.validateEachNumber("eatenNumber");
-      await this.validateEachNumber("damageNumber");
-      await this.validateEachNumber("noDamageNumber");
-      await this.validateEachNumber("lostNumber");
-      await this.validateNumbers();
-    }
+    await this.validateNumbers();
 
     // エラー一覧を表示
     let valid = true;
