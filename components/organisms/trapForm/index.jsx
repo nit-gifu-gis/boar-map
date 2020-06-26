@@ -25,8 +25,7 @@ class TrapForm extends React.Component {
       this.state.detail = props.detail;
     }
     this.updateError.bind(this);
-    this.validateSetDate.bind(this);
-    this.validateRemoveDate.bind(this);
+    this.validateEachDate.bind(this);
     this.validateDates.bind(this);
     this.validateDetail.bind(this);
   }
@@ -62,36 +61,19 @@ class TrapForm extends React.Component {
 
   async updateError(key, value) {
     const e = deepClone(this.state.error);
-    console.log(e);
     e[key] = value;
     this.setState({ error: e });
   }
 
-  async validateSetDate() {
+  async validateEachDate(name) {
     const form = document.forms.form;
-    const setDateStr = form.setDate.value;
-    const error = checkDateError(setDateStr);
+    const dateStr = form[name].value;
+    const error = checkDateError(dateStr);
     if (error != null) {
-      await this.updateError("setDate", error);
+      await this.updateError(name, error);
       return;
     }
-    await this.updateError("setDate", null);
-  }
-
-  async validateRemoveDate() {
-    if (!this.state.captured) {
-      // 撤去していない場合はエラーなし
-      await this.updateError("removeDate", null);
-      return;
-    }
-    const form = document.forms.form;
-    const removeDateStr = form.removeDate.value;
-    const error = checkDateError(removeDateStr);
-    if (error != null) {
-      await this.updateError("removeDate", error);
-      return;
-    }
-    await this.updateError("removeDate", null);
+    await this.updateError(name, null);
   }
 
   async validateDates() {
@@ -113,6 +95,10 @@ class TrapForm extends React.Component {
     // 設置年月日 > 撤去年月日ならエラー
     if (compareDate(setDate, removeDate) > 0) {
       await this.updateError(
+        "setDate",
+        "撤去年月日よりも後の日付が入力されています。"
+      );
+      await this.updateError(
         "removeDate",
         "設置年月日よりも前の日付が入力されています。"
       );
@@ -124,9 +110,11 @@ class TrapForm extends React.Component {
 
   async validateDetail() {
     // 全部チェックしていく
-    await this.validateSetDate();
-    await this.validateRemoveDate();
-    await this.validateDates();
+    await this.validateEachDate("setDate");
+    if (this.state.captured) {
+      await this.validateEachDate("removeDate");
+      await this.validateDates();
+    }
 
     // エラー一覧を表示
     let valid = true;
@@ -211,7 +199,7 @@ class TrapForm extends React.Component {
                 ? this.state.detail["properties"]["撤去年月日"]
                 : null
             }
-            onChange={this.validateRemoveDate.bind(this)}
+            onChange={this.validateEachDate.bind(this, "removeDate")}
             errorMessage={this.state.error.removeDate}
             required={true}
           />
@@ -236,7 +224,7 @@ class TrapForm extends React.Component {
                     : null
                 }
                 required={true}
-                onChange={this.validateSetDate.bind(this)}
+                onChange={this.validateEachDate.bind(this, "setDate")}
                 errorMessage={this.state.error.setDate}
               />
               <InfoInput
