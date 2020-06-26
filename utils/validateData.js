@@ -1,13 +1,14 @@
 compareDate = (date1, date2) => {
-  const year1 = date1.getFullYear();
-  const month1 = date1.getMonth() + 1;
-  const day1 = date1.getDate();
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
 
-  const year2 = date2.getFullYear();
-  const month2 = date2.getMonth() + 1;
-  const day2 = date2.getDate();
+  const year1 = d1.getFullYear();
+  const month1 = d1.getMonth() + 1;
+  const day1 = d1.getDate();
 
-  console.log(year1, year2);
+  const year2 = d2.getFullYear();
+  const month2 = d2.getMonth() + 1;
+  const day2 = d2.getDate();
 
   if (year1 === year2) {
     if (month1 === month2) {

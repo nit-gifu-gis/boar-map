@@ -5,49 +5,6 @@ import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
 
-const RecoverInfoForm = props => (
-  <div>
-    <InfoInput
-      title="回収年月日"
-      type="date"
-      name="recoverDate"
-      defaultValue={props.recoverDate}
-    />
-    <InfoInput
-      title="いのししの摂食数"
-      type="number"
-      name="eatenNum"
-      min={0}
-      step={1}
-      defaultValue={props.eatenNum}
-    />
-    <InfoInput
-      title="その他の破損数"
-      type="number"
-      name="damageNum"
-      min={0}
-      step={1}
-      defaultValue={props.damageNum}
-    />
-    <InfoInput
-      title="破損なし"
-      type="number"
-      name="noDamageNum"
-      min={0}
-      step={1}
-      defaultValue={props.noDamageNum}
-    />
-    <InfoInput
-      title="ロスト数"
-      type="number"
-      name="lostNum"
-      min={0}
-      step={1}
-      defaultValue={props.lostNum}
-    />
-  </div>
-);
-
 class VaccineForm extends React.Component {
   constructor(props) {
     super(props);
@@ -57,7 +14,14 @@ class VaccineForm extends React.Component {
       lng: props.lng,
       userData: UserData.getUserData(),
       error: {
-        treatDate: null
+        meshNo: null,
+        treatDate: null,
+        treatNumber: null,
+        recoverDate: null,
+        eatenNumber: null,
+        damageNumber: null,
+        noDamageNumber: null,
+        lostNumber: null
       }
     };
     // データが与えられた場合は保存しておく
@@ -65,7 +29,12 @@ class VaccineForm extends React.Component {
       this.state.detail = props.detail;
     }
     this.updateError.bind(this);
-    this.validateTreatDate.bind(this);
+    this.validateMeshNo.bind(this);
+    this.validateEachDate.bind(this);
+    this.validateTreatNumber.bind(this);
+    this.validateEachNumber.bind(this);
+    this.validateDates.bind(this);
+    this.validateNumbers.bind(this);
     this.validateDetail.bind(this);
   }
 
@@ -99,31 +68,147 @@ class VaccineForm extends React.Component {
     this.setState({ error: e });
   }
 
-  async validateTreatDate() {
+  async validateMeshNo() {
     const form = document.forms.form;
-    const treatDateStr = form.treatDate.value;
-    const date = new Date(treatDateStr);
-    // 日付が不正
-    if (date.toString() === "Invalid Date") {
-      await this.updateError("treatDate", "日付が入力されていません。");
-      return;
-    }
-    // 今日の日付
-    const today = new Date();
-    if (compareDate(date, today) > 0) {
-      // 未来の日付だったら不正
-      await this.updateError("treatDate", "未来の日付が入っています。");
+    const meshNo = form.meshNo.value;
+    // データが無いならエラー
+    if (meshNo === "") {
+      await this.updateError("meshNo", "入力されていません。");
     } else {
-      await this.updateError("treatDate", null);
+      await this.updateError("meshNo", null);
     }
   }
 
-  async validateTreatNumber() {}
+  async validateEachDate(name) {
+    const form = document.forms.form;
+    const dateStr = form[name].value;
+    const error = checkDateError(dateStr);
+    if (error != null) {
+      await this.updateError(name, error);
+      return;
+    }
+    await this.updateError(name, null);
+  }
+
+  async validateTreatNumber() {
+    const form = document.forms.form;
+    const numberStr = form.elements["treatNumber"].value;
+    const error = checkNumberError(numberStr);
+    if (error != null) {
+      await this.updateError("treatNumber", error);
+      return;
+    }
+    const num = parseInt(numberStr);
+    if (num <= 0) {
+      await this.updateError("treatNumber", "0以下の数値が入力されています。");
+      return;
+    }
+    await this.updateError("treatNumber", null);
+  }
+
+  async validateEachNumber(name) {
+    const form = document.forms.form;
+    const numberStr = form.elements[name].value;
+    const error = checkNumberError(numberStr);
+    if (error != null) {
+      await this.updateError(name, error);
+      return;
+    }
+    const num = parseInt(numberStr);
+    if (num < 0) {
+      await this.updateError(name, "0未満の数値が入力されています。");
+      return;
+    }
+    await this.updateError(name, null);
+  }
+
+  async validateDates() {
+    if (!this.state.recover) {
+      return;
+    }
+    if (
+      this.state.error.treatDate != null ||
+      this.state.error.recoverDate != null
+    ) {
+      // どっちかがエラーなら確認の必要なし
+      return;
+    }
+    const form = document.forms.form;
+    const treatDateStr = form.treatDate.value;
+    const recoverDateStr = form.recoverDate.value;
+    // 散布年月日 > 回収年月日ならエラー
+    if (compareDate(treatDateStr, recoverDateStr) > 0) {
+      await this.updateError(
+        "recoverDate",
+        "散布年月日よりも前の日付が入力されています。"
+      );
+      return;
+    }
+    await this.updateError("treatDate", null);
+    await this.updateError("removeDate", null);
+  }
+
+  async validateNumbers() {
+    if (!this.state.recover) {
+      return;
+    }
+    if (
+      this.state.error.treatNumber != null ||
+      this.state.error.eatenNumber != null ||
+      this.state.error.damageNumber != null ||
+      this.state.error.noDamageNumber != null ||
+      this.state.error.lostNumber != null
+    ) {
+      // 数値にエラーがあれば確認しない
+      return;
+    }
+    const form = document.forms.form;
+    const treatNumber = parseInt(form.treatNumber.value);
+    const eatenNumber = parseInt(form.eatenNumber.value);
+    const damageNumber = parseInt(form.damageNumber.value);
+    const noDamageNumber = parseInt(form.noDamageNumber.value);
+    const lostNumber = parseInt(form.lostNumber.value);
+    const totalNumber =
+      eatenNumber + damageNumber + noDamageNumber + lostNumber;
+    if (treatNumber != totalNumber) {
+      this.updateError(
+        "treatNumber",
+        "散布数と回収に係る数の合計が合っていません。"
+      );
+      this.updateError(
+        "eatenNumber",
+        "散布数と回収に係る数の合計が合っていません。"
+      );
+      this.updateError(
+        "damageNumber",
+        "散布数と回収に係る数の合計が合っていません。"
+      );
+      this.updateError(
+        "noDamageNumber",
+        "散布数と回収に係る数の合計が合っていません。"
+      );
+      this.updateError(
+        "lostNumber",
+        "散布数と回収に係る数の合計が合っていません。"
+      );
+    }
+  }
 
   // バリデーションをする
   async validateDetail() {
     // 全部チェックしていく
-    this.validateTreatDate();
+    await this.validateEachDate("treatDate");
+    await this.validateTreatNumber();
+    await this.validateMeshNo();
+    if (this.state.recover) {
+      await this.validateEachDate("recoverDate");
+      await this.validateDates();
+      await this.validateEachNumber("eatenNumber");
+      await this.validateEachNumber("damageNumber");
+      await this.validateEachNumber("noDamageNumber");
+      await this.validateEachNumber("lostNumber");
+      await this.validateNumbers();
+    }
 
     // エラー一覧を表示
     let valid = true;
@@ -156,24 +241,22 @@ class VaccineForm extends React.Component {
     // 5 回収年月日
     let recoverDate = "";
     // 6 摂食数
-    let eatenNum = "";
+    let eatenNumber = "";
     // 7 その他の破損数
-    let damageNum = "";
+    let damageNumber = "";
     // 8 破損なし
-    let noDamageNum = "";
+    let noDamageNumber = "";
     // 8-1 ロスト数
-    let lostNum = "";
+    let lostNumber = "";
     // 9 備考
     const note = form.note.value;
     if (recover) {
       recoverDate = form.recoverDate.value;
-      eatenNum = form.eatenNum.value;
-      damageNum = form.damageNum.value;
-      noDamageNum = form.noDamageNum.value;
-      lostNum = form.lostNum.value;
+      eatenNumber = form.eatenNumber.value;
+      damageNumber = form.damageNumber.value;
+      noDamageNumber = form.noDamageNumber.value;
+      lostNumber = form.lostNumber.value;
     }
-
-    // [todo] ここにバリデーション [todo]
 
     return {
       type: "Feature",
@@ -188,10 +271,10 @@ class VaccineForm extends React.Component {
         散布年月日: treatDate,
         散布数: treatNumber,
         回収年月日: recoverDate,
-        摂食数: eatenNum,
-        その他の破損数: damageNum,
-        破損なし: noDamageNum,
-        ロスト数: lostNum,
+        摂食数: eatenNumber,
+        その他の破損数: damageNumber,
+        破損なし: noDamageNumber,
+        ロスト数: lostNumber,
         備考: note
       }
     };
@@ -221,35 +304,81 @@ class VaccineForm extends React.Component {
     if (this.state.lng != undefined && this.state.lat != undefined) {
       let recoverInfoForm = null;
       if (this.state.recover) {
-        recoverInfoForm = (
-          <RecoverInfoForm
-            recoverDate={
+        recoverInfoForm = [
+          <InfoInput
+            title="回収年月日"
+            type="date"
+            name="recoverDate"
+            defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["回収年月日"]
                 : null
             }
-            eatenNum={
+            required={true}
+            onChange={this.validateEachDate.bind(this, "recoverDate")}
+            errorMessage={this.state.error.recoverDate}
+          />,
+          <InfoInput
+            title="いのししの摂食数"
+            type="number"
+            name="eatenNumber"
+            min={0}
+            step={1}
+            defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["摂食数"]
                 : null
             }
-            damageNum={
+            required={true}
+            onChange={this.validateEachNumber.bind(this, "eatenNumber")}
+            errorMessage={this.state.error.eatenNumber}
+          />,
+          <InfoInput
+            title="その他の破損数"
+            type="number"
+            name="damageNumber"
+            min={0}
+            step={1}
+            defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["その他の破損数"]
                 : null
             }
-            noDamageNum={
+            required={true}
+            onChange={this.validateEachNumber.bind(this, "damageNumber")}
+            errorMessage={this.state.error.damageNumber}
+          />,
+          <InfoInput
+            title="破損なし"
+            type="number"
+            name="noDamageNumber"
+            min={0}
+            step={1}
+            defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["破損なし"]
                 : null
             }
-            lostNum={
+            required={true}
+            onChange={this.validateEachNumber.bind(this, "noDamageNumber")}
+            errorMessage={this.state.error.noDamageNumber}
+          />,
+          <InfoInput
+            title="ロスト数"
+            type="number"
+            name="lostNumber"
+            min={0}
+            step={1}
+            defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["ロスト数"]
                 : null
             }
+            required={true}
+            onChange={this.validateEachNumber.bind(this, "lostNumber")}
+            errorMessage={this.state.error.lostNumber}
           />
-        );
+        ];
       }
       return (
         <div className="vaccine-form">
@@ -269,6 +398,9 @@ class VaccineForm extends React.Component {
                     ? this.state.detail["properties"]["メッシュNO"]
                     : null
                 }
+                required={true}
+                onChange={this.validateMeshNo.bind(this)}
+                errorMessage={this.state.error.meshNo}
               />
               <InfoInput
                 title="散布年月日"
@@ -280,7 +412,7 @@ class VaccineForm extends React.Component {
                     : null
                 }
                 required={true}
-                onChange={this.validateTreatDate.bind(this)}
+                onChange={this.validateEachDate.bind(this, "treatDate")}
                 errorMessage={this.state.error.treatDate}
               />
               <InfoInput
@@ -293,6 +425,9 @@ class VaccineForm extends React.Component {
                     ? this.state.detail["properties"]["散布数"]
                     : null
                 }
+                onChange={this.validateTreatNumber.bind(this)}
+                errorMessage={this.state.error.treatNumber}
+                required={true}
               />
               <InfoInput
                 title="回収状況"
