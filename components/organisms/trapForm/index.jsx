@@ -114,7 +114,7 @@ class TrapForm extends React.Component {
     if (compareDate(setDate, removeDate) > 0) {
       await this.updateError(
         "removeDate",
-        "設置年月日との整合性が取れません。"
+        "設置年月日よりも前の日付が入力されています。"
       );
       return;
     }
