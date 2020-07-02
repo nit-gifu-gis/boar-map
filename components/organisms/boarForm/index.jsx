@@ -4,6 +4,11 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
+import "../../../utils/validateData";
+import "../../../utils/dict";
+
+const TRAP = 1;
+const ENV = 2;
 
 const TrapSelector = props => (
   <InfoInput
@@ -29,16 +34,26 @@ class BoarForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      trapOrEnvSelector: <TrapSelector />,
+      trapOrEnv: TRAP,
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
-      detail: null
+      detail: null,
+      error: {
+        date: null,
+        meshNo: null,
+        length: null
+      }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
+    this.updateError.bind(this);
+    this.validateDate.bind(this);
+    this.validateMeshNo.bind(this);
+    this.validateLength.bind(this);
+    this.validateDetail.bind(this);
   }
 
   componentDidMount() {
@@ -62,27 +77,82 @@ class BoarForm extends React.Component {
         case "死亡":
           this.setState(_ => {
             return {
-              trapOrEnvSelector: (
-                <EnvSelector
-                  defaultValue={detail["properties"]["罠・発見場所"]}
-                />
-              )
+              trapOrEnv: ENV
             };
           });
           break;
         default:
           this.setState(_ => {
             return {
-              trapOrEnvSelector: (
-                <TrapSelector
-                  defaultValue={detail["properties"]["罠・発見場所"]}
-                />
-              )
+              trapOrEnv: TRAP
             };
           });
           break;
       }
     }
+  }
+
+  async updateError(key, value) {
+    const e = deepClone(this.state.error);
+    e[key] = value;
+    this.setState({ error: e });
+  }
+
+  // バリデーション
+  async validateMeshNo() {
+    const form = document.forms.form;
+    const meshNo = form.meshNo.value;
+    // データが無いならエラー
+    if (meshNo === "") {
+      await this.updateError("meshNo", "入力されていません。");
+    } else {
+      await this.updateError("meshNo", null);
+    }
+  }
+
+  async validateDate() {
+    const form = document.forms.form;
+    const dateStr = form.date.value;
+    const error = checkDateError(dateStr);
+    if (error != null) {
+      await this.updateError("date", error);
+      return;
+    }
+    await this.updateError("date", null);
+  }
+
+  async validateLength() {
+    const form = document.forms.form;
+    const length = form.length.value;
+    const error = checkNumberError(length);
+    if (error != null) {
+      await this.updateError("length", error);
+      return;
+    }
+    const length_num = parseFloat(length);
+    if (length_num <= 0) {
+      await this.updateError("length", "0以下の数値が入力されています。");
+      return;
+    }
+    await this.updateError("length", null);
+  }
+
+  // バリデーションをする
+  async validateDetail() {
+    // 全部チェックしていく
+    await this.validateMeshNo();
+    await this.validateDate();
+    await this.validateLength();
+
+    // エラー一覧を表示
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   // データを作る
@@ -121,8 +191,6 @@ class BoarForm extends React.Component {
     // 8 歯列画像
     // 9 現地写真
 
-    // [todo] ここにバリデーション [todo]
-
     return {
       type: "Feature",
       geometry: {
@@ -151,12 +219,12 @@ class BoarForm extends React.Component {
     switch (division) {
       case "死亡":
         this.setState(_ => {
-          return { trapOrEnvSelector: <EnvSelector /> };
+          return { trapOrEnv: ENV };
         });
         break;
       default:
         this.setState(_ => {
-          return { trapOrEnvSelector: <TrapSelector /> };
+          return { trapOrEnv: TRAP };
         });
         break;
     }
@@ -194,6 +262,26 @@ class BoarForm extends React.Component {
 
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
+      let trapOrEnvSelector = (
+        <TrapSelector
+          defaultValue={
+            this.state.detail != null
+              ? this.state.detail["properties"]["罠・発見場所"]
+              : null
+          }
+        />
+      );
+      if (this.state.trapOrEnv === ENV) {
+        trapOrEnvSelector = (
+          <EnvSelector
+            defaultValue={
+              this.state.detail != null
+                ? this.state.detail["properties"]["罠・発見場所"]
+                : null
+            }
+          />
+        );
+      }
       return (
         <div className="boar-form">
           <div className="form">
@@ -201,7 +289,7 @@ class BoarForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
-                onChanged={this.props.onChangedImages}
+                onChange={this.props.onChangedImages}
               />
               <InfoInput
                 title="メッシュ番号"
@@ -212,6 +300,9 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["メッシュ番号"]
                     : null
                 }
+                required={true}
+                onChange={this.validateMeshNo.bind(this)}
+                errorMessage={this.state.error.meshNo}
               />
               <InfoInput
                 title="区分"
@@ -234,8 +325,11 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["捕獲年月日"]
                     : null
                 }
+                onChange={this.validateDate.bind(this)}
+                errorMessage={this.state.error.date}
+                required={true}
               />
-              {this.state.trapOrEnvSelector}
+              {trapOrEnvSelector}
               <InfoInput
                 title="性別"
                 type="select"
@@ -244,7 +338,7 @@ class BoarForm extends React.Component {
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["性別"]
-                    : null
+                    : "不明"
                 }
               />
               <InfoInput
@@ -257,6 +351,9 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["体長"]
                     : null
                 }
+                required={true}
+                onChange={this.validateLength.bind(this)}
+                errorMessage={this.state.error.length}
               />
               <InfoInput
                 title="備考"

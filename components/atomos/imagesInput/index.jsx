@@ -7,11 +7,11 @@ class ImagesInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      onChanged: function changed(data) {}
+      onChange: function changed(data) {}
     };
 
-    if (this.props.onChanged != undefined) {
-      this.state.onChanged = this.props.onChanged;
+    if (this.props.onChange != undefined) {
+      this.state.onChange = this.props.onChange;
     }
   }
 
@@ -35,11 +35,11 @@ class ImagesInput extends React.Component {
       data.append("files[]", file, file.name);
       // プレビューにも表示
       const img = document.createElement("img");
-      img.setAttribute("class", "imagesInput__preview__image");
+      img.setAttribute("class", "images-input__preview__image");
       img.setAttribute("src", window.URL.createObjectURL(file));
       preview.appendChild(img);
     }
-    this.state.onChanged(data);
+    this.state.onChange(data);
   }
 
   onClickButton() {
@@ -48,9 +48,13 @@ class ImagesInput extends React.Component {
   }
 
   render() {
+    let className = "images-input";
+    if (this.props.error) {
+      className += "--error";
+    }
     return (
-      <div className="imagesInput">
-        <form name="imagesInput__form" className="imagesInput__form">
+      <div className={className}>
+        <form name="imagesInput__form" className="images-input__form">
           <input
             type="file"
             name="file"
@@ -61,8 +65,8 @@ class ImagesInput extends React.Component {
             style={{ display: "none" }}
           />
         </form>
-        <div className="imagesInput__preview" id="preview"></div>
-        <div className="imagesInput__buttonDiv">
+        <div className="images-input__preview" id="preview"></div>
+        <div className="images-input__buttonDiv">
           <RoundButton color="primary" bind={this.onClickButton}>
             画像を選択
           </RoundButton>

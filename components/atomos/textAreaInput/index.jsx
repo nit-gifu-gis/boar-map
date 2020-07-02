@@ -4,10 +4,15 @@ import "../../../public/static/css/global.scss";
 
 class TextAreaInput extends React.Component {
   render() {
+    let className = "text-area-input__input";
+    if (this.props.error) {
+      className += "--error";
+    }
+    let input;
     if (this.props.required) {
-      return (
+      input = (
         <textarea
-          className="text-area-input"
+          className={className}
           name={this.props.name}
           id={this.props.id}
           cols={this.props.cols}
@@ -22,9 +27,9 @@ class TextAreaInput extends React.Component {
         </textarea>
       );
     } else {
-      return (
+      input = (
         <textarea
-          className="text-area-input"
+          className={className}
           name={this.props.name}
           id={this.props.id}
           cols={this.props.cols}
@@ -38,6 +43,7 @@ class TextAreaInput extends React.Component {
         </textarea>
       );
     }
+    return <div className="text-area-input">{input}</div>;
   }
 }
 

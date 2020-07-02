@@ -1,29 +1,29 @@
+@import "../../../public/static/css/global";
+
 .select-input-div {
   position: relative;
   width: 100%;
   max-width: 400px;
 
-  .select-input {
-    padding: var(--padding);
-    width: 100%;
-    font-size: 18px;
-    border: solid var(--border) #bdbdbd;
-    border-radius: 10px;
-    box-sizing: border-box;
+  select {
+    -webkit-appearance: none;
+    appearance: none;
     position: relative;
-    background-color: #ffffff;
+    border: none;
+    border-radius: 0;
+    font-size: 18px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #00000000;
+    z-index: 2;
+  }
 
-    select {
-      -webkit-appearance: none;
-      appearance: none;
-      position: relative;
-      border: none;
-      border-radius: 0;
-      font-size: 18px;
-      width: 100%;
-      box-sizing: border-box;
-      background-color: #00000000;
-      z-index: 2;
+  &__select-input {
+    @extend %input;
+    position: relative;
+
+    &--error {
+      @extend %input-error;
     }
   }
 }

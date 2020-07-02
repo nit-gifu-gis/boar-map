@@ -4,30 +4,30 @@ import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import UserData from "../../../utils/userData";
-
-const RemoveDateInput = props => (
-  <InfoInput
-    title="撤去年月日"
-    type="date"
-    name="removeDate"
-    defaultValue={props.defaultValue}
-  />
-);
+import "../../../utils/validateData";
 
 class TrapForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      removeDateInput: null,
+      captured: false,
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
-      detail: null
+      detail: null,
+      error: {
+        setDate: null,
+        removeDate: null
+      }
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
       this.state.detail = props.detail;
     }
+    this.updateError.bind(this);
+    this.validateEachDate.bind(this);
+    this.validateDates.bind(this);
+    this.validateDetail.bind(this);
   }
 
   componentDidMount() {
@@ -48,21 +48,85 @@ class TrapForm extends React.Component {
       const detail = this.state.detail;
       const capture = detail["properties"]["捕獲の有無"];
       if (capture == "あり") {
-        this.setState(_ => {
-          return {
-            removeDateInput: (
-              <RemoveDateInput
-                defaultValue={detail["properties"]["撤去年月日"]}
-              />
-            )
-          };
+        this.setState({
+          captured: true
         });
       } else {
-        this.setState(_ => {
-          return { removeDateInput: null };
+        this.setState({
+          captured: false
         });
       }
     }
+  }
+
+  async updateError(key, value) {
+    const e = deepClone(this.state.error);
+    e[key] = value;
+    this.setState({ error: e });
+  }
+
+  async validateEachDate(name) {
+    const form = document.forms.form;
+    const dateStr = form[name].value;
+    const error = checkDateError(dateStr);
+    if (error != null) {
+      await this.updateError(name, error);
+      return false;
+    }
+    await this.updateError(name, null);
+    return true;
+  }
+
+  async validateDates() {
+    // 設置年月日がエラー
+    if (!(await this.validateEachDate("setDate"))) {
+      return false;
+    }
+    // 捕獲済みではない
+    if (!this.state.captured) {
+      await this.updateError("removeDate", null);
+      return true;
+    }
+    // 捕獲済みなら撤去年月日をチェック
+    if (!(await this.validateEachDate("removeDate"))) {
+      return false;
+    }
+    // ここまできたら，それぞれの日付はOK
+    const form = document.forms.form;
+    const setDateStr = form.setDate.value;
+    const removeDateStr = form.removeDate.value;
+    const setDate = new Date(setDateStr);
+    const removeDate = new Date(removeDateStr);
+    // 設置年月日 > 撤去年月日ならエラー
+    if (compareDate(setDate, removeDate) > 0) {
+      await this.updateError(
+        "setDate",
+        "撤去年月日よりも後の日付が入力されています。"
+      );
+      await this.updateError(
+        "removeDate",
+        "設置年月日よりも前の日付が入力されています。"
+      );
+      return false;
+    }
+    await this.updateError("setDate", null);
+    await this.updateError("removeDate", null);
+    return true;
+  }
+
+  async validateDetail() {
+    // 全部チェックしていく
+    await this.validateDates();
+
+    // エラー一覧を表示
+    let valid = true;
+    Object.keys(this.state.error).forEach(key => {
+      if (this.state.error[key] != null) {
+        console.error(this.state.error[key]);
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   // データを作る
@@ -81,10 +145,11 @@ class TrapForm extends React.Component {
     // 5 捕獲の有無
     const capture = form.capture.options[form.capture.selectedIndex].value;
     // 2 捕獲年月日
-    const removeDate = capture == "あり" ? form.removeDate.value : "";
+    let removeDate = "";
+    if (this.state.captured) {
+      removeDate = form.removeDate.value;
+    }
     // 6 写真?
-
-    // [todo] ここにバリデーション [todo]
 
     return {
       type: "Feature",
@@ -108,11 +173,11 @@ class TrapForm extends React.Component {
     const capture = captureSelect.options[captureSelect.selectedIndex].value;
     if (capture == "あり") {
       this.setState(_ => {
-        return { removeDateInput: <RemoveDateInput /> };
+        return { captured: true };
       });
     } else {
       this.setState(_ => {
-        return { removeDateInput: null };
+        return { captured: false };
       });
     }
   }
@@ -124,6 +189,24 @@ class TrapForm extends React.Component {
 
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
+      let removeDateInput = null;
+      if (this.state.captured) {
+        removeDateInput = (
+          <InfoInput
+            title="撤去年月日"
+            type="date"
+            name="removeDate"
+            defaultValue={
+              this.state.detail != null
+                ? this.state.detail["properties"]["撤去年月日"]
+                : null
+            }
+            onChange={this.validateEachDate.bind(this, "removeDate")}
+            errorMessage={this.state.error.removeDate}
+            required={true}
+          />
+        );
+      }
       return (
         <div className="trap-form">
           <div className="form">
@@ -131,7 +214,7 @@ class TrapForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
-                onChanged={this.props.onChangedImages}
+                onChange={this.props.onChangedImages}
               />
               <InfoInput
                 title="設置年月日"
@@ -142,6 +225,9 @@ class TrapForm extends React.Component {
                     ? this.state.detail["properties"]["設置年月日"]
                     : null
                 }
+                required={true}
+                onChange={this.validateEachDate.bind(this, "setDate")}
+                errorMessage={this.state.error.setDate}
               />
               <InfoInput
                 title="わなの種類"
@@ -166,7 +252,7 @@ class TrapForm extends React.Component {
                     : null
                 }
               />
-              {this.state.removeDateInput}
+              {removeDateInput}
             </form>
           </div>
         </div>

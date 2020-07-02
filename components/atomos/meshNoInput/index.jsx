@@ -58,8 +58,12 @@ class MeshNoInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: null
+      value: null,
+      onChange: function changed() {}
     };
+    if (this.props.onChange != undefined) {
+      this.state.onChange = this.props.onChange;
+    }
     this.onChangeVaule.bind(this);
     this.setValue.bind(this);
     this.initForm.bind(this);
@@ -111,35 +115,37 @@ class MeshNoInput extends React.Component {
     } else {
       this.setValue(null, null, null);
     }
+    this.state.onChange();
   }
 
   setValue(cityValue, num1Value, num2Value) {
-    // どこかがnullなら全体もnull
+    // 市町村名とnum1がnullなら全体もnull
+    // num2のみ未入力なら00をセット
     let meshIdValue = null;
-    if (cityValue && num1Value && num2Value) {
+    if (cityValue && num1Value) {
       // 市町村名＋４桁数値＋半角ハイフン＋２桁数値
       meshIdValue = cityValue;
       meshIdValue += ("0000" + num1Value).slice(-4);
       meshIdValue += "-";
       meshIdValue += ("00" + num2Value).slice(-2);
     }
-    console.log(meshIdValue);
     document.getElementById(this.props.id).value = meshIdValue;
   }
 
   render() {
     return (
-      <div className="mesh_num_input">
-        <div className="city_input">
+      <div className="mesh-num-input">
+        <div className="mesh-num-input__city-input">
           <SelectInput
             name={this.props.name + "City"}
             id={this.props.id + "City"}
             options={CITY_LIST}
             onChange={this.onChangeVaule.bind(this)}
+            error={this.props.error}
           />
         </div>
-        <div className="city_num1_break"></div>
-        <div className="num1_input">
+        <div className="mesh-num-input__city-num1-break"></div>
+        <div className="mesh-num-input__num1-input">
           <TextInput
             type="number"
             min="0"
@@ -148,10 +154,11 @@ class MeshNoInput extends React.Component {
             id={this.props.id + "Num1"}
             placeholder="4桁"
             onChange={this.onChangeVaule.bind(this)}
+            error={this.props.error}
           />
         </div>
-        <div className="hyphen">-</div>
-        <div className="num2_input">
+        <div className="mesh-num-input__hyphen">-</div>
+        <div className="mesh-num-input__num2-input">
           <TextInput
             type="number"
             min="0"
@@ -160,12 +167,13 @@ class MeshNoInput extends React.Component {
             id={this.props.id + "Num2"}
             placeholder="2桁"
             onChange={this.onChangeVaule.bind(this)}
+            error={this.props.error}
           />
         </div>
         <br />
         <input
           type="text"
-          className="mesh_input"
+          className="mesh-num-input__mesh-input"
           name={this.props.name}
           id={this.props.id}
           style={{ display: "none" }}
