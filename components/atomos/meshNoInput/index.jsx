@@ -72,7 +72,7 @@ class MeshNoInput extends React.Component {
   componentDidMount() {
     if (this.props.defaultValue != null) {
       // 正規表現でcity, num1, num2を抽出
-      const regexp = new RegExp("(\\D+)(\\d{1,4})-(\\d{1,2})", "gu");
+      const regexp = new RegExp("(\\D+)(\\d{1,4})-(\\d{1,2})", "g");
       const result = regexp.exec(this.props.defaultValue);
       if (result == null) {
         // 正規表現に引っかからなかったら，初期値がないときと同じ処理をして終了
