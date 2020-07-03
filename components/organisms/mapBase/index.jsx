@@ -259,9 +259,9 @@ class MapBase extends React.Component {
                 mapMarker.on("mouseover", function(e) {
                   this.openPopup();
                 });
-                // mapMarker.on("mouseout", function(e) {
-                //   this.closePopup();
-                // });
+                mapMarker.on("mouseout", function(e) {
+                  this.closePopup();
+                });
                 if (this.state.isMainMap) {
                   mapMarker.on("click", function(e) {
                     Router.push(
