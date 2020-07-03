@@ -1,4 +1,4 @@
-.mesh_num_input {
+.mesh-num-input {
   position: relative;
   width: 100%;
   max-width: 400px;
@@ -7,17 +7,17 @@
   flex-wrap: wrap;
   align-items: center;
 
-  .city_input {
+  &__city-input {
     box-sizing: border-box;
     flex-basis: 140px;
     flex-grow: 3;
   }
 
-  .city_num1_break {
+  &__city-num1-break {
     flex-basis: 3px;
   }
 
-  .num1_input {
+  &__num1-input {
     input {
       text-align: center;
     }
@@ -35,13 +35,13 @@
     flex-grow: 1;
   }
 
-  .hyphen {
+  &__hyphen {
     text-align: center;
     flex-basis: 15px;
     // flex-grow: 0.3;
   }
 
-  .num2_input {
+  &__num2-input {
     input {
       text-align: center;
     }

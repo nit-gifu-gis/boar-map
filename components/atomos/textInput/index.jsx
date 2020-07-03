@@ -4,11 +4,16 @@ import "../../../public/static/css/global.scss";
 
 class TextInput extends React.Component {
   render() {
+    let className = "text-input__input";
+    let input;
+    if (this.props.error) {
+      className += "--error";
+    }
     if (this.props.required) {
-      return (
+      input = (
         <input
           type={this.props.type}
-          className="text_input"
+          className={className}
           name={this.props.name}
           id={this.props.id}
           placeholder={this.props.placeholder}
@@ -21,10 +26,10 @@ class TextInput extends React.Component {
         />
       );
     } else {
-      return (
+      input = (
         <input
           type={this.props.type}
-          className="text_input"
+          className={className}
           name={this.props.name}
           id={this.props.id}
           placeholder={this.props.placeholder}
@@ -36,6 +41,7 @@ class TextInput extends React.Component {
         />
       );
     }
+    return <div className="text-input">{input}</div>;
   }
 }
 

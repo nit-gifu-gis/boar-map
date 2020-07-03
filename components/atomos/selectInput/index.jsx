@@ -4,6 +4,11 @@ import "../../../public/static/css/global.scss";
 
 class SelectInput extends React.Component {
   render() {
+    let className = "select-input-div__select-input";
+    if (this.props.error) {
+      className += "--error";
+    }
+
     const options = [];
     if (this.props.options == undefined) {
       return <></>;
@@ -41,7 +46,7 @@ class SelectInput extends React.Component {
 
     return (
       <div className="select-input-div">
-        <div className="select-input">
+        <div className={className}>
           <select
             name={this.props.name}
             id={this.props.id}

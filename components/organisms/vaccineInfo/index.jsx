@@ -37,6 +37,11 @@ class VaccineInfo extends React.Component {
           title="破損なし"
           type="text"
           data={this.props.detail["properties"]["破損なし"]}
+        />,
+        <InfoDiv
+          title="ロスト数"
+          type="text"
+          data={this.props.detail["properties"]["ロスト数"]}
         />
       ];
     }

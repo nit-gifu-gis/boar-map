@@ -186,6 +186,45 @@ class MapBase extends React.Component {
     }).addTo(this.myMap);
   }
 
+  // アイコンのマウスホバー時に出るポップアップを作る
+  makePopup(type, date) {
+    // 大枠
+    const div = document.createElement("div");
+    div.className = "pop-up";
+    // 種類に応じてテキスト変更
+    let title = "";
+    switch (type) {
+      case "boar":
+        title = "捕獲年月日";
+        break;
+      case "trap":
+        title = "設置年月日";
+        break;
+      case "vaccine":
+        title = "散布年月日";
+        break;
+    }
+    // タイトル
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "pop-up__title";
+    titleDiv.appendChild(document.createTextNode(title));
+    div.appendChild(titleDiv);
+    // 日付
+    let dateStr = "";
+    const regexp = new RegExp("(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}) .*", "g");
+    const result = regexp.exec(date);
+    if (result == null) {
+      dateStr += "登録されていません。";
+    } else {
+      dateStr += result[1];
+    }
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "pop-up__date";
+    dateDiv.appendChild(document.createTextNode(dateStr));
+    div.appendChild(dateDiv);
+    return div;
+  }
+
   getBoar(map, token, me, data) {
     console.log("boar");
     this.state.retry++;
@@ -215,10 +254,14 @@ class MapBase extends React.Component {
                   icon: this.boarIcon
                 });
                 mapMarker.bindPopup(
-                  "ID: " +
-                    feature["properties"]["ID$"] +
-                    "<br>種類: 捕獲いのしし"
+                  this.makePopup("boar", feature["properties"]["捕獲年月日"])
                 );
+                mapMarker.on("mouseover", function(e) {
+                  this.openPopup();
+                });
+                // mapMarker.on("mouseout", function(e) {
+                //   this.closePopup();
+                // });
                 if (this.state.isMainMap) {
                   mapMarker.on("click", function(e) {
                     Router.push(
@@ -292,8 +335,14 @@ class MapBase extends React.Component {
                   icon: this.trapIcon
                 });
                 mapMarker.bindPopup(
-                  "ID: " + feature["properties"]["ID$"] + "<br>種類: わな"
+                  this.makePopup("trap", feature["properties"]["設置年月日"])
                 );
+                mapMarker.on("mouseover", function(e) {
+                  this.openPopup();
+                });
+                mapMarker.on("mouseout", function(e) {
+                  this.closePopup();
+                });
                 if (this.state.isMainMap) {
                   mapMarker.on("click", function(e) {
                     Router.push(
@@ -371,8 +420,17 @@ class MapBase extends React.Component {
                     icon: this.vaccineIcon
                   });
                   mapMarker.bindPopup(
-                    "ID: " + feature["properties"]["ID$"] + "<br>種類: ワクチン"
+                    this.makePopup(
+                      "vaccine",
+                      feature["properties"]["散布年月日"]
+                    )
                   );
+                  mapMarker.on("mouseover", function(e) {
+                    this.openPopup();
+                  });
+                  mapMarker.on("mouseout", function(e) {
+                    this.closePopup();
+                  });
                   if (this.state.isMainMap) {
                     mapMarker.on("click", function(e) {
                       Router.push(

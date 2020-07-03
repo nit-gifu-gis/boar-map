@@ -10,7 +10,8 @@ class LoginForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLogining: false
+      isLogining: false,
+      isError: false
     };
     this.onSubmitting.bind(this);
     this.onLogin.bind(this);
@@ -53,7 +54,8 @@ class LoginForm extends React.Component {
           "処理中にエラーが発生しました [1]";
         console.log(error);
         this.setState({
-          isLogining: false
+          isLogining: false,
+          isError: true
         });
       });
   };
@@ -78,12 +80,18 @@ class LoginForm extends React.Component {
           document.getElementsByClassName("login_error")[0].innerHTML =
             "処理中にエラーが発生しました [2]";
           console.log(error);
-          this.setState({ isLogining: false });
+          this.setState({
+            isLogining: false,
+            isError: true
+          });
         });
     } else {
       document.getElementsByClassName("login_error")[0].innerHTML =
         data.commonHeader.systemErrorReport;
-      this.setState({ isLogining: false });
+      this.setState({
+        isLogining: false,
+        isError: true
+      });
     }
   };
 
@@ -104,7 +112,10 @@ class LoginForm extends React.Component {
     } else {
       document.getElementsByClassName("login_error")[0].innerHTML =
         "画像サーバーへのログインに失敗しました。";
-      this.setState({ isLogining: false });
+      this.setState({
+        isLogining: false,
+        isError: true
+      });
     }
   };
 
@@ -138,6 +149,7 @@ class LoginForm extends React.Component {
                 id="login__id"
                 placeholder="ユーザーID"
                 required={true}
+                error={this.state.isError}
               />
             </div>
             <div className="text_input_area">
@@ -146,6 +158,7 @@ class LoginForm extends React.Component {
                 id="login__pass"
                 placeholder="パスワード"
                 required={true}
+                error={this.state.isError}
               />
             </div>
             <div className="login_error"></div>

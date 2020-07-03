@@ -1,12 +1,12 @@
-.imagesInput {
-  padding: var(--padding);
-  width: 100%;
-  max-width: 400px;
-  font-size: 18px;
-  border: solid var(--border) #bdbdbd;
-  border-radius: 10px;
-  box-sizing: border-box;
+@import "../../../public/static/css/global";
+
+.images-input {
+  @extend %input;
   position: relative;
+
+  &--error {
+    @extend %input-error;
+  }
 
   &__form {
     width: 100%;
@@ -35,16 +35,3 @@
   }
 }
 
-// IE
-@media all and (-ms-high-contrast: none) {
-  .imagesInput {
-    padding: 10px;
-    width: 100%;
-    max-width: 400px;
-    font-size: 18px;
-    border: solid 2px #bdbdbd;
-    border-radius: 10px;
-    box-sizing: border-box;
-    position: relative;
-  }
-}
