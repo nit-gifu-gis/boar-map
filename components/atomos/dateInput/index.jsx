@@ -104,11 +104,10 @@ class DateInput extends React.Component {
     // 初期値の確認
     if (this.props.date != null) {
       // 正規表現でチェック，区切りは"-"または"/"
-      const regexp = new RegExp("(\\d{4})[/-](\\d{1,2})[/-](\\d{1,2})", "gu");
+      const regexp = new RegExp("(\\d{4})[/-](\\d{1,2})[/-](\\d{1,2})", "g");
       const result = regexp.exec(this.props.date);
       console.log(result);
       if (result == null) {
-        console.log("check");
         // 正規表現に引っかからないなら，初期値なしのときの処理
         this.initForm();
         return;
