@@ -31,8 +31,7 @@ class EditInfo extends React.Component {
     this.state.formData = data;
   }
 
-  upload() {
-    const data = this.formRef.current.createDetail();
+  upload(data) {
     // 編集時はIDを付け足す
     data["properties"]["ID$"] = this.state.id;
     if (this.state.formData == null) {
@@ -131,13 +130,20 @@ class EditInfo extends React.Component {
   // formから情報を取得して次のページに遷移する
   // 本当はrefを使うやり方はあまりよろしくないらしいので要リファクタリング
   // 各formもインターフェース作って継承させないかんな…
-  onClickNext() {
-    this.setState({ isProcessing: true });
-    this.upload();
-    // console.log(this.state.id);
-    // console.log(data);
-
-    // window.alert("工事中");
+  async onClickNext() {
+    // バリデーションをチェック
+    if (await this.formRef.current.validateDetail()) {
+      const data = this.formRef.current.createDetail();
+      if (data != null) {
+        this.setState({ isProcessing: true });
+        this.upload(data);
+      } else {
+        this.setState({ isProcessing: false });
+      }
+    } else {
+      window.alert("入力内容にエラーがあります。ご確認ください。");
+      this.setState({ isProcessing: false });
+    }
   }
 
   render() {
