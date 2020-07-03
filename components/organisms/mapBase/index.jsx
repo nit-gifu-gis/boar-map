@@ -188,10 +188,8 @@ class MapBase extends React.Component {
 
   // アイコンのマウスホバー時に出るポップアップを作る
   makePopup(type, id, date) {
-    console.log("check1");
     // 大枠
     const div = document.createElement("div");
-    console.log("check2");
     div.className = "pop-up";
     // 種類に応じてテキスト変更
     let titleStr = "";
@@ -210,14 +208,12 @@ class MapBase extends React.Component {
         dateStr = "散布年月日";
         break;
     }
-    console.log("check3");
     // タイトル（種類とid）
     titleStr += " - " + id;
     const titleDiv = document.createElement("div");
     titleDiv.className = "pop-up__title";
     titleDiv.appendChild(document.createTextNode(titleStr));
     div.appendChild(titleDiv);
-    console.log("check4");
     // 日付
     dateStr += ": ";
     const regexp = new RegExp("(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}) .*", "g");
@@ -227,13 +223,10 @@ class MapBase extends React.Component {
     } else {
       dateStr += result[1];
     }
-    console.log(result);
     const dateDiv = document.createElement("div");
     dateDiv.className = "pop-up__date";
     dateDiv.appendChild(document.createTextNode(dateStr));
     div.appendChild(dateDiv);
-    console.log("check5");
-    console.log(div);
     return div;
   }
 
