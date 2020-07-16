@@ -42,7 +42,8 @@ class BoarForm extends React.Component {
       error: {
         date: null,
         meshNo: null,
-        length: null
+        length: null,
+        pregnant: null
       },
       isFemale: false
     };
@@ -55,6 +56,7 @@ class BoarForm extends React.Component {
     this.validateMeshNo.bind(this);
     this.validateLength.bind(this);
     this.validateDetail.bind(this);
+    this.validatePregnant.bind(this);
   }
 
   componentDidMount() {
@@ -139,12 +141,39 @@ class BoarForm extends React.Component {
     await this.updateError("length", null);
   }
 
+  async validatePregnant() {
+    if (!this.state.isFemale) {
+      // メスじゃない場合はエラーを消して終了
+      await this.updateError("pregnant", null);
+      return;
+    }
+    // メスの場合
+    const form = document.forms.form;
+    const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
+    // 値が選択肢に引っかかればOK
+    const options = ["あり", "なし", "不明"];
+    let valid = false;
+    for (let i = 0; i < options.length; i++) {
+      if (pregnant === options[i]) {
+        valid = true;
+        break;
+      }
+    }
+    if (valid) {
+      await this.updateError("pregnant", null);
+    } else {
+      await this.updateError("pregnant", "選択されていません。");
+    }
+    return;
+  }
+
   // バリデーションをする
   async validateDetail() {
     // 全部チェックしていく
     await this.validateMeshNo();
     await this.validateDate();
     await this.validateLength();
+    await this.validatePregnant();
 
     // エラー一覧を表示
     let valid = true;
@@ -326,6 +355,8 @@ class BoarForm extends React.Component {
                 ? this.state.detail["properties"]["妊娠の状況"]
                 : null
             }
+            errorMessage={this.state.error.pregnant}
+            onChange={this.validatePregnant.bind(this)}
           />
         );
       }
