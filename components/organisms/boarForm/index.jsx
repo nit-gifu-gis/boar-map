@@ -43,7 +43,8 @@ class BoarForm extends React.Component {
         date: null,
         meshNo: null,
         length: null
-      }
+      },
+      isFemale: false
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -89,6 +90,7 @@ class BoarForm extends React.Component {
           });
           break;
       }
+      this.setState({ isFemale: detail["properties"]["性別"] === "メス" });
     }
   }
 
@@ -180,12 +182,17 @@ class BoarForm extends React.Component {
         trapOrEnv = form.trap.options[form.trap.selectedIndex].value;
         break;
     }
-    // 4.1 幼獣・成獣の別
+    // 4-1 幼獣・成獣の別
     const age = form.age.options[form.age.selectedIndex].value;
     // 5 性別
     const sex = form.sex.options[form.sex.selectedIndex].value;
     // 6 体長
     const length = form.length.value;
+    // 6-1 妊娠の状況
+    let pregnant = null;
+    if (this.state.isFemale) {
+      pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
+    }
     // 7 体重
     const weight = this.weigh(Number(length));
     // 7-1 備考
@@ -210,6 +217,7 @@ class BoarForm extends React.Component {
         性別: sex,
         体長: length,
         体重: weight,
+        妊娠の状況: pregnant,
         備考: note
       }
     };
@@ -229,6 +237,20 @@ class BoarForm extends React.Component {
         this.setState(_ => {
           return { trapOrEnv: TRAP };
         });
+        break;
+    }
+  }
+
+  // 性別が変更されたときに呼ばれる
+  onChangeSex() {
+    const sexSelect = document.forms.form.sex;
+    const sex = sexSelect.options[sexSelect.selectedIndex].value;
+    switch (sex) {
+      case "メス":
+        this.setState({ isFemale: true });
+        break;
+      default:
+        this.setState({ isFemale: false });
         break;
     }
   }
@@ -265,6 +287,7 @@ class BoarForm extends React.Component {
 
   render() {
     if (this.state.lat != undefined && this.state.lng != undefined) {
+      // わな・発見場所の切り替え
       let trapOrEnvSelector = (
         <TrapSelector
           defaultValue={
@@ -280,6 +303,24 @@ class BoarForm extends React.Component {
             defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["罠・発見場所"]
+                : null
+            }
+          />
+        );
+      }
+      // 妊娠の状況の表示切り替え
+      let pregnantSelector = null;
+      if (this.state.isFemale) {
+        pregnantSelector = (
+          <InfoInput
+            title="妊娠の状況"
+            type="select"
+            name="pregnant"
+            options={["なし", "あり", "不明"]}
+            required={true}
+            defaultValue={
+              this.state.detail != null
+                ? this.state.detail["properties"]["妊娠の状況"]
                 : null
             }
           />
@@ -354,6 +395,7 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["性別"]
                     : "不明"
                 }
+                onChange={this.onChangeSex.bind(this)}
               />
               <InfoInput
                 title="体長 (cm)"
@@ -369,6 +411,7 @@ class BoarForm extends React.Component {
                 onChange={this.validateLength.bind(this)}
                 errorMessage={this.state.error.length}
               />
+              {pregnantSelector}
               <InfoInput
                 title="備考"
                 type="text-area"
