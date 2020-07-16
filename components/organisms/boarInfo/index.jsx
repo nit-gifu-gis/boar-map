@@ -65,7 +65,7 @@ class BoarInfo extends React.Component {
           unit="cm"
         />
         <InfoDiv
-          title="体重 (体長から自動計算)"
+          title="体重 （体長から自動計算）"
           type="number"
           data={this.props.detail["properties"]["体重"]}
           unit="kg"
@@ -77,7 +77,7 @@ class BoarInfo extends React.Component {
           data={this.props.detail["properties"]["処分方法"]}
         />
         <InfoDiv
-          title="備考"
+          title="備考（遠沈管番号）"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
         />

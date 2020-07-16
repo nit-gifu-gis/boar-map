@@ -458,7 +458,7 @@ class BoarForm extends React.Component {
                 }
               />
               <InfoInput
-                title="備考"
+                title="備考（遠沈管番号）"
                 type="text-area"
                 rows="4"
                 name="note"
