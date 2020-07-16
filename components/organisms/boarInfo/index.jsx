@@ -39,6 +39,10 @@ class BoarInfo extends React.Component {
           data={this.props.detail["properties"]["罠・発見場所"]}
         />
         <InfoDiv
+          title="幼獣・成獣の別"
+          data={this.props.detail["properties"]["幼獣・成獣"]}
+        />
+        <InfoDiv
           title="性別"
           type="text"
           data={this.props.detail["properties"]["性別"]}

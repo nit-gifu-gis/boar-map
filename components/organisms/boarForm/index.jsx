@@ -180,6 +180,8 @@ class BoarForm extends React.Component {
         trapOrEnv = form.trap.options[form.trap.selectedIndex].value;
         break;
     }
+    // 4.1 幼獣・成獣の別
+    const age = form.age.options[form.age.selectedIndex].value;
     // 5 性別
     const sex = form.sex.options[form.sex.selectedIndex].value;
     // 6 体長
@@ -204,6 +206,7 @@ class BoarForm extends React.Component {
         捕獲年月日: date,
         位置情報: "(" + lat + "," + lng + ")",
         "罠・発見場所": trapOrEnv,
+        "幼獣・成獣": age,
         性別: sex,
         体長: length,
         体重: weight,
@@ -330,6 +333,17 @@ class BoarForm extends React.Component {
                 required={true}
               />
               {trapOrEnvSelector}
+              <InfoInput
+                title="幼獣・成獣の別"
+                type="select"
+                name="age"
+                options={["幼獣", "成獣"]}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["幼獣・成獣"]
+                    : "幼獣"
+                }
+              />
               <InfoInput
                 title="性別"
                 type="select"
