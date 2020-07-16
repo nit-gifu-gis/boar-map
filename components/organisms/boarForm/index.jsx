@@ -193,6 +193,8 @@ class BoarForm extends React.Component {
     if (this.state.isFemale) {
       pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     }
+    // 6-2 処分方法
+    const disposal = form.disposal.options[form.disposal.selectedIndex].value;
     // 7 体重
     const weight = this.weigh(Number(length));
     // 7-1 備考
@@ -218,6 +220,7 @@ class BoarForm extends React.Component {
         体長: length,
         体重: weight,
         妊娠の状況: pregnant,
+        処分方法: disposal,
         備考: note
       }
     };
@@ -412,6 +415,17 @@ class BoarForm extends React.Component {
                 errorMessage={this.state.error.length}
               />
               {pregnantSelector}
+              <InfoInput
+                title="処分方法"
+                type="select"
+                name="disposal"
+                options={["埋設", "焼却", "家保", "利活用", "その他"]}
+                defaultValue={
+                  this.state.detail != null
+                    ? this.state.detail["properties"]["処分方法"]
+                    : "埋設"
+                }
+              />
               <InfoInput
                 title="備考"
                 type="text-area"

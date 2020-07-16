@@ -72,6 +72,11 @@ class BoarInfo extends React.Component {
         />
         {pregnantInfo}
         <InfoDiv
+          title="処分方法"
+          type="text"
+          data={this.props.detail["properties"]["処分方法"]}
+        />
+        <InfoDiv
           title="備考"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
