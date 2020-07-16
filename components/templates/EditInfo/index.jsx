@@ -71,7 +71,7 @@ class EditInfo extends React.Component {
         query: {
           type: this.state.type,
           detail: JSON.stringify(data),
-          ids: this.state.ids,
+          ids: JSON.stringify(this.state.ids),
           formData: JSON.stringify(res)
         }
       },
@@ -88,7 +88,7 @@ class EditInfo extends React.Component {
         id: detail["properties"]["ID$"],
         lat: detail["geometry"]["coordinates"][1],
         lng: detail["geometry"]["coordinates"][0],
-        ids: Router.query.ids
+        ids: JSON.parse(Router.query.ids)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
