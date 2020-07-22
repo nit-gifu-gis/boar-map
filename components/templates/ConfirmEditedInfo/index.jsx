@@ -20,7 +20,7 @@ class ConfirmEditedInfo extends React.Component {
     this.state = {
       type: null,
       detail: null,
-      ids: null,
+      ids: [],
       formData: null,
       picCount: 0,
       isProcessing: false,
@@ -30,7 +30,7 @@ class ConfirmEditedInfo extends React.Component {
 
   componentDidMount() {
     if (Router.query.type != undefined || Router.query.detail != undefined) {
-      // console.log("confirm", Router.query);
+      // console.log("confirm", JSON.parse(Router.query.ids));
       this.setState({
         type: Router.query.type,
         detail: JSON.parse(Router.query.detail),
@@ -125,7 +125,8 @@ class ConfirmEditedInfo extends React.Component {
         query: {
           id: this.state.detail["properties"]["ID$"],
           type: this.state.type,
-          detail: JSON.stringify(this.state.detail)
+          detail: JSON.stringify(this.state.detail),
+          ids: JSON.stringify(this.state.ids)
         }
       },
       url

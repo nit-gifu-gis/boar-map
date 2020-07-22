@@ -4,6 +4,17 @@ import InfoDiv from "../../molecules/infoDiv";
 
 class BoarInfo extends React.Component {
   render() {
+    // 妊娠の状況は性別がメスの時のみ表示
+    let pregnantInfo = null;
+    if (this.props.detail["properties"]["性別"] === "メス") {
+      pregnantInfo = (
+        <InfoDiv
+          title="妊娠の状況"
+          type="text"
+          data={this.props.detail["properties"]["妊娠の状況"]}
+        />
+      );
+    }
     return (
       <div className="boar-info">
         <InfoDiv
@@ -39,6 +50,10 @@ class BoarInfo extends React.Component {
           data={this.props.detail["properties"]["罠・発見場所"]}
         />
         <InfoDiv
+          title="幼獣・成獣の別"
+          data={this.props.detail["properties"]["幼獣・成獣"]}
+        />
+        <InfoDiv
           title="性別"
           type="text"
           data={this.props.detail["properties"]["性別"]}
@@ -50,13 +65,19 @@ class BoarInfo extends React.Component {
           unit="cm"
         />
         <InfoDiv
-          title="体重 (体長から自動計算)"
+          title="体重 （体長から自動計算）"
           type="number"
           data={this.props.detail["properties"]["体重"]}
           unit="kg"
         />
+        {pregnantInfo}
         <InfoDiv
-          title="備考"
+          title="処分方法"
+          type="text"
+          data={this.props.detail["properties"]["処分方法"]}
+        />
+        <InfoDiv
+          title="備考（遠沈管番号）"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
         />
