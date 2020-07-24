@@ -10,26 +10,6 @@ import "../../../utils/dict";
 const TRAP = 1;
 const ENV = 2;
 
-const TrapSelector = props => (
-  <InfoInput
-    title="わなの種類"
-    type="select"
-    name="trap"
-    options={["箱わな", "くくりわな", "その他"]}
-    defaultValue={props.defaultValue}
-  />
-);
-
-const EnvSelector = props => (
-  <InfoInput
-    title="発見場所"
-    type="select"
-    name="env"
-    options={["山際", "山地", "その他"]}
-    defaultValue={props.defaultValue}
-  />
-);
-
 class BoarForm extends React.Component {
   constructor(props) {
     super(props);
@@ -321,17 +301,25 @@ class BoarForm extends React.Component {
     if (this.state.lat != undefined && this.state.lng != undefined) {
       // わな・発見場所の切り替え
       let trapOrEnvSelector = (
-        <TrapSelector
+        <InfoInput
+          title="わなの種類"
+          type="select"
+          name="trap"
+          options={["くくりわな", "箱わな", "その他"]}
           defaultValue={
             this.state.detail != null
               ? this.state.detail["properties"]["罠・発見場所"]
-              : null
+              : "くくりわな"
           }
         />
       );
       if (this.state.trapOrEnv === ENV) {
         trapOrEnvSelector = (
-          <EnvSelector
+          <InfoInput
+            title="発見場所"
+            type="select"
+            name="env"
+            options={["山際", "山地", "その他"]}
             defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["罠・発見場所"]
