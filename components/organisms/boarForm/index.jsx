@@ -218,7 +218,7 @@ class BoarForm extends React.Component {
     // 6 体長
     const length = form.length.value;
     // 6-1 妊娠の状況
-    let pregnant = null;
+    let pregnant = "";
     if (this.state.isFemale) {
       pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     }
