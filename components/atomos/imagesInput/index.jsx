@@ -15,31 +15,56 @@ class ImagesInput extends React.Component {
     }
   }
 
+  componentDidMount() {}
+
   postImage(callback) {
     if (!hasFile) {
       callback([], null);
     }
   }
 
-  formChanged() {
+  makeCompressedImageURL(file) {
+    return new Promise((resolve, reject) => {
+      if (process.browser) {
+        // 圧縮処理
+        const imageData = new Image();
+        imageData.src = URL.createObjectURL(file);
+        imageData.onload = () => {
+          // サイズ取得
+          const w = imageData.width;
+          const h = imageData.height;
+          // キャンバスに描画
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.setAttribute("width", w);
+          canvas.setAttribute("height", h);
+          ctx.drawImage(imageData, 0, 0);
+          // dataURLを生成
+          const url = canvas.toDataURL("image/jpeg", 0.5);
+          resolve(url);
+        };
+        imageData.onerror = e => reject(e);
+      } else {
+        reject("window is not defined.");
+      }
+    });
+  }
+
+  async formChanged() {
     const input = document.imagesInput__form.file;
-    const data = new FormData();
     const preview = document.getElementById("preview");
-    // 一旦プレビューはリセット
-    while (preview.firstChild) {
-      preview.removeChild(preview.firstChild);
-    }
-    data.append("MAX_FILE_SIZE", MAX_UPLOAD_SIZE);
     for (const file of input.files) {
-      console.log(file);
-      data.append("files[]", file, file.name);
+      // 圧縮した画像のdataURLを受け取る
+      const url = await this.makeCompressedImageURL(file);
+      // sessionStorageに置く
+
       // プレビューにも表示
       const img = document.createElement("img");
       img.setAttribute("class", "images-input__preview__image");
-      img.setAttribute("src", window.URL.createObjectURL(file));
+      img.setAttribute("src", url);
       preview.appendChild(img);
     }
-    this.state.onChange(data);
+    // this.state.onChange(data);
   }
 
   onClickButton() {
@@ -66,6 +91,7 @@ class ImagesInput extends React.Component {
           />
         </form>
         <div className="images-input__preview" id="preview"></div>
+        <canvas className="images-input__canvas" id="canvas"></canvas>
         <div className="images-input__buttonDiv">
           <RoundButton color="primary" bind={this.onClickButton}>
             画像を選択
