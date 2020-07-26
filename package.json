@@ -21,6 +21,7 @@
     "watch:js": "chokidar '{components,pages,scss,utils}/**/*.{js,jsx}' -c 'npm run lint:js'"
   },
   "dependencies": {
+    "blueimp-canvas-to-blob": "^3.28.0",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.6.0",
     "leaflet-easybutton": "^2.4.0",
