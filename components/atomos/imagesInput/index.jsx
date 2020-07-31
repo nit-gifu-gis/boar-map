@@ -111,20 +111,23 @@ class ImagesInput extends React.Component {
     // this.state.onChange(data);
   }
 
+  // 各画像の上のバツボタンを押したときの処理
   onClickEreseButton(index) {
-    console.log(index);
-    console.log(this.state.objectURLs[index]);
-    // 押された番号のobjectURLを消す
-    this.setState(state => {
-      // 引数で受け取ったインデックス以外の要素の配列を作る
-      const newlist = state.objectURLs.filter((_, i) => i !== index);
-      // ↑を新しくsessionStorageとstateにセット
-      const jsonStr = JSON.stringify(newlist);
-      sessionStorage.setItem(this.state.name, jsonStr);
-      return {
-        objectURLs: newlist
-      };
-    });
+    if (confirm("この画像の登録を取り消しますか？")) {
+      console.log(index);
+      console.log(this.state.objectURLs[index]);
+      // 押された番号のobjectURLを消す
+      this.setState(state => {
+        // 引数で受け取ったインデックス以外の要素の配列を作る
+        const newlist = state.objectURLs.filter((_, i) => i !== index);
+        // ↑を新しくsessionStorageとstateにセット
+        const jsonStr = JSON.stringify(newlist);
+        sessionStorage.setItem(this.state.name, jsonStr);
+        return {
+          objectURLs: newlist
+        };
+      });
+    }
   }
 
   onClickButton() {
