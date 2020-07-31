@@ -23,7 +23,7 @@ class BoarInfo extends React.Component {
           title="捕獲頭数"
           type="text"
           data={this.props.detail["properties"]["捕獲頭数"]}
-          />
+        />
       );
     }
     return (

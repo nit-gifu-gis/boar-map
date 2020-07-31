@@ -24,10 +24,10 @@ class BoarForm extends React.Component {
         meshNo: null,
         length: null,
         pregnant: null,
-        catchNum: null,
+        catchNum: null
       },
       isFemale: false,
-      isBox: false,
+      isBox: false
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -76,7 +76,9 @@ class BoarForm extends React.Component {
           break;
       }
       this.setState({ isFemale: detail["properties"]["性別"] === "メス" });
-      this.setState({ isBox: detail["properties"]["罠・発見場所"] === "箱わな"});
+      this.setState({
+        isBox: detail["properties"]["罠・発見場所"] === "箱わな"
+      });
     }
   }
 
@@ -152,7 +154,7 @@ class BoarForm extends React.Component {
   }
 
   async validateCatchNum() {
-    if (this.state.isBox) {
+    if (!this.state.isBox) {
       // 箱わなが選択されていない場合はnull
       await this.updateError("catchNum", null);
       return;
@@ -371,7 +373,7 @@ class BoarForm extends React.Component {
             defaultValue={
               this.state.detail != null
                 ? this.state.detail["properties"]["罠・発見場所"]
-                : null
+                : "山際"
             }
           />
         );
@@ -398,8 +400,8 @@ class BoarForm extends React.Component {
       }
       // 捕獲頭数の表示切り替え
       let catchNumInput = null;
-      if(this.state.isBox) {
-        catchNumInput = (
+      if (this.state.isBox) {
+        catchNumInput = [
           <InfoInput
             title="捕獲頭数"
             type="number"
@@ -413,8 +415,11 @@ class BoarForm extends React.Component {
             }
             onChange={this.validateCatchNum.bind(this)}
             errorMessage={this.state.error.catchNum}
-            />
-        );
+          />,
+          <p className="boar-form__description">
+            以下の項目については、代表的な1体のみに関して入力してください。
+          </p>
+        ];
       }
       return (
         <div className="boar-form">

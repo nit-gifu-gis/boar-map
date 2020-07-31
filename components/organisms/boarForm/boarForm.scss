@@ -1,3 +1,10 @@
+@import "../../../public/static/css/global";
+
 .boar-form {
   width: 100%;
+
+  &__description {
+    margin: 15px $margin-lr $margin-tb $margin-lr;
+    text-align: justify;
+  }
 }
