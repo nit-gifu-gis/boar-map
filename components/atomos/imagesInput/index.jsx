@@ -17,7 +17,14 @@ class ImagesInput extends React.Component {
     }
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // 最初からsessionStorageに入っている場合はプレビューに表示する
+    if (sessionStorage.getItem(this.props.name)) {
+      this.setState({
+        objectURLs: JSON.parse(sessionStorage.getItem(this.props.name))
+      });
+    }
+  }
 
   postImage(callback) {
     if (!hasFile) {
