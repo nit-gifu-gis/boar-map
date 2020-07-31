@@ -130,6 +130,8 @@ class ImagesInput extends React.Component {
         // ↑を新しくsessionStorageとstateにセット
         const jsonStr = JSON.stringify(newlist);
         sessionStorage.setItem(this.state.name, jsonStr);
+        // 削除する画像のobjectURLをメモリから解放
+        URL.revokeObjectURL(this.state.objectURLs[index]);
         return {
           objectURLs: newlist
         };
