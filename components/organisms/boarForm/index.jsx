@@ -417,7 +417,7 @@ class BoarForm extends React.Component {
             errorMessage={this.state.error.catchNum}
           />,
           <p className="boar-form__description">
-            以下の項目については、代表的な1体のみに関して入力してください。
+            ※以下の項目については、代表的なイノシシ1体の情報を入力してください。
           </p>
         ];
       }
@@ -520,7 +520,7 @@ class BoarForm extends React.Component {
                 }
               />
               <InfoInput
-                title="備考（遠沈管番号）"
+                title="備考（捕獲を手伝った者の氏名）（遠沈管番号）"
                 type="text-area"
                 rows="4"
                 name="note"
