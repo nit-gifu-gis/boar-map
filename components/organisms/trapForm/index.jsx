@@ -214,6 +214,7 @@ class TrapForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
+                name="trapImage"
                 onChange={this.props.onChangedImages}
               />
               <InfoInput

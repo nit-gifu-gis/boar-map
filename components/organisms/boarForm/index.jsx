@@ -367,6 +367,7 @@ class BoarForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
+                name="boarImage"
                 onChange={this.props.onChangedImages}
               />
               <InfoInput

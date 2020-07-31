@@ -71,6 +71,7 @@ class InfoInput extends React.Component {
           <ImagesInput
             onChange={this.props.onChange}
             error={this.props.errorMessage != null}
+            name={this.props.name}
           />
         );
         break;
