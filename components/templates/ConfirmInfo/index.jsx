@@ -25,7 +25,8 @@ class ConfirmInfo extends React.Component {
       formData: null,
       picCount: 0,
       isProcessing: false,
-      userData: UserData.getUserData()
+      userData: UserData.getUserData(),
+      imageURLs: []
     };
   }
 
@@ -42,12 +43,21 @@ class ConfirmInfo extends React.Component {
         lng: Router.query.lng,
         type: Router.query.type,
         detail: JSON.parse(Router.query.detail),
-        formData: JSON.parse(Router.query.formData),
-        picCount: JSON.parse(Router.query.formData).length
+        formData: JSON.parse(Router.query.formData)
+        // picCount: JSON.parse(Router.query.formData).length
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
+    }
+
+    const imageURLsStr = sessionStorage.getItem("boarImage");
+    if (imageURLsStr) {
+      const urls = JSON.parse(imageURLsStr);
+      this.setState({
+        imageURLs: urls,
+        picCount: urls.length
+      });
     }
   }
 
@@ -184,6 +194,7 @@ class ConfirmInfo extends React.Component {
           <BoarInfo
             detail={this.state.detail}
             waitingPublish={this.state.picCount}
+            imgs={this.state.imageURLs}
           />
         );
         break;
@@ -193,6 +204,7 @@ class ConfirmInfo extends React.Component {
           <TrapInfo
             detail={this.state.detail}
             waitingPublish={this.state.picCount}
+            imgs={this.state.imageURLs}
           />
         );
         break;
@@ -202,6 +214,7 @@ class ConfirmInfo extends React.Component {
           <VaccineInfo
             detail={this.state.detail}
             waitingPublish={this.state.picCount}
+            imgs={this.state.imageURLs}
           />
         );
         break;

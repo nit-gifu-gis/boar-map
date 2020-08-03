@@ -9,7 +9,6 @@ import BoarForm from "../../organisms/boarForm";
 import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
-import ImageInput from "../../organisms/imageInput";
 
 class AddInfo extends React.Component {
   constructor(props) {

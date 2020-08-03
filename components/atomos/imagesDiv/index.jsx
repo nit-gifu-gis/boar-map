@@ -11,17 +11,33 @@ class ImagesDiv extends React.Component {
       if (imgNum <= 0) {
         return (
           <div className="imagesDiv">
-            <div className="imagesDiv__description">
-              画像が登録されていません。
-            </div>
+            <div className="imagesDiv__description">画像は登録されません。</div>
           </div>
         );
       } else {
+        let className = "";
+        if (imgNum == 1) {
+          className = "imagesDiv__singleBox";
+        } else {
+          className = "imagesDiv__multiBox";
+        }
+        let imgBox = null;
+        if (this.props.imgs != null) {
+          imgBox = (
+            <div className={className}>
+              {this.props.imgs.map(data => {
+                const url = `${data}`;
+                return <img src={url} className={`${className}__image`} />;
+              })}
+            </div>
+          );
+        }
         return (
           <div className="imagesDiv">
             <div className="imagesDiv__description">
-              {imgNum}枚の画像がアップロードされました。
+              {imgNum}枚の画像がアップロードされます。
             </div>
+            {imgBox}
           </div>
         );
       }
