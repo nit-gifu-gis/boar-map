@@ -24,8 +24,6 @@ class ConfirmInfo extends React.Component {
       lng: null,
       type: null,
       detail: null,
-      formData: null,
-      picCount: 0,
       isProcessing: false,
       userData: UserData.getUserData(),
       imageURLs: [],
@@ -45,9 +43,7 @@ class ConfirmInfo extends React.Component {
         lat: Router.query.lat,
         lng: Router.query.lng,
         type: Router.query.type,
-        detail: JSON.parse(Router.query.detail),
-        formData: JSON.parse(Router.query.formData)
-        // picCount: JSON.parse(Router.query.formData).length
+        detail: JSON.parse(Router.query.detail)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -55,13 +51,12 @@ class ConfirmInfo extends React.Component {
     }
 
     // 画像を読み込む
-    const imageURLsStr = sessionStorage.getItem("boarImage");
+    const imageURLsStr = Router.query.objectURLs;
     if (imageURLsStr) {
       const urls = JSON.parse(imageURLsStr);
       // プレビュー用にobjectURLと枚数を保持
       this.setState({
-        imageURLs: urls,
-        picCount: urls.length
+        imageURLs: urls
       });
       // 送信用にblobを保持
       const blobs = [];
@@ -265,7 +260,8 @@ class ConfirmInfo extends React.Component {
           lat: this.state.lat,
           lng: this.state.lng,
           type: this.state.type,
-          detail: JSON.stringify(this.state.detail)
+          detail: JSON.stringify(this.state.detail),
+          objectURLs: JSON.stringify(this.state.imageURLs)
         }
       },
       url

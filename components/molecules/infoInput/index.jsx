@@ -72,6 +72,7 @@ class InfoInput extends React.Component {
             onChange={this.props.onChange}
             error={this.props.errorMessage != null}
             name={this.props.name}
+            objectURLs={this.props.objectURLs}
           />
         );
         break;

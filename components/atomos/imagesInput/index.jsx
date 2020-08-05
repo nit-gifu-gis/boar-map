@@ -15,22 +15,13 @@ class ImagesInput extends React.Component {
     if (this.props.onChange != undefined) {
       this.state.onChange = this.props.onChange;
     }
-  }
 
-  componentDidMount() {
-    // 最初からsessionStorageに入っている場合はプレビューに表示する
-    if (sessionStorage.getItem(this.props.name)) {
-      this.setState({
-        objectURLs: JSON.parse(sessionStorage.getItem(this.props.name))
-      });
+    if (this.props.objectURLs != undefined) {
+      this.state.objectURLs = this.props.objectURLs;
     }
   }
 
-  postImage(callback) {
-    if (!hasFile) {
-      callback([], null);
-    }
-  }
+  componentDidMount() {}
 
   makeCompressedImageURL(file) {
     return new Promise((resolve, reject) => {
@@ -108,9 +99,8 @@ class ImagesInput extends React.Component {
     // stateに反映
     this.setState(state => {
       const newlist = state.objectURLs.concat(newURLs);
-      // sessionStorageにも保存
-      const jsonStr = JSON.stringify(newlist);
-      sessionStorage.setItem(this.state.name, jsonStr);
+      // onChangeを呼ぶ
+      this.state.onChange(newlist);
       return {
         objectURLs: newlist
       };
@@ -127,11 +117,10 @@ class ImagesInput extends React.Component {
       this.setState(state => {
         // 引数で受け取ったインデックス以外の要素の配列を作る
         const newlist = state.objectURLs.filter((_, i) => i !== index);
-        // ↑を新しくsessionStorageとstateにセット
-        const jsonStr = JSON.stringify(newlist);
-        sessionStorage.setItem(this.state.name, jsonStr);
         // 削除する画像のobjectURLをメモリから解放
         URL.revokeObjectURL(this.state.objectURLs[index]);
+        // onChangeを呼ぶ
+        this.state.onChange(newlist);
         return {
           objectURLs: newlist
         };

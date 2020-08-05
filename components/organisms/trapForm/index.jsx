@@ -216,6 +216,7 @@ class TrapForm extends React.Component {
                 type="images"
                 name="trapImage"
                 onChange={this.props.onChangedImages}
+                objectURLs={this.props.objectURLs}
               />
               <InfoInput
                 title="設置年月日"
