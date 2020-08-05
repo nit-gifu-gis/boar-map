@@ -10,7 +10,7 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
-import ImageInput from "../../organisms/imageInput";
+// import ImageInput from "../../organisms/imageInput";
 
 class EditInfo extends React.Component {
   constructor(props) {
