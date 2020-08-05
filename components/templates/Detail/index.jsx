@@ -151,7 +151,7 @@ class Detail extends React.Component {
         if (type == 0) {
           this.state.type = "boar";
           header = <Header color="boar">捕獲情報</Header>;
-          detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
           if (
             userDepartment == "T" ||
             userDepartment == "U" ||
@@ -163,7 +163,7 @@ class Detail extends React.Component {
         } else if (type == 1) {
           this.state.type = "trap";
           header = <Header color="trap">わな情報</Header>;
-          detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = <TrapInfo detail={this.state.detail} imageIDs={imgIds} />;
           if (
             userDepartment == "T" ||
             userDepartment == "U" ||
@@ -175,7 +175,9 @@ class Detail extends React.Component {
         } else if (type == 2) {
           this.state.type = "vaccine";
           header = <Header color="vaccine">ワクチン情報</Header>;
-          detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = (
+            <VaccineInfo detail={this.state.detail} imageIDs={imgIds} />
+          );
           if (userDepartment == "W" || userDepartment == "K") {
             editEnabled = true;
           }

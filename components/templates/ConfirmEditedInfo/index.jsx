@@ -149,7 +149,9 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <BoarInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            // objectURLs={this.state.imageURLs}
           />
         );
         break;
@@ -158,7 +160,9 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <TrapInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            // objectURLs={this.state.imageURLs}
           />
         );
         break;
@@ -167,7 +171,9 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <VaccineInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            // objectURLs={this.state.imageURLs}
           />
         );
         break;

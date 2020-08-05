@@ -264,8 +264,8 @@ class ConfirmInfo extends React.Component {
         detaildiv = (
           <BoarInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
-            imgs={this.state.imageURLs}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
           />
         );
         break;
@@ -274,8 +274,8 @@ class ConfirmInfo extends React.Component {
         detaildiv = (
           <TrapInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
-            imgs={this.state.imageURLs}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
           />
         );
         break;
@@ -284,8 +284,8 @@ class ConfirmInfo extends React.Component {
         detaildiv = (
           <VaccineInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
-            imgs={this.state.imageURLs}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
           />
         );
         break;
