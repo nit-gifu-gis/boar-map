@@ -78,9 +78,7 @@ class ConfirmInfo extends React.Component {
 
   async submitInfo() {
     this.setState({ isProcessing: true });
-    const token = this.state.userData.access_token;
     const userDepartment = this.state.userData.department;
-    const receiptNumber = Math.floor(Math.random() * 100000);
     let layerId = null;
     // レイヤーIDを選択すると同時に，書き込み権限をチェック
     switch (this.state.type) {
@@ -131,49 +129,18 @@ class ConfirmInfo extends React.Component {
       await this.publishImages(imageRes);
 
       // GISに登録
-      // 画像IDをデータに追加する
-      const feature = this.state.detail;
-      const reg_ids = [];
-      for (let i = 0; i < imageRes.length; i++) {
-        const data = imageRes[i];
-        if (data["id"] !== "") {
-          reg_ids.push(data["id"]);
-        }
-      }
-      const send_ids = reg_ids.join(",");
-      feature["properties"]["画像ID"] = send_ids;
-      console.log("登録フィーチャ", feature);
+      await this.postFeature(layerId, imageRes);
 
-      // 登録データ生成
-      const data = {
-        commonHeader: {
-          receiptNumber: receiptNumber
-        },
-        layerId: layerId,
-        srid: 4326,
-        features: [feature]
-      };
+      // 登録後，objectURLを破棄する
+      this.state.imageURLs.forEach(url => URL.revokeObjectURL(url));
 
-      // post
-      const res = await fetch("/api/JsonService.asmx/AddFeatures", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
-      });
-      const json = await res.json();
-      if (json.commonHeader.resultInfomation == "0") {
-        alert("登録が完了しました。\nご協力ありがとうございました。");
-        Router.push("/map");
-      } else {
-        console.log("Error:", json.commonHeader.systemErrorReport);
-        alert("登録に失敗しました。");
-      }
+      // mapに飛ばす
+      alert("登録が完了しました。\nご協力ありがとうございました。");
+      Router.push("/map");
     } catch (e) {
       console.error("アップロードエラー", e);
+      alert(`登録に失敗しました。\n${e}`);
+      this.setState({ isProcessing: false });
     }
   }
 
@@ -220,6 +187,7 @@ class ConfirmInfo extends React.Component {
     });
   }
 
+  // 画像を公開する
   publishImages(imageRes) {
     return new Promise((resolve, reject) => {
       fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
@@ -229,6 +197,62 @@ class ConfirmInfo extends React.Component {
       })
         .then(resolve())
         .catch(e => reject(e));
+    });
+  }
+
+  // GISにpostする
+  postFeature(layerId, imageRes) {
+    const token = this.state.userData.access_token;
+    const receiptNumber = Math.floor(Math.random() * 100000);
+
+    return new Promise(async (resolve, reject) => {
+      // 画像IDをデータに追加する
+      const feature = this.state.detail;
+      const reg_ids = [];
+      for (let i = 0; i < imageRes.length; i++) {
+        const data = imageRes[i];
+        if (data["id"] !== "") {
+          reg_ids.push(data["id"]);
+        }
+      }
+      const send_ids = reg_ids.join(",");
+      feature["properties"]["画像ID"] = send_ids;
+      console.log("登録フィーチャ", feature);
+
+      // 登録データ生成
+      const data = {
+        commonHeader: {
+          receiptNumber: receiptNumber
+        },
+        layerId: layerId,
+        srid: 4326,
+        features: [feature]
+      };
+
+      // post
+      try {
+        const res = await fetch("/api/JsonService.asmx/AddFeatures", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Map-Api-Access-Token": token
+          },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.commonHeader.resultInfomation == "0") {
+          // alert("登録が完了しました。\nご協力ありがとうございました。");
+          // Router.push("/map");
+          resolve();
+        } else {
+          // console.log("Error:", json.commonHeader.systemErrorReport);
+          // alert("登録に失敗しました。");
+          reject(json.commonHeader.systemErrorReport);
+        }
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 
