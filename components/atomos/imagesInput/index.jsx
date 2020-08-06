@@ -8,7 +8,7 @@ class ImagesInput extends React.Component {
     super(props);
     this.state = {
       onChange: function changed(objectURLs) {},
-      onDeleteServerImage: function deleted(imageIDs) {},
+      onDeleteServerImage: function deleted(imageIDs, deletedID) {},
       name: this.props.name,
       objectURLs: [],
       imageIDs: [],
@@ -154,7 +154,7 @@ class ImagesInput extends React.Component {
         // 引数で受け取ったインデックス以外の要素の配列を作る
         const newlist = state.imageIDs.filter((_, i) => i !== index);
         // onChangeを呼ぶ
-        this.state.onDeleteServerImage(newlist);
+        this.state.onDeleteServerImage(newlist, this.state.imageIDs[index]);
         return {
           imageIDs: newlist
         };

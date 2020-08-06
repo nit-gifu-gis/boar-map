@@ -23,7 +23,8 @@ class EditInfo extends React.Component {
       lng: null,
       imageIDs: [],
       isProcessing: false,
-      objectURLs: []
+      objectURLs: [],
+      deletedIDs: []
     };
     this.formRef = React.createRef();
   }
@@ -32,9 +33,10 @@ class EditInfo extends React.Component {
     this.state.objectURLs = objectURLs;
   }
 
-  onDeletedServerImage(imageIDs) {
-    console.log(imageIDs);
+  onDeletedServerImage(imageIDs, deletedID) {
+    console.log(deletedID);
     this.state.imageIDs = imageIDs;
+    this.state.deletedIDs.push(deletedID);
   }
 
   componentDidMount() {
@@ -61,6 +63,11 @@ class EditInfo extends React.Component {
       this.setState({
         objectURLs: urls
       });
+    }
+
+    const deletedIDsStr = Router.query.deletedIDs;
+    if (deletedIDsStr) {
+      this.setState({ deletedIDs: JSON.parse(deletedIDsStr) });
     }
   }
 
@@ -102,8 +109,6 @@ class EditInfo extends React.Component {
     if (await this.formRef.current.validateDetail()) {
       const data = this.formRef.current.createDetail();
       if (data != null) {
-        console.log(this.state.imageIDs);
-        console.log(this.state.objectURLs);
         // 編集時はidを付け足す
         data["properties"]["ID$"] = this.state.id;
         this.setState({ isProcessing: true });
@@ -115,7 +120,8 @@ class EditInfo extends React.Component {
               type: this.state.type,
               detail: JSON.stringify(data),
               imageIDs: JSON.stringify(this.state.imageIDs),
-              objectURLs: JSON.stringify(this.state.objectURLs)
+              objectURLs: JSON.stringify(this.state.objectURLs),
+              deletedIDs: JSON.stringify(this.state.deletedIDs)
             }
           },
           url

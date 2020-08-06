@@ -26,7 +26,8 @@ class ConfirmEditedInfo extends React.Component {
       isProcessing: false,
       userData: UserData.getUserData(),
       imageURLs: [],
-      imageBlobs: []
+      imageBlobs: [],
+      deletedIDs: []
     };
   }
 
@@ -35,7 +36,8 @@ class ConfirmEditedInfo extends React.Component {
       this.setState({
         type: Router.query.type,
         detail: JSON.parse(Router.query.detail),
-        imageIDs: JSON.parse(Router.query.imageIDs)
+        imageIDs: JSON.parse(Router.query.imageIDs),
+        deletedIDs: JSON.parse(Router.query.deletedIDs)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
@@ -193,6 +195,7 @@ class ConfirmEditedInfo extends React.Component {
   // 消された画像をサーバーからも消す
   deleteImages() {
     // TODO
+    console.log("削除画像", this.state.deletedIDs);
   }
 
   // GISにpostする
@@ -261,7 +264,8 @@ class ConfirmEditedInfo extends React.Component {
           type: this.state.type,
           detail: JSON.stringify(this.state.detail),
           imageIDs: JSON.stringify(this.state.imageIDs),
-          objectURLs: JSON.stringify(this.state.imageURLs)
+          objectURLs: JSON.stringify(this.state.imageURLs),
+          deletedIDs: JSON.stringify(this.state.deletedIDs)
         }
       },
       url
