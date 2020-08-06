@@ -21,7 +21,7 @@ class ImagesDiv extends React.Component {
 
     // プレビュー時
     if (this.state.confirmMode) {
-      const len = this.state.objectURLs.length;
+      const len = this.state.objectURLs.length + this.state.imageIDs.length;
       if (len === 0) {
         // アップロードされる画像が0枚
         description = (
@@ -38,13 +38,22 @@ class ImagesDiv extends React.Component {
         // 説明文とimg要素
         description = (
           <div className="imagesDiv__description">
-            {len}枚の画像がアップロードされます。
+            {len}枚の画像が登録されます。
           </div>
         );
-        imgs = this.state.objectURLs.map(data => {
+        // サーバー上の画像
+        const simgs = this.state.imageIDs.map(data => {
+          const url = `${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${data}`;
+          return (
+            <img src={url} className="imagesDiv__multiBox__image" alt={data} />
+          );
+        });
+        // ローカルの画像
+        const limgs = this.state.objectURLs.map(data => {
           const url = `${data}`;
           return <img src={url} className={`${className}__image`} />;
         });
+        imgs = simgs.concat(limgs);
       }
     } else {
       if (this.state.type != null) {

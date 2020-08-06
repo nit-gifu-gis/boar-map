@@ -7,17 +7,28 @@ class ImagesInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      onChange: function changed(data) {},
+      onChange: function changed(objectURLs) {},
+      onDeleteServerImage: function deleted(imageIDs) {},
       name: this.props.name,
-      objectURLs: []
+      objectURLs: [],
+      imageIDs: [],
+      type: props.type
     };
 
     if (this.props.onChange != undefined) {
       this.state.onChange = this.props.onChange;
     }
 
+    if (this.props.onDeleteServerImage != undefined) {
+      this.state.onDeleteServerImage = this.props.onDeleteServerImage;
+    }
+
     if (this.props.objectURLs != undefined) {
       this.state.objectURLs = this.props.objectURLs;
+    }
+
+    if (this.props.imageIDs != undefined) {
+      this.state.imageIDs = this.props.imageIDs;
     }
   }
 
@@ -83,7 +94,12 @@ class ImagesInput extends React.Component {
   async formChanged() {
     const input = document.imagesInput__form.file;
     // 10枚以上は登録不可
-    if (this.state.objectURLs.length + input.files.length > 10) {
+    if (
+      this.state.objectURLs.length +
+        this.state.imageIDs.length +
+        input.files.length >
+      10
+    ) {
       alert("一度に登録できる画像は10枚までです");
       return;
     }
@@ -128,6 +144,24 @@ class ImagesInput extends React.Component {
     }
   }
 
+  // もともと登録されている画像のバツボタン
+  onClickEreseButtonForServerImage(index) {
+    if (confirm("この画像の登録を取り消しますか？")) {
+      console.log(index);
+      console.log(this.state.imageIDs[index]);
+      // 押された番号のimageIDを消す
+      this.setState(state => {
+        // 引数で受け取ったインデックス以外の要素の配列を作る
+        const newlist = state.imageIDs.filter((_, i) => i !== index);
+        // onChangeを呼ぶ
+        this.state.onDeleteServerImage(newlist);
+        return {
+          imageIDs: newlist
+        };
+      });
+    }
+  }
+
   onClickButton() {
     const input = document.imagesInput__form.file;
     input.click();
@@ -140,6 +174,25 @@ class ImagesInput extends React.Component {
     }
     // プレビューを描画
     const previewChildren = [];
+    // もともと登録されている画像
+    for (let i = 0; i < this.state.imageIDs.length; i++) {
+      const previewChild = (
+        <div className="images-input__preview__child">
+          <img
+            className="images-input__preview__child__image"
+            src={`${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${this.state.imageIDs[i]}`}
+          ></img>
+          <button
+            className="images-input__preview__child__erase-button"
+            onClick={this.onClickEreseButtonForServerImage.bind(this, i)}
+          >
+            ×
+          </button>
+        </div>
+      );
+      previewChildren.push(previewChild);
+    }
+    // ローカルの画像
     for (let i = 0; i < this.state.objectURLs.length; i++) {
       const previewChild = (
         <div className="images-input__preview__child">

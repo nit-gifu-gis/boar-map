@@ -17,7 +17,7 @@ class Detail extends React.Component {
     detail: {},
     retry: 0,
     type: undefined,
-    ids: [],
+    imageIDs: [],
     userData: UserData.getUserData()
   };
   async getFeatureDetail() {
@@ -72,7 +72,7 @@ class Detail extends React.Component {
               console.log(ids);
               this.setState({
                 detail: feature,
-                ids: ids
+                imageIDs: ids
               });
             }
           })
@@ -120,7 +120,7 @@ class Detail extends React.Component {
           query: {
             type: type,
             detail: JSON.stringify(this.state.detail),
-            ids: JSON.stringify(this.state.ids)
+            imageIDs: JSON.stringify(this.state.imageIDs)
           }
         },
         url
@@ -138,7 +138,7 @@ class Detail extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
 
-    const imgIds = this.state.ids;
+    const imgIds = this.state.imageIDs;
 
     // 区分に応じて「編集」ボタンを有効化
     // （通常であれば，Wがboarとtrapを編集出来ないだけ）

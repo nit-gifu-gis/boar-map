@@ -400,6 +400,9 @@ class VaccineForm extends React.Component {
                 name="vaccineImage"
                 onChange={this.props.onChangedImages}
                 objectURLs={this.props.objectURLs}
+                imageIDs={this.props.imageIDs}
+                featureType="vaccine"
+                onDeleteServerImage={this.props.onDeleteServerImage}
               />
               <InfoInput
                 title="メッシュ番号"

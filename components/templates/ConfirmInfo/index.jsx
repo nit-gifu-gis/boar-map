@@ -331,11 +331,7 @@ class ConfirmInfo extends React.Component {
               登録 ＞
             </RoundButton>
           ) : (
-            <RoundButton
-              color="danger"
-              bind={this.onClickNext.bind(this)}
-              enabled={false}
-            >
+            <RoundButton color="danger" enabled={false}>
               処理中
             </RoundButton>
           )}

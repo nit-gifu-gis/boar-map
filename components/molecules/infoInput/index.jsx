@@ -73,6 +73,9 @@ class InfoInput extends React.Component {
             error={this.props.errorMessage != null}
             name={this.props.name}
             objectURLs={this.props.objectURLs}
+            imageIDs={this.props.imageIDs}
+            type={this.props.featureType}
+            onDeleteServerImage={this.props.onDeleteServerImage}
           />
         );
         break;

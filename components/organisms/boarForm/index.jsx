@@ -370,6 +370,9 @@ class BoarForm extends React.Component {
                 name="boarImage"
                 onChange={this.props.onChangedImages}
                 objectURLs={this.props.objectURLs}
+                imageIDs={this.props.imageIDs}
+                featureType="boar"
+                onDeleteServerImage={this.props.onDeleteServerImage}
               />
               <InfoInput
                 title="メッシュ番号"
