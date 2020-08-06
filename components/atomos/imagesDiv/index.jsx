@@ -78,9 +78,6 @@ class ImagesDiv extends React.Component {
       }
     }
 
-    console.log(description);
-    console.log(imgs);
-
     return (
       <div className="imagesDiv">
         {description}
