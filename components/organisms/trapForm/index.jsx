@@ -238,11 +238,11 @@ class TrapForm extends React.Component {
                 title="わなの種類"
                 type="select"
                 name="kind"
-                options={["箱わな", "くくりわな", "その他"]}
+                options={["くくりわな", "箱わな", "その他"]}
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["罠の種類"]
-                    : null
+                    : "くくりわな"
                 }
               />
               <InfoInput

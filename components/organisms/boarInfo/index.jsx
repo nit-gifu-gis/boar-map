@@ -15,6 +15,17 @@ class BoarInfo extends React.Component {
         />
       );
     }
+    // 捕獲頭数は箱わなが選択された時のみ表示
+    let catchNumInfo = null;
+    if (this.props.detail["properties"]["罠・発見場所"] === "箱わな") {
+      catchNumInfo = (
+        <InfoDiv
+          title="捕獲頭数"
+          type="text"
+          data={this.props.detail["properties"]["捕獲頭数"]}
+        />
+      );
+    }
     return (
       <div className="boar-info">
         <InfoDiv
@@ -50,6 +61,7 @@ class BoarInfo extends React.Component {
           title="わな・発見場所"
           data={this.props.detail["properties"]["罠・発見場所"]}
         />
+        {catchNumInfo}
         <InfoDiv
           title="幼獣・成獣の別"
           data={this.props.detail["properties"]["幼獣・成獣"]}
@@ -78,7 +90,7 @@ class BoarInfo extends React.Component {
           data={this.props.detail["properties"]["処分方法"]}
         />
         <InfoDiv
-          title="備考（遠沈管番号）"
+          title="備考（捕獲を手伝った者の氏名）（遠沈管番号）"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
         />
