@@ -32,8 +32,9 @@ class TrapInfo extends React.Component {
           type="images"
           data={{
             type: "trap",
-            imgs: this.props.imgs,
-            waitingPublish: this.props.waitingPublish
+            objectURLs: this.props.objectURLs,
+            imageIDs: this.props.imageIDs,
+            confirmMode: this.props.confirmMode
           }}
         />
         <InfoDiv

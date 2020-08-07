@@ -17,7 +17,7 @@ class Detail extends React.Component {
     detail: {},
     retry: 0,
     type: undefined,
-    ids: [],
+    imageIDs: [],
     userData: UserData.getUserData()
   };
   async getFeatureDetail() {
@@ -72,7 +72,7 @@ class Detail extends React.Component {
               console.log(ids);
               this.setState({
                 detail: feature,
-                ids: ids
+                imageIDs: ids
               });
             }
           })
@@ -120,7 +120,7 @@ class Detail extends React.Component {
           query: {
             type: type,
             detail: JSON.stringify(this.state.detail),
-            ids: JSON.stringify(this.state.ids)
+            imageIDs: JSON.stringify(this.state.imageIDs)
           }
         },
         url
@@ -138,7 +138,7 @@ class Detail extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
 
-    const imgIds = this.state.ids;
+    const imgIds = this.state.imageIDs;
 
     // 区分に応じて「編集」ボタンを有効化
     // （通常であれば，Wがboarとtrapを編集出来ないだけ）
@@ -151,7 +151,7 @@ class Detail extends React.Component {
         if (type == 0) {
           this.state.type = "boar";
           header = <Header color="boar">捕獲情報</Header>;
-          detaildiv = <BoarInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
           if (
             userDepartment == "T" ||
             userDepartment == "U" ||
@@ -163,7 +163,7 @@ class Detail extends React.Component {
         } else if (type == 1) {
           this.state.type = "trap";
           header = <Header color="trap">わな情報</Header>;
-          detaildiv = <TrapInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = <TrapInfo detail={this.state.detail} imageIDs={imgIds} />;
           if (
             userDepartment == "T" ||
             userDepartment == "U" ||
@@ -175,7 +175,9 @@ class Detail extends React.Component {
         } else if (type == 2) {
           this.state.type = "vaccine";
           header = <Header color="vaccine">ワクチン情報</Header>;
-          detaildiv = <VaccineInfo detail={this.state.detail} imgs={imgIds} />;
+          detaildiv = (
+            <VaccineInfo detail={this.state.detail} imageIDs={imgIds} />
+          );
           if (userDepartment == "W" || userDepartment == "K") {
             editEnabled = true;
           }

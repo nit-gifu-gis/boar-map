@@ -60,8 +60,9 @@ class VaccineInfo extends React.Component {
           type="images"
           data={{
             type: "vaccine",
-            imgs: this.props.imgs,
-            waitingPublish: this.props.waitingPublish
+            objectURLs: this.props.objectURLs,
+            imageIDs: this.props.imageIDs,
+            confirmMode: this.props.confirmMode
           }}
         />
         <InfoDiv

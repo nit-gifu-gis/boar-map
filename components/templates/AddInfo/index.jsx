@@ -9,7 +9,6 @@ import BoarForm from "../../organisms/boarForm";
 import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
-import ImageInput from "../../organisms/imageInput";
 
 class AddInfo extends React.Component {
   constructor(props) {
@@ -19,61 +18,14 @@ class AddInfo extends React.Component {
       lng: null,
       type: null,
       detail: null,
-      formData: null,
-      isProcessing: false
+      isProcessing: false,
+      objectURLs: []
     };
     this.formRef = React.createRef();
   }
 
-  fileChanged(data) {
-    this.state.formData = data;
-  }
-
-  callback(data, res, error) {
-    const url = "/add/confirm";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          lat: this.state.lat,
-          lng: this.state.lng,
-          type: this.state.type,
-          detail: JSON.stringify(data),
-          formData: JSON.stringify(res)
-        }
-      },
-      url
-    );
-  }
-
-  upload(data) {
-    if (this.state.formData == null) {
-      this.callback(data, [], null);
-    }
-    const res = [];
-
-    fetch(IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type, {
-      credentials: "include",
-      method: "POST",
-      body: this.state.formData,
-      header: {
-        "Content-Type": "multipart/form-data"
-      }
-    }).then(response =>
-      response.json().then(json => {
-        if (json["status"] == 200) {
-          json["results"].forEach(element => {
-            res.push({
-              id: element["id"],
-              error: 0
-            });
-          });
-          this.callback(data, res, null);
-        } else {
-          this.callback(data, [], json["message"]);
-        }
-      })
-    );
+  fileChanged(objectURLs) {
+    this.state.objectURLs = objectURLs;
   }
 
   componentDidMount() {
@@ -97,6 +49,15 @@ class AddInfo extends React.Component {
         detail: JSON.parse(Router.query.detail)
       });
     }
+
+    const imageURLsStr = Router.query.objectURLs;
+    console.log(imageURLsStr);
+    if (imageURLsStr) {
+      const urls = JSON.parse(imageURLsStr);
+      this.setState({
+        objectURLs: urls
+      });
+    }
   }
 
   onClickPrev() {
@@ -109,7 +70,8 @@ class AddInfo extends React.Component {
           lat: this.state.lat,
           lng: this.state.lng,
           type: this.state.type,
-          detail: JSON.stringify(data)
+          detail: JSON.stringify(data),
+          objectURLs: JSON.stringify(this.state.objectURLs)
         }
       },
       url
@@ -125,7 +87,20 @@ class AddInfo extends React.Component {
       const data = this.formRef.current.createDetail();
       if (data != null) {
         this.setState({ isProcessing: true });
-        this.upload(data);
+        const url = "/add/confirm";
+        Router.push(
+          {
+            pathname: url,
+            query: {
+              lat: this.state.lat,
+              lng: this.state.lng,
+              type: this.state.type,
+              detail: JSON.stringify(data),
+              objectURLs: JSON.stringify(this.state.objectURLs)
+            }
+          },
+          url
+        );
       } else {
         this.setState({ isProcessing: false });
       }
@@ -149,6 +124,7 @@ class AddInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
           />
         );
         break;
@@ -161,6 +137,7 @@ class AddInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
           />
         );
         break;
@@ -173,6 +150,7 @@ class AddInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
           />
         );
         break;

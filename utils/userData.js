@@ -28,6 +28,7 @@ export default class UserData {
           userData.department = "S";
           break;
         case "trap":
+        case "vaccine":
           userData.department = "W";
           break;
         case "pref":
@@ -37,7 +38,7 @@ export default class UserData {
           userData.department = null;
           break;
         default:
-          userData.department = userId.substr(0, 1).toUpperCase();
+          userData.department = userData.user_id.substr(0, 1).toUpperCase();
           break;
       }
       return userData;

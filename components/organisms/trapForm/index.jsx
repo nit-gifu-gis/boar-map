@@ -214,7 +214,12 @@ class TrapForm extends React.Component {
               <InfoInput
                 title="画像"
                 type="images"
+                name="trapImage"
                 onChange={this.props.onChangedImages}
+                objectURLs={this.props.objectURLs}
+                imageIDs={this.props.imageIDs}
+                featureType="trap"
+                onDeleteServerImage={this.props.onDeleteServerImage}
               />
               <InfoInput
                 title="設置年月日"
@@ -233,11 +238,11 @@ class TrapForm extends React.Component {
                 title="わなの種類"
                 type="select"
                 name="kind"
-                options={["箱わな", "くくりわな", "その他"]}
+                options={["くくりわな", "箱わな", "その他"]}
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["罠の種類"]
-                    : null
+                    : "くくりわな"
                 }
               />
               <InfoInput
