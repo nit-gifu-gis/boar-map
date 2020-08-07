@@ -7,39 +7,159 @@ class ImagesInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      onChange: function changed(data) {}
+      onChange: function changed(objectURLs) {},
+      onDeleteServerImage: function deleted(imageIDs, deletedID) {},
+      name: this.props.name,
+      objectURLs: [],
+      imageIDs: [],
+      type: props.type
     };
 
     if (this.props.onChange != undefined) {
       this.state.onChange = this.props.onChange;
     }
-  }
 
-  postImage(callback) {
-    if (!hasFile) {
-      callback([], null);
+    if (this.props.onDeleteServerImage != undefined) {
+      this.state.onDeleteServerImage = this.props.onDeleteServerImage;
+    }
+
+    if (this.props.objectURLs != undefined) {
+      this.state.objectURLs = this.props.objectURLs;
+    }
+
+    if (this.props.imageIDs != undefined) {
+      this.state.imageIDs = this.props.imageIDs;
     }
   }
 
-  formChanged() {
+  componentDidMount() {}
+
+  makeCompressedImageURL(file) {
+    return new Promise((resolve, reject) => {
+      if (process.browser) {
+        // 圧縮処理
+        const imageData = new Image();
+        imageData.src = URL.createObjectURL(file);
+        imageData.onload = () => {
+          // サイズ取得
+          const wRow = imageData.width;
+          const hRow = imageData.height;
+          // 長辺を1024に丸める
+          const longSide = wRow > hRow ? wRow : hRow;
+          let ratio = 1024.0 / longSide;
+          if (ratio > 1.0) ratio = 1.0;
+          const w = wRow * ratio;
+          const h = hRow * ratio;
+          // キャンバスに描画
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.setAttribute("width", w);
+          canvas.setAttribute("height", h);
+          ctx.drawImage(imageData, 0, 0, w, h);
+          // Blobを生成
+          if (canvas.msToBlob) {
+            // msToBlobが実装されているブラウザ(IE/レガシーEdge)ではこの方法
+            // dataURLを生成
+            const url = canvas.toDataURL("image/jpeg", 0.5);
+            // blobを生成
+            const bin = atob(url.replace(/^.*,/, ""));
+            const buffer = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) {
+              buffer[i] = bin.charCodeAt(i);
+            }
+            const blob = new Blob([buffer.buffer], { type: "image/png" });
+            console.log(blob.size);
+            // objectURLを生成
+            const objectURL = URL.createObjectURL(blob);
+            resolve(objectURL);
+          } else {
+            // モダンブラウザはcanvasから直接blobが作れる
+            canvas.toBlob(
+              blob => {
+                const objectURL = URL.createObjectURL(blob);
+                resolve(objectURL);
+              },
+              "image/jpeg",
+              0.5
+            );
+          }
+        };
+        imageData.onerror = e => reject(e);
+      } else {
+        reject("window is not defined.");
+      }
+    });
+  }
+
+  async formChanged() {
     const input = document.imagesInput__form.file;
-    const data = new FormData();
-    const preview = document.getElementById("preview");
-    // 一旦プレビューはリセット
-    while (preview.firstChild) {
-      preview.removeChild(preview.firstChild);
+    // 10枚以上は登録不可
+    if (
+      this.state.objectURLs.length +
+        this.state.imageIDs.length +
+        input.files.length >
+      10
+    ) {
+      alert("一度に登録できる画像は10枚までです");
+      return;
     }
-    data.append("MAX_FILE_SIZE", MAX_UPLOAD_SIZE);
+    // 入力された各画像に関して
+    const newURLs = [];
     for (const file of input.files) {
-      console.log(file);
-      data.append("files[]", file, file.name);
-      // プレビューにも表示
-      const img = document.createElement("img");
-      img.setAttribute("class", "images-input__preview__image");
-      img.setAttribute("src", window.URL.createObjectURL(file));
-      preview.appendChild(img);
+      // 圧縮した画像のobjectURLを受け取る
+      const url = await this.makeCompressedImageURL(file);
+      // this.makePreview(url);
+      // dataURLを配列に入れておく
+      newURLs.push(url);
     }
-    this.state.onChange(data);
+    // stateに反映
+    this.setState(state => {
+      const newlist = state.objectURLs.concat(newURLs);
+      // onChangeを呼ぶ
+      this.state.onChange(newlist);
+      return {
+        objectURLs: newlist
+      };
+    });
+    // this.state.onChange(data);
+  }
+
+  // 各画像の上のバツボタンを押したときの処理
+  onClickEreseButton(index) {
+    if (confirm("この画像の登録を取り消しますか？")) {
+      console.log(index);
+      console.log(this.state.objectURLs[index]);
+      // 押された番号のobjectURLを消す
+      this.setState(state => {
+        // 引数で受け取ったインデックス以外の要素の配列を作る
+        const newlist = state.objectURLs.filter((_, i) => i !== index);
+        // 削除する画像のobjectURLをメモリから解放
+        URL.revokeObjectURL(this.state.objectURLs[index]);
+        // onChangeを呼ぶ
+        this.state.onChange(newlist);
+        return {
+          objectURLs: newlist
+        };
+      });
+    }
+  }
+
+  // もともと登録されている画像のバツボタン
+  onClickEreseButtonForServerImage(index) {
+    if (confirm("この画像の登録を取り消しますか？")) {
+      console.log(index);
+      console.log(this.state.imageIDs[index]);
+      // 押された番号のimageIDを消す
+      this.setState(state => {
+        // 引数で受け取ったインデックス以外の要素の配列を作る
+        const newlist = state.imageIDs.filter((_, i) => i !== index);
+        // onChangeを呼ぶ
+        this.state.onDeleteServerImage(newlist, this.state.imageIDs[index]);
+        return {
+          imageIDs: newlist
+        };
+      });
+    }
   }
 
   onClickButton() {
@@ -51,6 +171,44 @@ class ImagesInput extends React.Component {
     let className = "images-input";
     if (this.props.error) {
       className += "--error";
+    }
+    // プレビューを描画
+    const previewChildren = [];
+    // もともと登録されている画像
+    for (let i = 0; i < this.state.imageIDs.length; i++) {
+      const previewChild = (
+        <div className="images-input__preview__child">
+          <img
+            className="images-input__preview__child__image"
+            src={`${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${this.state.imageIDs[i]}`}
+          ></img>
+          <button
+            className="images-input__preview__child__erase-button"
+            onClick={this.onClickEreseButtonForServerImage.bind(this, i)}
+          >
+            ×
+          </button>
+        </div>
+      );
+      previewChildren.push(previewChild);
+    }
+    // ローカルの画像
+    for (let i = 0; i < this.state.objectURLs.length; i++) {
+      const previewChild = (
+        <div className="images-input__preview__child">
+          <img
+            className="images-input__preview__child__image"
+            src={this.state.objectURLs[i]}
+          ></img>
+          <button
+            className="images-input__preview__child__erase-button"
+            onClick={this.onClickEreseButton.bind(this, i)}
+          >
+            ×
+          </button>
+        </div>
+      );
+      previewChildren.push(previewChild);
     }
     return (
       <div className={className}>
@@ -65,7 +223,10 @@ class ImagesInput extends React.Component {
             style={{ display: "none" }}
           />
         </form>
-        <div className="images-input__preview" id="preview"></div>
+        <div className="images-input__preview" id="preview">
+          {previewChildren}
+        </div>
+        <canvas className="images-input__canvas" id="canvas"></canvas>
         <div className="images-input__buttonDiv">
           <RoundButton color="primary" bind={this.onClickButton}>
             画像を選択

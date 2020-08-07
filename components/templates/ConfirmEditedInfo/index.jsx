@@ -14,83 +14,222 @@ import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
 import UserData from "../../../utils/userData";
 
+import "whatwg-fetch";
+
 class ConfirmEditedInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       type: null,
       detail: null,
-      ids: [],
-      formData: null,
-      picCount: 0,
+      imageIDs: [],
       isProcessing: false,
-      userData: UserData.getUserData()
+      userData: UserData.getUserData(),
+      imageURLs: [],
+      imageBlobs: [],
+      deletedIDs: []
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (Router.query.type != undefined || Router.query.detail != undefined) {
-      // console.log("confirm", JSON.parse(Router.query.ids));
       this.setState({
         type: Router.query.type,
         detail: JSON.parse(Router.query.detail),
-        ids: JSON.parse(Router.query.ids),
-        formData: JSON.parse(Router.query.formData),
-        picCount: JSON.parse(Router.query.formData).length
+        imageIDs: JSON.parse(Router.query.imageIDs),
+        deletedIDs: JSON.parse(Router.query.deletedIDs)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
+
+    // 画像を読み込む
+    const imageURLsStr = Router.query.objectURLs;
+    if (imageURLsStr) {
+      const urls = JSON.parse(imageURLsStr);
+      // プレビュー用にobjectURLと枚数を保持
+      this.setState({
+        imageURLs: urls
+      });
+      // 送信用にblobを保持
+      const blobs = [];
+      for (let i = 0; i < urls.length; i++) {
+        // このためにfetchのpolyfill入れました…（小声）
+        const blob = await fetch(urls[i]).then(r => r.blob());
+        blobs.push(blob);
+      }
+      this.setState({
+        imageBlobs: blobs
+      });
+    }
   }
 
-  submitInfo() {
+  async submitInfo() {
     this.setState({ isProcessing: true });
-    const token = this.state.userData.access_token;
-    const receiptNumber = Math.floor(Math.random() * 100000);
+    const userDepartment = this.state.userData.department;
     let layerId = null;
+    // レイヤーIDを選択すると同時に，書き込み権限をチェック
     switch (this.state.type) {
       case "boar":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = BOAR_LAYER_ID;
         break;
       case "trap":
+        if (
+          userDepartment != "T" &&
+          userDepartment != "U" &&
+          userDepartment != "S" &&
+          userDepartment != "K"
+        ) {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = TRAP_LAYER_ID;
         break;
       case "vaccine":
+        if (userDepartment != "W" && userDepartment != "K") {
+          console.log("Permission Denied: この情報にはアクセスできません");
+          Router.push("/map");
+          return;
+        }
         layerId = VACCINE_LAYER_ID;
         break;
       default:
         break;
     }
 
-    const reg_ids = [].concat(this.state.ids);
-    for (let i = 0; i < this.state.formData.length; i++) {
-      const data = this.state.formData[i];
-      if (data["id"] !== "") {
-        reg_ids.push(data["id"]);
-      }
+    try {
+      // 画像をアップロード（画像idを取得）
+      const imageRes = await this.uploadImages();
+      console.log(imageRes);
+
+      // 画像を公開
+      await this.publishImages(imageRes);
+
+      // 消えた画像を消す
+      await this.deleteImages();
+
+      // GISに登録
+      await this.postFeature(layerId, imageRes);
+
+      // 登録後，objectURLを破棄する
+      this.state.imageURLs.forEach(url => URL.revokeObjectURL(url));
+
+      // mapに飛ばす
+      alert("登録が完了しました。\nご協力ありがとうございました。");
+      Router.push("/map");
+    } catch (e) {
+      console.error("アップロードエラー", e);
+      alert(`登録に失敗しました。\n${e}`);
+      this.setState({ isProcessing: false });
     }
+  }
 
-    const send_ids = reg_ids.join(",");
+  // 画像をアップロードする
+  uploadImages() {
+    return new Promise(async (resolve, reject) => {
+      // 1枚も画像がなければ空の配列を返す
+      if (this.state.imageBlobs.length === 0) {
+        resolve([]);
+      }
+      // 1枚以上画像があれば，アップロード→idを返す
+      const ids = [];
+      // 送信用データ生成
+      const body = new FormData();
+      for (let i = 0; i < this.state.imageBlobs.length; i++) {
+        body.append("files[]", this.state.imageBlobs[i]);
+      }
+      const url = IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type;
+      const req = {
+        credentials: "include",
+        method: "POST",
+        body: body,
+        header: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      // 通信
+      try {
+        const r = await fetch(url, req);
+        const json = await r.json();
+        if (json["status"] == 200) {
+          // 通信成功
+          json["results"].forEach(element => {
+            ids.push({ id: element["id"], error: 0 });
+          });
+          resolve(ids);
+        } else {
+          reject(json["message"]);
+        }
+      } catch (e) {
+        // 通信orデコード失敗
+        reject(e);
+      }
+    });
+  }
 
-    this.state.detail["properties"]["画像ID"] = send_ids;
+  // 画像を公開する
+  publishImages(imageRes) {
+    return new Promise((resolve, reject) => {
+      fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
+        credentials: "include",
+        method: "POST",
+        body: JSON.stringify(imageRes)
+      })
+        .then(resolve())
+        .catch(e => reject(e));
+    });
+  }
 
-    const data = {
-      commonHeader: {
-        receiptNumber: receiptNumber
-      },
-      layerId: layerId,
-      srid: 4326,
-      features: [this.state.detail]
-    };
+  // 消された画像をサーバーからも消す
+  deleteImages() {
+    // TODO
+    console.log("削除画像", this.state.deletedIDs);
+  }
 
-    fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
-      credentials: "include",
-      method: "POST",
-      body: JSON.stringify(this.state.formData)
-    })
-      .then(res => {
-        fetch("/api/JsonService.asmx/UpdateFeatures", {
+  // GISにpostする
+  postFeature(layerId, imageRes) {
+    const token = this.state.userData.access_token;
+    const receiptNumber = Math.floor(Math.random() * 100000);
+
+    return new Promise(async (resolve, reject) => {
+      // 画像IDをデータに追加する
+      const feature = this.state.detail;
+      const reg_ids = [].concat(this.state.imageIDs);
+      for (let i = 0; i < imageRes.length; i++) {
+        const data = imageRes[i];
+        if (data["id"] !== "") {
+          reg_ids.push(data["id"]);
+        }
+      }
+      const send_ids = reg_ids.join(",");
+      feature["properties"]["画像ID"] = send_ids;
+      console.log("登録フィーチャ", feature);
+
+      // 登録データ生成
+      const data = {
+        commonHeader: {
+          receiptNumber: receiptNumber
+        },
+        layerId: layerId,
+        srid: 4326,
+        features: [feature]
+      };
+
+      // post
+      try {
+        const res = await fetch("/api/JsonService.asmx/AddFeatures", {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -98,23 +237,21 @@ class ConfirmEditedInfo extends React.Component {
             "X-Map-Api-Access-Token": token
           },
           body: JSON.stringify(data)
-        })
-          .then(function(res) {
-            const json = res.json().then(data => {
-              if (data.commonHeader.resultInfomation == "0") {
-                alert("更新が完了しました。\nご協力ありがとうございました。");
-                Router.push("/map");
-              } else {
-                console.log("Error:", data.commonHeader.systemErrorReport);
-                alert("更新に失敗しました。");
-              }
-            });
-          })
-          .catch(error => console.log("Error:", error));
-      })
-      .catch(error => {
-        console.log(error);
-      });
+        });
+        const json = await res.json();
+        if (json.commonHeader.resultInfomation == "0") {
+          // alert("登録が完了しました。\nご協力ありがとうございました。");
+          // Router.push("/map");
+          resolve();
+        } else {
+          // console.log("Error:", json.commonHeader.systemErrorReport);
+          // alert("登録に失敗しました。");
+          reject(json.commonHeader.systemErrorReport);
+        }
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   onClickPrev() {
@@ -126,17 +263,19 @@ class ConfirmEditedInfo extends React.Component {
           id: this.state.detail["properties"]["ID$"],
           type: this.state.type,
           detail: JSON.stringify(this.state.detail),
-          ids: JSON.stringify(this.state.ids)
+          imageIDs: JSON.stringify(this.state.imageIDs),
+          objectURLs: JSON.stringify(this.state.imageURLs),
+          deletedIDs: JSON.stringify(this.state.deletedIDs)
         }
       },
       url
     );
   }
 
-  onClickNext() {
+  async onClickNext() {
     const result = window.confirm("この内容でよろしいですか？");
     if (result) {
-      this.submitInfo();
+      await this.submitInfo();
     }
   }
 
@@ -149,7 +288,10 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <BoarInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
+            imageIDs={this.state.imageIDs}
           />
         );
         break;
@@ -158,7 +300,10 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <TrapInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
+            imageIDs={this.state.imageIDs}
           />
         );
         break;
@@ -167,7 +312,10 @@ class ConfirmEditedInfo extends React.Component {
         detaildiv = (
           <VaccineInfo
             detail={this.state.detail}
-            waitingPublish={this.state.picCount}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
+            imageIDs={this.state.imageIDs}
           />
         );
         break;
@@ -193,11 +341,7 @@ class ConfirmEditedInfo extends React.Component {
               登録 ＞
             </RoundButton>
           ) : (
-            <RoundButton
-              color="danger"
-              bind={this.onClickNext.bind(this)}
-              enabled={false}
-            >
+            <RoundButton color="danger" enabled={false}>
               処理中
             </RoundButton>
           )}

@@ -10,7 +10,7 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
-import ImageInput from "../../organisms/imageInput";
+// import ImageInput from "../../organisms/imageInput";
 
 class EditInfo extends React.Component {
   constructor(props) {
@@ -21,62 +21,22 @@ class EditInfo extends React.Component {
       id: null,
       lat: null,
       lng: null,
-      ids: [],
-      isProcessing: false
+      imageIDs: [],
+      isProcessing: false,
+      objectURLs: [],
+      deletedIDs: []
     };
     this.formRef = React.createRef();
   }
 
-  fileChanged(data) {
-    this.state.formData = data;
+  fileChanged(objectURLs) {
+    this.state.objectURLs = objectURLs;
   }
 
-  upload(data) {
-    // 編集時はIDを付け足す
-    data["properties"]["ID$"] = this.state.id;
-    if (this.state.formData == null) {
-      this.callback(data, [], null);
-    }
-    const res = [];
-
-    fetch(IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type, {
-      credentials: "include",
-      method: "POST",
-      body: this.state.formData,
-      header: {
-        "Content-Type": "multipart/form-data"
-      }
-    }).then(response =>
-      response.json().then(json => {
-        if (json["status"] == 200) {
-          json["results"].forEach(element => {
-            res.push({
-              id: element["id"],
-              error: 0
-            });
-          });
-          this.callback(data, res, null);
-        } else {
-          this.callback(data, [], json["message"]);
-        }
-      })
-    );
-  }
-
-  callback(data, res, error) {
-    const url = "/edit/confirm";
-    Router.push(
-      {
-        pathname: url,
-        query: {
-          type: this.state.type,
-          detail: JSON.stringify(data),
-          ids: JSON.stringify(this.state.ids),
-          formData: JSON.stringify(res)
-        }
-      },
-      url
-    );
+  onDeletedServerImage(imageIDs, deletedID) {
+    console.log(deletedID);
+    this.state.imageIDs = imageIDs;
+    this.state.deletedIDs.push(deletedID);
   }
 
   componentDidMount() {
@@ -88,13 +48,27 @@ class EditInfo extends React.Component {
         id: detail["properties"]["ID$"],
         lat: detail["geometry"]["coordinates"][1],
         lng: detail["geometry"]["coordinates"][0],
-        ids: JSON.parse(Router.query.ids)
+        imageIDs: JSON.parse(Router.query.imageIDs)
       });
     } else {
       alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
     // console.log(Router.query.detail);
+    // 戻ってきた人用，入力画像初期値
+    const imageURLsStr = Router.query.objectURLs;
+    console.log(imageURLsStr);
+    if (imageURLsStr) {
+      const urls = JSON.parse(imageURLsStr);
+      this.setState({
+        objectURLs: urls
+      });
+    }
+
+    const deletedIDsStr = Router.query.deletedIDs;
+    if (deletedIDsStr) {
+      this.setState({ deletedIDs: JSON.parse(deletedIDsStr) });
+    }
   }
 
   onClickPrev() {
@@ -135,8 +109,23 @@ class EditInfo extends React.Component {
     if (await this.formRef.current.validateDetail()) {
       const data = this.formRef.current.createDetail();
       if (data != null) {
+        // 編集時はidを付け足す
+        data["properties"]["ID$"] = this.state.id;
         this.setState({ isProcessing: true });
-        this.upload(data);
+        const url = "/edit/confirm";
+        Router.push(
+          {
+            pathname: url,
+            query: {
+              type: this.state.type,
+              detail: JSON.stringify(data),
+              imageIDs: JSON.stringify(this.state.imageIDs),
+              objectURLs: JSON.stringify(this.state.objectURLs),
+              deletedIDs: JSON.stringify(this.state.deletedIDs)
+            }
+          },
+          url
+        );
       } else {
         this.setState({ isProcessing: false });
       }
@@ -160,6 +149,9 @@ class EditInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
+            imageIDs={this.state.imageIDs}
+            onDeleteServerImage={this.onDeletedServerImage.bind(this)}
           />
         );
         break;
@@ -172,6 +164,9 @@ class EditInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
+            imageIDs={this.state.imageIDs}
+            onDeleteServerImage={this.onDeletedServerImage.bind(this)}
           />
         );
         break;
@@ -184,6 +179,9 @@ class EditInfo extends React.Component {
             lat={this.state.lat}
             lng={this.state.lng}
             onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
+            imageIDs={this.state.imageIDs}
+            onDeleteServerImage={this.onDeletedServerImage.bind(this)}
           />
         );
         break;

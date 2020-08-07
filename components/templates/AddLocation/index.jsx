@@ -39,7 +39,8 @@ class AddLocation extends React.Component {
       lat: defaultLat,
       lng: defautlLng,
       type: null,
-      detail: null
+      detail: null,
+      objectURLs: null
     };
     this.saveCenter.bind(this);
   }
@@ -52,6 +53,10 @@ class AddLocation extends React.Component {
     // detailが設定されている場合は保存しておく（戻ってきた人用）
     if (Router.query.detail != null) {
       this.state.detail = Router.query.detail;
+    }
+    // objectURLsも保存しておく（戻ってきた人用）
+    if (Router.query.objectURLs != null) {
+      this.state.objectURLs = Router.query.objectURLs;
     }
     console.log(Router.query);
     if (Router.query.type != null) {
@@ -78,7 +83,8 @@ class AddLocation extends React.Component {
           lat: this.state.lat,
           lng: this.state.lng,
           type: this.state.type,
-          detail: this.state.detail
+          detail: this.state.detail,
+          objectURLs: this.state.objectURLs
         }
       },
       url

@@ -47,14 +47,16 @@ class InfoDiv extends React.Component {
           dataDiv = <DynamicMiniMapComponentWithNoSSR lat={lat} lng={lng} />;
           break;
         case "images":
-          const imgs = this.props.data.imgs;
           const type = this.props.data.type;
-          const waitingPublish = this.props.data.waitingPublish;
+          const objectURLs = this.props.data.objectURLs;
+          const imageIDs = this.props.data.imageIDs;
+          const confirmMode = this.props.data.confirmMode;
           dataDiv = (
             <ImagesDiv
               type={type}
-              imgs={imgs}
-              waitingPublish={waitingPublish}
+              objectURLs={objectURLs}
+              imageIDs={imageIDs}
+              confirmMode={confirmMode}
             />
           );
           break;
