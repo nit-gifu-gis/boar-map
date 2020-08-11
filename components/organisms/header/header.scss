@@ -14,7 +14,7 @@
   left: 0;
   z-index: 10;
   filter: drop-shadow(0 0 5px $text-color);
-  transition: all 0.3s;
+  // transition: all 0.3s ease-in-out;
 
   .title {
     position: absolute;
@@ -55,7 +55,7 @@
         width: 20px;
         height: 2px;
         background-color: #fafafa;
-        transition: all 0.3s;
+        // transition: all 0.3s;
       }
     }
 

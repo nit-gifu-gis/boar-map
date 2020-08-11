@@ -102,8 +102,10 @@ class Header extends React.Component {
     if (this.state.clicked) {
       height += (itemHeight + 1) * itemLength;
     }
+
     // 背景色決定
     const bgColor = getColorCode(this.props.color);
+
     // フォントサイズ決定（要修正）
     let textFontSize = 30;
     if (typeof this.props.children == "string") {
@@ -112,11 +114,20 @@ class Header extends React.Component {
         textFontSize = 25;
       }
     }
+
+    // アニメーション
+    const anim1 = "all 0.2s ease-in-out";
+    const anim2 = "all 0.2s 0.2s ease-in-out";
+
     return (
       <div
         className="header"
         id="header"
-        style={{ backgroundColor: bgColor, height: height }}
+        style={{
+          backgroundColor: bgColor,
+          height: height,
+          transition: this.state.clicked ? anim1 : anim2
+        }}
       >
         <div className="title">
           <div className="text" style={{ fontSize: textFontSize }}>
@@ -133,7 +144,13 @@ class Header extends React.Component {
             <span className="ham_line ham_line3"></span>
           </div>
         </div>
-        <div className="menu" style={{ height: itemHeight * itemLength }}>
+        <div
+          className="menu"
+          style={{
+            height: itemHeight * itemLength,
+            transition: this.state.clicked ? anim2 : anim1
+          }}
+        >
           {contents}
         </div>
       </div>
