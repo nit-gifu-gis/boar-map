@@ -5,7 +5,7 @@ import Router from "next/router";
 import Header from "../../organisms/header";
 import VersionInfo from "../../../components/organisms/versionInfo";
 
-class SelectType extends React.Component {
+class Version extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -22,4 +22,4 @@ class SelectType extends React.Component {
   }
 }
 
-export default SelectType;
+export default Version;
