@@ -6,6 +6,7 @@ import Header from "../../organisms/header";
 import UserData from "../../../utils/userData";
 import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
+import { data } from "autoprefixer";
 
 class List extends React.Component {
   constructor(props) {
@@ -23,12 +24,16 @@ class List extends React.Component {
     }
   }
 
+  onClickSearch(data) {
+    console.log("Search data", data);
+  }
+
   render() {
     return (
       <div className="list">
         <Header color="primary">一覧表</Header>
         <div className="list__contents">
-          <SearchForm />
+          <SearchForm onClick={this.onClickSearch.bind(this)} />
           <ListTable />
         </div>
       </div>

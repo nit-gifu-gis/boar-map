@@ -10,25 +10,54 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      year: null,
-      date1: null,
-      date2: null,
-      city: null,
-      onClick: data => {
-        console.log(data);
-      }
+      dateErr: false,
+      onClick: data => {}
     };
     if (props.onClick != undefined) {
       this.state.onClick = props.onClick;
     }
   }
 
+  onChangeCities(id) {
+    const value = document.getElementById(id).value;
+    console.log(value);
+    // 市町村はスペース区切りで配列化
+    if (id === "cities") {
+      const tmpArr = value.split(/[\s\n,\.，．、。]/);
+      // 空白の配列は削除
+      const arr = tmpArr.filter(e => e !== "");
+      console.log(arr);
+      this.state[id] = arr;
+    } else {
+      this.state[id] = value;
+    }
+  }
+
+  validateDate(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    if (d1 <= d2) {
+      this.setState({ dateErr: false });
+      return true;
+    } else {
+      this.setState({ dateErr: true });
+    }
+  }
+
   onClickSearchButton() {
+    const date1 = document.getElementById("date1").value;
+    const date2 = document.getElementById("date2").value;
+    if (!this.validateDate(date1, date2)) {
+      alert("日付の前後が間違っています。");
+      return;
+    }
+    const citiesStr = document.getElementById("cities").value;
+    // 市町村はスペース（等）区切り
+    const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== "");
     const data = {
-      year: this.state.year,
-      date1: this.state.date1,
-      date2: this.state.date2,
-      city: this.state.city
+      date1: date1,
+      date2: date2,
+      cities: cities
     };
     this.state.onClick(data);
     alert("こーじちゅー");
@@ -45,18 +74,18 @@ class SearchForm extends React.Component {
             </div>
             <div className="search-form__form__grid__input search-form__form__grid__date">
               <div className="search-form__form__grid__input__date">
-                <DateInput id="date1" />
+                <DateInput id="date1" error={this.state.dateErr} />
               </div>
               <div className="search-form__form__grid__input__tilda">〜</div>
               <div className="search-form__form__grid__input__date">
-                <DateInput id="date2" />
+                <DateInput id="date2" error={this.state.dateErr} />
               </div>
             </div>
             <div className="search-form__form__grid__title search-form__form__grid__city">
               市町村
             </div>
             <div className="search-form__form__grid__input search-form__form__grid__city">
-              <TextInput id="city" />
+              <TextInput id="cities" />
             </div>
             <div className="search-form__form__grid__button-div">
               <div className="search-form__form__grid__button-div__button">
