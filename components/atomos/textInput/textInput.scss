@@ -1,6 +1,8 @@
 @import "../../../public/static/css/global";
 
 .text-input {
+  width: 100%;
+
   &__input {
     @extend %input;
 
