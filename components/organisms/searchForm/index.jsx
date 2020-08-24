@@ -59,8 +59,8 @@ class SearchForm extends React.Component {
       date2: date2,
       cities: cities
     };
+    // 親に通知
     this.state.onClick(data);
-    alert("こーじちゅー");
   }
 
   render() {
