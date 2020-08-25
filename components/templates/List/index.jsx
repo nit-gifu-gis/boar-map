@@ -13,8 +13,10 @@ class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: UserData.getUserData()
+      userData: UserData.getUserData(),
+      features: []
     };
+    this.onClickSearch.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +33,7 @@ class List extends React.Component {
     // this.getFeatures(data);
     const features = await this.getFeaturesTest();
     console.log(features);
+    this.setState({ features: features });
   }
 
   // 検索ができないらしいのでとりあえず暫定
@@ -133,7 +136,7 @@ class List extends React.Component {
         <Header color="primary">一覧表</Header>
         <div className="list__contents">
           <SearchForm onClick={this.onClickSearch.bind(this)} />
-          <ListTable />
+          <ListTable features={this.state.features} />
         </div>
       </div>
     );

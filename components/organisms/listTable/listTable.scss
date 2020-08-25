@@ -1,0 +1,18 @@
+@import "../../../public/static/css/global.scss";
+
+.list-table {
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  &__table {
+    border-collapse: collapse;
+
+    &__header th, &__row td {
+      border: solid 2px $border-color;
+    }
+
+  }
+
+}
