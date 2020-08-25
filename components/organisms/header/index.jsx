@@ -43,7 +43,7 @@ class Header extends React.Component {
 
     // マップ画面
     contents.push(
-      <div className="menu_item">
+      <div className="menu_item" key="menu_item_map">
         <Link href="/map">
           <a>マップ</a>
         </Link>
@@ -53,7 +53,7 @@ class Header extends React.Component {
     // K権限であれば一覧表
     if (this.state.userDepartment === "K") {
       contents.push(
-        <div className="menu_item">
+        <div className="menu_item" key="menu_item_list">
           <Link href="/list">
             <a>一覧表</a>
           </Link>
@@ -63,7 +63,7 @@ class Header extends React.Component {
 
     // アンケート
     contents.push(
-      <div className="menu_item">
+      <div className="menu_item" key="menu_item_questionnaire">
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link"
           target="_blank"
@@ -76,7 +76,7 @@ class Header extends React.Component {
 
     // バージョン情報
     contents.push(
-      <div className="menu_item">
+      <div className="menu_item" key="menu_item_version">
         <Link href="/version">
           <a>バージョン情報</a>
         </Link>
@@ -85,7 +85,7 @@ class Header extends React.Component {
 
     // ログアウト
     contents.push(
-      <div className="menu_item danger_item">
+      <div className="menu_item danger_item" key="menu_item_logout">
         <Link href="#">
           <a className="logout_link" onClick={this.onLogout}>
             ログアウト
