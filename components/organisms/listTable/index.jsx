@@ -38,23 +38,25 @@ class ListTable extends React.Component {
       <div className="list-table">
         <div className="list-table__title">てーぶる（工事中）</div>
         <table className="list-table__table">
-          <tr className="list-table__table__header">
-            <th>ID</th>
-            <th>入力者</th>
-            <th>市町村</th>
-            <th>区分</th>
-            <th>捕獲年月日</th>
-            <th>わなの種類・発見場所</th>
-            <th>捕獲頭数</th>
-            <th>幼獣・成獣の別</th>
-            <th>性別</th>
-            <th>妊娠の状況</th>
-            <th>体長</th>
-            <th>処分方法</th>
-            <th>備考（捕獲を手伝った者の氏名）（遠沈管番号）</th>
-            <th>写真</th>
-          </tr>
-          {featuresList}
+          <tbody>
+            <tr className="list-table__table__header">
+              <th>ID</th>
+              <th>入力者</th>
+              <th>市町村</th>
+              <th>区分</th>
+              <th>捕獲年月日</th>
+              <th>わなの種類・発見場所</th>
+              <th>捕獲頭数</th>
+              <th>幼獣・成獣の別</th>
+              <th>性別</th>
+              <th>妊娠の状況</th>
+              <th>体長</th>
+              <th>処分方法</th>
+              <th>備考（捕獲を手伝った者の氏名）（遠沈管番号）</th>
+              <th>写真</th>
+            </tr>
+            {featuresList}
+          </tbody>
         </table>
       </div>
     );
