@@ -1,16 +1,26 @@
 @import "../../../public/static/css/global.scss";
 
 .list-table {
+
   &__title {
     font-size: 24px;
     font-weight: bold;
   }
 
   &__table {
+    display: block;
     border-collapse: collapse;
+    overflow-x: scroll;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+
+    tbody {
+      display: table;
+    }
 
     &__header th, &__row td {
       border: solid 2px $border-color;
+      padding: 5px;
     }
 
   }
