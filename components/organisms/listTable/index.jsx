@@ -6,13 +6,28 @@ import React from "react";
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      features: props.features
-    };
+    this.state = {};
   }
 
   render() {
     const features = this.props.features;
+
+    // 検索してないならインフォメーションを表示
+    if (!this.props.searched) {
+      return (
+        <div className="list-table">
+          <div className="list-table__how-to">
+            検索条件に条件を入力して検索してください．
+          </div>
+        </div>
+      );
+    }
+
+    // 無いなら表示しない
+    if (features == null) {
+      return <div className="list-table">エラー：再読込してください．</div>;
+    }
+
     const featuresList = features.map(f => {
       const data = f.properties;
       // メッシュ番号から市町村を取り出す
@@ -44,7 +59,7 @@ class ListTable extends React.Component {
     });
     return (
       <div className="list-table">
-        <div className="list-table__title">てーぶる（工事中）</div>
+        <div className="list-table__title">検索結果</div>
         <table className="list-table__table">
           <tbody>
             <tr className="list-table__table__header">

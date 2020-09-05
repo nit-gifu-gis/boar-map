@@ -14,7 +14,8 @@ class List extends React.Component {
     super(props);
     this.state = {
       userData: UserData.getUserData(),
-      features: []
+      features: [],
+      searched: false
     };
     this.onClickSearch.bind(this);
   }
@@ -33,7 +34,7 @@ class List extends React.Component {
     try {
       const features = await this.getFeatures(data);
       console.log(features);
-      this.setState({ features: features });
+      this.setState({ features: features, searched: true });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
     }
@@ -134,7 +135,10 @@ class List extends React.Component {
         <Header color="primary">一覧表</Header>
         <div className="list__contents">
           <SearchForm onClick={this.onClickSearch.bind(this)} />
-          <ListTable features={this.state.features} />
+          <ListTable
+            searched={this.state.searched}
+            features={this.state.features}
+          />
         </div>
       </div>
     );
