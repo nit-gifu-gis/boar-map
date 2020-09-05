@@ -151,38 +151,96 @@ class ListTable extends React.Component {
         </tr>
       );
     });
+    // 並び替えの三角用のクラス名
+    const thClassName = key => {
+      if (this.state.sortKey == key) {
+        if (this.state.sortReverse) {
+          return "sortable desc";
+        } else {
+          return "sortable asc";
+        }
+      } else {
+        return "sortable";
+      }
+    };
     return (
       <div className="list-table">
         <div className="list-table__title">検索結果</div>
         <table className="list-table__table">
           <tbody>
             <tr className="list-table__table__header">
-              <th onClick={this.onClickHeader.bind(this, "ID$")}>ID</th>
-              <th onClick={this.onClickHeader.bind(this, "入力者")}>入力者</th>
-              <th onClick={this.onClickHeader.bind(this, "メッシュ番号")}>
+              <th
+                className={thClassName("ID$")}
+                onClick={this.onClickHeader.bind(this, "ID$")}
+              >
+                ID
+              </th>
+              <th
+                className={thClassName("入力者")}
+                onClick={this.onClickHeader.bind(this, "入力者")}
+              >
+                入力者
+              </th>
+              <th
+                className={thClassName("メッシュ番号")}
+                onClick={this.onClickHeader.bind(this, "メッシュ番号")}
+              >
                 市町村
               </th>
-              <th onClick={this.onClickHeader.bind(this, "区分")}>区分</th>
-              <th onClick={this.onClickHeader.bind(this, "捕獲年月日")}>
+              <th
+                className={thClassName("区分")}
+                onClick={this.onClickHeader.bind(this, "区分")}
+              >
+                区分
+              </th>
+              <th
+                className={thClassName("捕獲年月日")}
+                onClick={this.onClickHeader.bind(this, "捕獲年月日")}
+              >
                 捕獲年月日
               </th>
-              <th onClick={this.onClickHeader.bind(this, "罠・発見場所")}>
+              <th
+                className={thClassName("罠・発見場所")}
+                onClick={this.onClickHeader.bind(this, "罠・発見場所")}
+              >
                 わなの種類
                 <br />
                 発見場所
               </th>
-              <th onClick={this.onClickHeader.bind(this, "捕獲頭数")}>
+              <th
+                className={thClassName("捕獲頭数")}
+                onClick={this.onClickHeader.bind(this, "捕獲頭数")}
+              >
                 捕獲頭数
               </th>
-              <th onClick={this.onClickHeader.bind(this, "幼獣・成獣")}>
+              <th
+                className={thClassName("幼獣・成獣")}
+                onClick={this.onClickHeader.bind(this, "幼獣・成獣")}
+              >
                 幼獣・成獣の別
               </th>
-              <th onClick={this.onClickHeader.bind(this, "性別")}>性別</th>
-              <th onClick={this.onClickHeader.bind(this, "妊娠の状況")}>
+              <th
+                className={thClassName("性別")}
+                onClick={this.onClickHeader.bind(this, "性別")}
+              >
+                性別
+              </th>
+              <th
+                className={thClassName("妊娠時の状況")}
+                onClick={this.onClickHeader.bind(this, "妊娠の状況")}
+              >
                 妊娠の状況
               </th>
-              <th onClick={this.onClickHeader.bind(this, "体長")}>体長</th>
-              <th onClick={this.onClickHeader.bind(this, "処分方法")}>
+              <th
+                className={thClassName("体長")}
+                onClick={this.onClickHeader.bind(this, "体長")}
+              >
+                体長
+              </th>
+              <th
+                className={thClassName("処分方法")}
+                onClick={this.onClickHeader.bind(this, "処分方法")}
+              >
                 処分方法
               </th>
               <th>
