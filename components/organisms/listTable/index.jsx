@@ -7,7 +7,10 @@ import "../../../utils/statics";
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      sortKey: "ID$",
+      sortReverse: false
+    };
   }
 
   showImages(ids) {
@@ -23,8 +26,82 @@ class ListTable extends React.Component {
     });
   }
 
+  onClickHeader(key) {
+    console.log(this.state.sortKey, this.state.sortReverse);
+    if (key == this.state.sortKey) {
+      const old = this.state.sortReverse;
+      this.setState({ sortReverse: !old });
+    } else {
+      this.setState({ sortKey: key, sortReverse: false });
+    }
+  }
+
+  sortFeatures(features) {
+    const tmp = features.slice();
+    return tmp.sort((a, b) => {
+      // 比較用のデータを取り出す
+      const getItem = feature => {
+        // プロパティ
+        const p = feature.properties;
+        // 数値データの時
+        if (
+          this.state.sortKey == "ID$" ||
+          this.state.sortKey == "捕獲頭数" ||
+          this.state.sortKey == "体長"
+        ) {
+          // 空文字はいつも下に来るようにする
+          if (p[this.state.sortKey] == "") {
+            return this.state.sortReverse ? Number.MIN_VALUE : Number.MAX_VALUE;
+          }
+          // 実数に変換
+          return parseFloat(p[this.state.sortKey]);
+        }
+        // 日付データの時
+        if (this.state.sortKey == "捕獲年月日") {
+          // 空の時は0
+          if (p[this.state.sortKey] == "") {
+            return new Date(0);
+          }
+          return new Date(p[this.state.sortKey]);
+        }
+        // 文字列データ
+        return p[this.state.sortKey];
+      };
+
+      const aItem = getItem(a);
+      const bItem = getItem(b);
+      // 空文字＝未入力データ＝下に寄せる
+      if (aItem == "" && bItem != "") {
+        return 1;
+      }
+      if (bItem == "" && aItem != "") {
+        return -1;
+      }
+      const rev = this.state.sortReverse ? -1 : 1;
+      if (aItem > bItem) {
+        return 1 * rev;
+      } else if (aItem < bItem) {
+        return -1 * rev;
+      } else {
+        // データが同じ時はIDで比較
+        const aId = parseInt(a.properties["ID$"]);
+        const bId = parseInt(b.properties["ID$"]);
+        if (aId > bId) {
+          return 1;
+        } else if (aId < bId) {
+          return -1;
+        } else {
+          // 本来ここには来ない
+          return 0;
+        }
+      }
+    });
+  }
+
   render() {
+    // Sortkeyで並び替え
     const features = this.props.features;
+    const sorted = this.sortFeatures(features);
 
     // 検索してないならインフォメーションを表示
     if (!this.props.searched) {
@@ -42,7 +119,7 @@ class ListTable extends React.Component {
       return <div className="list-table">エラー：再読込してください．</div>;
     }
 
-    const featuresList = features.map(f => {
+    const featuresList = sorted.map(f => {
       const data = f.properties;
       // メッシュ番号から市町村を取り出す
       const cityPattern = /(^\D+)\d-?\d/;
@@ -80,22 +157,34 @@ class ListTable extends React.Component {
         <table className="list-table__table">
           <tbody>
             <tr className="list-table__table__header">
-              <th>ID</th>
-              <th>入力者</th>
-              <th>市町村</th>
-              <th>区分</th>
-              <th>捕獲年月日</th>
-              <th>
+              <th onClick={this.onClickHeader.bind(this, "ID$")}>ID</th>
+              <th onClick={this.onClickHeader.bind(this, "入力者")}>入力者</th>
+              <th onClick={this.onClickHeader.bind(this, "メッシュ番号")}>
+                市町村
+              </th>
+              <th onClick={this.onClickHeader.bind(this, "区分")}>区分</th>
+              <th onClick={this.onClickHeader.bind(this, "捕獲年月日")}>
+                捕獲年月日
+              </th>
+              <th onClick={this.onClickHeader.bind(this, "罠・発見場所")}>
                 わなの種類
                 <br />
                 発見場所
               </th>
-              <th>捕獲頭数</th>
-              <th>幼獣・成獣の別</th>
-              <th>性別</th>
-              <th>妊娠の状況</th>
-              <th>体長</th>
-              <th>処分方法</th>
+              <th onClick={this.onClickHeader.bind(this, "捕獲頭数")}>
+                捕獲頭数
+              </th>
+              <th onClick={this.onClickHeader.bind(this, "幼獣・成獣")}>
+                幼獣・成獣の別
+              </th>
+              <th onClick={this.onClickHeader.bind(this, "性別")}>性別</th>
+              <th onClick={this.onClickHeader.bind(this, "妊娠の状況")}>
+                妊娠の状況
+              </th>
+              <th onClick={this.onClickHeader.bind(this, "体長")}>体長</th>
+              <th onClick={this.onClickHeader.bind(this, "処分方法")}>
+                処分方法
+              </th>
               <th>
                 備考
                 <br />

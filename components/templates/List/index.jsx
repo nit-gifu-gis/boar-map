@@ -33,7 +33,7 @@ class List extends React.Component {
     console.log("Search data", data);
     try {
       const features = await this.getFeatures(data);
-      console.log(features);
+      // console.log(features);
       this.setState({ features: features, searched: true });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
