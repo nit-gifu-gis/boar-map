@@ -19,8 +19,12 @@
     }
 
     &__header th, &__row td {
-      border: solid 2px $border-color;
+      border: solid 1px $border-color;
       padding: 5px;
+    }
+
+    &__header th {
+      border-bottom-width: 2px;
     }
 
     &__header th.sortable {

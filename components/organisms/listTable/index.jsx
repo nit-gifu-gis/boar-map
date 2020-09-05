@@ -145,7 +145,6 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
           <td style={{ textAlign: "left" }}>{data["備考"]}</td>
           <td style={{ textAlign: "left" }}>
-            {/* {data["画像ID"]} */}
             {this.showImages(data["画像ID"])}
           </td>
         </tr>
@@ -226,7 +225,7 @@ class ListTable extends React.Component {
                 性別
               </th>
               <th
-                className={thClassName("妊娠時の状況")}
+                className={thClassName("妊娠の状況")}
                 onClick={this.onClickHeader.bind(this, "妊娠の状況")}
               >
                 妊娠の状況
