@@ -2,11 +2,25 @@ import "./listTable.scss";
 import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
+import "../../../utils/statics";
 
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  showImages(ids) {
+    const idsArray = ids.split(",");
+    return idsArray.map(id => {
+      if (id == "") {
+        return <div className="">画像なし</div>;
+      }
+      const url = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${id}`;
+      return (
+        <img src={url} className="list-table__table__row__image" alt={id} />
+      );
+    });
   }
 
   render() {
@@ -53,7 +67,10 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "right" }}>{data["体長"]}</td>
           <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
           <td style={{ textAlign: "left" }}>{data["備考"]}</td>
-          <td style={{ textAlign: "left" }}>{data["画像ID"]}</td>
+          <td style={{ textAlign: "left" }}>
+            {/* {data["画像ID"]} */}
+            {this.showImages(data["画像ID"])}
+          </td>
         </tr>
       );
     });

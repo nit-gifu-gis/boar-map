@@ -23,6 +23,14 @@
       padding: 5px;
     }
 
+    &__row {
+      height: 150px;
+      &__image {
+        height: 150px;
+        margin: 0 5px 0 5px;
+      }
+    }
+
   }
 
 }
