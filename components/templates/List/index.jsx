@@ -15,6 +15,7 @@ class List extends React.Component {
     this.state = {
       userData: UserData.getUserData(),
       features: [],
+      searching: false,
       searched: false
     };
     this.onClickSearch.bind(this);
@@ -30,13 +31,15 @@ class List extends React.Component {
 
   // 検索ボタンが押された時
   async onClickSearch(data) {
-    console.log("Search data", data);
+    // console.log("Search data", data);
+    this.setState({ searching: true });
     try {
       const features = await this.getFeatures(data);
       // console.log(features);
-      this.setState({ features: features, searched: true });
+      this.setState({ features: features, searched: true, searching: false });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
+      this.setState({ searching: false });
     }
   }
 
@@ -50,7 +53,7 @@ class List extends React.Component {
     const date2 = data.date2;
     const cities = data.cities;
 
-    console.log(date1, date2, cities);
+    // console.log(date1, date2, cities);
 
     // 条件を作る
     const combination = []; // 0=and 1=or
@@ -96,7 +99,7 @@ class List extends React.Component {
       searchValue: searchValue,
       operators: operators
     };
-    console.log(reqBody);
+    // console.log(reqBody);
 
     return new Promise(async (resolve, reject) => {
       // リクエストを送信
@@ -134,7 +137,10 @@ class List extends React.Component {
       <div className="list">
         <Header color="primary">一覧表</Header>
         <div className="list__contents">
-          <SearchForm onClick={this.onClickSearch.bind(this)} />
+          <SearchForm
+            onClick={this.onClickSearch.bind(this)}
+            searching={this.state.searching}
+          />
           <ListTable
             searched={this.state.searched}
             features={this.state.features}

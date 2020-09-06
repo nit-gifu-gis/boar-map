@@ -64,9 +64,15 @@
 
     &__row {
       height: 150px;
-      &__image {
-        height: 150px;
-        margin: 0 5px 0 5px;
+      &__image-cell {
+        display: flex;
+        flex-wrap: wrap;
+        width: calc(1000px + 10px * 5);
+
+        &__image {
+          margin: 5px 5px 5px 5px;
+          align-self: center;
+        }
       }
     }
 

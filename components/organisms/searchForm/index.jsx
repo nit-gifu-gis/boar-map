@@ -89,7 +89,10 @@ class SearchForm extends React.Component {
             </div>
             <div className="search-form__form__grid__button-div">
               <div className="search-form__form__grid__button-div__button">
-                <RoundButton bind={this.onClickSearchButton.bind(this)}>
+                <RoundButton
+                  bind={this.onClickSearchButton.bind(this)}
+                  enabled={!this.props.searching}
+                >
                   検索
                 </RoundButton>
               </div>

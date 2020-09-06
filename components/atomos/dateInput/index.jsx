@@ -87,7 +87,7 @@ class DateInput extends React.Component {
     // window.alert(date);
     // 全部空文字じゃ無いなら日付として正しいか判定
     const dt = new Date(yyyy, mm - 1, dd);
-    console.log(dt);
+    // console.log(dt);
     if (
       dt.getFullYear() == yyyy &&
       dt.getMonth() == mm - 1 &&

@@ -15,15 +15,34 @@ class ListTable extends React.Component {
 
   showImages(ids) {
     const idsArray = ids.split(",");
-    return idsArray.map(id => {
+    const imgs = idsArray.map(id => {
       if (id == "") {
         return <div className="">画像なし</div>;
       }
+      // 一旦縦横比を計算するためにimg要素に貼る
       const url = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${id}`;
+      const img = new Image();
+      img.src = url;
+      // 長辺が200pxになるように調整する
+      const wRow = img.width;
+      const hRow = img.height;
+      const calcShort = (long, short) => {
+        return short * (200.0 / long);
+      };
+      const w = wRow > hRow ? 200 : calcShort(hRow, wRow);
+      const h = wRow > hRow ? calcShort(wRow, hRow) : 200;
+      console.log(wRow, hRow, w, h);
       return (
-        <img src={url} className="list-table__table__row__image" alt={id} />
+        <img
+          src={url}
+          className="list-table__table__row__image-cell__image"
+          alt={id}
+          width={w}
+          height={h}
+        />
       );
     });
+    return <div className="list-table__table__row__image-cell">{imgs}</div>;
   }
 
   onClickHeader(key) {
@@ -196,7 +215,9 @@ class ListTable extends React.Component {
                 className={thClassName("捕獲年月日")}
                 onClick={this.onClickHeader.bind(this, "捕獲年月日")}
               >
-                捕獲年月日
+                捕獲
+                <br />
+                年月日
               </th>
               <th
                 className={thClassName("罠・発見場所")}
@@ -210,13 +231,17 @@ class ListTable extends React.Component {
                 className={thClassName("捕獲頭数")}
                 onClick={this.onClickHeader.bind(this, "捕獲頭数")}
               >
-                捕獲頭数
+                捕獲
+                <br />
+                頭数
               </th>
               <th
                 className={thClassName("幼獣・成獣")}
                 onClick={this.onClickHeader.bind(this, "幼獣・成獣")}
               >
-                幼獣・成獣の別
+                幼獣
+                <br />
+                成獣
               </th>
               <th
                 className={thClassName("性別")}
@@ -228,7 +253,9 @@ class ListTable extends React.Component {
                 className={thClassName("妊娠の状況")}
                 onClick={this.onClickHeader.bind(this, "妊娠の状況")}
               >
-                妊娠の状況
+                妊娠の
+                <br />
+                状況
               </th>
               <th
                 className={thClassName("体長")}
@@ -240,7 +267,9 @@ class ListTable extends React.Component {
                 className={thClassName("処分方法")}
                 onClick={this.onClickHeader.bind(this, "処分方法")}
               >
-                処分方法
+                処分
+                <br />
+                方法
               </th>
               <th>
                 備考
