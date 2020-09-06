@@ -15,7 +15,8 @@ class List extends React.Component {
       userData: UserData.getUserData(),
       features: [],
       searching: false,
-      searched: false
+      searched: false,
+      images: []
     };
     this.onClickSearch.bind(this);
   }
@@ -34,8 +35,14 @@ class List extends React.Component {
     this.setState({ searching: true });
     try {
       const features = await this.getFeatures(data);
-      // console.log(features);
-      this.setState({ features: features, searched: true, searching: false });
+      const images = await this.fetchImages(features);
+      // console.log(imagesSize);
+      this.setState({
+        features: features,
+        images: images,
+        searched: true,
+        searching: false
+      });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
       this.setState({ searching: false });
@@ -131,6 +138,47 @@ class List extends React.Component {
     });
   }
 
+  // 画像のサイズを先回りで取得しておく
+  async fetchImages(features) {
+    const fetchImage = id => {
+      return new Promise(resolve => {
+        if (id === "") {
+          resolve();
+          return;
+        }
+        const img = new Image();
+        img.onload = () => {
+          resolve({
+            id: id,
+            w: img.width,
+            h: img.height
+          });
+        };
+        img.src = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${id}`;
+      });
+    };
+
+    return await Promise.all(
+      features.map(async feature => {
+        const id = feature["properties"]["ID$"];
+        const ids = feature["properties"]["画像ID"];
+        if (ids == "") {
+          return {
+            id: id,
+            images: []
+          };
+        }
+        const images = await Promise.all(
+          ids.split(",").map(id => fetchImage(id))
+        );
+        return {
+          id: id,
+          images: images
+        };
+      })
+    );
+  }
+
   render() {
     return (
       <div className="list">
@@ -143,6 +191,7 @@ class List extends React.Component {
           <ListTable
             searched={this.state.searched}
             features={this.state.features}
+            images={this.state.images}
           />
         </div>
       </div>

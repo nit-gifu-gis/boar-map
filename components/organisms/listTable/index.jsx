@@ -13,25 +13,22 @@ class ListTable extends React.Component {
     };
   }
 
-  showImages(ids) {
-    const idsArray = ids.split(",");
-    const imgs = idsArray.map(id => {
+  showImages(id) {
+    // プリロードしておいた画像を引っ張ってくる
+    const images = this.props.images.find(v => v.id === id).images;
+    const imgs = images.map(image => {
       if (id == "") {
         return <div className="">画像なし</div>;
       }
-      // 一旦縦横比を計算するためにimg要素に貼る
-      const url = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${id}`;
-      const img = new Image();
-      img.src = url;
+      const url = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${image.id}`;
       // 長辺が200pxになるように調整する
-      const wRow = img.width;
-      const hRow = img.height;
+      const wRow = image.w;
+      const hRow = image.h;
       const calcShort = (long, short) => {
         return short * (200.0 / long);
       };
       const w = wRow > hRow ? 200 : calcShort(hRow, wRow);
       const h = wRow > hRow ? calcShort(wRow, hRow) : 200;
-      console.log(wRow, hRow, w, h);
       return (
         <img
           src={url}
@@ -163,9 +160,7 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "right" }}>{data["体長"]}</td>
           <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
           <td style={{ textAlign: "left" }}>{data["備考"]}</td>
-          <td style={{ textAlign: "left" }}>
-            {this.showImages(data["画像ID"])}
-          </td>
+          <td style={{ textAlign: "left" }}>{this.showImages(data["ID$"])}</td>
         </tr>
       );
     });
