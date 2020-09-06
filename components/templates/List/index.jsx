@@ -7,7 +7,6 @@ import UserData from "../../../utils/userData";
 import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
-import { data } from "autoprefixer";
 
 class List extends React.Component {
   constructor(props) {
