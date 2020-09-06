@@ -29,14 +29,17 @@ class ListTable extends React.Component {
       };
       const w = wRow > hRow ? 200 : calcShort(hRow, wRow);
       const h = wRow > hRow ? calcShort(wRow, hRow) : 200;
+      // 押したら別タブで開くため，aタグの中に入れる
       return (
-        <img
-          src={url}
-          className="list-table__table__row__image-cell__image"
-          alt={id}
-          width={w}
-          height={h}
-        />
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <img
+            src={url}
+            className="list-table__table__row__image-cell__image"
+            alt={id}
+            width={w}
+            height={h}
+          />
+        </a>
       );
     });
     return <div className="list-table__table__row__image-cell">{imgs}</div>;
