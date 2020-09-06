@@ -193,6 +193,7 @@ class List extends React.Component {
             features={this.state.features}
             images={this.state.images}
           />
+          <div className="list__contents__footer-adjuster"></div>
         </div>
       </div>
     );

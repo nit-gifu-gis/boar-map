@@ -31,14 +31,13 @@ class ListTable extends React.Component {
       const h = wRow > hRow ? calcShort(wRow, hRow) : 200;
       // 押したら別タブで開くため，aタグの中に入れる
       return (
-        <a href={url} target="_blank" rel="noopener noreferrer">
-          <img
-            src={url}
-            className="list-table__table__row__image-cell__image"
-            alt={id}
-            width={w}
-            height={h}
-          />
+        <a
+          className="list-table__table__row__image-cell__image"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src={url} alt={id} width={w} height={h} />
         </a>
       );
     });
