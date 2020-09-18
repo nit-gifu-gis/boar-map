@@ -156,8 +156,8 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "left" }}>{date}</td>
           <td style={{ textAlign: "left" }}>{data["罠・発見場所"]}</td>
           <td style={{ textAlign: "right" }}>{data["捕獲頭数"]}</td>
-      <td style={{ textAlign: "right" }}>{data["幼獣の頭数"]}</td>
-      <td style={{ textAlign: "right" }}>{data["成獣の頭数"]}</td>
+          <td style={{ textAlign: "right" }}>{data["幼獣の頭数"]}</td>
+          <td style={{ textAlign: "right" }}>{data["成獣の頭数"]}</td>
           <td style={{ textAlign: "left" }}>{data["幼獣・成獣"]}</td>
           <td style={{ textAlign: "left" }}>{data["性別"]}</td>
           <td style={{ textAlign: "left" }}>{data["妊娠の状況"]}</td>
