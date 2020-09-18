@@ -275,6 +275,8 @@ class BoarForm extends React.Component {
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
       case "死亡":
+      case "狩猟":
+      case "その他":
         this.setState(_ => {
           return { trapOrEnv: ENV, isBox: false };
         });
@@ -452,7 +454,7 @@ class BoarForm extends React.Component {
                 title="区分"
                 type="select"
                 name="division"
-                options={["調査捕獲", "有害捕獲", "死亡"]}
+                options={["調査捕獲", "有害捕獲", "死亡", "狩猟", "その他"]}
                 onChange={this.onChangeDivision.bind(this)}
                 defaultValue={
                   this.state.detail != null
