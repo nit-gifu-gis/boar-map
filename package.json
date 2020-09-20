@@ -21,7 +21,9 @@
     "watch:js": "chokidar '{components,pages,scss,utils}/**/*.{js,jsx}' -c 'npm run lint:js'"
   },
   "dependencies": {
+    "@babel/helper-create-regexp-features-plugin": "^7.10.4",
     "blueimp-canvas-to-blob": "^3.28.0",
+    "exceljs": "^4.1.1",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.6.0",
     "leaflet-easybutton": "^2.4.0",
@@ -32,6 +34,7 @@
     "react-event-listener": "^0.6.6",
     "react-markdown": "^4.3.1",
     "reboot.css": "^1.0.4",
+    "regexpu-core": "^4.7.1",
     "serialize-javascript": "^2.1.1",
     "whatwg-fetch": "^3.2.0",
     "xmlhttprequest": "^1.8.0"

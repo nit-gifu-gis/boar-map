@@ -16,7 +16,8 @@ class List extends React.Component {
       features: [],
       searching: false,
       searched: false,
-      images: []
+      images: [],
+      nameList: []
     };
     this.onClickSearch.bind(this);
   }
@@ -32,7 +33,8 @@ class List extends React.Component {
   // 検索ボタンが押された時
   async onClickSearch(data) {
     // console.log("Search data", data);
-    this.setState({ searching: true });
+    // 検索中という状態，名前一覧をセット
+    this.setState({ searching: true, nameList: data.nameList });
     try {
       const features = await this.getFeatures(data);
       const images = await this.fetchImages(features);
@@ -192,6 +194,7 @@ class List extends React.Component {
             searched={this.state.searched}
             features={this.state.features}
             images={this.state.images}
+            nameList={this.state.nameList}
           />
           <div className="list__contents__footer-adjuster"></div>
         </div>

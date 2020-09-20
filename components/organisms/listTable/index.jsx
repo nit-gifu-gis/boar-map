@@ -13,6 +13,13 @@ class ListTable extends React.Component {
     };
   }
 
+  showUserName(userId, nameList) {
+    // リストの中からユーザーIDが一致する名前を探す
+    const nameData = nameList.find(elem => elem.userId === userId);
+    if (nameData != null) return nameData.name;
+    else return userId;
+  }
+
   showImages(id) {
     // プリロードしておいた画像を引っ張ってくる
     const images = this.props.images.find(v => v.id === id).images;
@@ -120,6 +127,8 @@ class ListTable extends React.Component {
     // Sortkeyで並び替え
     const features = this.props.features;
     const sorted = this.sortFeatures(features);
+    const nameList = this.props.nameList;
+    console.log(nameList);
 
     // 検索してないならインフォメーションを表示
     if (!this.props.searched) {
@@ -150,7 +159,9 @@ class ListTable extends React.Component {
       return (
         <tr className="list-table__table__row" key={data["ID$"]}>
           <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
-          <td style={{ textAlign: "left" }}>{data["入力者"]}</td>
+          <td style={{ textAlign: "left" }}>
+            {this.showUserName(data["入力者"], nameList)}
+          </td>
           <td style={{ textAlign: "left" }}>{city}</td>
           <td style={{ textAlign: "left" }}>{data["区分"]}</td>
           <td style={{ textAlign: "left" }}>{date}</td>

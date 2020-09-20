@@ -5,13 +5,16 @@ import React from "react";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
+// import "../../../utils/regexp";
+import ExcelJS from "exceljs";
 
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dateErr: false,
-      onClick: data => {}
+      onClick: data => {},
+      nameList: []
     };
     if (props.onClick != undefined) {
       this.state.onClick = props.onClick;
@@ -57,10 +60,44 @@ class SearchForm extends React.Component {
     const data = {
       date1: date1,
       date2: date2,
-      cities: cities
+      cities: cities,
+      nameList: this.state.nameList
     };
     // 親に通知
     this.state.onClick(data);
+  }
+
+  async onChangeFile() {
+    // ファイル取得
+    const file = document.getElementById("file").files[0];
+    if (file == null) {
+      return;
+    }
+    const nameListWorkbook = new ExcelJS.Workbook();
+    await nameListWorkbook.xlsx.load(file);
+    const worksheet = nameListWorkbook.getWorksheet("ユーザー一覧");
+    if (worksheet == null) {
+      alert("Excelファイルの形式が間違っています。ファイルをご確認ください。");
+      return;
+    }
+    const values = worksheet.getSheetValues();
+    // 0番目の列は空白なので消す
+    values.shift();
+    // 1番目の列はヘッダー，確認する
+    if (values[0][2] != "ユーザーID" || values[0][3] != "氏名") {
+      alert("Excelファイルの形式が間違っています。ファイルをご確認ください。");
+      return;
+    }
+    // 確認OKならヘッダは捨てる
+    values.shift();
+    const nameList = values.map(row => {
+      return {
+        userId: row[2],
+        name: row[3]
+      };
+    });
+    // console.log(nameList);
+    this.setState({ nameList: nameList });
   }
 
   render() {
@@ -86,6 +123,18 @@ class SearchForm extends React.Component {
             </div>
             <div className="search-form__form__grid__input search-form__form__grid__city">
               <TextInput id="cities" />
+            </div>
+            <div className="search-form__form__grid__title search-form__form__grid__name-list">
+              名前一覧表
+            </div>
+            <div className="search-form__form__grid__input search-form__form__grid__name-list">
+              <input
+                type="file"
+                name="file"
+                id="file"
+                accept=".xls,.xlsx"
+                onChange={this.onChangeFile.bind(this)}
+              />
             </div>
             <div className="search-form__form__grid__button-div">
               <div className="search-form__form__grid__button-div__button">
