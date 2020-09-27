@@ -7,6 +7,8 @@ import UserData from "../../../utils/userData";
 import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
+import "../../../utils/excel";
+import { downloadExcel } from "../../../utils/excel";
 
 class List extends React.Component {
   constructor(props) {
@@ -181,6 +183,32 @@ class List extends React.Component {
     );
   }
 
+  // ダウンロードボタンが押されたときの処理
+  // todo: IE対応
+  async onClickDownload() {
+    // bufferにファイルを書き出す
+    const fileBuffer = await downloadExcel(
+      this.state.features,
+      this.state.nameList,
+      this.state.images
+    );
+    console.log(fileBuffer);
+
+    // 見えないaタグを作っておく
+    const imaginaryA = document.createElement("a");
+    document.body.appendChild(imaginaryA);
+    imaginaryA.style = "display: none;";
+
+    // bufferをblobに流し込む
+    const blob = new Blob([fileBuffer], { type: "vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+
+    imaginaryA.href = url;
+    imaginaryA.download = "捕獲情報一覧.xlsx";
+    imaginaryA.click();
+    URL.revokeObjectURL(url);
+  }
+
   render() {
     return (
       <div className="list">
@@ -195,6 +223,7 @@ class List extends React.Component {
             features={this.state.features}
             images={this.state.images}
             nameList={this.state.nameList}
+            onClickDownload={this.onClickDownload.bind(this)}
           />
           <div className="list__contents__footer-adjuster"></div>
         </div>

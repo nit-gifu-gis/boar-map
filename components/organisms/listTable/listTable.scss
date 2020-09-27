@@ -2,9 +2,21 @@
 
 .list-table {
 
-  &__title {
-    font-size: 24px;
-    font-weight: bold;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 0 0 10px 0;
+
+    &__title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    &__download-button {
+      width: 200px;
+      box-sizing: content-box;
+    }
   }
 
   &__table {

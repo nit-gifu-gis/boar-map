@@ -3,14 +3,21 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import "../../../utils/statics";
+import RoundButton from "../../atomos/roundButton";
 
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       sortKey: "ID$",
-      sortReverse: false
+      sortReverse: false,
+      onClickDownload: () => {
+        return;
+      }
     };
+    if (this.props.onClickDownload != undefined) {
+      this.state.onClickDownload = this.props.onClickDownload;
+    }
   }
 
   showUserName(userId, nameList) {
@@ -43,6 +50,7 @@ class ListTable extends React.Component {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
+          key={image.id}
         >
           <img src={url} alt={id} width={w} height={h} />
         </a>
@@ -193,7 +201,14 @@ class ListTable extends React.Component {
     };
     return (
       <div className="list-table">
-        <div className="list-table__title">検索結果</div>
+        <div className="list-table__header">
+          <div className="list-table__header__title">検索結果</div>
+          <div className="list-table__header__download-button">
+            <RoundButton color="excel" bind={this.state.onClickDownload}>
+              Excel形式でDL
+            </RoundButton>
+          </div>
+        </div>
         <table className="list-table__table">
           <tbody>
             <tr className="list-table__table__header">

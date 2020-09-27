@@ -5,8 +5,8 @@ import React from "react";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
-// import "../../../utils/regexp";
-import ExcelJS from "exceljs";
+import "../../../utils/excel";
+import { loadNameList } from "../../../utils/excel";
 
 class SearchForm extends React.Component {
   constructor(props) {
@@ -69,35 +69,18 @@ class SearchForm extends React.Component {
 
   async onChangeFile() {
     // ファイル取得
-    const file = document.getElementById("file").files[0];
+    const input = document.getElementById("file");
+    const file = input.files[0];
     if (file == null) {
       return;
     }
-    const nameListWorkbook = new ExcelJS.Workbook();
-    await nameListWorkbook.xlsx.load(file);
-    const worksheet = nameListWorkbook.getWorksheet("ユーザー一覧");
-    if (worksheet == null) {
-      alert("Excelファイルの形式が間違っています。ファイルをご確認ください。");
-      return;
+    try {
+      const nameList = await loadNameList(file);
+      this.setState({ nameList: nameList });
+    } catch (error) {
+      alert(error);
+      input.value = "";
     }
-    const values = worksheet.getSheetValues();
-    // 0番目の列は空白なので消す
-    values.shift();
-    // 1番目の列はヘッダー，確認する
-    if (values[0][2] != "ユーザーID" || values[0][3] != "氏名") {
-      alert("Excelファイルの形式が間違っています。ファイルをご確認ください。");
-      return;
-    }
-    // 確認OKならヘッダは捨てる
-    values.shift();
-    const nameList = values.map(row => {
-      return {
-        userId: row[2],
-        name: row[3]
-      };
-    });
-    // console.log(nameList);
-    this.setState({ nameList: nameList });
   }
 
   render() {
