@@ -44,11 +44,7 @@ export default (req, res) => {
     if (req2.readyState != 4) {
       return;
     }
-    if (req2.status !== 200) {
-      res.status(req2.status).end(req2.responseText);
-      return;
-    }
-    res.status(200).end(req2.responseText);
+    res.status(req2.status === 0 ? 500 : req2.status).end(req2.responseText);
   };
   req2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   if (req.headers["content-type"] != undefined) {
