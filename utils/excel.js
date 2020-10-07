@@ -35,41 +35,56 @@ export const loadNameList = file => {
   });
 };
 
-export const downloadExcel = (features, nameList, images) => {
-  const makeRow = feature => {
-    const properties = feature.properties;
-    // 名前は対応するものが一覧にあればそっちを採用する
-    const nameData = nameList.find(
-      elem => elem.userId === properties["入力者"]
-    );
-    const name = nameData != undefined ? nameData.name : properties["入力者"];
-    // 市町村はメッシュ番号から切り出す
-    const cityPattern = /(^\D+)\d-?\d/;
-    const cityResult = cityPattern.exec(properties["メッシュ番号"]);
-    const city = cityResult != null ? cityResult[1] : "";
-    // 捕獲年月日からは時刻を削除
-    const datePattern = /(^[\d/-]+)\s.*/;
-    const dateResult = datePattern.exec(properties["捕獲年月日"]);
-    const date = dateResult != null ? dateResult[1] : "";
-    // 行を返す
-    return [
-      properties["ID$"],
-      name,
-      city,
-      properties["区分"],
-      date,
-      properties["罠・発見場所"],
-      properties["捕獲頭数"],
-      properties["幼獣の頭数"],
-      properties["成獣の頭数"],
-      properties["幼獣・成獣"],
-      properties["性別"],
-      properties["妊娠の状況"],
-      properties["体長"],
-      properties["処分方法"],
-      properties["備考"],
-      properties["画像ID"]
+export const downloadExcel = async tableData => {
+  const convertBase64 = imageData => {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.src = imageData.src;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = imageData.w;
+        canvas.height = imageData.h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const dataUrl = canvas.toDataURL("image/jpeg");
+        resolve(dataUrl);
+      };
+    });
+  };
+
+  const makeRow = async (data, workbook, sheet) => {
+    // テキストデータを入れる
+    const row = [
+      data["ID"],
+      data["入力者"],
+      data["市町村"],
+      data["区分"],
+      data["捕獲年月日"],
+      data["罠・発見場所"],
+      data["捕獲頭数"],
+      data["幼獣の頭数"],
+      data["成獣の頭数"],
+      data["幼獣・成獣"],
+      data["性別"],
+      data["妊娠の状況"],
+      data["体長"],
+      data["処分方法"],
+      data["備考"]
     ];
+    sheet.addRow(row);
+
+    // 画像データを入れる
+    data["画像"].forEach(async d => {
+      const base64 = await convertBase64(d);
+      const imageIdForWorkbook = workbook.addImage({
+        base64: base64,
+        extension: "jpeg"
+      });
+      sheet.addImage(imageIdForWorkbook, {
+        tl: { col: 20, row: 20 },
+        ext: { width: d.w, height: d.h }
+      });
+    });
   };
 
   return new Promise(async (resolve, reject) => {
@@ -100,10 +115,9 @@ export const downloadExcel = (features, nameList, images) => {
     sheet.addRow(headers);
 
     // データ挿入
-    const rows = features.map(f => makeRow(f));
-    console.log(rows);
-    sheet.addRows(rows);
-    console.log(sheet.getSheetValues());
+    tableData.forEach(async d => {
+      await makeRow(d, workbook, sheet);
+    });
 
     // bufferに書き込む
     const buffer = workbook.xlsx.writeBuffer();

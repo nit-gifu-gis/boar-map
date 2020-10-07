@@ -8,7 +8,7 @@ import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
 import "../../../utils/excel";
-import { downloadExcel } from "../../../utils/excel";
+import ExcelJS from "exceljs";
 
 class List extends React.Component {
   constructor(props) {
@@ -291,12 +291,9 @@ class List extends React.Component {
   // todo: IE対応
   async onClickDownload() {
     // bufferにファイルを書き出す
-    const fileBuffer = await downloadExcel(
-      this.state.features,
-      this.state.nameList,
-      this.state.images
+    const fileBuffer = await this.downloadExcel(
+      this.sortTalbeData("ID", false)
     );
-    console.log(fileBuffer);
 
     // 見えないaタグを作っておく
     const imaginaryA = document.createElement("a");
@@ -311,6 +308,96 @@ class List extends React.Component {
     imaginaryA.download = "捕獲情報一覧.xlsx";
     imaginaryA.click();
     URL.revokeObjectURL(url);
+  }
+
+  async downloadExcel(tableData) {
+    const convertBase64 = imageData => {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = imageData.src;
+        img.onload = () => {
+          const canvas = document.getElementById("canvas");
+          canvas.width = imageData.w;
+          canvas.height = imageData.h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          const dataUrl = canvas.toDataURL("image/jpeg");
+          resolve(dataUrl);
+        };
+      });
+    };
+
+    const makeRow = async (data, workbook, sheet) => {
+      // テキストデータを入れる
+      const row = [
+        data["ID"],
+        data["入力者"],
+        data["市町村"],
+        data["区分"],
+        data["捕獲年月日"],
+        data["罠・発見場所"],
+        data["捕獲頭数"],
+        data["幼獣の頭数"],
+        data["成獣の頭数"],
+        data["幼獣・成獣"],
+        data["性別"],
+        data["妊娠の状況"],
+        data["体長"],
+        data["処分方法"],
+        data["備考"]
+      ];
+      sheet.addRow(row);
+
+      // 画像データを入れる
+      data["画像"].forEach(async d => {
+        const base64 = await convertBase64(d);
+        const imageIdForWorkbook = workbook.addImage({
+          base64: base64,
+          extension: "jpeg"
+        });
+        sheet.addImage(imageIdForWorkbook, {
+          tl: { col: 20, row: 20 },
+          ext: { width: d.w, height: d.h }
+        });
+      });
+    };
+
+    return new Promise(async (resolve, reject) => {
+      // ワークブック作成
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("捕獲いのしし一覧表");
+
+      // todo: 整形
+      // ヘッダ挿入
+      const headers = [
+        "ID",
+        "入力者",
+        "市町村",
+        "区分",
+        "捕獲年月日",
+        "わなの種類\n発見場所",
+        "捕獲頭数",
+        "幼獣の頭数",
+        "成獣の頭数",
+        "幼獣・成獣",
+        "性別",
+        "妊娠の状況",
+        "体長",
+        "処分方法",
+        "備考",
+        "画像"
+      ];
+      sheet.addRow(headers);
+
+      // データ挿入
+      tableData.forEach(async d => {
+        await makeRow(d, workbook, sheet);
+      });
+
+      // bufferに書き込む
+      const buffer = workbook.xlsx.writeBuffer();
+      resolve(buffer);
+    });
   }
 
   render() {
@@ -331,6 +418,8 @@ class List extends React.Component {
             sortReversed={this.state.reversed}
           />
           <div className="list__contents__footer-adjuster"></div>
+          {/* Excelに画像をエクスポートするためのcanvas */}
+          <canvas style={{ display: "none" }} id="canvas"></canvas>
         </div>
       </div>
     );
