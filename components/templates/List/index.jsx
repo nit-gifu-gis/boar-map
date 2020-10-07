@@ -15,11 +15,11 @@ class List extends React.Component {
     super(props);
     this.state = {
       userData: UserData.getUserData(),
-      features: [],
       searching: false,
       searched: false,
-      images: [],
-      nameList: []
+      tableData: [],
+      sortKey: "ID",
+      reversed: false
     };
     this.onClickSearch.bind(this);
   }
@@ -39,13 +39,11 @@ class List extends React.Component {
     this.setState({ searching: true, nameList: data.nameList });
     try {
       const features = await this.getFeatures(data);
-      const images = await this.fetchImages(features);
-      // console.log(imagesSize);
+      const tableData = await this.makeTableData(features, data.nameList);
       this.setState({
-        features: features,
-        images: images,
         searched: true,
-        searching: false
+        searching: false,
+        tableData: tableData
       });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
@@ -142,45 +140,151 @@ class List extends React.Component {
     });
   }
 
-  // 画像のサイズを先回りで取得しておく
-  async fetchImages(features) {
-    const fetchImage = id => {
+  // テーブル用にデータを整形する
+  async makeTableData(features, nameList) {
+    // 画像の縦横長さをフェッチする関数
+    const fetchImage = imageId => {
       return new Promise(resolve => {
-        if (id === "") {
+        if (imageId === "") {
           resolve();
           return;
         }
         const img = new Image();
         img.onload = () => {
           resolve({
-            id: id,
+            id: imageId,
             w: img.width,
-            h: img.height
+            h: img.height,
+            src: img.src
           });
+          return;
         };
-        img.src = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${id}`;
+        img.src = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${imageId}`;
       });
     };
 
-    return await Promise.all(
-      features.map(async feature => {
-        const id = feature["properties"]["ID$"];
-        const ids = feature["properties"]["画像ID"];
-        if (ids == "") {
-          return {
-            id: id,
-            images: []
-          };
+    const makeRow = async feature => {
+      const properties = feature.properties;
+      // 名前に対応するものがあればそっちを一覧表に採用
+      const nameData = nameList.find(
+        elem => elem.userId === properties["入力者"]
+      );
+      const name = nameData != undefined ? nameData.name : properties["入力者"];
+      // 市町村はメッシュ番号から切り出し
+      const cityPattern = /(^\D+)\d-?\d/;
+      const cityResult = cityPattern.exec(properties["メッシュ番号"]);
+      const city = cityResult != null ? cityResult[1] : "";
+      // 捕獲年月日からは時刻を削除
+      const datePattern = /(^[\d/-]+)\s.*/;
+      const dateResult = datePattern.exec(properties["捕獲年月日"]);
+      const date = dateResult != null ? dateResult[1] : "";
+      // 画像は先に縦横の長さをフェッチしておく
+      const images =
+        properties["画像ID"] === ""
+          ? []
+          : await Promise.all(
+              properties["画像ID"]
+                .split(",")
+                .map(async id => await fetchImage(id))
+            );
+
+      // 行を返す
+      return {
+        ID: properties["ID$"],
+        入力者: name,
+        市町村: city,
+        区分: properties["区分"],
+        捕獲年月日: date,
+        "罠・発見場所": properties["罠・発見場所"],
+        捕獲頭数: properties["捕獲頭数"],
+        幼獣の頭数: properties["幼獣の頭数"],
+        成獣の頭数: properties["成獣の頭数"],
+        "幼獣・成獣": properties["幼獣・成獣"],
+        性別: properties["性別"],
+        妊娠の状況: properties["妊娠の状況"],
+        体長: properties["体長"],
+        処分方法: properties["処分方法"],
+        備考: properties["備考"],
+        画像: images
+      };
+    };
+
+    return await Promise.all(features.map(async f => await makeRow(f)));
+  }
+
+  // テーブルのヘッダーを押されたとき：表の並び替え
+  onClickHeader(key) {
+    // 現在のソートキーと一致するなら，現在の順番の逆順にする
+    // ソートキーが一致しないなら，正順とする
+    const reverse = this.state.sortKey === key ? !this.state.reversed : false;
+    const sortedTableData = this.sortTalbeData(key, reverse);
+    console.log(key, reverse);
+    this.setState({
+      tableData: sortedTableData,
+      sortKey: key,
+      reversed: reverse
+    });
+  }
+
+  sortTalbeData(key, reverse) {
+    return this.state.tableData.sort((a, b) => {
+      const getItem = data => {
+        // 数値データでソートする場合
+        if (
+          key === "ID" ||
+          key === "捕獲頭数" ||
+          key === "体長" ||
+          key === "幼獣の頭数" ||
+          key === "成獣の頭数"
+        ) {
+          // 空文字はいつも下に来るようにする
+          if (data[key] === "") {
+            return reverse ? Number.MIN_VALUE : Number.MAX_VALUE;
+          }
+          // 数値に変換
+          return parseFloat(data[key]);
         }
-        const images = await Promise.all(
-          ids.split(",").map(id => fetchImage(id))
-        );
-        return {
-          id: id,
-          images: images
-        };
-      })
-    );
+        // 日付データの場合
+        if (key === "捕獲年月日") {
+          // （無いけど）空の時は0
+          if (data[key] === "") {
+            return new Date(0);
+          }
+          return new Date(data[key]);
+        }
+        // 文字列データ
+        return data[key];
+      };
+
+      // 比較用
+      const aItem = getItem(a);
+      const bItem = getItem(b);
+      // 空文字＝未入力＝下に寄せる
+      if (aItem === "" && bItem !== "") {
+        return 1;
+      }
+      if (bItem === "" && aItem !== "") {
+        return -1;
+      }
+      const rev = reverse ? -1 : 1;
+      if (aItem > bItem) {
+        return 1 * rev;
+      } else if (aItem < bItem) {
+        return -1 * rev;
+      } else {
+        // データが同じならIDで比較
+        const aId = parseInt(a["ID"]);
+        const bId = parseInt(b["ID"]);
+        if (aId > bId) {
+          return 1;
+        } else if (aId < bId) {
+          return -1;
+        } else {
+          // 本来ここに来ない
+          return 0;
+        }
+      }
+    });
   }
 
   // ダウンロードボタンが押されたときの処理
@@ -220,10 +324,11 @@ class List extends React.Component {
           />
           <ListTable
             searched={this.state.searched}
-            features={this.state.features}
-            images={this.state.images}
-            nameList={this.state.nameList}
+            tableData={this.state.tableData}
             onClickDownload={this.onClickDownload.bind(this)}
+            onClickHeader={this.onClickHeader.bind(this)}
+            sortKey={this.state.sortKey}
+            sortReversed={this.state.reversed}
           />
           <div className="list__contents__footer-adjuster"></div>
         </div>
