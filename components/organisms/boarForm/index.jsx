@@ -61,6 +61,8 @@ class BoarForm extends React.Component {
       const division = detail["properties"]["区分"];
       switch (division) {
         case "死亡":
+        case "狩猟":
+        case "その他":
           this.setState(_ => {
             return {
               trapOrEnv: ENV
@@ -213,6 +215,8 @@ class BoarForm extends React.Component {
     let trapOrEnv;
     switch (division) {
       case "死亡":
+      case "狩猟":
+      case "その他":
         trapOrEnv = form.env.options[form.env.selectedIndex].value;
         break;
       default:
@@ -273,15 +277,22 @@ class BoarForm extends React.Component {
   onChangeDivision() {
     const divisonSelect = document.forms.form.division;
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
+    const d = deepClone(this.state.detail);
     switch (division) {
       case "死亡":
+      case "狩猟":
+      case "その他":
+        // 罠・発見場所を初期値に戻す
+        d["properties"]["罠・発見場所"] = "山際";
         this.setState(_ => {
-          return { trapOrEnv: ENV, isBox: false };
+          return { trapOrEnv: ENV, isBox: false, detail: d };
         });
         break;
       default:
+        // 罠・発見場所を初期値に戻す
+        d["properties"]["罠・発見場所"] = "くくりわな";
         this.setState(_ => {
-          return { trapOrEnv: TRAP };
+          return { trapOrEnv: TRAP, detail: d };
         });
         break;
     }
@@ -452,7 +463,7 @@ class BoarForm extends React.Component {
                 title="区分"
                 type="select"
                 name="division"
-                options={["調査捕獲", "有害捕獲", "死亡"]}
+                options={["調査捕獲", "有害捕獲", "死亡", "狩猟", "その他"]}
                 onChange={this.onChangeDivision.bind(this)}
                 defaultValue={
                   this.state.detail != null
