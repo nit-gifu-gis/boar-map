@@ -21,13 +21,14 @@ class BoarInfo extends React.Component {
     // 捕獲頭数は箱わなが選択された時のみ表示
     let catchNumInfo = null;
     if (this.props.detail["properties"]["罠・発見場所"] === "箱わな") {
-      catchNumInfo = (
-        <InfoDiv
-          title="捕獲頭数"
-          type="text"
-          data={this.props.detail["properties"]["捕獲頭数"]}
-        />
-      );
+      const childrenNum =
+        parseInt(this.props.detail["properties"]["幼獣の頭数"]) || 0;
+      const adultsNum =
+        parseInt(this.props.detail["properties"]["成獣の頭数"]) || 0;
+      const catchNum = this.props.detail["properties"]["捕獲頭数"];
+      const text =
+        catchNum + "（幼獣: " + childrenNum + " 成獣: " + adultsNum + "）";
+      catchNumInfo = <InfoDiv title="捕獲頭数" type="text" data={text} />;
     }
     return (
       <div className="boar-info">
