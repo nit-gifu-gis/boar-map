@@ -27,6 +27,7 @@ class BoarForm extends React.Component {
         catchNum: null
       },
       isFemale: false,
+      isAdult: false,
       isBox: false
     };
     // データが与えられた場合は保存しておく
@@ -78,6 +79,7 @@ class BoarForm extends React.Component {
           break;
       }
       this.setState({ isFemale: detail["properties"]["性別"] === "メス" });
+      this.setState({ isAdult: detail["properties"]["幼獣・成獣"] === "成獣" });
       this.setState({
         isBox: detail["properties"]["罠・発見場所"] === "箱わな"
       });
@@ -136,6 +138,12 @@ class BoarForm extends React.Component {
       return;
     }
     // メスの場合
+    if (!this.state.isAdult) {
+      // 成獣じゃない場合はエラーを消して終了
+      await this.updateError("pregnant", null);
+      return;
+    }
+    // メスかつ成獣の場合
     const form = document.forms.form;
     const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     // 値が選択肢に引っかかればOK
@@ -236,7 +244,7 @@ class BoarForm extends React.Component {
     const length = form.length.value;
     // 6-1 妊娠の状況
     let pregnant = "";
-    if (this.state.isFemale) {
+    if (this.state.isFemale && this.state.isAdult) {
       pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     }
     // 6-2 処分方法
@@ -308,6 +316,19 @@ class BoarForm extends React.Component {
         break;
       default:
         this.setState({ isFemale: false });
+        break;
+    }
+  }
+
+  onChangeAge() {
+    const ageSelect = document.forms.form.age;
+    const age = ageSelect.options[ageSelect.selectedIndex].value;
+    switch (age) {
+      case "成獣":
+        this.setState({ isAdult: true });
+        break;
+      default:
+        this.setState({ isAdult: false });
         break;
     }
   }
@@ -391,7 +412,7 @@ class BoarForm extends React.Component {
       }
       // 妊娠の状況の表示切り替え
       let pregnantSelector = null;
-      if (this.state.isFemale) {
+      if (this.state.isFemale && this.state.isAdult) {
         pregnantSelector = (
           <InfoInput
             title="妊娠の状況"
@@ -496,6 +517,7 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["幼獣・成獣"]
                     : "幼獣"
                 }
+                onChange={this.onChangeAge.bind(this)}
               />
               <InfoInput
                 title="性別"

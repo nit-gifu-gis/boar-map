@@ -4,9 +4,12 @@ import InfoDiv from "../../molecules/infoDiv";
 
 class BoarInfo extends React.Component {
   render() {
-    // 妊娠の状況は性別がメスの時のみ表示
+    // 妊娠の状況は性別がメスかつ成獣の時のみ表示
     let pregnantInfo = null;
-    if (this.props.detail["properties"]["性別"] === "メス") {
+    if (
+      this.props.detail["properties"]["性別"] === "メス" &&
+      this.props.detail["properties"]["幼獣・成獣"] === "成獣"
+    ) {
       pregnantInfo = (
         <InfoDiv
           title="妊娠の状況"
