@@ -94,7 +94,7 @@ class BoarInfo extends React.Component {
           data={this.props.detail["properties"]["処分方法"]}
         />
         <InfoDiv
-          title="備考（捕獲を手伝った者の氏名）（遠沈管番号）"
+          title="備考（遠沈管番号）"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
         />
