@@ -229,6 +229,7 @@ class MapBase extends React.Component {
     console.log("boar");
     this.state.retry++;
     const overlays = {};
+
     fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
       method: "POST",
       headers: {
@@ -517,42 +518,171 @@ class MapBase extends React.Component {
     }
   }
 
-  updateMarkers(map, token) {
-    console.log(this.myMap);
-    console.log("updateMarkers");
-    const me = this;
-
+  async updateMarkers(map, token) {
+    // 所属を取得
+    const userDepartment = this.state.userData.department;
+    // 表示範囲を取得
     const bounds = map.getBounds();
-    const topLat = bounds.getNorth();
-    const rightLng = bounds.getEast();
-    const bottomLat = bounds.getSouth();
-    const leftLng = bounds.getWest();
 
-    const receiptNumber = Math.floor(Math.random() * 100000);
-    const data = {
-      commonHeader: {
-        receiptNumber: receiptNumber
-      },
-      layerId: BOAR_LAYER_ID,
-      inclusion: 1,
-      buffer: 100,
-      srid: 4326,
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
+    // 各フィーチャーを取得
+    try {
+      const boars = await this.getFeatures(bounds, BOAR_LAYER_ID);
+      const traps = await this.getFeatures(bounds, TRAP_LAYER_ID);
+      // ワクチンのみ，権限を気にする
+      const vaccines =
+        userDepartment == "W" || userDepartment == "K"
+          ? await this.getFeatures(bounds, VACCINE_LAYER_ID)
+          : [];
+      console.log(boars, traps, vaccines);
+
+      // 取得できたらマーカー生成
+      const boarMarkers = boars.map(f => this.makeMarker(f, "boar"));
+      const trapMarkers = traps.map(f => this.makeMarker(f, "trap"));
+      const vaccinesMakers = vaccines.map(f => this.makeMarker(f, "vaccine"));
+
+      // レイヤーにする
+      const boarLayer = L.layerGroup(boarMarkers);
+      const trapLayer = L.layerGroup(trapMarkers);
+      const vaccineLayer = L.layerGroup(vaccinesMakers);
+
+      // 地図に追加
+      boarLayer.addTo(map);
+      trapLayer.addTo(map);
+      vaccineLayer.addTo(map);
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  }
+
+  async getFeatures(bounds, layerId) {
+    return new Promise(async (resolve, reject) => {
+      // 範囲を取得
+      const topLat = bounds.getNorth();
+      const rightLng = bounds.getEast();
+      const bottomLat = bounds.getSouth();
+      const leftLng = bounds.getWest();
+
+      // bodyを作って
+      const req_body = {
+        layerId: layerId,
+        inclusion: 1,
+        buffer: 100,
+        srid: 4326,
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [
             [leftLng, topLat],
             [rightLng, topLat],
             [rightLng, bottomLat],
             [leftLng, bottomLat],
             [leftLng, topLat]
           ]
-        ]
-      }
-    };
+        }
+      };
 
-    this.getBoar(map, token, me, data);
+      // fetch
+      try {
+        const res = await fetch(
+          `${SERVER_URI}/Feature/GetFeaturesByExtent.php`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(req_body)
+          }
+        );
+        if (res.status === 200) {
+          // 通信成功ならfeaturesを返す
+          const json = await res.json();
+          resolve(json["features"]);
+          return;
+        } else {
+          const json = await res.json();
+          reject(json["reason"]);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // マーカーを作る
+  makeMarker(feature, type) {
+    // // 既に描画されてるならスキップ
+    // const layerLabel =
+    //   type === "boar"
+    //     ? "捕獲いのしし"
+    //     : type === "trap"
+    //     ? "わな"
+    //     : type === "vaccine"
+    //     ? "ワクチン"
+    //     : undefined;
+
+    // 三項演算子，Formattingのせいで見づらい…
+    const icon =
+      type === "boar"
+        ? this.boarIcon
+        : type === "trap"
+        ? this.trapIcon
+        : type === "vaccine"
+        ? this.vaccineIcon
+        : undefined;
+    const dateLabel =
+      type === "boar"
+        ? "捕獲年月日"
+        : type === "trap"
+        ? "設置年月日"
+        : type === "vaccine"
+        ? "散布年月日"
+        : undefined;
+    const typeNum =
+      type === "boar"
+        ? 0
+        : type === "trap"
+        ? 1
+        : type === "vaccine"
+        ? 2
+        : undefined;
+
+    // 緯度経度
+    const lat = feature["geometry"]["coordinates"][1];
+    const lng = feature["geometry"]["coordinates"][0];
+
+    // マーカー生成
+    const mapMarker = L.marker([lat, lng], {
+      icon: icon
+    });
+
+    // ポップアップ作成
+    mapMarker.bindPopup(this.makePopup(type, feature["properties"][dateLabel]));
+    mapMarker.on("mouseover", function(e) {
+      this.openPopup();
+    });
+    mapMarker.on("mouseout", function(e) {
+      this.closePopup();
+    });
+    if (this.state.isMainMap) {
+      mapMarker.on("click", function(e) {
+        Router.push(
+          {
+            pathname: "/detail",
+            query: {
+              FeatureID: feature["properties"]["ID$"],
+              type: typeNum
+            }
+          },
+          "/detail"
+        );
+      });
+    }
+
+    return mapMarker;
   }
 
   // 地図のサイズを計算する
