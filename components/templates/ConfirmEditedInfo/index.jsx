@@ -114,9 +114,6 @@ class ConfirmEditedInfo extends React.Component {
       const imageRes = await this.uploadImages();
       console.log(imageRes);
 
-      // 画像を公開
-      await this.publishImages(imageRes);
-
       // 消えた画像を消す
       await this.deleteImages();
 
@@ -150,7 +147,7 @@ class ConfirmEditedInfo extends React.Component {
       for (let i = 0; i < this.state.imageBlobs.length; i++) {
         body.append("files[]", this.state.imageBlobs[i]);
       }
-      const url = IMAGE_SERVER_URI + "/upload.php?type=" + this.state.type;
+      const url = SERVER_URI + "/Image/AddImage?type=" + this.state.type;
       const req = {
         credentials: "include",
         method: "POST",
@@ -176,19 +173,6 @@ class ConfirmEditedInfo extends React.Component {
         // 通信orデコード失敗
         reject(e);
       }
-    });
-  }
-
-  // 画像を公開する
-  publishImages(imageRes) {
-    return new Promise((resolve, reject) => {
-      fetch(IMAGE_SERVER_URI + "/publish.php?type=" + this.state.type, {
-        credentials: "include",
-        method: "POST",
-        body: JSON.stringify(imageRes)
-      })
-        .then(resolve())
-        .catch(e => reject(e));
     });
   }
 

@@ -43,7 +43,7 @@ class ImagesDiv extends React.Component {
         );
         // サーバー上の画像
         const simgs = this.state.imageIDs.map(data => {
-          const url = `${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${data}`;
+          const url = `${SERVER_URI}/Image/GetImage?id=${data}`;
           return (
             <img src={url} className="imagesDiv__multiBox__image" alt={data} />
           );
@@ -74,7 +74,7 @@ class ImagesDiv extends React.Component {
             className = "imagesDiv__multiBox";
           }
           imgs = this.state.imageIDs.map(data => {
-            const url = `${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${data}`;
+            const url = `${SERVER_URI}/Image/GetImage?id=${data}`;
             return (
               <img
                 src={url}
