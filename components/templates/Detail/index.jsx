@@ -110,6 +110,43 @@ class Detail extends React.Component {
     Router.push("/map");
   }
 
+  async onClickDelete() {
+    const res = confirm("この情報を削除します。\n本当によろしいですか？");
+    if (res) {
+      // id取得
+      const id = this.state.detail["properties"]["ID$"];
+      const layerId = BOAR_LAYER_ID + parseInt(Router.query.type);
+      // GISにフェッチ
+      const body = {
+        layerId: layerId,
+        shapeIds: [id]
+      };
+      try {
+        const res = await fetch(SERVER_URI + "/Feature/DeleteFeatures.php", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          mode: "cors",
+          credentials: "include",
+          body: JSON.stringify(body)
+        });
+        if (res.status === 200) {
+          const json = await res.json();
+          console.log(json["status"]);
+          alert("削除しました。");
+          Router.push("/map");
+        } else {
+          const json = await res.json();
+          alert(json["reason"]);
+        }
+      } catch (error) {
+        alert(error);
+      }
+    }
+  }
+
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
@@ -149,14 +186,21 @@ class Detail extends React.Component {
           </div>
           <Footer>
             <RoundButton color="accent" bind={this.onClickPrev}>
-              ＜ 戻る
+              戻る
             </RoundButton>
             <RoundButton
               color="primary"
               bind={this.onClickNext.bind(this)}
               enabled={editEnabled}
             >
-              編集 ＞
+              編集
+            </RoundButton>
+            <RoundButton
+              color="danger"
+              bind={this.onClickDelete.bind(this)}
+              enabled={editEnabled}
+            >
+              削除
             </RoundButton>
           </Footer>
         </div>

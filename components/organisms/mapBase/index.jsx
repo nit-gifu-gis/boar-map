@@ -214,7 +214,7 @@ class MapBase extends React.Component {
       newLayers["捕獲いのしし"] = boarLayer;
       newLayers["わな"] = trapLayer;
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     // ワクチン
@@ -225,7 +225,7 @@ class MapBase extends React.Component {
         const vaccineLayer = L.layerGroup(vaccinesMakers);
         newLayers["ワクチン"] = vaccineLayer;
       } catch (error) {
-        alert(error);
+        console.error(error);
       }
     }
 

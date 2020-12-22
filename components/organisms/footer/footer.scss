@@ -1,6 +1,6 @@
 .footer {
   width: 100%;
-  height: var(--footer-height);
+  min-height: var(--footer-height);
   background-color: #fafafa;
   display: flex;
   justify-content: center;
@@ -14,7 +14,7 @@
   filter: drop-shadow(0 0 5px #212121);
 
   &__child {
-    padding: 5vw;
+    padding: 3vw;
     box-sizing: border-box;
     text-align: center;
   }
