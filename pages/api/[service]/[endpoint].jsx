@@ -1,3 +1,5 @@
+// 中間サーバーがあるため不要と考えられるが，万が一本番用の中間サーバーがGISサーバーと同じように通信ができなかった場合のために残しておきます
+
 export default (req, res) => {
   const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
   const service = req["query"]["service"];
