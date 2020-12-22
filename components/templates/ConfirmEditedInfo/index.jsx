@@ -167,7 +167,7 @@ class ConfirmEditedInfo extends React.Component {
           });
           resolve(ids);
         } else {
-          reject(json["message"]);
+          reject(json["reason"]);
         }
       } catch (e) {
         // 通信orデコード失敗
@@ -184,9 +184,6 @@ class ConfirmEditedInfo extends React.Component {
 
   // GISにpostする
   postFeature(layerId, imageRes) {
-    const token = this.state.userData.access_token;
-    const receiptNumber = Math.floor(Math.random() * 100000);
-
     return new Promise(async (resolve, reject) => {
       // 画像IDをデータに追加する
       const feature = this.state.detail;
@@ -203,9 +200,6 @@ class ConfirmEditedInfo extends React.Component {
 
       // 登録データ生成
       const data = {
-        commonHeader: {
-          receiptNumber: receiptNumber
-        },
         layerId: layerId,
         srid: 4326,
         features: [feature]
@@ -213,25 +207,19 @@ class ConfirmEditedInfo extends React.Component {
 
       // post
       try {
-        const res = await fetch("/api/JsonService.asmx/AddFeatures", {
+        const res = await fetch(SERVER_URI + "/Feature/UpdateFeatures", {
           method: "POST",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-Map-Api-Access-Token": token
+            "Content-Type": "application/json"
           },
+          mode: "cors",
+          credentials: "include",
           body: JSON.stringify(data)
         });
         const json = await res.json();
-        if (json.commonHeader.resultInfomation == "0") {
-          // alert("登録が完了しました。\nご協力ありがとうございました。");
-          // Router.push("/map");
-          resolve();
-        } else {
-          // console.log("Error:", json.commonHeader.systemErrorReport);
-          // alert("登録に失敗しました。");
-          reject(json.commonHeader.systemErrorReport);
-        }
+        console.log(json);
+        resolve();
       } catch (e) {
         reject(e);
       }
