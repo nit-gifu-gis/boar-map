@@ -216,7 +216,11 @@ class ConfirmInfo extends React.Component {
         });
         const json = await res.json();
         console.log(json);
-        resolve();
+        if (res.status === 200) {
+          resolve();
+        } else {
+          reject(json["reason"]);
+        }
       } catch (e) {
         reject(e);
       }
