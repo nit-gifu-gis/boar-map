@@ -1,20 +1,27 @@
+@import "../../../public/static/css/global";
+
+:export {
+  menuItemHeight: $menu-item-height;
+  headerHeight: $header-height;
+}
+
 .header {
   width: 100%;
-  height: var(--header-height);
+  height: $header-height;
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 10;
-  filter: drop-shadow(0 0 5px #212121);
-  transition: all 0.3s;
+  filter: drop-shadow(0 0 5px $text-color);
+  // transition: all 0.3s ease-in-out;
 
   .title {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: var(--header-height);
+    height: $header-height;
 
     .text {
       position: absolute;
@@ -48,7 +55,7 @@
         width: 20px;
         height: 2px;
         background-color: #fafafa;
-        transition: all 0.3s;
+        // transition: all 0.3s;
       }
     }
 
@@ -71,21 +78,21 @@
 
   .menu {
     position: absolute;
-    top: var(--header-height);
+    top: $header-height;
     left: 0;
     right: 0;
     width: 100%;
-    height: calc(var(--menu-item-height) * var(--menu-item-num));
+    // height: $menu-item-height * $menu-item-num;
     text-align: center;
     visibility: hidden;
     transition: all 0.3s;
     opacity: 0;
 
     .menu_item {
-      height: calc(var(--menu-item-height));
+      height: $menu-item-height;
       width: 90%;
       margin: auto;
-      border-top: solid 1px #fafafa;
+      border-top: solid 1px $background-color;
       font-size: 14pt;
       display: flex;
       justify-content: center;
@@ -96,16 +103,16 @@
       }
 
       a:link {
-        color: #fafafa;
+        color: $background-color;
       }
       a:visited {
-        color: #fafafa;
+        color: $background-color;
       }
       a:hover {
-        color: #fafafa;
+        color: $background-color;
       }
       a:active {
-        color: #fafafa;
+        color: $background-color;
       }
     }
   }
@@ -113,10 +120,7 @@
 
 // ハンバーガーをクリックした後
 .clicked.header {
-  height: calc(
-    (var(--menu-item-height) + 1pt) * var(--menu-item-num) +
-      var(--header-height)
-  );
+  // height: ($menu-item-height + 1pt) * $menu-item-num + $header-height;
 
   .ham_line1 {
     transform: rotate(45deg);
@@ -133,55 +137,5 @@
   .menu {
     visibility: visible;
     opacity: 1;
-  }
-}
-
-// IE
-@media all and (-ms-high-contrast: none) {
-  .header {
-    height: 60px;
-
-    .title {
-      height: 60px;
-    }
-
-    .menu {
-      position: absolute;
-      top: 60px;
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: calc(40px * 4);
-      text-align: center;
-      visibility: hidden;
-      transition: all 0.3s;
-      opacity: 0;
-
-      .menu_item {
-        height: calc(40px);
-      }
-    }
-  }
-
-  // ハンバーガーをクリックした後
-  .clicked.header {
-    height: calc((40px + 1px) * 4 + 60px);
-
-    .ham_line1 {
-      transform: rotate(45deg);
-      top: 20px;
-    }
-    .ham_line2 {
-      transform: scaleX(0);
-    }
-    .ham_line3 {
-      transform: rotate(-45deg);
-      top: 20px;
-    }
-
-    .menu {
-      visibility: visible;
-      opacity: 1;
-    }
   }
 }

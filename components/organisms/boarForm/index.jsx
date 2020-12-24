@@ -85,6 +85,7 @@ class BoarForm extends React.Component {
       this.setState({
         isBox: detail["properties"]["罠・発見場所"] === "箱わな"
       });
+      this.setState({ isAdult: detail["properties"]["幼獣・成獣"] === "成獣" });
     }
   }
 
@@ -192,6 +193,7 @@ class BoarForm extends React.Component {
     return true;
   }
 
+  // 捕獲頭数の合計をチェック
   async validateCatchNum() {
     if (!this.state.isBox) {
       // 箱わなが選択されていない場合はnull
@@ -224,6 +226,8 @@ class BoarForm extends React.Component {
     await this.validateDate();
     await this.validateLength();
     await this.validatePregnant();
+    await this.validateEachCatchNum("childrenNum");
+    await this.validateEachCatchNum("adultsNum");
     await this.validateCatchNum();
 
     // エラー一覧を表示
@@ -359,6 +363,7 @@ class BoarForm extends React.Component {
     }
   }
 
+  // 幼獣・成獣の別が変更された時に呼ばれる
   onChangeAge() {
     const ageSelect = document.forms.form.age;
     const age = ageSelect.options[ageSelect.selectedIndex].value;

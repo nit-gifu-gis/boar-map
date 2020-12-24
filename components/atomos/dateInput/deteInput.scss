@@ -3,7 +3,7 @@
 .date-input-div {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  // max-width: 400px;
 
   &__input {
     @extend %input;
@@ -32,6 +32,7 @@
     box-sizing: border-box;
     opacity: 0;
     z-index: 1;
+    margin: 0;
   }
 }
 
@@ -76,5 +77,18 @@
     flex-grow: 3;
     // background-color: blue;
   }
+}
+
+// 矢印を消す
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 

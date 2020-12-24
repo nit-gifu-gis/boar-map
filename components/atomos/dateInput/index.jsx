@@ -87,7 +87,7 @@ class DateInput extends React.Component {
     // window.alert(date);
     // 全部空文字じゃ無いなら日付として正しいか判定
     const dt = new Date(yyyy, mm - 1, dd);
-    console.log(dt);
+    // console.log(dt);
     if (
       dt.getFullYear() == yyyy &&
       dt.getMonth() == mm - 1 &&
@@ -159,6 +159,7 @@ class DateInput extends React.Component {
                 placeholder="西暦"
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
+                disabled={this.props.disabled}
               />
             </div>
             年
@@ -173,6 +174,7 @@ class DateInput extends React.Component {
                 id={this.props.id + "Month"}
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
+                disabled={this.props.disabled}
               />
             </div>
             月
@@ -187,6 +189,7 @@ class DateInput extends React.Component {
                 id={this.props.id + "Day"}
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
+                disabled={this.props.disabled}
               />
             </div>
             日
@@ -196,6 +199,9 @@ class DateInput extends React.Component {
             type="date"
             name={this.props.name}
             id={this.props.id}
+            min={this.props.min}
+            max={this.props.max}
+            disabled={this.props.disabled}
             style={{ display: "none" }}
           />
         </div>
@@ -214,6 +220,9 @@ class DateInput extends React.Component {
             id={this.props.id}
             placeholder={"年/月/日"}
             onChange={this.state.onChange}
+            min={this.props.min}
+            max={this.props.max}
+            disabled={this.props.disabled}
           />
         </div>
       );

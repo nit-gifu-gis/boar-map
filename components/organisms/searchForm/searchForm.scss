@@ -1,0 +1,80 @@
+@import "../../../public/static/css/global.scss";
+
+.search-form {
+  width: 100%;
+  margin: 0 0 30px 0;
+
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  &__form {
+    box-sizing: border-box;
+    border: solid 2px $border-color;
+    border-radius: 10px;
+    padding: 10px $margin-lr 10px $margin-lr;
+    width: 100%;
+
+    &__grid {
+      display: grid;
+      display: -ms-grid;
+      grid-template-columns: 70px 1fr;
+      -ms-grid-columns: 70px 1fr;
+      -ms-grid-rows: auto auto auto;
+
+      &__title {
+        display: flex;
+        grid-column: 1/2;
+        -ms-grid-column: 1;
+        justify-content: center;
+        align-items: center;
+        margin: 5px;
+      }
+
+      &__input {
+        grid-column: 2/3;
+        -ms-grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+        align-items: center;
+        text-align: left;
+        margin: 5px;
+
+        &__date {
+          flex: 0 1 300px;
+        }
+
+        &__tilda {
+          flex: 0 0 auto;
+          margin: 0 5px 0 5px;
+        }
+      }
+
+      &__date {
+        grid-row: 1;
+        -ms-grid-row: 1;
+      }
+
+      &__city {
+        grid-row: 2;
+        -ms-grid-row: 2;
+      }
+
+      &__button-div {
+        grid-column: 1/3;
+        -ms-grid-columns: 1;
+        -ms-grid-column-span: 2;
+        grid-row: 3;
+        -ms-grid-row: 3;
+
+        &__button {
+          margin: 20px auto $margin-tb auto;
+          max-width: 400px;
+        }
+      }
+    }
+  }
+
+}

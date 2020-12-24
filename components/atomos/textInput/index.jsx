@@ -22,6 +22,7 @@ class TextInput extends React.Component {
           min={this.props.min}
           step={this.props.step}
           onChange={this.props.onChange}
+          disabled={this.props.disabled}
           required
         />
       );
@@ -38,6 +39,7 @@ class TextInput extends React.Component {
           min={this.props.min}
           step={this.props.step}
           onChange={this.props.onChange}
+          disabled={this.props.disabled}
         />
       );
     }
