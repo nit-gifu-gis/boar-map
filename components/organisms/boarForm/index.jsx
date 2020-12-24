@@ -15,6 +15,8 @@ class BoarForm extends React.Component {
     super(props);
     this.state = {
       trapOrEnv: TRAP,
+      trapValue: "くくりわな",
+      envValue: "山際",
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
@@ -68,14 +70,16 @@ class BoarForm extends React.Component {
         case "その他":
           this.setState(_ => {
             return {
-              trapOrEnv: ENV
+              trapOrEnv: ENV,
+              envValue: detail["properties"]["罠・発見場所"]
             };
           });
           break;
         default:
           this.setState(_ => {
             return {
-              trapOrEnv: TRAP
+              trapOrEnv: TRAP,
+              trapValue: detail["properties"]["罠・発見場所"]
             };
           });
           break;
@@ -171,6 +175,7 @@ class BoarForm extends React.Component {
     if (!this.state.isBox) {
       // 箱わなが選択されていない場合はnull
       await this.updateError(name, null);
+      return;
     }
 
     const form = document.forms.form;
@@ -328,22 +333,17 @@ class BoarForm extends React.Component {
   onChangeDivision() {
     const divisonSelect = document.forms.form.division;
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
-    const d = deepClone(this.state.detail);
     switch (division) {
       case "死亡":
       case "狩猟":
       case "その他":
-        // 罠・発見場所を初期値に戻す
-        d["properties"]["罠・発見場所"] = "山際";
         this.setState(_ => {
-          return { trapOrEnv: ENV, isBox: false, detail: d };
+          return { trapOrEnv: ENV, isBox: false };
         });
         break;
       default:
-        // 罠・発見場所を初期値に戻す
-        d["properties"]["罠・発見場所"] = "くくりわな";
         this.setState(_ => {
-          return { trapOrEnv: TRAP, detail: d };
+          return { trapOrEnv: TRAP };
         });
         break;
     }
@@ -381,6 +381,7 @@ class BoarForm extends React.Component {
   onChangeTrap() {
     const trapSelect = document.forms.form.trap;
     const trap = trapSelect.options[trapSelect.selectedIndex].value;
+    this.setState({ trapValue: trap });
     switch (trap) {
       case "箱わな":
         this.setState({ isBox: true });
@@ -389,6 +390,13 @@ class BoarForm extends React.Component {
         this.setState({ isBox: false });
         break;
     }
+  }
+
+  // 発見場所を変更した時に呼ばれる
+  onChangeEnv() {
+    const envSelect = document.forms.form.env;
+    const env = envSelect.options[envSelect.selectedIndex].value;
+    this.setState({ envValue: env });
   }
 
   // 体長を体重に変換する
@@ -431,11 +439,7 @@ class BoarForm extends React.Component {
           type="select"
           name="trap"
           options={["くくりわな", "箱わな", "その他"]}
-          defaultValue={
-            this.state.detail != null
-              ? this.state.detail["properties"]["罠・発見場所"]
-              : "くくりわな"
-          }
+          defaultValue={this.state.trapValue}
           onChange={this.onChangeTrap.bind(this)}
         />
       );
@@ -446,11 +450,8 @@ class BoarForm extends React.Component {
             type="select"
             name="env"
             options={["山際", "山地", "その他"]}
-            defaultValue={
-              this.state.detail != null
-                ? this.state.detail["properties"]["罠・発見場所"]
-                : "山際"
-            }
+            defaultValue={this.state.envValue}
+            onChange={this.onChangeEnv.bind(this)}
           />
         );
       }
