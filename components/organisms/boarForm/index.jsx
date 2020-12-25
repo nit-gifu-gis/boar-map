@@ -535,6 +535,8 @@ class BoarForm extends React.Component {
                     ? this.state.detail["properties"]["メッシュ番号"]
                     : null
                 }
+                lat={this.state.lat}
+                lng={this.state.lng}
                 required={true}
                 onChange={this.validateMeshNo.bind(this)}
                 errorMessage={this.state.error.meshNo}

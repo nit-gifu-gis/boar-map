@@ -101,8 +101,72 @@ class MeshNoInput extends React.Component {
     }
   }
 
-  initForm() {
+  async initForm() {
+    try {
+      const city = await this.getCityName();
+      console.log(city);
+      // 表示をセット
+      document.getElementById(this.props.id + "City").value = city;
+    } catch (error) {
+      console.error(error);
+    }
     this.setValue(null, null, null);
+  }
+
+  // 市町村名を取得
+  getCityName() {
+    if (!this.props.lat || !this.props.lng) return;
+    const lat = Number(this.props.lat);
+    const lng = Number(this.props.lng);
+
+    console.log(lat, lng);
+
+    const body = {
+      layerId: 5000017,
+      inclusion: 0,
+      buffer: 100,
+      srid: 4326,
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [[lng, lat]]
+      }
+    };
+
+    console.log(body);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch(
+          `${SERVER_URI}/Feature/GetFeaturesByExtent.php`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(body)
+          }
+        );
+        if (res.status === 200) {
+          const json = await res.json();
+          const features = json["features"];
+          console.log("test", features);
+          if (features.length !== 0) {
+            resolve(features[0]["properties"]["NAME"]);
+          } else {
+            reject(null);
+          }
+        } else {
+          const json = await res.json();
+          reject(json["reason"]);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   onChangeVaule() {
