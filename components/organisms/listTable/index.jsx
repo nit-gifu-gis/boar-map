@@ -3,14 +3,19 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import "../../../utils/statics";
+import RoundButton from "../../atomos/roundButton";
 
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       sortKey: "ID$",
-      sortReverse: false
+      sortReverse: false,
+      onClick: () => {}
     };
+    if (props.onClick != undefined) {
+      this.state.onClick = props.onClick;
+    }
   }
 
   showImages(id) {
@@ -117,6 +122,10 @@ class ListTable extends React.Component {
     });
   }
 
+  onClickExport() {
+    this.state.onClick();
+  }
+
   render() {
     // Sortkeyで並び替え
     const features = this.props.features;
@@ -180,7 +189,14 @@ class ListTable extends React.Component {
     };
     return (
       <div className="list-table">
-        <div className="list-table__title">検索結果</div>
+        <div className="list-table__title">
+          検索結果
+          <div className="list-table__title__export-button-wrapper">
+            <RoundButton color="excel" bind={this.onClickExport.bind(this)}>
+              ダウンロード
+            </RoundButton>
+          </div>
+        </div>
         <table className="list-table__table">
           <tbody>
             <tr className="list-table__table__header">

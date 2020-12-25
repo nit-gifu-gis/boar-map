@@ -20,6 +20,9 @@ class RoundButton extends React.Component {
       case "danger":
         bgColor = "#ff0000";
         break;
+      case "excel":
+        bgColor = "#217346";
+        break;
       default:
         break;
     }

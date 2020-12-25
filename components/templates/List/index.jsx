@@ -19,6 +19,7 @@ class List extends React.Component {
       images: []
     };
     this.onClickSearch.bind(this);
+    this.onClickExport.bind(this);
   }
 
   componentDidMount() {
@@ -129,6 +130,48 @@ class List extends React.Component {
     );
   }
 
+  async onClickExport() {
+    const req_body = {
+      features: this.state.features
+    };
+
+    try {
+      const res = await fetch(`${SERVER_URI}/BoarList/Export.php`, {
+        method: "POST",
+        headers: {
+          Accept:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Type": "application/json"
+        },
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify(req_body)
+      });
+      if (res.status === 200) {
+        const blob = await res.blob();
+        const anchor = document.createElement("a");
+        const now = new Date();
+        const yyyy = ("0000" + now.getFullYear()).slice(-4);
+        const mm = ("00" + (now.getMonth() + 1)).slice(-2);
+        const dd = ("00" + now.getDate()).slice(-2);
+        const name = "捕獲情報一覧表(" + yyyy + "-" + mm + "-" + dd + ").xlsx";
+        // IE対応
+        if (window.navigator.msSaveBlob) {
+          window.navigator.msSaveBlob(blob, name);
+          return;
+        }
+        anchor.download = name;
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.click();
+      } else {
+        const json = await res.json();
+        alert(json["reason"]);
+      }
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   render() {
     return (
       <div className="list">
@@ -142,6 +185,7 @@ class List extends React.Component {
             searched={this.state.searched}
             features={this.state.features}
             images={this.state.images}
+            onClick={this.onClickExport.bind(this)}
           />
           <div className="list__contents__footer-adjuster"></div>
         </div>

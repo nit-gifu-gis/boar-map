@@ -3,8 +3,16 @@
 .list-table {
 
   &__title {
+    position: relative;
     font-size: 24px;
     font-weight: bold;
+    height: auto;
+    margin-bottom: 10px;
+    &__export-button-wrapper {
+      display: inline-block;
+      width: 200px;
+      margin-left: 20px;
+    }
   }
 
   &__table {
