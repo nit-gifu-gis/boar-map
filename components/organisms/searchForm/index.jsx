@@ -52,13 +52,12 @@ class SearchForm extends React.Component {
       return;
     }
     const citiesStr = document.getElementById("cities").value;
-    // 市町村はスペース（等）区切り
+    // 市町村はスペース（等）区切りをカンマ区切りに直す
     const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== "");
-    const data = {
-      date1: date1,
-      date2: date2,
-      cities: cities
-    };
+    const data = new FormData();
+    data.append("fromDate", date1);
+    data.append("toDate", date2);
+    data.append("cities", cities);
     // 親に通知
     this.state.onClick(data);
   }

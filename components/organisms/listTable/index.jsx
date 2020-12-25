@@ -20,7 +20,7 @@ class ListTable extends React.Component {
       if (id == "") {
         return <div className="">画像なし</div>;
       }
-      const url = `${IMAGE_SERVER_URI}/view.php?type=${"boar"}&id=${image.id}`;
+      const url = `${SERVER_URI}/Image/GetImage.php?id=${image.id}`;
       // 長辺が200pxになるように調整する
       const wRow = image.w;
       const hRow = image.h;
@@ -65,7 +65,8 @@ class ListTable extends React.Component {
         if (
           this.state.sortKey == "ID$" ||
           this.state.sortKey == "捕獲頭数" ||
-          this.state.sortKey == "体長"
+          this.state.sortKey == "体長" ||
+          this.state.sortKey == "体重"
         ) {
           // 空文字はいつも下に来るようにする
           if (p[this.state.sortKey] == "") {
@@ -143,17 +144,13 @@ class ListTable extends React.Component {
       const cityPattern = /(^\D+)\d-?\d/;
       const cityResult = cityPattern.exec(data["メッシュ番号"]);
       const city = cityResult != null ? cityResult[1] : "";
-      // 捕獲年月日からは時刻を削除
-      const datePattern = /(^[\d/-]+)\s.*/;
-      const dateResult = datePattern.exec(data["捕獲年月日"]);
-      const date = dateResult != null ? dateResult[1] : "";
       return (
         <tr className="list-table__table__row" key={data["ID$"]}>
           <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
           <td style={{ textAlign: "left" }}>{data["入力者"]}</td>
           <td style={{ textAlign: "left" }}>{city}</td>
           <td style={{ textAlign: "left" }}>{data["区分"]}</td>
-          <td style={{ textAlign: "left" }}>{date}</td>
+          <td style={{ textAlign: "left" }}>{data["捕獲年月日"]}</td>
           <td style={{ textAlign: "left" }}>{data["罠・発見場所"]}</td>
           <td style={{ textAlign: "right" }}>{data["捕獲頭数"]}</td>
           <td style={{ textAlign: "right" }}>{data["幼獣の頭数"]}</td>
@@ -162,6 +159,7 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "left" }}>{data["性別"]}</td>
           <td style={{ textAlign: "left" }}>{data["妊娠の状況"]}</td>
           <td style={{ textAlign: "right" }}>{data["体長"]}</td>
+          <td style={{ textAlign: "right" }}>{data["体重"]}</td>
           <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
           <td style={{ textAlign: "left" }}>{data["備考"]}</td>
           <td style={{ textAlign: "left" }}>{this.showImages(data["ID$"])}</td>
@@ -277,6 +275,12 @@ class ListTable extends React.Component {
                 onClick={this.onClickHeader.bind(this, "体長")}
               >
                 体長
+              </th>
+              <th
+                className={thClassName("体重")}
+                onClick={this.onClickHeader.bind(this, "体重")}
+              >
+                体重
               </th>
               <th
                 className={thClassName("処分方法")}
