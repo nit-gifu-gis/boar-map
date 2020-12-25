@@ -36,6 +36,14 @@ class List extends React.Component {
     try {
       const features = await this.getFeatures(data);
       console.log(features);
+      if (features.length === 0) {
+        alert("データが1件も見つかりませんでした。");
+        this.setState({
+          searched: false,
+          searching: false
+        });
+        return;
+      }
       const images = await this.fetchImages(features);
       console.log(images);
       this.setState({

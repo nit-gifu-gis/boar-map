@@ -54,10 +54,15 @@ class SearchForm extends React.Component {
     const citiesStr = document.getElementById("cities").value;
     // 市町村はスペース（等）区切りをカンマ区切りに直す
     const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== "");
+    // ファイルを取得しておく
+    const userList = document.getElementById("userList").files;
     const data = new FormData();
     data.append("fromDate", date1);
     data.append("toDate", date2);
     data.append("cities", cities);
+    if (userList.length !== 0) {
+      data.append("userList", userList[0]);
+    }
     // 親に通知
     this.state.onClick(data);
   }
@@ -85,6 +90,17 @@ class SearchForm extends React.Component {
             </div>
             <div className="search-form__form__grid__input search-form__form__grid__city">
               <TextInput id="cities" />
+            </div>
+            <div className="search-form__form__grid__title search-form__form__grid__user-list">
+              名前一覧表
+            </div>
+            <div className="search-form__form__grid__input search-form__form__grid__user-list">
+              <input
+                type="file"
+                name="userList"
+                id="userList"
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              />
             </div>
             <div className="search-form__form__grid__button-div">
               <div className="search-form__form__grid__button-div__button">
