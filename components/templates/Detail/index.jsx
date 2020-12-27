@@ -14,19 +14,17 @@ import UserData from "../../../utils/userData";
 
 class Detail extends React.Component {
   state = {
-    detail: {},
+    detail: undefined,
     retry: 0,
     type: undefined,
     imageIDs: [],
     userData: UserData.getUserData()
   };
   async getFeatureDetail() {
-    this.state.retry++;
     if (Router.query.type == undefined) {
       Router.push("/map");
       return;
     }
-    const userData = UserData.getUserData();
 
     // W,K以外でワクチン情報を表示しようとするのは禁止
     if (
@@ -39,60 +37,38 @@ class Detail extends React.Component {
       }
     }
 
-    const receiptNumber = Math.floor(Math.random() * 100000);
     const data = {
-      commonHeader: {
-        receiptNumber: receiptNumber
-      },
       layerId: BOAR_LAYER_ID + parseInt(Router.query.type),
       shapeIds: [Router.query.FeatureID],
       srid: 3857
     };
 
-    fetch("/api/JsonService.asmx/GetFeaturesById", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": userData.access_token
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => {
-        res
-          .json()
-          .then(rdata => {
-            this.state.retry = 0;
-            if (rdata["data"]["features"].length != 0) {
-              const feature = rdata["data"]["features"][0];
-              let ids = feature["properties"]["画像ID"].split(",");
-              if (ids.length == 1 && ids[0] === "") {
-                ids = [];
-              }
-              console.log(ids);
-              this.setState({
-                detail: feature,
-                imageIDs: ids
-              });
-            }
-          })
-          .catch(e => {
-            if (this.state.retry <= 5) {
-              this.getFeatureDetail();
-              console.log("retry");
-            }
-          });
-      })
-      .catch(e => {
-        if (this.state.retry <= 5) {
-          this.getFeatureDetail();
-          console.log("retry");
-        } else {
-          this.state.retry = 0;
-          console.log(e);
-          alert("情報の取得に失敗しました。");
-        }
+    try {
+      const res = await fetch(SERVER_URI + "/Feature/GetFeaturesById", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify(data)
       });
+      const json = await res.json();
+      const feature = json["features"][0];
+      const imageIDs =
+        feature["properties"]["画像ID"] !== ""
+          ? feature["properties"]["画像ID"].split(",")
+          : [];
+      console.log(feature);
+      this.setState({
+        detail: feature,
+        imageIDs: imageIDs
+      });
+    } catch (error) {
+      console.log(error);
+      alert("情報の取得に失敗しました。");
+    }
   }
 
   componentDidMount() {
@@ -134,17 +110,54 @@ class Detail extends React.Component {
     Router.push("/map");
   }
 
+  async onClickDelete() {
+    const res = confirm("この情報を削除します。\n本当によろしいですか？");
+    if (res) {
+      // id取得
+      const id = this.state.detail["properties"]["ID$"];
+      const layerId = BOAR_LAYER_ID + parseInt(Router.query.type);
+      // GISにフェッチ
+      const body = {
+        layerId: layerId,
+        shapeIds: [id]
+      };
+      try {
+        const res = await fetch(SERVER_URI + "/Feature/DeleteFeatures.php", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          mode: "cors",
+          credentials: "include",
+          body: JSON.stringify(body)
+        });
+        if (res.status === 200) {
+          const json = await res.json();
+          console.log(json["status"]);
+          alert("削除しました。");
+          Router.push("/map");
+        } else {
+          const json = await res.json();
+          alert(json["reason"]);
+        }
+      } catch (error) {
+        alert(error);
+      }
+    }
+  }
+
   render() {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">詳細情報</Header>;
 
     const imgIds = this.state.imageIDs;
 
-    // 区分に応じて「編集」ボタンを有効化
-    // （通常であれば，Wがboarとtrapを編集出来ないだけ）
-    if (this.state.userData) {
-      const userDepartment = this.state.userData.department;
-      let editEnabled = false;
+    if (this.state.detail && this.state.userData) {
+      // ユーザーIDが入力者なら編集を有効化
+      const editEnabled =
+        this.state.detail["properties"]["入力者"] ===
+        this.state.userData.user_id;
 
       if (Object.keys(this.state.detail).length != 0) {
         const type = Router.query.type;
@@ -152,35 +165,16 @@ class Detail extends React.Component {
           this.state.type = "boar";
           header = <Header color="boar">捕獲情報</Header>;
           detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
-          if (
-            userDepartment == "T" ||
-            userDepartment == "U" ||
-            userDepartment == "S" ||
-            userDepartment == "K"
-          ) {
-            editEnabled = true;
-          }
         } else if (type == 1) {
           this.state.type = "trap";
           header = <Header color="trap">わな情報</Header>;
           detaildiv = <TrapInfo detail={this.state.detail} imageIDs={imgIds} />;
-          if (
-            userDepartment == "T" ||
-            userDepartment == "U" ||
-            userDepartment == "S" ||
-            userDepartment == "K"
-          ) {
-            editEnabled = true;
-          }
         } else if (type == 2) {
           this.state.type = "vaccine";
           header = <Header color="vaccine">ワクチン情報</Header>;
           detaildiv = (
             <VaccineInfo detail={this.state.detail} imageIDs={imgIds} />
           );
-          if (userDepartment == "W" || userDepartment == "K") {
-            editEnabled = true;
-          }
         }
       }
       return (
@@ -192,14 +186,21 @@ class Detail extends React.Component {
           </div>
           <Footer>
             <RoundButton color="accent" bind={this.onClickPrev}>
-              ＜ 戻る
+              戻る
             </RoundButton>
             <RoundButton
               color="primary"
               bind={this.onClickNext.bind(this)}
               enabled={editEnabled}
             >
-              編集 ＞
+              編集
+            </RoundButton>
+            <RoundButton
+              color="danger"
+              bind={this.onClickDelete.bind(this)}
+              enabled={editEnabled}
+            >
+              削除
             </RoundButton>
           </Footer>
         </div>

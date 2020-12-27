@@ -54,8 +54,10 @@ class MapBase extends React.Component {
           stateName: "reload",
           onClick: function(button, map) {
             // ローディングのクルクルを出す
-            document.getElementById("loading-mark").style.visibility =
-              "visible";
+            if (document.getElementById("loading-mark") != null) {
+              document.getElementById("loading-mark").style.visibility =
+                "visible";
+            }
             this.updateMarkers(map, this.state.userData.access_token);
           }.bind(this),
           title: "reload",
@@ -98,7 +100,9 @@ class MapBase extends React.Component {
       retry: 0,
       userData: userData,
       reloadButton: reloadButton,
-      isMainMap: false
+      isMainMap: false,
+      mapLoading: true,
+      featureLoading: true
     };
   }
 
@@ -186,24 +190,135 @@ class MapBase extends React.Component {
     }).addTo(this.myMap);
   }
 
+  async updateMarkers(map) {
+    // 所属を取得
+    const userDepartment = this.state.userData.department;
+    // 表示範囲を取得
+    const bounds = map.getBounds();
+
+    const newLayers = {};
+
+    // 各フィーチャーを取得
+    try {
+      const boars = await this.getFeatures(bounds, BOAR_LAYER_ID);
+      const traps = await this.getFeatures(bounds, TRAP_LAYER_ID);
+
+      // 取得できたらマーカー生成
+      const boarMarkers = boars.map(f => this.makeMarker(f, "boar"));
+      const trapMarkers = traps.map(f => this.makeMarker(f, "trap"));
+
+      // レイヤーにする
+      const boarLayer = L.layerGroup(boarMarkers);
+      const trapLayer = L.layerGroup(trapMarkers);
+
+      newLayers["捕獲いのしし"] = boarLayer;
+      newLayers["わな"] = trapLayer;
+    } catch (error) {
+      console.error(error);
+    }
+
+    // ワクチン
+    if (userDepartment == "W" || userDepartment == "K") {
+      try {
+        const vaccines = await this.getFeatures(bounds, VACCINE_LAYER_ID);
+        const vaccinesMakers = vaccines.map(f => this.makeMarker(f, "vaccine"));
+        const vaccineLayer = L.layerGroup(vaccinesMakers);
+        newLayers["ワクチン"] = vaccineLayer;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // 古いレイヤーを削除
+    Object.keys(this.state.overlays).forEach(key =>
+      this.state.overlays[key].remove()
+    );
+    // 新しいレイヤーを追加
+    this.state.overlays = newLayers;
+    Object.keys(this.state.overlays).forEach(key =>
+      this.state.overlays[key].addTo(map)
+    );
+
+    // コントロールを付け替え
+    if (this.state.control) this.state.control.remove();
+    this.state.control = L.control.layers(undefined, this.state.overlays, {
+      collapsed: false
+    });
+    // チェックボックスを配置
+    this.state.control.addTo(map);
+
+    // 再読み込みボタンを再配置
+    this.state.reloadButton.remove();
+    this.state.reloadButton.addTo(map);
+
+    // くるくるを消す
+    if (document.getElementById("loading-mark") != null) {
+      document.getElementById("loading-mark").style.visibility = "hidden";
+    }
+  }
+
+  async getFeatures(bounds, layerId) {
+    return new Promise(async (resolve, reject) => {
+      // 範囲を取得
+      const topLat = bounds.getNorth();
+      const rightLng = bounds.getEast();
+      const bottomLat = bounds.getSouth();
+      const leftLng = bounds.getWest();
+
+      // bodyを作って
+      const req_body = {
+        layerId: layerId,
+        inclusion: 1,
+        buffer: 100,
+        srid: 4326,
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [leftLng, topLat],
+            [rightLng, topLat],
+            [rightLng, bottomLat],
+            [leftLng, bottomLat],
+            [leftLng, topLat]
+          ]
+        }
+      };
+
+      // fetch
+      try {
+        const res = await fetch(
+          `${SERVER_URI}/Feature/GetFeaturesByExtent.php`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(req_body)
+          }
+        );
+        if (res.status === 200) {
+          // 通信成功ならfeaturesを返す
+          const json = await res.json();
+          resolve(json["features"]);
+          return;
+        } else {
+          const json = await res.json();
+          reject(json["reason"]);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   // アイコンのマウスホバー時に出るポップアップを作る
-  makePopup(type, date) {
+  makePopup(title, date) {
     // 大枠
     const div = document.createElement("div");
     div.className = "pop-up";
-    // 種類に応じてテキスト変更
-    let title = "";
-    switch (type) {
-      case "boar":
-        title = "捕獲年月日";
-        break;
-      case "trap":
-        title = "設置年月日";
-        break;
-      case "vaccine":
-        title = "散布年月日";
-        break;
-    }
     // タイトル
     const titleDiv = document.createElement("div");
     titleDiv.className = "pop-up__title";
@@ -225,334 +340,69 @@ class MapBase extends React.Component {
     return div;
   }
 
-  getBoar(map, token, me, data) {
-    console.log("boar");
-    this.state.retry++;
-    const overlays = {};
-    fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => {
-        res
-          .json()
-          .then(rdata => {
-            const bmarkers = [];
-            if (rdata["commonHeader"]["resultInfomation"] == "0") {
-              const features = rdata["data"]["features"];
-              for (let i = 0; i < features.length; i++) {
-                const feature = features[i];
-                const Lat = feature["geometry"]["coordinates"][1];
-                const Lng = feature["geometry"]["coordinates"][0];
+  // マーカーを作る
+  makeMarker(feature, type) {
+    // 三項演算子，Formattingのせいで見づらい…
+    const icon =
+      type === "boar"
+        ? this.boarIcon
+        : type === "trap"
+        ? this.trapIcon
+        : type === "vaccine"
+        ? this.vaccineIcon
+        : undefined;
+    const dateLabel =
+      type === "boar"
+        ? "捕獲年月日"
+        : type === "trap"
+        ? "設置年月日"
+        : type === "vaccine"
+        ? "散布年月日"
+        : undefined;
+    const typeNum =
+      type === "boar"
+        ? 0
+        : type === "trap"
+        ? 1
+        : type === "vaccine"
+        ? 2
+        : undefined;
 
-                const mapMarker = L.marker([Lat, Lng], {
-                  icon: this.boarIcon
-                });
-                mapMarker.bindPopup(
-                  this.makePopup("boar", feature["properties"]["捕獲年月日"])
-                );
-                mapMarker.on("mouseover", function(e) {
-                  this.openPopup();
-                });
-                mapMarker.on("mouseout", function(e) {
-                  this.closePopup();
-                });
-                if (this.state.isMainMap) {
-                  mapMarker.on("click", function(e) {
-                    Router.push(
-                      {
-                        pathname: "/detail",
-                        query: {
-                          FeatureID: feature["properties"]["ID$"],
-                          type: 0
-                        }
-                      },
-                      "/detail"
-                    );
-                  });
-                }
-                bmarkers.push(mapMarker);
-              }
-            }
-            overlays["捕獲いのしし"] = L.layerGroup(bmarkers);
-            overlays["捕獲いのしし"].addEventListener("add", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[0] = true;
-              }
-            });
-            overlays["捕獲いのしし"].addEventListener("remove", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[0] = false;
-              }
-            });
-            this.state.retry = 0;
-            this.getTrap(map, token, me, overlays, data);
-          })
-          .catch(e => {
-            if (this.state.retry <= 5) {
-              this.getBoar(map, token, me, data);
-            }
-          });
-      })
-      .catch(e => {
-        if (this.state.retry <= 5) {
-          this.getBoar(map, token, me, data);
-        }
-      });
-  }
+    // 緯度経度
+    const lat = feature["geometry"]["coordinates"][1];
+    const lng = feature["geometry"]["coordinates"][0];
 
-  getTrap(map, token, me, overlays, data) {
-    console.log("trap");
-    this.state.retry++;
-    data.layerId = TRAP_LAYER_ID;
-    fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-Map-Api-Access-Token": token
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => {
-        res
-          .json()
-          .then(wdata => {
-            const wmarkers = [];
-            if (wdata["commonHeader"]["resultInfomation"] == "0") {
-              const features = wdata["data"]["features"];
-              for (let i = 0; i < features.length; i++) {
-                const feature = features[i];
-                const Lat = feature["geometry"]["coordinates"][1];
-                const Lng = feature["geometry"]["coordinates"][0];
-
-                const mapMarker = L.marker([Lat, Lng], {
-                  icon: this.trapIcon
-                });
-                mapMarker.bindPopup(
-                  this.makePopup("trap", feature["properties"]["設置年月日"])
-                );
-                mapMarker.on("mouseover", function(e) {
-                  this.openPopup();
-                });
-                mapMarker.on("mouseout", function(e) {
-                  this.closePopup();
-                });
-                if (this.state.isMainMap) {
-                  mapMarker.on("click", function(e) {
-                    Router.push(
-                      {
-                        pathname: "/detail",
-                        query: {
-                          FeatureID: feature["properties"]["ID$"],
-                          type: 1
-                        }
-                      },
-                      "/detail"
-                    );
-                  });
-                }
-                wmarkers.push(mapMarker);
-              }
-            }
-            overlays["わな"] = L.layerGroup(wmarkers);
-            overlays["わな"].addEventListener("add", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[1] = true;
-              }
-            });
-            overlays["わな"].addEventListener("remove", function(e) {
-              if (!me.state.pauseEvent) {
-                me.state.markerstate[1] = false;
-              }
-            });
-            this.state.retry = 0;
-            this.getVaccine(map, token, me, overlays, data);
-          })
-          .catch(e => {
-            if (this.state.retry <= 5) {
-              this.getTrap(map, token, me, overlays, data);
-            }
-          });
-      })
-      .catch(e => {
-        if (this.state.retry <= 5) {
-          this.getTrap(map, token, me, overlays, data);
-        }
-      });
-  }
-
-  getVaccine(map, token, me, overlays, data) {
-    const userDepartment = this.state.userData.department;
-
-    console.log("vaccine");
-    if (userDepartment == "W" || userDepartment == "K") {
-      this.state.retry++;
-      data.layerId = VACCINE_LAYER_ID;
-      fetch("/api/JsonService.asmx/GetFeaturesByExtent", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "X-Map-Api-Access-Token": token
-        },
-        body: JSON.stringify(data)
-      })
-        .then(res => {
-          res
-            .json()
-            .then(vdata => {
-              const vmarkers = [];
-              if (vdata["commonHeader"]["resultInfomation"] == "0") {
-                const features = vdata["data"]["features"];
-
-                for (let i = 0; i < features.length; i++) {
-                  const feature = features[i];
-                  const Lat = feature["geometry"]["coordinates"][1];
-                  const Lng = feature["geometry"]["coordinates"][0];
-
-                  const mapMarker = L.marker([Lat, Lng], {
-                    icon: this.vaccineIcon
-                  });
-                  mapMarker.bindPopup(
-                    this.makePopup(
-                      "vaccine",
-                      feature["properties"]["散布年月日"]
-                    )
-                  );
-                  mapMarker.on("mouseover", function(e) {
-                    this.openPopup();
-                  });
-                  mapMarker.on("mouseout", function(e) {
-                    this.closePopup();
-                  });
-                  if (this.state.isMainMap) {
-                    mapMarker.on("click", function(e) {
-                      Router.push(
-                        {
-                          pathname: "/detail",
-                          query: {
-                            FeatureID: feature["properties"]["ID$"],
-                            type: 2
-                          }
-                        },
-                        "/detail"
-                      );
-                    });
-                  }
-                  vmarkers.push(mapMarker);
-                }
-              }
-              overlays["ワクチン"] = L.layerGroup(vmarkers);
-              overlays["ワクチン"].addEventListener("add", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[2] = true;
-                }
-              });
-              overlays["ワクチン"].addEventListener("remove", function(e) {
-                if (!me.state.pauseEvent) {
-                  me.state.markerstate[2] = false;
-                }
-              });
-              this.state.retry = 0;
-              this.applyMarkers(map, token, me, overlays);
-            })
-            .catch(e => {
-              console.log("E1", e);
-              if (this.state.retry <= 5) {
-                this.getVaccine(map, token, me, overlays, data);
-              }
-            });
-        })
-        .catch(e => {
-          console.log("E2", e);
-          if (this.state.retry <= 5) {
-            this.getVaccine(map, token, me, overlays, data);
-          }
-        });
-    } else {
-      this.state.retry = 0;
-      this.applyMarkers(map, token, me, overlays);
-    }
-  }
-
-  applyMarkers(map, token, me, overlays) {
-    console.log("applyMarkers");
-    // 既存のマーカーを削除
-    if (this.state.control != undefined && this.state.overlays != undefined) {
-      this.state.control.remove();
-      const ovl = this.state.overlays;
-      this.state.pauseEvent = true;
-      Object.keys(ovl).forEach(function(key) {
-        ovl[key].remove();
-      });
-      this.state.pauseEvent = false;
-    }
-
-    if (me.state.markerstate[0]) overlays["捕獲いのしし"].addTo(map);
-    if (me.state.markerstate[1]) overlays["わな"].addTo(map);
-    if (overlays["ワクチン"] != undefined) {
-      if (me.state.markerstate[2]) overlays["ワクチン"].addTo(map);
-    }
-
-    this.state.overlays = overlays;
-    this.state.control = L.control.layers(undefined, overlays, {
-      collapsed: false
+    // マーカー生成
+    const mapMarker = L.marker([lat, lng], {
+      icon: icon
     });
-    // チェックボックスを配置
-    this.state.control.addTo(map);
 
-    // 再読み込みボタンを再配置
-    this.state.reloadButton.remove();
-    this.state.reloadButton.addTo(map);
-
-    // ローディングのクルクルを消す
-    if (document.getElementById("loading-mark") != null) {
-      document.getElementById("loading-mark").style.visibility = "hidden";
+    // ポップアップ作成
+    mapMarker.bindPopup(
+      this.makePopup(dateLabel, feature["properties"][dateLabel])
+    );
+    mapMarker.on("mouseover", function(e) {
+      this.openPopup();
+    });
+    mapMarker.on("mouseout", function(e) {
+      this.closePopup();
+    });
+    if (this.state.isMainMap) {
+      mapMarker.on("click", function(e) {
+        Router.push(
+          {
+            pathname: "/detail",
+            query: {
+              FeatureID: feature["properties"]["ID$"],
+              type: typeNum
+            }
+          },
+          "/detail"
+        );
+      });
     }
-  }
 
-  updateMarkers(map, token) {
-    console.log(this.myMap);
-    console.log("updateMarkers");
-    const me = this;
-
-    const bounds = map.getBounds();
-    const topLat = bounds.getNorth();
-    const rightLng = bounds.getEast();
-    const bottomLat = bounds.getSouth();
-    const leftLng = bounds.getWest();
-
-    const receiptNumber = Math.floor(Math.random() * 100000);
-    const data = {
-      commonHeader: {
-        receiptNumber: receiptNumber
-      },
-      layerId: BOAR_LAYER_ID,
-      inclusion: 1,
-      buffer: 100,
-      srid: 4326,
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [leftLng, topLat],
-            [rightLng, topLat],
-            [rightLng, bottomLat],
-            [leftLng, bottomLat],
-            [leftLng, topLat]
-          ]
-        ]
-      }
-    };
-
-    this.getBoar(map, token, me, data);
+    return mapMarker;
   }
 
   // 地図のサイズを計算する

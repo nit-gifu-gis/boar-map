@@ -14,11 +14,9 @@ class LoginForm extends React.Component {
       isError: false
     };
     this.onSubmitting.bind(this);
-    this.onLogin.bind(this);
-    this.onLogin2.bind(this);
   }
 
-  onSubmitting = event => {
+  onSubmitting = async event => {
     event.preventDefault();
     // ボタン無効化
     this.setState({
@@ -26,92 +24,48 @@ class LoginForm extends React.Component {
     });
     const id = document.getElementById("login__id").value;
     const pass = document.getElementById("login__pass").value;
-    const receiptNumber = Math.floor(Math.random() * 100000);
-    const data = {
-      commonHeader: {
-        receiptNumber: receiptNumber
-      },
-      userID: id,
-      password: pass,
-      tenantID: "21000S"
+
+    const body = {
+      userId: id,
+      password: pass
     };
-    const onLogin = this.onLogin;
 
-    fetch("/api/JsonService.asmx/GetToken", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    })
-      .then(function(res) {
-        const time = new Date().getTime();
-        const json = res.json().then(data => onLogin(data, time));
-      })
-      .catch(error => {
-        document.getElementsByClassName("login_error")[0].innerHTML =
-          "処理中にエラーが発生しました [1]";
-        console.log(error);
-        this.setState({
-          isLogining: false,
-          isError: true
-        });
-      });
-  };
-
-  onLogin = (data, time) => {
-    const onLogin2 = this.onLogin2;
-    if (data["commonHeader"].resultInfomation == "0") {
-      const imgdata = {
-        token: data.data.accessToken,
-        user: data.data.userId,
-        expires_in: time / 1000 + 6 * 60 * 60
-      };
-      fetch(IMAGE_SERVER_URI + "/auth.php", {
+    try {
+      const res = await fetch(SERVER_URI + "/Authorization/GetToken.php", {
         method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        mode: "cors",
         credentials: "include",
-        body: JSON.stringify(imgdata)
-      })
-        .then(function(res) {
-          res.json().then(rdata => onLogin2(data, rdata, time));
-        })
-        .catch(error => {
-          document.getElementsByClassName("login_error")[0].innerHTML =
-            "処理中にエラーが発生しました [2]";
-          console.log(error);
-          this.setState({
-            isLogining: false,
-            isError: true
-          });
-        });
-    } else {
-      document.getElementsByClassName("login_error")[0].innerHTML =
-        data.commonHeader.systemErrorReport;
-      this.setState({
-        isLogining: false,
-        isError: true
+        body: JSON.stringify(body)
       });
-    }
-  };
-
-  onLogin2 = (data, res, time) => {
-    console.log(data);
-    console.log(res);
-    if (res["status"] == 200) {
-      document.cookie = `user_id=${data.data.userId}; path=/`;
-      document.cookie = `access_token=${data.data.accessToken}; path=/`;
-      document.cookie = `login_time=${time}; path=/`;
-      document.cookie =
-        "last_lat=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-      document.cookie =
-        "last_lng=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-      document.cookie =
-        "last_zoom=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-      Router.push("/map");
-    } else {
-      document.getElementsByClassName("login_error")[0].innerHTML =
-        "画像サーバーへのログインに失敗しました。";
+      if (res.status === 200) {
+        // ログイン成功時
+        const json = await res.json();
+        // cookieに記載
+        const time = new Date().getTime();
+        document.cookie = `user_id=${json.userId}; path=/`;
+        document.cookie = `access_token=${json.accessToken}; path=/`;
+        document.cookie = `login_time=${time}; path=/`;
+        document.cookie =
+          "last_lat=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        document.cookie =
+          "last_lng=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        document.cookie =
+          "last_zoom=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        // mapへジャンプ
+        Router.push("/map");
+      } else {
+        const json = await res.json();
+        console.log(json);
+        document.getElementsByClassName("login_error")[0].innerHTML =
+          json["reason"];
+      }
+    } catch (error) {
+      console.log(error);
+      document.getElementsByClassName("login_error")[0].innerHTML = error;
       this.setState({
         isLogining: false,
         isError: true

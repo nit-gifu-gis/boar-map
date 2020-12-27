@@ -1,0 +1,90 @@
+@import "../../../public/static/css/global.scss";
+
+.list-table {
+
+  &__title {
+    position: relative;
+    font-size: 24px;
+    font-weight: bold;
+    height: auto;
+    margin-bottom: 10px;
+    &__export-button-wrapper {
+      display: inline-block;
+      width: 200px;
+      margin-left: 20px;
+    }
+  }
+
+  &__table {
+    display: block;
+    border-collapse: collapse;
+    overflow-x: scroll;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+
+    tbody {
+      display: table;
+    }
+
+    &__header th, &__row td {
+      border: solid 1px $border-color;
+      padding: 5px;
+    }
+
+    &__header th {
+      border-bottom-width: 2px;
+    }
+
+    &__header th.sortable {
+      font-weight: bold;
+      // cursor: pointer;
+      position: relative;
+      padding-right: 30px;
+    }
+
+    // 並び替え用△
+    &__header th.sortable::before, &__header th.sortable::after {
+      content: "";
+      height: 0;
+      width: 0;
+      position: absolute;
+      border: 5px solid transparent;
+      right: 10px;
+      top: 50%;
+    }
+
+    &__header th.sortable::before {
+        border-bottom-color: $border-color;
+        margin-top: -10px;
+    }
+    &__header th.sortable::after {
+        border-top-color: $border-color;
+        margin-top: 2px;
+    }
+
+    &__header th.asc::before {
+        border-bottom-color: $text-color;
+    }
+    &__header th.desc::after {
+        border-top-color: $text-color;
+    }
+
+
+    &__row {
+      height: 150px;
+      &__image-cell {
+        display: flex;
+        flex-wrap: wrap;
+        width: calc(1000px + 10px * 5);
+
+        &__image {
+          margin: 5px 5px 5px 5px;
+          align-self: center;
+          flex: 0 0 auto;
+        }
+      }
+    }
+
+  }
+
+}
