@@ -85,6 +85,8 @@ class InfoInput extends React.Component {
             name={this.props.name}
             id={this.props.name}
             defaultValue={this.props.defaultValue}
+            lat={this.props.lat}
+            lng={this.props.lng}
             onChange={this.props.onChange}
             error={this.props.errorMessage != null}
           />

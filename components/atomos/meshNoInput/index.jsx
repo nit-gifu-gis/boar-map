@@ -71,8 +71,11 @@ class MeshNoInput extends React.Component {
 
   componentDidMount() {
     if (this.props.defaultValue != null) {
-      // 正規表現でcity, num1, num2を抽出
-      const regexp = new RegExp("(\\D+)(\\d{1,4})-(\\d{1,2})", "g");
+      // 正規表現でcity, numを抽出
+      const regexp = new RegExp(
+        /^(\D+)(\d{4}-\d{2})$|^(\D+)([A-Fa-f]\d{4})$/,
+        "g"
+      );
       const result = regexp.exec(this.props.defaultValue);
       if (result == null) {
         // 正規表現に引っかからなかったら，初期値がないときと同じ処理をして終了
@@ -80,55 +83,127 @@ class MeshNoInput extends React.Component {
         return;
       }
       // 正規表現に引っかかったらそれぞれを取り出して
-      const cityValue = result[1];
+      const cityValue = result[1] ? result[1] : result[3];
       // cityが一覧に無かったら不正
       if (CITY_LIST.indexOf(cityValue) === -1) {
         // 初期値がないときと同じ処理をして終了
         this.initForm();
         return;
       }
-      const num1Value = result[2];
-      const num2Value = result[3];
+      const numValue = result[2] ? result[2] : result[4];
       // 内部データのセットと
-      this.setValue(cityValue, num1Value, num2Value);
+      this.setValue(cityValue, numValue);
       // 表示をセット
       document.getElementById(this.props.id + "City").value = cityValue;
-      document.getElementById(this.props.id + "Num1").value = num1Value;
-      document.getElementById(this.props.id + "Num2").value = num2Value;
+      document.getElementById(this.props.id + "Num").value = numValue;
     } else {
       this.initForm();
     }
   }
 
-  initForm() {
+  async initForm() {
+    try {
+      const city = await this.getCityName();
+      console.log(city);
+      // 表示をセット
+      document.getElementById(this.props.id + "City").value = city;
+    } catch (error) {
+      console.error(error);
+    }
     this.setValue(null, null, null);
+  }
+
+  // 市町村名を取得
+  getCityName() {
+    if (!this.props.lat || !this.props.lng) return;
+    const lat = Number(this.props.lat);
+    const lng = Number(this.props.lng);
+
+    console.log(lat, lng);
+
+    const body = {
+      layerId: 5000017,
+      inclusion: 0,
+      buffer: 100,
+      srid: 4326,
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [[lng, lat]]
+      }
+    };
+
+    console.log(body);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch(
+          `${SERVER_URI}/Feature/GetFeaturesByExtent.php`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(body)
+          }
+        );
+        if (res.status === 200) {
+          const json = await res.json();
+          const features = json["features"];
+          console.log("test", features);
+          if (features.length !== 0) {
+            resolve(features[0]["properties"]["NAME"]);
+          } else {
+            reject(null);
+          }
+        } else {
+          const json = await res.json();
+          reject(json["reason"]);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
   onChangeVaule() {
     // 入力情報からメッシュIDを作る
     const cityValue = document.getElementById(this.props.id + "City").value;
-    const num1Value = document.getElementById(this.props.id + "Num1").value;
-    const num2Value = document.getElementById(this.props.id + "Num2").value;
+    const numValueRow = document.getElementById(this.props.id + "Num").value;
     // 有効な桁数の時のみセット
-    if (num1Value.length <= 4 && num2Value.length <= 2) {
-      this.setValue(cityValue, num1Value, num2Value);
+    const numRegExp = new RegExp(
+      /(^\d{4}-\d{2}$)|(^\d{6}$)|(^\d{4}$)|(^[A-Fa-f]\d{4}$)/,
+      "g"
+    );
+    const result = numRegExp.exec(numValueRow);
+    if (result) {
+      // 三項演算子が見づらいですが，
+      // result[1]でマッチ → (^\d{4}-\d{2}$) ＝ そのまま
+      // result[2]でマッチ → (^\d{6}$) ＝ 省略されたハイフンを補完
+      // result[3]でマッチ → (^\d{4}$) ＝ 省略されたハイフンと下二桁(00)を補完
+      // result[4]でマッチ → (^[A-Fa-f]\d{4}$) = 市町村が使うメッシュ番号，大文字に統一
+      const numValue = result[1]
+        ? result[1]
+        : result[2]
+        ? result[2].substr(0, 4) + "-" + result[2].substr(4, 2)
+        : result[3]
+        ? result[3] + "-00"
+        : result[4]
+        ? result[4].toUpperCase()
+        : null;
+      this.setValue(cityValue, numValue);
     } else {
-      this.setValue(null, null, null);
+      this.setValue(null, null);
     }
     this.state.onChange();
   }
 
-  setValue(cityValue, num1Value, num2Value) {
+  setValue(cityValue, numValue) {
     // 市町村名とnum1がnullなら全体もnull
-    // num2のみ未入力なら00をセット
-    let meshIdValue = null;
-    if (cityValue && num1Value) {
-      // 市町村名＋４桁数値＋半角ハイフン＋２桁数値
-      meshIdValue = cityValue;
-      meshIdValue += ("0000" + num1Value).slice(-4);
-      meshIdValue += "-";
-      meshIdValue += ("00" + num2Value).slice(-2);
-    }
+    const meshIdValue = cityValue && numValue ? cityValue + numValue : null;
     document.getElementById(this.props.id).value = meshIdValue;
   }
 
@@ -145,27 +220,11 @@ class MeshNoInput extends React.Component {
           />
         </div>
         <div className="mesh-num-input__city-num1-break"></div>
-        <div className="mesh-num-input__num1-input">
+        <div className="mesh-num-input__num-input">
           <TextInput
-            type="number"
-            min="0"
-            step="1"
-            max="9999"
-            id={this.props.id + "Num1"}
-            placeholder="4桁"
-            onChange={this.onChangeVaule.bind(this)}
-            error={this.props.error}
-          />
-        </div>
-        <div className="mesh-num-input__hyphen">-</div>
-        <div className="mesh-num-input__num2-input">
-          <TextInput
-            type="number"
-            min="0"
-            step="1"
-            max="99"
-            id={this.props.id + "Num2"}
-            placeholder="2桁"
+            type="text"
+            id={this.props.id + "Num"}
+            placeholder="0000-00 または A0000"
             onChange={this.onChangeVaule.bind(this)}
             error={this.props.error}
           />
