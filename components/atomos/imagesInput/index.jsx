@@ -180,7 +180,7 @@ class ImagesInput extends React.Component {
         <div className="images-input__preview__child">
           <img
             className="images-input__preview__child__image"
-            src={`${IMAGE_SERVER_URI}/view.php?type=${this.state.type}&id=${this.state.imageIDs[i]}`}
+            src={`${SERVER_URI}/Image/GetImage?id=${this.state.imageIDs[i]}`}
           ></img>
           <button
             className="images-input__preview__child__erase-button"

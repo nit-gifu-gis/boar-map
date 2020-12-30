@@ -413,6 +413,8 @@ class VaccineForm extends React.Component {
                     ? this.state.detail["properties"]["メッシュNO"]
                     : null
                 }
+                lat={this.state.lat}
+                lng={this.state.lng}
                 required={true}
                 onChange={this.validateMeshNo.bind(this)}
                 errorMessage={this.state.error.meshNo}
