@@ -43,7 +43,7 @@ class MapForAddInfo extends MapBase {
   map() {
     super.map();
     // 下のon関数の中ではthisが使えないのでコピー
-    const mapObj = this.myMap;
+    const mapObj = this.state.myMap;
     // 十字
     const centerCrossIcon = L.icon({
       iconUrl: "../../static/images/map/centerCross.svg",
@@ -96,7 +96,7 @@ class MapForAddInfo extends MapBase {
     setTimeout(
       function() {
         console.log("tests");
-        this.myMap.invalidateSize();
+        this.state.myMap.invalidateSize();
       }.bind(this),
       200
     );

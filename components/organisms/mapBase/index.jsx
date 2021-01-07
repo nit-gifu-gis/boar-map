@@ -37,7 +37,6 @@ class MapBase extends React.Component {
   });
 
   myLocIcon = "static/images/map/location_marker.svg";
-  myMap = null;
 
   constructor(props) {
     super(props);
@@ -108,6 +107,7 @@ class MapBase extends React.Component {
 
     // state初期化
     this.state = {
+      myMap: null,
       lat: defaultLat,
       lng: defautlLng,
       zoom: defaultZoom,
@@ -161,14 +161,14 @@ class MapBase extends React.Component {
 
   map() {
     const node = this.node;
-    this.myMap = L.map(node).setView(
+    this.state.myMap = L.map(node, { keyboard: false }).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
 
     if (this.state.isDefault) {
       // 県庁の場合位置情報を取得する。
-      this.getCurrentLocation(this.myMap);
+      this.getCurrentLocation(this.state.myMap);
     }
 
     const userData = this.state.userData;
@@ -194,32 +194,32 @@ class MapBase extends React.Component {
           value: userData.access_token
         }
       ]
-    ).addTo(this.myMap);
+    ).addTo(this.state.myMap);
 
-    this.updateMarkers(this.myMap, userData.access_token);
+    this.updateMarkers(this.state.myMap, userData.access_token);
 
     const me = this;
 
-    this.myMap.on("moveend", function(e) {
+    this.state.myMap.on("moveend", function(e) {
       console.log("map-moveend");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
-    this.myMap.on("zoomend", function(e) {
+    this.state.myMap.on("zoomend", function(e) {
       console.log("map-zoomend");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
-    this.myMap.on("resize", function(e) {
+    this.state.myMap.on("resize", function(e) {
       console.log("map-resize");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
     // 拡大縮小ボタン追加
-    L.control.scale().addTo(this.myMap);
+    L.control.scale().addTo(this.state.myMap);
 
     // 現在地取得ボタンを作成＋追加
     L.easyButton({
@@ -236,20 +236,20 @@ class MapBase extends React.Component {
           icon: "fa-location-arrow"
         }
       ]
-    }).addTo(this.myMap);
+    }).addTo(this.state.myMap);
 
     // 各種レイヤー追加
-    Object.values(this.state.overlays).forEach(o => o.addTo(this.myMap));
+    Object.values(this.state.overlays).forEach(o => o.addTo(this.state.myMap));
     // コントロール追加
     this.state.control = L.control.layers(undefined, this.state.overlays, {
       collapsed: false
     });
     // チェックボックスを配置
-    this.state.control.addTo(this.myMap);
+    this.state.control.addTo(this.state.myMap);
 
     // 再読み込みボタンを再配置
     this.state.reloadButton.remove();
-    this.state.reloadButton.addTo(this.myMap);
+    this.state.reloadButton.addTo(this.state.myMap);
   }
 
   async updateMarkers(map) {
@@ -257,8 +257,6 @@ class MapBase extends React.Component {
     const userDepartment = this.state.userData.department;
     // 表示範囲を取得
     const bounds = map.getBounds();
-
-    const newLayers = {};
 
     // 各フィーチャーを取得
     try {
@@ -500,7 +498,7 @@ class MapBase extends React.Component {
         document.getElementById("map").style.height = mapHeight + "px";
         // マップのサイズを確認して修正する
         console.log("handleResize");
-        this.myMap.invalidateSize();
+        this.state.myMap.invalidateSize();
       }.bind(this),
       200
     );
