@@ -76,7 +76,8 @@ class ConfirmEditedInfo extends React.Component {
           userDepartment != "T" &&
           userDepartment != "U" &&
           userDepartment != "S" &&
-          userDepartment != "K"
+          userDepartment != "K" &&
+          userDepartment != "R"
         ) {
           console.log("Permission Denied: この情報にはアクセスできません");
           Router.push("/map");
@@ -89,7 +90,8 @@ class ConfirmEditedInfo extends React.Component {
           userDepartment != "T" &&
           userDepartment != "U" &&
           userDepartment != "S" &&
-          userDepartment != "K"
+          userDepartment != "K" &&
+          userDepartment != "R"
         ) {
           console.log("Permission Denied: この情報にはアクセスできません");
           Router.push("/map");

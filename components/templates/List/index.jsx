@@ -25,8 +25,8 @@ class List extends React.Component {
   componentDidMount() {
     // 権限がない人はアクセス不可
     const department = this.state.userData.department;
-    if (department !== "K") {
-      Router.push("./map");
+    if (department !== "K" && department !== "R" && department !== "S") {
+      Router.push("/map");
     }
   }
 

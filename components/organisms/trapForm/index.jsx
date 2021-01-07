@@ -31,13 +31,14 @@ class TrapForm extends React.Component {
   }
 
   componentDidMount() {
-    // T, U, S, K以外は登録不可
+    // T, U, S, K, R以外は登録不可
     const userDepartment = this.state.userData.department;
     if (
       userDepartment != "T" &&
       userDepartment != "U" &&
       userDepartment != "S" &&
-      userDepartment != "K"
+      userDepartment != "K" &&
+      userDepartment != "R"
     ) {
       console.log("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");

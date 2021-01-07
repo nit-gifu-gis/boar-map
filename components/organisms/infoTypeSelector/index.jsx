@@ -74,6 +74,7 @@ class InfoTypeSelector extends React.Component {
         case "T":
         case "U":
         case "S":
+        case "R":
           choices = [<BoarDiv />, <TrapDiv />];
           break;
         case "W":

@@ -50,8 +50,12 @@ class Header extends React.Component {
       </div>
     );
 
-    // K権限であれば一覧表
-    if (this.state.userDepartment === "K") {
+    // K,R,S権限であれば一覧表
+    if (
+      this.state.userDepartment === "K" ||
+      this.state.userDepartment === "R" ||
+      this.state.userDepartment === "S"
+    ) {
       contents.push(
         <div className="menu_item" key="menu_item_list">
           <Link href="/list">
