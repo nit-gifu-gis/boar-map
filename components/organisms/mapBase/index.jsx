@@ -10,7 +10,6 @@ import "../../../utils/statics";
 import EventListener from "react-event-listener";
 import UserData from "../../../utils/userData";
 import "leaflet.markercluster";
-import { type } from "os";
 
 // 現在地マーカー
 let locMarker = undefined;
