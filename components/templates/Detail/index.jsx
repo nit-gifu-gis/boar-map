@@ -157,7 +157,8 @@ class Detail extends React.Component {
       // ユーザーIDが入力者なら編集を有効化
       const editEnabled =
         this.state.detail["properties"]["入力者"] ===
-        this.state.userData.user_id;
+        this.state.userData.user_id ||
+        this.state.userData.department === 'K';
 
       if (Object.keys(this.state.detail).length != 0) {
         const type = Router.query.type;
