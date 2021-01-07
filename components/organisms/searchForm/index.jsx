@@ -5,6 +5,7 @@ import React from "react";
 import RoundButton from "../../atomos/roundButton";
 import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
+import SelectInput from "../../atomos/selectInput";
 
 class SearchForm extends React.Component {
   constructor(props) {
@@ -54,12 +55,14 @@ class SearchForm extends React.Component {
     const citiesStr = document.getElementById("cities").value;
     // 市町村はスペース（等）区切りをカンマ区切りに直す
     const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== "");
+    const division = document.getElementById("division").value;
     // ファイルを取得しておく
     const userList = document.getElementById("userList").files;
     const data = new FormData();
     data.append("fromDate", date1);
     data.append("toDate", date2);
     data.append("cities", cities);
+    data.append("divisions", division);
     if (userList.length !== 0) {
       data.append("userList", userList[0]);
     }
@@ -90,6 +93,26 @@ class SearchForm extends React.Component {
             </div>
             <div className="search-form__form__grid__input search-form__form__grid__city">
               <TextInput id="cities" />
+              <div className="search-form__form__grid__input search-form__form__grid__city__description">
+                「市」「町」「村」まで入力してください。スペース区切りで複数選択もできます。
+              </div>
+            </div>
+            <div className="search-form__form__grid__title search-form__form__grid__division">
+              区分
+            </div>
+            <div className="search-form__form__grid__input search-form__form__grid__division">
+              <SelectInput
+                id="division"
+                options={[
+                  "すべて",
+                  "調査捕獲",
+                  "有害捕獲",
+                  "死亡",
+                  "狩猟",
+                  "その他"
+                ]}
+                defaultValue={"すべて"}
+              />
             </div>
             <div className="search-form__form__grid__title search-form__form__grid__user-list">
               名前一覧表
