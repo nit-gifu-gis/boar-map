@@ -313,8 +313,6 @@ class ListTable extends React.Component {
               <th>
                 備考
                 <br />
-                （捕獲を手伝った者の氏名）
-                <br />
                 （遠沈管番号）
               </th>
               <th>写真</th>
