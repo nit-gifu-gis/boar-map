@@ -60,19 +60,28 @@
       &__city {
         grid-row: 2;
         -ms-grid-row: 2;
+        &__description {
+          color: $small-text-color;
+          font-size: small;
+        }
+      }
+
+      &__division {
+        grid-row: 3;
+        -ms-grid-row: 3;
       }
 
       &__user-list {
-        grid-row: 3;
-        -ms-grid-row: 3;
+        grid-row: 4;
+        -ms-grid-row: 4;
       }
 
       &__button-div {
         grid-column: 1/3;
         -ms-grid-columns: 1;
         -ms-grid-column-span: 2;
-        grid-row: 4;
-        -ms-grid-row: 4;
+        grid-row: 5;
+        -ms-grid-row: 5;
 
         &__button {
           margin: 20px auto $margin-tb auto;
