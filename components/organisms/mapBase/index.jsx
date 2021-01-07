@@ -94,8 +94,11 @@ class MapBase extends React.Component {
       lng: defautlLng,
       zoom: defaultZoom,
       isDefault: isDefault,
-      overlays: {},
-      markerstate: [true, true, true],
+      featureIDs: { boar: [], trap: [], vaccine: [] },
+      overlays: {
+        捕獲いのしし: L.layerGroup(),
+        わな: L.layerGroup()
+      },
       control: undefined,
       pauseEvent: false,
       retry: 0,
@@ -105,6 +108,14 @@ class MapBase extends React.Component {
       mapLoading: true,
       featureLoading: true
     };
+
+    // 必要に応じてワクチンレイヤー追加
+    if (
+      this.state.userData.department === "K" ||
+      this.state.userData.department === "W"
+    ) {
+      this.state.overlays["ワクチン"] = L.layerGroup();
+    }
   }
 
   componentDidMount() {
@@ -189,6 +200,21 @@ class MapBase extends React.Component {
         }
       ]
     }).addTo(this.myMap);
+
+    // 各種レイヤー追加
+    Object.keys(this.state.overlays).forEach(key =>
+      this.state.overlays[key].addTo(this.myMap)
+    );
+    // コントロール追加
+    this.state.control = L.control.layers(undefined, this.state.overlays, {
+      collapsed: false
+    });
+    // チェックボックスを配置
+    this.state.control.addTo(this.myMap);
+
+    // 再読み込みボタンを再配置
+    this.state.reloadButton.remove();
+    this.state.reloadButton.addTo(this.myMap);
   }
 
   async updateMarkers(map) {
@@ -204,16 +230,37 @@ class MapBase extends React.Component {
       const boars = await this.getFeatures(bounds, BOAR_LAYER_ID);
       const traps = await this.getFeatures(bounds, TRAP_LAYER_ID);
 
-      // 取得できたらマーカー生成
-      const boarMarkers = boars.map(f => this.makeMarker(f, "boar"));
-      const trapMarkers = traps.map(f => this.makeMarker(f, "trap"));
+      // まだ描画してないフィーチャーだけ抜き出す
+      const newBoars = boars.filter(
+        f =>
+          !this.state.featureIDs["boar"].find(
+            id => id === f["properties"]["ID$"]
+          )
+      );
+      const newTraps = traps.filter(
+        f =>
+          !this.state.featureIDs["trap"].find(
+            id => id === f["properties"]["ID$"]
+          )
+      );
 
-      // レイヤーにする
-      const boarLayer = L.layerGroup(boarMarkers);
-      const trapLayer = L.layerGroup(trapMarkers);
+      // 描画予定フィーチャーのidを描画済みidに追加
+      this.state.featureIDs["boar"].push(
+        ...newBoars.map(f => f["properties"]["ID$"])
+      );
+      this.state.featureIDs["trap"].push(
+        ...newTraps.map(f => f["properties"]["ID$"])
+      );
 
-      newLayers["捕獲いのしし"] = boarLayer;
-      newLayers["わな"] = trapLayer;
+      // 新規描画するマーカーだけ生成
+      const newBoarMarkers = newBoars.map(f => this.makeMarker(f, "boar"));
+      const newTrapMarkers = newTraps.map(f => this.makeMarker(f, "trap"));
+
+      // レイヤーグループにマーカー追加
+      newBoarMarkers.forEach(m =>
+        this.state.overlays["捕獲いのしし"].addLayer(m)
+      );
+      newTrapMarkers.forEach(m => this.state.overlays["わな"].addLayer(m));
     } catch (error) {
       console.error(error);
     }
@@ -222,35 +269,25 @@ class MapBase extends React.Component {
     if (userDepartment == "W" || userDepartment == "K") {
       try {
         const vaccines = await this.getFeatures(bounds, VACCINE_LAYER_ID);
-        const vaccinesMakers = vaccines.map(f => this.makeMarker(f, "vaccine"));
-        const vaccineLayer = L.layerGroup(vaccinesMakers);
-        newLayers["ワクチン"] = vaccineLayer;
+        const newVaccines = vaccines.filter(
+          f =>
+            !this.state.featureIDs["vaccine"].find(
+              id => id === f["properties"]["ID$"]
+            )
+        );
+        this.state.featureIDs["vaccine"].push(
+          ...newVaccines.map(f => f["properties"]["ID$"])
+        );
+        const newVaccineMarkers = newVaccines.map(f =>
+          this.makeMarker(f, "vaccine")
+        );
+        newVaccineMarkers.forEach(m =>
+          this.state.overlays["ワクチン"].addLayer(m)
+        );
       } catch (error) {
         console.error(error);
       }
     }
-
-    // 古いレイヤーを削除
-    Object.keys(this.state.overlays).forEach(key =>
-      this.state.overlays[key].remove()
-    );
-    // 新しいレイヤーを追加
-    this.state.overlays = newLayers;
-    Object.keys(this.state.overlays).forEach(key =>
-      this.state.overlays[key].addTo(map)
-    );
-
-    // コントロールを付け替え
-    if (this.state.control) this.state.control.remove();
-    this.state.control = L.control.layers(undefined, this.state.overlays, {
-      collapsed: false
-    });
-    // チェックボックスを配置
-    this.state.control.addTo(map);
-
-    // 再読み込みボタンを再配置
-    this.state.reloadButton.remove();
-    this.state.reloadButton.addTo(map);
 
     // くるくるを消す
     if (document.getElementById("loading-mark") != null) {
