@@ -4,11 +4,7 @@ import "../../../public/static/css/global.scss";
 import SelectInput from "../selectInput";
 import TextInput from "../textInput";
 
-// 緯度経度から市町村名取ってくるAPI使いたいけど，使っていいかどうかが分からない…
-// http://geoapi.heartrails.com/api.html#geolocation
-// GISのAPIに住所から緯度経度取るやつはあるのに逆はないの…？
-
-// 諦めて市町村名一覧
+// 市町村名一覧
 const CITY_LIST = [
   "安八町",
   "池田町",
@@ -175,25 +171,25 @@ class MeshNoInput extends React.Component {
     const numValueRow = document.getElementById(this.props.id + "Num").value;
     // 有効な桁数の時のみセット
     const numRegExp = new RegExp(
-      /(^\d{4}-\d{2}$)|(^\d{6}$)|(^\d{4}$)|(^[A-Fa-f]\d{4}$)/,
+      /(^\d{1,4}-\d{0,2}$)|(^\d{1,4}$)|(^[A-Fa-f]\d{4}$)/,
       "g"
     );
     const result = numRegExp.exec(numValueRow);
     if (result) {
       // 三項演算子が見づらいですが，
-      // result[1]でマッチ → (^\d{4}-\d{2}$) ＝ そのまま
-      // result[2]でマッチ → (^\d{6}$) ＝ 省略されたハイフンを補完
-      // result[3]でマッチ → (^\d{4}$) ＝ 省略されたハイフンと下二桁(00)を補完
-      // result[4]でマッチ → (^[A-Fa-f]\d{4}$) = 市町村が使うメッシュ番号，大文字に統一
+      // result[1]でマッチ → (^\d{1,4}-\d{0,2}$) ＝ 頭0埋めをして4桁-2桁にする
+      // result[2]でマッチ → (^\d{1,4}$) ＝ 頭を0埋めし，省略されたハイフンと下二桁(00)を補完
+      // result[3]でマッチ → (^[A-Fa-f]\d{4}$) = 市町村が使うメッシュ番号，大文字に統一
       const numValue = result[1]
-        ? result[1]
+        ? ("0000" + result[1].split("-")[0]).slice(-4) +
+          "-" +
+          ("00" + result[1].split("-")[1]).slice(-2)
         : result[2]
-        ? result[2].substr(0, 4) + "-" + result[2].substr(4, 2)
+        ? ("0000" + result[2]).slice(-4) + "-00"
         : result[3]
-        ? result[3] + "-00"
-        : result[4]
-        ? result[4].toUpperCase()
+        ? result[3].toUpperCase()
         : null;
+      console.log(numValue);
       this.setValue(cityValue, numValue);
     } else {
       this.setValue(null, null);
