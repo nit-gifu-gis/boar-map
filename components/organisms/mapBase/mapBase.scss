@@ -14,6 +14,28 @@
   }
 }
 
+// marker-cluster
+.marker-cluster-vaccine {
+	background-color: rgba(140, 180, 226, 0.6);
+	}
+.marker-cluster-vaccine div {
+	background-color: rgba(57, 157, 204, 0.6);
+	}
+
+.marker-cluster-trap {
+	background-color: rgba(241, 211, 87, 0.6);
+	}
+.marker-cluster-trap div {
+	background-color: rgba(240, 194, 12, 0.6);
+	}
+
+.marker-cluster-boar {
+	background-color: rgba(253, 156, 115, 0.6);
+	}
+.marker-cluster-boar div {
+	background-color: rgba(241, 128, 23, 0.6);
+	}
+
 #map {
   position: absolute;
   width: 100%;

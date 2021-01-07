@@ -1,5 +1,6 @@
 /* eslint-disable no-invalid-this */
 import "./mapBase.scss";
+import "./leafletCluster.scss";
 import React from "react";
 import L from "leaflet";
 import Router from "next/router";
@@ -9,6 +10,7 @@ import "../../../utils/statics";
 import EventListener from "react-event-listener";
 import UserData from "../../../utils/userData";
 import "leaflet.markercluster";
+import { type } from "os";
 
 // 現在地マーカー
 let locMarker = undefined;
@@ -88,6 +90,22 @@ class MapBase extends React.Component {
       });
     }
 
+    // クラスタ設定
+    const clusterIconCreate = type => {
+      return cluster => {
+        const childCount = cluster.getChildCount();
+        const c = " marker-cluster-" + type;
+        return new L.DivIcon({
+          html: "<div><span>" + childCount + "</span></div>",
+          className: "marker-cluster" + c,
+          iconSize: new L.Point(40, 40)
+        });
+      };
+    };
+    const clusterGroupOption = {
+      maxClusterRadius: 40
+    };
+
     // state初期化
     this.state = {
       lat: defaultLat,
@@ -96,10 +114,23 @@ class MapBase extends React.Component {
       isDefault: isDefault,
       featureIDs: { boar: [], trap: [], vaccine: [] },
       overlays: {
-        捕獲いのしし: L.layerGroup(),
-        わな: L.layerGroup()
+        捕獲いのしし: L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate("boar"),
+          polygonOptions: {
+            color: getColorCode("boar")
+          }
+        }),
+        わな: L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate("trap"),
+          polygonOptions: {
+            color: getColorCode("trap")
+          }
+        })
       },
       control: undefined,
+      clusterGroup: undefined,
       pauseEvent: false,
       retry: 0,
       userData: userData,
@@ -114,7 +145,13 @@ class MapBase extends React.Component {
       this.state.userData.department === "K" ||
       this.state.userData.department === "W"
     ) {
-      this.state.overlays["ワクチン"] = L.layerGroup();
+      this.state.overlays["ワクチン"] = L.markerClusterGroup({
+        ...clusterGroupOption,
+        iconCreateFunction: clusterIconCreate("vaccine"),
+        polygonOptions: {
+          color: getColorCode("vaccine")
+        }
+      });
     }
   }
 
@@ -202,9 +239,7 @@ class MapBase extends React.Component {
     }).addTo(this.myMap);
 
     // 各種レイヤー追加
-    Object.keys(this.state.overlays).forEach(key =>
-      this.state.overlays[key].addTo(this.myMap)
-    );
+    Object.values(this.state.overlays).forEach(o => o.addTo(this.myMap));
     // コントロール追加
     this.state.control = L.control.layers(undefined, this.state.overlays, {
       collapsed: false
@@ -257,10 +292,8 @@ class MapBase extends React.Component {
       const newTrapMarkers = newTraps.map(f => this.makeMarker(f, "trap"));
 
       // レイヤーグループにマーカー追加
-      newBoarMarkers.forEach(m =>
-        this.state.overlays["捕獲いのしし"].addLayer(m)
-      );
-      newTrapMarkers.forEach(m => this.state.overlays["わな"].addLayer(m));
+      this.state.overlays["捕獲いのしし"].addLayers(newBoarMarkers);
+      this.state.overlays["わな"].addLayers(newTrapMarkers);
     } catch (error) {
       console.error(error);
     }
@@ -281,9 +314,7 @@ class MapBase extends React.Component {
         const newVaccineMarkers = newVaccines.map(f =>
           this.makeMarker(f, "vaccine")
         );
-        newVaccineMarkers.forEach(m =>
-          this.state.overlays["ワクチン"].addLayer(m)
-        );
+        this.state.overlays["ワクチン"].addLayers(newVaccineMarkers);
       } catch (error) {
         console.error(error);
       }
