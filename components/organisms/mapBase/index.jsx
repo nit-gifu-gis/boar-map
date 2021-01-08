@@ -11,9 +11,6 @@ import EventListener from "react-event-listener";
 import UserData from "../../../utils/userData";
 import "leaflet.markercluster";
 
-// 現在地マーカー
-let locMarker = undefined;
-
 class MapBase extends React.Component {
   boarIcon = L.icon({
     iconUrl: "static/images/icons/boar.svg",
@@ -136,7 +133,10 @@ class MapBase extends React.Component {
       reloadButton: reloadButton,
       isMainMap: false,
       mapLoading: true,
-      featureLoading: true
+      featureLoading: true,
+      currentLocation: { lat: undefined, lng: undefined },
+      watchPositionId: undefined,
+      myLocMarker: undefined
     };
 
     // 必要に応じてワクチンレイヤー追加
@@ -156,6 +156,14 @@ class MapBase extends React.Component {
 
   componentDidMount() {
     this.map();
+    // マウント時に位置情報の取得を開始
+    this.startWatchLocation();
+  }
+
+  componentWillUnmount() {
+    console.log("unmount");
+    // アンマウント時に位置情報の取得をストップ
+    this.stopWatchLocation();
   }
 
   map() {
@@ -167,7 +175,7 @@ class MapBase extends React.Component {
 
     if (this.state.isDefault) {
       // 県庁の場合位置情報を取得する。
-      this.getCurrentLocation(this.state.myMap);
+      this.getFirstCurrentLocation();
     }
 
     const userData = this.state.userData;
@@ -504,47 +512,103 @@ class MapBase extends React.Component {
   };
 
   // 現在地取得ボタンをクリックしたときの処理
-  onClickSetLocation = (btn, map) => {
-    this.getCurrentLocation(map, true);
+  onClickSetLocation = () => {
+    console.log("onclickSetLocation");
+    this.setCurrentLocation(true);
   };
 
-  // 現在地取得関数
-  getCurrentLocation(map, alert) {
+  // 初回のみ現在地を単発で取得する
+  getFirstCurrentLocation() {
     if (navigator.geolocation == false) {
-      if (alert) {
-        alert("現在地を取得できませんでした．");
-      }
+      alert("位置情報を取得することができません。");
+    }
+    const success = pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("get location:", lat, lng);
+      // 表示は行わず，マーカーの移動のみ処理する
+      this.state.currentLocation["lat"] = lat;
+      this.state.currentLocation["lng"] = lng;
+      this.setCurrentLocation(true);
+    };
+    const error = e => {
+      console.error("初回位置情報取得失敗", e);
+    };
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+
+  // 位置情報の追跡を開始する
+  startWatchLocation() {
+    if (navigator.geolocation == false) {
+      alert("位置情報を取得することができません。");
       return;
     }
 
-    // 取得成功時
-    const success = e => {
-      // マップを現在地中心で表示
-      const lat = e.coords.latitude;
-      const lng = e.coords.longitude;
-      map.setView([lat, lng], 17);
-
-      // 前に表示されていた現在地マーカを消す
-      if (locMarker != undefined) {
-        map.removeLayer(locMarker);
-      }
-      // 現在地にマーカーを置く
-      const locMerkerIcon = L.icon({
-        iconUrl: this.myLocIcon,
-        iconRetinaUrl: this.myLocIcon,
-        iconSize: [40, 40],
-        iconAnchor: [21, 21]
-      });
-      locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
+    // 位置情報が取れたときの関数
+    const success = pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("watch location:", lat, lng);
+      // 表示は行わず，マーカーの移動のみ処理する
+      this.state.currentLocation["lat"] = lat;
+      this.state.currentLocation["lng"] = lng;
+      this.setCurrentLocation(false);
     };
 
-    const error = () => {
-      if (alert) {
-        alert("現在地を取得できませんでした．");
-      }
+    const error = e => {
+      console.error("位置情報取得失敗", e);
     };
 
-    navigator.geolocation.getCurrentPosition(success, error);
+    const options = {
+      enableHighAccuracy: false, // 高精度の位置情報は利用しない
+      timeout: Infinity, // 取得できるまで待つ
+      maximumAge: 0 // キャッシュは使わない
+    };
+
+    this.state.watchPositionId = navigator.geolocation.watchPosition(
+      success,
+      error,
+      options
+    );
+
+    console.log("watch start:", this.state.watchPositionId);
+  }
+
+  setCurrentLocation(show) {
+    if (this.state.myMap) {
+      const lat = this.state.currentLocation["lat"];
+      const lng = this.state.currentLocation["lng"];
+      if (!lat || !lng) {
+        // 取得できてない
+        if (show) {
+          alert("位置情報の取得ができません。");
+        }
+        return;
+      }
+      if (this.state.myLocMarker === undefined) {
+        // マーカーがなければ作る
+        const icon = L.icon({
+          iconUrl: this.myLocIcon,
+          iconRetinaUrl: this.myLocIcon,
+          iconSize: [40, 40],
+          iconAnchor: [21, 21]
+        });
+        this.state.myLocMarker = L.marker([lat, lng], { icon: icon });
+        this.state.myLocMarker.addTo(this.state.myMap);
+      }
+      // 自分のマーカーを移動させる
+      this.state.myLocMarker.setLatLng([lat, lng]);
+      if (show) {
+        this.state.myMap.setView([lat, lng], 17);
+      }
+    }
+  }
+
+  stopWatchLocation() {
+    if (this.state.watchPositionId) {
+      navigator.geolocation.clearWatch(this.state.watchPositionId);
+      console.log("watch end.", this.state.watchPositionId);
+    }
   }
 
   // 現在の表示状態（中心座標，ズームレベル）を記録する
