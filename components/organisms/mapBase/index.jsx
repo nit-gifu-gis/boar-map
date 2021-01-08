@@ -164,6 +164,8 @@ class MapBase extends React.Component {
     console.log("unmount");
     // アンマウント時に位置情報の取得をストップ
     this.stopWatchLocation();
+    // マップを破棄
+    this.state.myMap.remove();
   }
 
   map() {

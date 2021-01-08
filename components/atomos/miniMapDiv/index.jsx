@@ -34,6 +34,10 @@ class MiniMapDiv extends React.Component {
     this.map();
   }
 
+  componentWillUnmount() {
+    this.state.myMap.remove();
+  }
+
   map() {
     const node = this.node;
     this.state.myMap = L.map(node, { keyboard: false }).setView(
