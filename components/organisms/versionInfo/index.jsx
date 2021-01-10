@@ -2,6 +2,7 @@ import "./versionInfo.scss";
 import "../../../public/static/css/global.scss";
 import React from "react";
 import ReactMarkDown from "react-markdown/with-html";
+import { getVersionInfomation } from "../../../utils/versioninfo";
 
 class VersionInfo extends React.Component {
   constructor(props) {
@@ -12,32 +13,17 @@ class VersionInfo extends React.Component {
     };
   }
 
-  componentDidMount() {
-    // markdownファイル読み込み
-    const rawFile = new XMLHttpRequest();
-    let allText = null;
-    rawFile.open("GET", "static/history.md", false);
-    rawFile.onreadystatechange = () => {
-      if (rawFile.readyState === 4) {
-        if (rawFile.status === 200 || rawFile.status == 0) {
-          allText = rawFile.responseText;
-          // console.log("allText: ", allText);
-          this.setState({
-            markdown: allText
-          });
-        }
-      }
-    };
-    rawFile.send(null);
-    // markdownテキストから最新バージョンを取得
-    // 一番最初の小見出しが最新バージョン
-    const pattern = /^### .+$/m;
-    const result = allText.match(pattern);
-    const latest = result[0].replace("### ", "");
-    console.log(latest);
-    this.setState({
-      latest: latest
-    });
+  async componentDidMount() {
+    // バージョン情報を取得する
+    try {
+      const version = await getVersionInfomation();
+      this.setState({
+        markdown: version.allText,
+        latest: version.latestNumber
+      });
+    } catch (e) {
+      console.error("Login: get version error:", e);
+    }
   }
 
   render() {
@@ -58,6 +44,7 @@ class VersionInfo extends React.Component {
           <div className="history-title">更新履歴</div>
           <div className="history-contents">
             <ReactMarkDown source={this.state.markdown} escapeHtml={false} />
+            <div className="footer-adjust"></div>
           </div>
         </div>
       </div>

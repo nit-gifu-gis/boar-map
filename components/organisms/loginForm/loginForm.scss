@@ -1,3 +1,5 @@
+@import "../../../public/static/css/global.scss";
+
 body {
   background-color: #fafafa;
   padding: 0;
@@ -8,12 +10,12 @@ body {
 .login {
   // 中の要素を左右中央揃え(最大幅400)
   margin: 0 auto;
-  width: calc(100vw - var(--margin-lr) * 2);
+  width: calc(100vw - #{$margin-lr} * 2);
   max-width: 400px;
 
   .image_area {
     text-align: center;
-    margin-top: var(--margin-tb);
+    margin-top: $margin-tb;
   }
 
   .image {
@@ -26,7 +28,7 @@ body {
     text-align: center;
     font-size: 40px;
     font-weight: bold;
-    color: #ff9800;
+    color: $primary-color;
     span {
       display: inline-block;
     }
@@ -36,7 +38,17 @@ body {
     width: auto;
     text-align: center;
     font-size: 20px;
-    color: #212121;
+    color: $text-color;
+    span {
+      display: inline-block;
+    }
+  }
+
+  .version_num {
+    width: auto;
+    text-align: center;
+    font-size: 18px;
+    color: $small-text-color;
     span {
       display: inline-block;
     }
@@ -53,7 +65,7 @@ body {
     .login_error {
       margin-top: 20px;
       font-size: 20px;
-      color: #ff0000;
+      color: $danger-color;
     }
     .login_button {
       margin: 30px auto;
