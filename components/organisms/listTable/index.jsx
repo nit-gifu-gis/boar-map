@@ -149,15 +149,11 @@ class ListTable extends React.Component {
 
     const featuresList = sorted.map(f => {
       const data = f.properties;
-      // メッシュ番号から市町村を取り出す
-      const cityPattern = /(^\D+)\d-?\d/;
-      const cityResult = cityPattern.exec(data["メッシュ番号"]);
-      const city = cityResult != null ? cityResult[1] : "";
       return (
         <tr className="list-table__table__row" key={data["ID$"]}>
           <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
           <td style={{ textAlign: "left" }}>{data["入力者"]}</td>
-          <td style={{ textAlign: "left" }}>{city}</td>
+          <td style={{ textAlign: "left" }}>{data["メッシュ番号"]}</td>
           <td style={{ textAlign: "left" }}>{data["区分"]}</td>
           <td style={{ textAlign: "left" }}>{data["捕獲年月日"]}</td>
           <td style={{ textAlign: "left" }}>{data["罠・発見場所"]}</td>
@@ -192,7 +188,11 @@ class ListTable extends React.Component {
         <div className="list-table__title">
           検索結果
           <div className="list-table__title__export-button-wrapper">
-            <RoundButton color="excel" bind={this.onClickExport.bind(this)}>
+            <RoundButton
+              color="excel"
+              bind={this.onClickExport.bind(this)}
+              enabled={!this.props.downloading}
+            >
               ダウンロード
             </RoundButton>
           </div>
@@ -216,7 +216,7 @@ class ListTable extends React.Component {
                 className={thClassName("メッシュ番号")}
                 onClick={this.onClickHeader.bind(this, "メッシュ番号")}
               >
-                市町村
+                メッシュ番号
               </th>
               <th
                 className={thClassName("区分")}
@@ -308,8 +308,6 @@ class ListTable extends React.Component {
               </th>
               <th>
                 備考
-                <br />
-                （捕獲を手伝った者の氏名）
                 <br />
                 （遠沈管番号）
               </th>

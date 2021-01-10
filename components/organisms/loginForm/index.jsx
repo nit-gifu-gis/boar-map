@@ -5,15 +5,27 @@ import TextInput from "../../atomos/textInput";
 import "../../../public/static/css/global.scss";
 import "../../../utils/statics";
 import React from "react";
+import { getVersionInfomation } from "../../../utils/versioninfo";
 
 class LoginForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLogining: false,
-      isError: false
+      isError: false,
+      versionNum: ""
     };
     this.onSubmitting.bind(this);
+  }
+
+  async componentDidMount() {
+    // バージョン情報を取得する
+    try {
+      const version = await getVersionInfomation();
+      this.setState({ versionNum: version.latestNumber });
+    } catch (e) {
+      console.error("Login: get version error:", e);
+    }
   }
 
   onSubmitting = async event => {
@@ -62,6 +74,10 @@ class LoginForm extends React.Component {
         console.log(json);
         document.getElementsByClassName("login_error")[0].innerHTML =
           json["reason"];
+        this.setState({
+          isLogining: false,
+          isError: true
+        });
       }
     } catch (error) {
       console.log(error);
@@ -91,6 +107,7 @@ class LoginForm extends React.Component {
         <div className="sub_title">
           <span>岐阜県家畜対策公式Webアプリ</span>
         </div>
+        <div className="version_num">{this.state.versionNum}</div>
         <div className="form">
           <form
             method="POST"

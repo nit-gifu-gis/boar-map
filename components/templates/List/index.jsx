@@ -16,6 +16,7 @@ class List extends React.Component {
       features: [],
       searching: false,
       searched: false,
+      downloading: false,
       images: []
     };
     this.onClickSearch.bind(this);
@@ -25,8 +26,8 @@ class List extends React.Component {
   componentDidMount() {
     // 権限がない人はアクセス不可
     const department = this.state.userData.department;
-    if (department !== "K") {
-      Router.push("./map");
+    if (department !== "K" && department !== "R" && department !== "S") {
+      Router.push("/map");
     }
   }
 
@@ -131,6 +132,7 @@ class List extends React.Component {
   }
 
   async onClickExport() {
+    this.setState({ downloading: true });
     const req_body = {
       features: this.state.features
     };
@@ -158,17 +160,21 @@ class List extends React.Component {
         // IE対応
         if (window.navigator.msSaveBlob) {
           window.navigator.msSaveBlob(blob, name);
+          this.setState({ downloading: false });
           return;
         }
         anchor.download = name;
         anchor.href = window.URL.createObjectURL(blob);
         anchor.click();
+        this.setState({ downloading: false });
       } else {
         const json = await res.json();
         alert(json["reason"]);
+        this.setState({ downloading: false });
       }
     } catch (error) {
       alert(error);
+      this.setState({ downloading: false });
     }
   }
 
@@ -179,13 +185,15 @@ class List extends React.Component {
         <div className="list__contents">
           <SearchForm
             onClick={this.onClickSearch.bind(this)}
-            searching={this.state.searching}
+            searching={this.state.searching | this.state.downloading}
           />
           <ListTable
             searched={this.state.searched}
             features={this.state.features}
             images={this.state.images}
             onClick={this.onClickExport.bind(this)}
+            // ダウンロード中と検索中はExcelのダウンロードボタンを無効にする
+            downloading={this.state.downloading | this.state.searching}
           />
           <div className="list__contents__footer-adjuster"></div>
         </div>

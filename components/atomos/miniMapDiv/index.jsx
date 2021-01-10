@@ -6,8 +6,6 @@ import EventListener from "react-event-listener";
 import UserData from "../../../utils/userData";
 
 class MiniMapDiv extends React.Component {
-  myMap = null;
-
   constructor(props) {
     super(props);
 
@@ -25,10 +23,10 @@ class MiniMapDiv extends React.Component {
     }
 
     this.state = {
+      myMap: null,
       lat: this.props.lat,
       lng: this.props.lng,
-      zoom: defaultZoom,
-      myMap: null
+      zoom: defaultZoom
     };
   }
 
@@ -36,9 +34,13 @@ class MiniMapDiv extends React.Component {
     this.map();
   }
 
+  componentWillUnmount() {
+    this.state.myMap.remove();
+  }
+
   map() {
     const node = this.node;
-    this.myMap = L.map(node).setView(
+    this.state.myMap = L.map(node, { keyboard: false }).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
@@ -63,9 +65,9 @@ class MiniMapDiv extends React.Component {
           value: userData.access_token
         }
       ]
-    ).addTo(this.myMap);
+    ).addTo(this.state.myMap);
 
-    L.control.scale().addTo(this.myMap);
+    L.control.scale().addTo(this.state.myMap);
 
     // 十字
     const centerCrossIcon = L.icon({
@@ -77,7 +79,7 @@ class MiniMapDiv extends React.Component {
     const centerCross = L.marker([this.state.lat, this.state.lng], {
       icon: centerCrossIcon,
       zIndexOffset: 400
-    }).addTo(this.myMap);
+    }).addTo(this.state.myMap);
     // ピン
     const centerPinIcon = L.icon({
       iconUrl: "../../../static/images/map/centerPin.svg",
@@ -88,13 +90,13 @@ class MiniMapDiv extends React.Component {
     const centerPin = L.marker([this.state.lat, this.state.lng], {
       icon: centerPinIcon,
       zIndexOffset: 400
-    }).addTo(this.myMap);
+    }).addTo(this.state.myMap);
   }
 
   // 画面リサイズで呼ばれる
   handleResize = () => {
     setTimeout(() => {
-      this.myMap.invalidateSize();
+      this.state.myMap.invalidateSize();
     }, 200);
   };
 

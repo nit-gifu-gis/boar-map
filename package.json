@@ -25,6 +25,7 @@
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^1.6.0",
     "leaflet-easybutton": "^2.4.0",
+    "leaflet.markercluster": "^1.4.1",
     "next": "^9.3.2",
     "next-cookies": "^2.0.3",
     "react": "^16.12.0",
