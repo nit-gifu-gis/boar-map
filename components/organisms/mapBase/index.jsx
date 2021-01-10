@@ -1,5 +1,6 @@
 /* eslint-disable no-invalid-this */
 import "./mapBase.scss";
+import "./leafletCluster.scss";
 import React from "react";
 import L from "leaflet";
 import Router from "next/router";
@@ -8,9 +9,7 @@ import "leaflet-easybutton";
 import "../../../utils/statics";
 import EventListener from "react-event-listener";
 import UserData from "../../../utils/userData";
-
-// 現在地マーカー
-let locMarker = undefined;
+import "leaflet.markercluster";
 
 class MapBase extends React.Component {
   boarIcon = L.icon({
@@ -34,7 +33,6 @@ class MapBase extends React.Component {
   });
 
   myLocIcon = "static/images/map/location_marker.svg";
-  myMap = null;
 
   constructor(props) {
     super(props);
@@ -87,39 +85,99 @@ class MapBase extends React.Component {
       });
     }
 
+    // クラスタ設定
+    const clusterIconCreate = type => {
+      return cluster => {
+        const childCount = cluster.getChildCount();
+        const c = " marker-cluster-" + type;
+        return new L.DivIcon({
+          html: "<div><span>" + childCount + "</span></div>",
+          className: "marker-cluster" + c,
+          iconSize: new L.Point(40, 40)
+        });
+      };
+    };
+    const clusterGroupOption = {
+      maxClusterRadius: 40
+    };
+
     // state初期化
     this.state = {
+      myMap: null,
       lat: defaultLat,
       lng: defautlLng,
       zoom: defaultZoom,
       isDefault: isDefault,
-      overlays: {},
-      markerstate: [true, true, true],
+      featureIDs: { boar: [], trap: [], vaccine: [] },
+      overlays: {
+        捕獲いのしし: L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate("boar"),
+          polygonOptions: {
+            color: getColorCode("boar")
+          }
+        }),
+        わな: L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate("trap"),
+          polygonOptions: {
+            color: getColorCode("trap")
+          }
+        })
+      },
       control: undefined,
+      clusterGroup: undefined,
       pauseEvent: false,
       retry: 0,
       userData: userData,
       reloadButton: reloadButton,
       isMainMap: false,
       mapLoading: true,
-      featureLoading: true
+      featureLoading: true,
+      currentLocation: { lat: undefined, lng: undefined },
+      watchPositionId: undefined,
+      myLocMarker: undefined
     };
+
+    // 必要に応じてワクチンレイヤー追加
+    if (
+      this.state.userData.department === "K" ||
+      this.state.userData.department === "W"
+    ) {
+      this.state.overlays["ワクチン"] = L.markerClusterGroup({
+        ...clusterGroupOption,
+        iconCreateFunction: clusterIconCreate("vaccine"),
+        polygonOptions: {
+          color: getColorCode("vaccine")
+        }
+      });
+    }
   }
 
   componentDidMount() {
     this.map();
+    // マウント時に位置情報の取得を開始
+    this.startWatchLocation();
+  }
+
+  componentWillUnmount() {
+    console.log("unmount");
+    // アンマウント時に位置情報の取得をストップ
+    this.stopWatchLocation();
+    // マップを破棄
+    this.state.myMap.remove();
   }
 
   map() {
     const node = this.node;
-    this.myMap = L.map(node).setView(
+    this.state.myMap = L.map(node, { keyboard: false }).setView(
       [this.state.lat, this.state.lng],
       this.state.zoom
     );
 
     if (this.state.isDefault) {
       // 県庁の場合位置情報を取得する。
-      this.getCurrentLocation(this.myMap);
+      this.getFirstCurrentLocation();
     }
 
     const userData = this.state.userData;
@@ -145,32 +203,32 @@ class MapBase extends React.Component {
           value: userData.access_token
         }
       ]
-    ).addTo(this.myMap);
+    ).addTo(this.state.myMap);
 
-    this.updateMarkers(this.myMap, userData.access_token);
+    this.updateMarkers(this.state.myMap, userData.access_token);
 
     const me = this;
 
-    this.myMap.on("moveend", function(e) {
+    this.state.myMap.on("moveend", function(e) {
       console.log("map-moveend");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
-    this.myMap.on("zoomend", function(e) {
+    this.state.myMap.on("zoomend", function(e) {
       console.log("map-zoomend");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
-    this.myMap.on("resize", function(e) {
+    this.state.myMap.on("resize", function(e) {
       console.log("map-resize");
-      me.saveMapState(me.myMap);
-      me.updateMarkers(me.myMap, userData.access_token);
+      me.saveMapState(me.state.myMap);
+      me.updateMarkers(me.state.myMap, userData.access_token);
     });
 
     // 拡大縮小ボタン追加
-    L.control.scale().addTo(this.myMap);
+    L.control.scale().addTo(this.state.myMap);
 
     // 現在地取得ボタンを作成＋追加
     L.easyButton({
@@ -187,7 +245,20 @@ class MapBase extends React.Component {
           icon: "fa-location-arrow"
         }
       ]
-    }).addTo(this.myMap);
+    }).addTo(this.state.myMap);
+
+    // 各種レイヤー追加
+    Object.values(this.state.overlays).forEach(o => o.addTo(this.state.myMap));
+    // コントロール追加
+    this.state.control = L.control.layers(undefined, this.state.overlays, {
+      collapsed: false
+    });
+    // チェックボックスを配置
+    this.state.control.addTo(this.state.myMap);
+
+    // 再読み込みボタンを再配置
+    this.state.reloadButton.remove();
+    this.state.reloadButton.addTo(this.state.myMap);
   }
 
   async updateMarkers(map) {
@@ -196,23 +267,40 @@ class MapBase extends React.Component {
     // 表示範囲を取得
     const bounds = map.getBounds();
 
-    const newLayers = {};
-
     // 各フィーチャーを取得
     try {
       const boars = await this.getFeatures(bounds, BOAR_LAYER_ID);
       const traps = await this.getFeatures(bounds, TRAP_LAYER_ID);
 
-      // 取得できたらマーカー生成
-      const boarMarkers = boars.map(f => this.makeMarker(f, "boar"));
-      const trapMarkers = traps.map(f => this.makeMarker(f, "trap"));
+      // まだ描画してないフィーチャーだけ抜き出す
+      const newBoars = boars.filter(
+        f =>
+          !this.state.featureIDs["boar"].find(
+            id => id === f["properties"]["ID$"]
+          )
+      );
+      const newTraps = traps.filter(
+        f =>
+          !this.state.featureIDs["trap"].find(
+            id => id === f["properties"]["ID$"]
+          )
+      );
 
-      // レイヤーにする
-      const boarLayer = L.layerGroup(boarMarkers);
-      const trapLayer = L.layerGroup(trapMarkers);
+      // 描画予定フィーチャーのidを描画済みidに追加
+      this.state.featureIDs["boar"].push(
+        ...newBoars.map(f => f["properties"]["ID$"])
+      );
+      this.state.featureIDs["trap"].push(
+        ...newTraps.map(f => f["properties"]["ID$"])
+      );
 
-      newLayers["捕獲いのしし"] = boarLayer;
-      newLayers["わな"] = trapLayer;
+      // 新規描画するマーカーだけ生成
+      const newBoarMarkers = newBoars.map(f => this.makeMarker(f, "boar"));
+      const newTrapMarkers = newTraps.map(f => this.makeMarker(f, "trap"));
+
+      // レイヤーグループにマーカー追加
+      this.state.overlays["捕獲いのしし"].addLayers(newBoarMarkers);
+      this.state.overlays["わな"].addLayers(newTrapMarkers);
     } catch (error) {
       console.error(error);
     }
@@ -221,35 +309,23 @@ class MapBase extends React.Component {
     if (userDepartment == "W" || userDepartment == "K") {
       try {
         const vaccines = await this.getFeatures(bounds, VACCINE_LAYER_ID);
-        const vaccinesMakers = vaccines.map(f => this.makeMarker(f, "vaccine"));
-        const vaccineLayer = L.layerGroup(vaccinesMakers);
-        newLayers["ワクチン"] = vaccineLayer;
+        const newVaccines = vaccines.filter(
+          f =>
+            !this.state.featureIDs["vaccine"].find(
+              id => id === f["properties"]["ID$"]
+            )
+        );
+        this.state.featureIDs["vaccine"].push(
+          ...newVaccines.map(f => f["properties"]["ID$"])
+        );
+        const newVaccineMarkers = newVaccines.map(f =>
+          this.makeMarker(f, "vaccine")
+        );
+        this.state.overlays["ワクチン"].addLayers(newVaccineMarkers);
       } catch (error) {
         console.error(error);
       }
     }
-
-    // 古いレイヤーを削除
-    Object.keys(this.state.overlays).forEach(key =>
-      this.state.overlays[key].remove()
-    );
-    // 新しいレイヤーを追加
-    this.state.overlays = newLayers;
-    Object.keys(this.state.overlays).forEach(key =>
-      this.state.overlays[key].addTo(map)
-    );
-
-    // コントロールを付け替え
-    if (this.state.control) this.state.control.remove();
-    this.state.control = L.control.layers(undefined, this.state.overlays, {
-      collapsed: false
-    });
-    // チェックボックスを配置
-    this.state.control.addTo(map);
-
-    // 再読み込みボタンを再配置
-    this.state.reloadButton.remove();
-    this.state.reloadButton.addTo(map);
 
     // くるくるを消す
     if (document.getElementById("loading-mark") != null) {
@@ -431,54 +507,110 @@ class MapBase extends React.Component {
         document.getElementById("map").style.height = mapHeight + "px";
         // マップのサイズを確認して修正する
         console.log("handleResize");
-        this.myMap.invalidateSize();
+        this.state.myMap.invalidateSize();
       }.bind(this),
       200
     );
   };
 
   // 現在地取得ボタンをクリックしたときの処理
-  onClickSetLocation = (btn, map) => {
-    this.getCurrentLocation(map, true);
+  onClickSetLocation = () => {
+    console.log("onclickSetLocation");
+    this.setCurrentLocation(true);
   };
 
-  // 現在地取得関数
-  getCurrentLocation(map, alert) {
+  // 初回のみ現在地を単発で取得する
+  getFirstCurrentLocation() {
     if (navigator.geolocation == false) {
-      if (alert) {
-        alert("現在地を取得できませんでした．");
-      }
+      alert("位置情報を取得することができません。");
+    }
+    const success = pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("get location:", lat, lng);
+      // 表示は行わず，マーカーの移動のみ処理する
+      this.state.currentLocation["lat"] = lat;
+      this.state.currentLocation["lng"] = lng;
+      this.setCurrentLocation(true);
+    };
+    const error = e => {
+      console.error("初回位置情報取得失敗", e);
+    };
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+
+  // 位置情報の追跡を開始する
+  startWatchLocation() {
+    if (navigator.geolocation == false) {
+      alert("位置情報を取得することができません。");
       return;
     }
 
-    // 取得成功時
-    const success = e => {
-      // マップを現在地中心で表示
-      const lat = e.coords.latitude;
-      const lng = e.coords.longitude;
-      map.setView([lat, lng], 17);
-
-      // 前に表示されていた現在地マーカを消す
-      if (locMarker != undefined) {
-        map.removeLayer(locMarker);
-      }
-      // 現在地にマーカーを置く
-      const locMerkerIcon = L.icon({
-        iconUrl: this.myLocIcon,
-        iconRetinaUrl: this.myLocIcon,
-        iconSize: [40, 40],
-        iconAnchor: [21, 21]
-      });
-      locMarker = L.marker([lat, lng], { icon: locMerkerIcon }).addTo(map);
+    // 位置情報が取れたときの関数
+    const success = pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      console.log("watch location:", lat, lng);
+      // 表示は行わず，マーカーの移動のみ処理する
+      this.state.currentLocation["lat"] = lat;
+      this.state.currentLocation["lng"] = lng;
+      this.setCurrentLocation(false);
     };
 
-    const error = () => {
-      if (alert) {
-        alert("現在地を取得できませんでした．");
-      }
+    const error = e => {
+      console.error("位置情報取得失敗", e);
     };
 
-    navigator.geolocation.getCurrentPosition(success, error);
+    const options = {
+      enableHighAccuracy: false, // 高精度の位置情報は利用しない
+      timeout: Infinity, // 取得できるまで待つ
+      maximumAge: 0 // キャッシュは使わない
+    };
+
+    this.state.watchPositionId = navigator.geolocation.watchPosition(
+      success,
+      error,
+      options
+    );
+
+    console.log("watch start:", this.state.watchPositionId);
+  }
+
+  setCurrentLocation(show) {
+    if (this.state.myMap) {
+      const lat = this.state.currentLocation["lat"];
+      const lng = this.state.currentLocation["lng"];
+      if (!lat || !lng) {
+        // 取得できてない
+        if (show) {
+          alert("位置情報の取得ができません。");
+        }
+        return;
+      }
+      if (this.state.myLocMarker === undefined) {
+        // マーカーがなければ作る
+        const icon = L.icon({
+          iconUrl: this.myLocIcon,
+          iconRetinaUrl: this.myLocIcon,
+          iconSize: [40, 40],
+          iconAnchor: [21, 21]
+        });
+        this.state.myLocMarker = L.marker([lat, lng], { icon: icon });
+        this.state.myLocMarker.addTo(this.state.myMap);
+      }
+      // 自分のマーカーを移動させる
+      this.state.myLocMarker.setLatLng([lat, lng]);
+      if (show) {
+        this.state.myMap.setView([lat, lng], 17);
+      }
+    }
+  }
+
+  stopWatchLocation() {
+    if (this.state.watchPositionId) {
+      navigator.geolocation.clearWatch(this.state.watchPositionId);
+      console.log("watch end.", this.state.watchPositionId);
+    }
   }
 
   // 現在の表示状態（中心座標，ズームレベル）を記録する
