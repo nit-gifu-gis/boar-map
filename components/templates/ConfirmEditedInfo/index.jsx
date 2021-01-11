@@ -141,6 +141,7 @@ class ConfirmEditedInfo extends React.Component {
       // 1枚も画像がなければ空の配列を返す
       if (this.state.imageBlobs.length === 0) {
         resolve([]);
+        return;
       }
       // 1枚以上画像があれば，アップロード→idを返す
       const ids = [];
@@ -182,6 +183,39 @@ class ConfirmEditedInfo extends React.Component {
   deleteImages() {
     // TODO
     console.log("削除画像", this.state.deletedIDs);
+    // 一枚ずつ消す
+    const deleteImage = id => {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const data = new FormData();
+          data.append("id", id);
+          const options = {
+            credentials: "include",
+            method: "POST",
+            body: data,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/x-www-form-urlencoded"
+            }
+          };
+          delete options.headers["Content-Type"];
+          const res = await fetch(
+            `${SERVER_URI}/Image/DeleteImage.php`,
+            options
+          );
+          const json = await res.json();
+          console.log("deleteImage", json);
+          if (res.status === 200) {
+            resolve();
+          } else {
+            reject(json["reason"]);
+          }
+        } catch (e) {
+          reject(e);
+        }
+      });
+    };
+    return Promise.all(this.state.deletedIDs.map(id => deleteImage(id)));
   }
 
   // GISにpostする
