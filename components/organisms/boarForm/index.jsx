@@ -285,6 +285,11 @@ class BoarForm extends React.Component {
     }
     // 4-1 幼獣・成獣の別
     const age = form.age.options[form.age.selectedIndex].value;
+    if (!this.state.isBox) {
+      catchNum = 1;
+      childrenNum = age === "幼獣" ? 1 : 0;
+      adultsNum = age === "成獣" ? 1 : 0;
+    }
     // 5 性別
     const sex = form.sex.options[form.sex.selectedIndex].value;
     // 6 体長

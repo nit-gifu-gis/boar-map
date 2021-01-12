@@ -116,12 +116,50 @@ class Detail extends React.Component {
       // id取得
       const id = this.state.detail["properties"]["ID$"];
       const layerId = BOAR_LAYER_ID + parseInt(Router.query.type);
+      // 画像を消す
+      const deleteImageIds = this.state.detail["properties"]["画像ID"].split(
+        ","
+      );
+      const deleteImage = id => {
+        console.log(id);
+        return new Promise(async (resolve, reject) => {
+          try {
+            const data = new FormData();
+            data.append("id", id);
+            const options = {
+              credentials: "include",
+              method: "POST",
+              body: data,
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            };
+            delete options.headers["Content-Type"];
+            const res = await fetch(
+              `${SERVER_URI}/Image/DeleteImage.php`,
+              options
+            );
+            const json = await res.json();
+            console.log("deleteImage", json);
+            if (res.status === 200) {
+              resolve();
+            } else {
+              reject(json["reason"]);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        });
+      };
       // GISにフェッチ
       const body = {
         layerId: layerId,
         shapeIds: [id]
       };
       try {
+        // 先に画像を消す
+        Promise.all(deleteImageIds.map(id => deleteImage(id)));
         const res = await fetch(SERVER_URI + "/Feature/DeleteFeatures.php", {
           method: "POST",
           headers: {

@@ -171,7 +171,7 @@ class MeshNoInput extends React.Component {
     const numValueRow = document.getElementById(this.props.id + "Num").value;
     // 有効な桁数の時のみセット
     const numRegExp = new RegExp(
-      /(^\d{1,4}-\d{0,2}$)|(^\d{1,4}$)|(^[A-Fa-f]\d{4}$)/,
+      /(^\d{1,4}-\d{0,2}$)|(^\d{1,4}$)|(^[A-Fa-f]\d{1,4}$)/,
       "g"
     );
     const result = numRegExp.exec(numValueRow);
@@ -179,7 +179,7 @@ class MeshNoInput extends React.Component {
       // 三項演算子が見づらいですが，
       // result[1]でマッチ → (^\d{1,4}-\d{0,2}$) ＝ 頭0埋めをして4桁-2桁にする
       // result[2]でマッチ → (^\d{1,4}$) ＝ 頭を0埋めし，省略されたハイフンと下二桁(00)を補完
-      // result[3]でマッチ → (^[A-Fa-f]\d{4}$) = 市町村が使うメッシュ番号，大文字に統一
+      // result[3]でマッチ → (^[A-Fa-f]\d{1,4}$) = 市町村が使うメッシュ番号，大文字に統一，0埋めして4桁
       const numValue = result[1]
         ? ("0000" + result[1].split("-")[0]).slice(-4) +
           "-" +
@@ -187,7 +187,8 @@ class MeshNoInput extends React.Component {
         : result[2]
         ? ("0000" + result[2]).slice(-4) + "-00"
         : result[3]
-        ? result[3].toUpperCase()
+        ? result[3].slice(0, 1).toUpperCase() +
+          ("0000" + result[3].slice(1)).slice(-4)
         : null;
       console.log(numValue);
       this.setValue(cityValue, numValue);
