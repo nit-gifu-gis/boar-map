@@ -1,6 +1,8 @@
 @import "../../../public/static/css/global.scss";
 
 .list-table {
+  display: inline-block;
+  margin-right: $margin-lr;
 
   &__title {
     position: relative;
@@ -18,7 +20,7 @@
   &__table {
     display: block;
     border-collapse: collapse;
-    overflow-x: scroll;
+    // overflow-x: scroll;
     white-space: pre;
     -webkit-overflow-scrolling: touch;
 
