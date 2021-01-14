@@ -1,12 +1,12 @@
-import "./list.scss";
+import './list.scss';
 
-import React from "react";
-import Router from "next/router";
-import Header from "../../organisms/header";
-import UserData from "../../../utils/userData";
-import SearchForm from "../../organisms/searchForm";
-import ListTable from "../../organisms/listTable";
-import "../../../utils/statics";
+import React from 'react';
+import Router from 'next/router';
+import Header from '../../organisms/header';
+import UserData from '../../../utils/userData';
+import SearchForm from '../../organisms/searchForm';
+import ListTable from '../../organisms/listTable';
+import '../../../utils/statics';
 
 class List extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class List extends React.Component {
       searching: false,
       searched: false,
       downloading: false,
-      images: []
+      images: [],
     };
     this.onClickSearch.bind(this);
     this.onClickExport.bind(this);
@@ -26,8 +26,8 @@ class List extends React.Component {
   componentDidMount() {
     // 権限がない人はアクセス不可
     const department = this.state.userData.department;
-    if (department !== "K" && department !== "R" && department !== "S") {
-      Router.push("/map");
+    if (department !== 'K' && department !== 'R' && department !== 'S') {
+      Router.push('/map');
     }
   }
 
@@ -39,10 +39,10 @@ class List extends React.Component {
       const features = await this.getFeatures(data);
       console.log(features);
       if (features.length === 0) {
-        alert("データが1件も見つかりませんでした。");
+        alert('データが1件も見つかりませんでした。');
         this.setState({
           searched: false,
-          searching: false
+          searching: false,
         });
         return;
       }
@@ -52,7 +52,7 @@ class List extends React.Component {
         features: features,
         images: images,
         searched: true,
-        searching: false
+        searching: false,
       });
     } catch (error) {
       alert(`エラーが発生しました．\n${error}`);
@@ -62,26 +62,26 @@ class List extends React.Component {
 
   getFeatures(data) {
     const options = {
-      method: "POST",
+      method: 'POST',
       body: data,
       headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data"
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
-      mode: "cors",
-      credentials: "include"
+      mode: 'cors',
+      credentials: 'include',
     };
-    delete options.headers["Content-Type"];
+    delete options.headers['Content-Type'];
 
     return new Promise(async (resolve, reject) => {
       try {
         const res = await fetch(`${SERVER_URI}/BoarList/GetList.php`, options);
         const json = await res.json();
         if (res.status === 200) {
-          const list = json["features"];
+          const list = json['features'];
           resolve(list);
         } else {
-          const reason = json["reason"];
+          const reason = json['reason'];
           reject(reason);
         }
       } catch (error) {
@@ -94,7 +94,7 @@ class List extends React.Component {
   async fetchImages(features) {
     const fetchImage = id => {
       return new Promise(resolve => {
-        if (id === "") {
+        if (id === '') {
           resolve();
           return;
         }
@@ -103,7 +103,7 @@ class List extends React.Component {
           resolve({
             id: id,
             w: img.width,
-            h: img.height
+            h: img.height,
           });
         };
         img.src = `${SERVER_URI}/Image/GetImage.php?id=${id}`;
@@ -112,51 +112,51 @@ class List extends React.Component {
 
     return await Promise.all(
       features.map(async feature => {
-        const id = feature["properties"]["ID$"];
-        const ids = feature["properties"]["画像ID"];
-        if (ids == "") {
+        const id = feature['properties']['ID$'];
+        const ids = feature['properties']['画像ID'];
+        if (ids == '') {
           return {
             id: id,
-            images: []
+            images: [],
           };
         }
         const images = await Promise.all(
-          ids.split(",").map(id => fetchImage(id))
+          ids.split(',').map(id => fetchImage(id)),
         );
         return {
           id: id,
-          images: images
+          images: images,
         };
-      })
+      }),
     );
   }
 
   async onClickExport() {
     this.setState({ downloading: true });
     const req_body = {
-      features: this.state.features
+      features: this.state.features,
     };
 
     try {
       const res = await fetch(`${SERVER_URI}/BoarList/Export.php`, {
-        method: "POST",
+        method: 'POST',
         headers: {
           Accept:
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          "Content-Type": "application/json"
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Type': 'application/json',
         },
-        mode: "cors",
-        credentials: "include",
-        body: JSON.stringify(req_body)
+        mode: 'cors',
+        credentials: 'include',
+        body: JSON.stringify(req_body),
       });
       if (res.status === 200) {
         const blob = await res.blob();
-        const anchor = document.createElement("a");
+        const anchor = document.createElement('a');
         const now = new Date();
-        const yyyy = ("0000" + now.getFullYear()).slice(-4);
-        const mm = ("00" + (now.getMonth() + 1)).slice(-2);
-        const dd = ("00" + now.getDate()).slice(-2);
-        const name = "捕獲情報一覧表(" + yyyy + "-" + mm + "-" + dd + ").xlsx";
+        const yyyy = ('0000' + now.getFullYear()).slice(-4);
+        const mm = ('00' + (now.getMonth() + 1)).slice(-2);
+        const dd = ('00' + now.getDate()).slice(-2);
+        const name = '捕獲情報一覧表(' + yyyy + '-' + mm + '-' + dd + ').xlsx';
         // IE対応
         if (window.navigator.msSaveBlob) {
           window.navigator.msSaveBlob(blob, name);
@@ -169,7 +169,7 @@ class List extends React.Component {
         this.setState({ downloading: false });
       } else {
         const json = await res.json();
-        alert(json["reason"]);
+        alert(json['reason']);
         this.setState({ downloading: false });
       }
     } catch (error) {

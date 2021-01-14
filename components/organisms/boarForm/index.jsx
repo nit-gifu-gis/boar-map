@@ -1,11 +1,11 @@
-import "./boarForm.scss";
-import "../../../public/static/css/global.scss";
-import Router from "next/router";
-import React from "react";
-import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
-import "../../../utils/validateData";
-import "../../../utils/dict";
+import './boarForm.scss';
+
+import Router from 'next/router';
+import React from 'react';
+import InfoInput from '../../molecules/infoInput';
+import UserData from '../../../utils/userData';
+import '../../../utils/validateData';
+import '../../../utils/dict';
 
 const TRAP = 1;
 const ENV = 2;
@@ -15,8 +15,8 @@ class BoarForm extends React.Component {
     super(props);
     this.state = {
       trapOrEnv: TRAP,
-      trapValue: "くくりわな",
-      envValue: "山際",
+      trapValue: 'くくりわな',
+      envValue: '山際',
       lat: props.lat,
       lng: props.lng,
       userData: UserData.getUserData(),
@@ -27,11 +27,11 @@ class BoarForm extends React.Component {
         length: null,
         pregnant: null,
         childrenNum: null,
-        adultsNum: null
+        adultsNum: null,
       },
       isFemale: false,
       isAdult: false,
-      isBox: false
+      isBox: false,
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -50,27 +50,27 @@ class BoarForm extends React.Component {
   componentDidMount() {
     // T, U, S, K, R以外は登録不可
     if (
-      this.state.userData.department != "T" &&
-      this.state.userData.department != "U" &&
-      this.state.userData.department != "S" &&
-      this.state.userData.department != "K" &&
-      this.state.userData.department != "R"
+      this.state.userData.department != 'T' &&
+      this.state.userData.department != 'U' &&
+      this.state.userData.department != 'S' &&
+      this.state.userData.department != 'K' &&
+      this.state.userData.department != 'R'
     ) {
-      console.log("Permission Denied: この情報にはアクセスできません");
-      Router.push("/map");
+      console.log('Permission Denied: この情報にはアクセスできません');
+      Router.push('/map');
       return;
     }
 
     // detailが与えられた場合
     if (this.state.detail != null) {
       const detail = this.state.detail;
-      const division = detail["properties"]["区分"];
+      const division = detail['properties']['区分'];
       switch (division) {
-        case "死亡":
+        case '死亡':
           this.setState(_ => {
             return {
               trapOrEnv: ENV,
-              envValue: detail["properties"]["罠・発見場所"]
+              envValue: detail['properties']['罠・発見場所'],
             };
           });
           break;
@@ -78,17 +78,17 @@ class BoarForm extends React.Component {
           this.setState(_ => {
             return {
               trapOrEnv: TRAP,
-              trapValue: detail["properties"]["罠・発見場所"]
+              trapValue: detail['properties']['罠・発見場所'],
             };
           });
           break;
       }
-      this.setState({ isFemale: detail["properties"]["性別"] === "メス" });
-      this.setState({ isAdult: detail["properties"]["幼獣・成獣"] === "成獣" });
+      this.setState({ isFemale: detail['properties']['性別'] === 'メス' });
+      this.setState({ isAdult: detail['properties']['幼獣・成獣'] === '成獣' });
       this.setState({
-        isBox: detail["properties"]["罠・発見場所"] === "箱わな"
+        isBox: detail['properties']['罠・発見場所'] === '箱わな',
       });
-      this.setState({ isAdult: detail["properties"]["幼獣・成獣"] === "成獣" });
+      this.setState({ isAdult: detail['properties']['幼獣・成獣'] === '成獣' });
     }
   }
 
@@ -103,10 +103,10 @@ class BoarForm extends React.Component {
     const form = document.forms.form;
     const meshNo = form.meshNo.value;
     // データが無いならエラー
-    if (meshNo === "") {
-      await this.updateError("meshNo", "入力されていません。");
+    if (meshNo === '') {
+      await this.updateError('meshNo', '入力されていません。');
     } else {
-      await this.updateError("meshNo", null);
+      await this.updateError('meshNo', null);
     }
   }
 
@@ -115,10 +115,10 @@ class BoarForm extends React.Component {
     const dateStr = form.date.value;
     const error = checkDateError(dateStr);
     if (error != null) {
-      await this.updateError("date", error);
+      await this.updateError('date', error);
       return;
     }
-    await this.updateError("date", null);
+    await this.updateError('date', null);
   }
 
   async validateLength() {
@@ -126,34 +126,34 @@ class BoarForm extends React.Component {
     const length = form.length.value;
     const error = checkNumberError(length);
     if (error != null) {
-      await this.updateError("length", error);
+      await this.updateError('length', error);
       return;
     }
     const length_num = parseFloat(length);
     if (length_num <= 0) {
-      await this.updateError("length", "0以下の数値が入力されています。");
+      await this.updateError('length', '0以下の数値が入力されています。');
       return;
     }
-    await this.updateError("length", null);
+    await this.updateError('length', null);
   }
 
   async validatePregnant() {
     if (!this.state.isFemale) {
       // メスじゃない場合はエラーを消して終了
-      await this.updateError("pregnant", null);
+      await this.updateError('pregnant', null);
       return;
     }
     // メスの場合
     if (!this.state.isAdult) {
       // 成獣じゃない場合はエラーを消して終了
-      await this.updateError("pregnant", null);
+      await this.updateError('pregnant', null);
       return;
     }
     // メスかつ成獣の場合
     const form = document.forms.form;
     const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     // 値が選択肢に引っかかればOK
-    const options = ["あり", "なし", "不明"];
+    const options = ['あり', 'なし', '不明'];
     let valid = false;
     for (let i = 0; i < options.length; i++) {
       if (pregnant === options[i]) {
@@ -162,9 +162,9 @@ class BoarForm extends React.Component {
       }
     }
     if (valid) {
-      await this.updateError("pregnant", null);
+      await this.updateError('pregnant', null);
     } else {
-      await this.updateError("pregnant", "選択されていません。");
+      await this.updateError('pregnant', '選択されていません。');
     }
     return;
   }
@@ -188,7 +188,7 @@ class BoarForm extends React.Component {
     // 0以上か検証
     const num = parseFloat(numStr);
     if (num < 0) {
-      await this.updateError(name, "負の数が入力されています。");
+      await this.updateError(name, '負の数が入力されています。');
       return false;
     }
 
@@ -201,24 +201,24 @@ class BoarForm extends React.Component {
   async validateCatchNum() {
     if (!this.state.isBox) {
       // 箱わなが選択されていない場合はnull
-      await this.updateError("childrenNum", null);
-      await this.updateError("adultsNum", null);
+      await this.updateError('childrenNum', null);
+      await this.updateError('adultsNum', null);
       return;
     }
     // すでにエラーがある場合は検証しない
-    const cError = await this.validateEachCatchNum("childrenNum");
-    const aError = await this.validateEachCatchNum("adultsNum");
+    const cError = await this.validateEachCatchNum('childrenNum');
+    const aError = await this.validateEachCatchNum('adultsNum');
     if (!cError || !aError) {
       return;
     }
     // 足す
     const form = document.forms.form;
-    const childrenNum = parseInt(form["childrenNum"].value);
-    const adultsNum = parseInt(form["adultsNum"].value);
+    const childrenNum = parseInt(form['childrenNum'].value);
+    const adultsNum = parseInt(form['adultsNum'].value);
     const catchNum = childrenNum + adultsNum;
     if (catchNum <= 0) {
-      await this.updateError("childrenNum", "捕獲頭数の合計が0以下です。");
-      await this.updateError("adultsNum", "捕獲頭数の合計が0以下です。");
+      await this.updateError('childrenNum', '捕獲頭数の合計が0以下です。');
+      await this.updateError('adultsNum', '捕獲頭数の合計が0以下です。');
       return;
     }
   }
@@ -230,8 +230,8 @@ class BoarForm extends React.Component {
     await this.validateDate();
     await this.validateLength();
     await this.validatePregnant();
-    await this.validateEachCatchNum("childrenNum");
-    await this.validateEachCatchNum("adultsNum");
+    await this.validateEachCatchNum('childrenNum');
+    await this.validateEachCatchNum('adultsNum');
     await this.validateCatchNum();
 
     // エラー一覧を表示
@@ -263,7 +263,7 @@ class BoarForm extends React.Component {
     // 4 わなor発見場所
     let trapOrEnv;
     switch (division) {
-      case "死亡":
+      case '死亡':
         trapOrEnv = form.env.options[form.env.selectedIndex].value;
         break;
       default:
@@ -272,8 +272,8 @@ class BoarForm extends React.Component {
     }
     // 4-0-1 捕獲頭数
     let catchNum = 0;
-    let childrenNum = "";
-    let adultsNum = "";
+    let childrenNum = '';
+    let adultsNum = '';
     if (this.state.isBox) {
       childrenNum = parseInt(form.childrenNum.value);
       adultsNum = parseInt(form.adultsNum.value);
@@ -283,15 +283,15 @@ class BoarForm extends React.Component {
     const age = form.age.options[form.age.selectedIndex].value;
     if (!this.state.isBox) {
       catchNum = 1;
-      childrenNum = age === "幼獣" ? 1 : 0;
-      adultsNum = age === "成獣" ? 1 : 0;
+      childrenNum = age === '幼獣' ? 1 : 0;
+      adultsNum = age === '成獣' ? 1 : 0;
     }
     // 5 性別
     const sex = form.sex.options[form.sex.selectedIndex].value;
     // 6 体長
     const length = form.length.value;
     // 6-1 妊娠の状況
-    let pregnant = "";
+    let pregnant = '';
     if (this.state.isFemale && this.state.isAdult) {
       pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
     }
@@ -305,29 +305,29 @@ class BoarForm extends React.Component {
     // 9 現地写真
 
     return {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "Point",
-        coordinates: [parseFloat(lng), parseFloat(lat)]
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)],
       },
       properties: {
         入力者: user,
         メッシュ番号: meshNo,
         区分: division,
         捕獲年月日: date,
-        位置情報: "(" + lat + "," + lng + ")",
-        "罠・発見場所": trapOrEnv,
+        位置情報: '(' + lat + ',' + lng + ')',
+        '罠・発見場所': trapOrEnv,
         捕獲頭数: catchNum,
         幼獣の頭数: childrenNum,
         成獣の頭数: adultsNum,
-        "幼獣・成獣": age,
+        '幼獣・成獣': age,
         性別: sex,
         体長: length,
         体重: weight,
         妊娠の状況: pregnant,
         処分方法: disposal,
-        備考: note
-      }
+        備考: note,
+      },
     };
   }
 
@@ -336,7 +336,7 @@ class BoarForm extends React.Component {
     const divisonSelect = document.forms.form.division;
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
-      case "死亡":
+      case '死亡':
         this.setState(_ => {
           return { trapOrEnv: ENV, isBox: false };
         });
@@ -354,7 +354,7 @@ class BoarForm extends React.Component {
     const sexSelect = document.forms.form.sex;
     const sex = sexSelect.options[sexSelect.selectedIndex].value;
     switch (sex) {
-      case "メス":
+      case 'メス':
         this.setState({ isFemale: true });
         break;
       default:
@@ -368,7 +368,7 @@ class BoarForm extends React.Component {
     const ageSelect = document.forms.form.age;
     const age = ageSelect.options[ageSelect.selectedIndex].value;
     switch (age) {
-      case "成獣":
+      case '成獣':
         this.setState({ isAdult: true });
         break;
       default:
@@ -383,7 +383,7 @@ class BoarForm extends React.Component {
     const trap = trapSelect.options[trapSelect.selectedIndex].value;
     this.setState({ trapValue: trap });
     switch (trap) {
-      case "箱わな":
+      case '箱わな':
         this.setState({ isBox: true });
         break;
       default:
@@ -430,7 +430,7 @@ class BoarForm extends React.Component {
   }
 
   render() {
-    console.log("isBox", this.state.isBox);
+    console.log('isBox', this.state.isBox);
     if (this.state.lat != undefined && this.state.lng != undefined) {
       // わな・発見場所の切り替え
       let trapOrEnvSelector = (
@@ -438,7 +438,7 @@ class BoarForm extends React.Component {
           title="わなの種類"
           type="select"
           name="trap"
-          options={["くくりわな", "箱わな", "その他"]}
+          options={['くくりわな', '箱わな', 'その他']}
           defaultValue={this.state.trapValue}
           onChange={this.onChangeTrap.bind(this)}
         />
@@ -449,7 +449,7 @@ class BoarForm extends React.Component {
             title="発見場所"
             type="select"
             name="env"
-            options={["山際", "山地", "その他"]}
+            options={['山際', '山地', 'その他']}
             defaultValue={this.state.envValue}
             onChange={this.onChangeEnv.bind(this)}
           />
@@ -463,11 +463,11 @@ class BoarForm extends React.Component {
             title="妊娠の状況"
             type="select"
             name="pregnant"
-            options={["なし", "あり", "不明"]}
+            options={['なし', 'あり', '不明']}
             required={true}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["妊娠の状況"]
+                ? this.state.detail['properties']['妊娠の状況']
                 : null
             }
             errorMessage={this.state.error.pregnant}
@@ -487,10 +487,10 @@ class BoarForm extends React.Component {
             required={true}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["幼獣の頭数"]
+                ? this.state.detail['properties']['幼獣の頭数']
                 : null
             }
-            onChange={this.validateEachCatchNum.bind(this, "childrenNum")}
+            onChange={this.validateEachCatchNum.bind(this, 'childrenNum')}
             errorMessage={this.state.error.childrenNum}
           />,
           <InfoInput
@@ -501,15 +501,15 @@ class BoarForm extends React.Component {
             required={true}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["成獣の頭数"]
+                ? this.state.detail['properties']['成獣の頭数']
                 : null
             }
-            onChange={this.validateEachCatchNum.bind(this, "adultsNum")}
+            onChange={this.validateEachCatchNum.bind(this, 'adultsNum')}
             errorMessage={this.state.error.adultsNum}
           />,
           <p className="boar-form__description">
             ※以下の項目については、代表的なイノシシ1体の情報を入力してください。
-          </p>
+          </p>,
         ];
       }
       return (
@@ -532,7 +532,7 @@ class BoarForm extends React.Component {
                 name="meshNo"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["メッシュ番号"]
+                    ? this.state.detail['properties']['メッシュ番号']
                     : null
                 }
                 lat={this.state.lat}
@@ -545,11 +545,11 @@ class BoarForm extends React.Component {
                 title="区分"
                 type="select"
                 name="division"
-                options={["調査捕獲", "有害捕獲", "死亡", "狩猟", "その他"]}
+                options={['調査捕獲', '有害捕獲', '死亡', '狩猟', 'その他']}
                 onChange={this.onChangeDivision.bind(this)}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["区分"]
+                    ? this.state.detail['properties']['区分']
                     : null
                 }
               />
@@ -559,7 +559,7 @@ class BoarForm extends React.Component {
                 name="date"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["捕獲年月日"]
+                    ? this.state.detail['properties']['捕獲年月日']
                     : null
                 }
                 onChange={this.validateDate.bind(this)}
@@ -572,11 +572,11 @@ class BoarForm extends React.Component {
                 title="幼獣・成獣の別"
                 type="select"
                 name="age"
-                options={["幼獣", "成獣"]}
+                options={['幼獣', '成獣']}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["幼獣・成獣"]
-                    : "幼獣"
+                    ? this.state.detail['properties']['幼獣・成獣']
+                    : '幼獣'
                 }
                 onChange={this.onChangeAge.bind(this)}
               />
@@ -584,11 +584,11 @@ class BoarForm extends React.Component {
                 title="性別"
                 type="select"
                 name="sex"
-                options={["オス", "メス", "不明"]}
+                options={['オス', 'メス', '不明']}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["性別"]
-                    : "不明"
+                    ? this.state.detail['properties']['性別']
+                    : '不明'
                 }
                 onChange={this.onChangeSex.bind(this)}
               />
@@ -599,7 +599,7 @@ class BoarForm extends React.Component {
                 min="1"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["体長"]
+                    ? this.state.detail['properties']['体長']
                     : null
                 }
                 required={true}
@@ -611,11 +611,11 @@ class BoarForm extends React.Component {
                 title="処分方法"
                 type="select"
                 name="disposal"
-                options={["埋設", "焼却", "家保", "利活用", "その他"]}
+                options={['埋設', '焼却', '家保', '利活用', 'その他']}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["処分方法"]
-                    : "埋設"
+                    ? this.state.detail['properties']['処分方法']
+                    : '埋設'
                 }
               />
               <InfoInput
@@ -625,7 +625,7 @@ class BoarForm extends React.Component {
                 name="note"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["備考"]
+                    ? this.state.detail['properties']['備考']
                     : null
                 }
               />

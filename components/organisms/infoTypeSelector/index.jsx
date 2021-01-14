@@ -1,8 +1,8 @@
-import "./infoTypeSelector.scss";
-import Router from "next/router";
-import React from "react";
-import InfoTypeItem from "../../molecules/InfoTypeItem";
-import UserData from "../../../utils/userData";
+import './infoTypeSelector.scss';
+import Router from 'next/router';
+import React from 'react';
+import InfoTypeItem from '../../molecules/InfoTypeItem';
+import UserData from '../../../utils/userData';
 
 const BoarDiv = () => (
   <div className="boar-div select-div">
@@ -48,7 +48,7 @@ class InfoTypeSelector extends React.Component {
     super();
     this.state = {
       userData: UserData.getUserData(),
-      selected: []
+      selected: [],
     };
   }
 
@@ -71,16 +71,16 @@ class InfoTypeSelector extends React.Component {
     if (this.state.userData) {
       // userDepartmentに応じて表示するものを変更する
       switch (this.state.userData.department) {
-        case "T":
-        case "U":
-        case "S":
-        case "R":
+        case 'T':
+        case 'U':
+        case 'S':
+        case 'R':
           choices = [<BoarDiv />, <TrapDiv />];
           break;
-        case "W":
+        case 'W':
           choices = [<VaccineDiv />];
           break;
-        case "K":
+        case 'K':
           choices = [<BoarDiv />, <TrapDiv />, <VaccineDiv />];
           break;
         default:
@@ -102,7 +102,7 @@ class InfoTypeSelector extends React.Component {
               id="radio4"
               name="infoType"
               value="none"
-              style={{ display: "none" }}
+              style={{ display: 'none' }}
             />
           </form>
         </div>

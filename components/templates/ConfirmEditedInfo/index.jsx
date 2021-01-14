@@ -1,20 +1,19 @@
-import "./confirmEditedInfo.scss";
-import "../../../public/static/css/global.scss";
+import './confirmEditedInfo.scss';
 
-import Router from "next/router";
+import Router from 'next/router';
 
-import BoarInfo from "../../organisms/boarInfo";
-import TrapInfo from "../../organisms/trapInfo";
-import VaccineInfo from "../../organisms/vaccineInfo";
+import BoarInfo from '../../organisms/boarInfo';
+import TrapInfo from '../../organisms/trapInfo';
+import VaccineInfo from '../../organisms/vaccineInfo';
 
-import "../../../utils/statics";
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import RoundButton from "../../atomos/roundButton";
-import FooterAdjustment from "../../organisms/footerAdjustment";
-import UserData from "../../../utils/userData";
+import '../../../utils/statics';
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import RoundButton from '../../atomos/roundButton';
+import FooterAdjustment from '../../organisms/footerAdjustment';
+import UserData from '../../../utils/userData';
 
-import "whatwg-fetch";
+import 'whatwg-fetch';
 
 class ConfirmEditedInfo extends React.Component {
   constructor(props) {
@@ -27,7 +26,7 @@ class ConfirmEditedInfo extends React.Component {
       userData: UserData.getUserData(),
       imageURLs: [],
       imageBlobs: [],
-      deletedIDs: []
+      deletedIDs: [],
     };
   }
 
@@ -37,11 +36,11 @@ class ConfirmEditedInfo extends React.Component {
         type: Router.query.type,
         detail: JSON.parse(Router.query.detail),
         imageIDs: JSON.parse(Router.query.imageIDs),
-        deletedIDs: JSON.parse(Router.query.deletedIDs)
+        deletedIDs: JSON.parse(Router.query.deletedIDs),
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/map");
+      alert('情報の取得に失敗しました。\nもう一度やり直してください。');
+      Router.push('/map');
     }
 
     // 画像を読み込む
@@ -50,7 +49,7 @@ class ConfirmEditedInfo extends React.Component {
       const urls = JSON.parse(imageURLsStr);
       // プレビュー用にobjectURLと枚数を保持
       this.setState({
-        imageURLs: urls
+        imageURLs: urls,
       });
       // 送信用にblobを保持
       const blobs = [];
@@ -60,7 +59,7 @@ class ConfirmEditedInfo extends React.Component {
         blobs.push(blob);
       }
       this.setState({
-        imageBlobs: blobs
+        imageBlobs: blobs,
       });
     }
   }
@@ -71,38 +70,38 @@ class ConfirmEditedInfo extends React.Component {
     let layerId = null;
     // レイヤーIDを選択すると同時に，書き込み権限をチェック
     switch (this.state.type) {
-      case "boar":
+      case 'boar':
         if (
-          userDepartment != "T" &&
-          userDepartment != "U" &&
-          userDepartment != "S" &&
-          userDepartment != "K" &&
-          userDepartment != "R"
+          userDepartment != 'T' &&
+          userDepartment != 'U' &&
+          userDepartment != 'S' &&
+          userDepartment != 'K' &&
+          userDepartment != 'R'
         ) {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
+          console.log('Permission Denied: この情報にはアクセスできません');
+          Router.push('/map');
           return;
         }
         layerId = BOAR_LAYER_ID;
         break;
-      case "trap":
+      case 'trap':
         if (
-          userDepartment != "T" &&
-          userDepartment != "U" &&
-          userDepartment != "S" &&
-          userDepartment != "K" &&
-          userDepartment != "R"
+          userDepartment != 'T' &&
+          userDepartment != 'U' &&
+          userDepartment != 'S' &&
+          userDepartment != 'K' &&
+          userDepartment != 'R'
         ) {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
+          console.log('Permission Denied: この情報にはアクセスできません');
+          Router.push('/map');
           return;
         }
         layerId = TRAP_LAYER_ID;
         break;
-      case "vaccine":
-        if (userDepartment != "W" && userDepartment != "K") {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
+      case 'vaccine':
+        if (userDepartment != 'W' && userDepartment != 'K') {
+          console.log('Permission Denied: この情報にはアクセスできません');
+          Router.push('/map');
           return;
         }
         layerId = VACCINE_LAYER_ID;
@@ -126,10 +125,10 @@ class ConfirmEditedInfo extends React.Component {
       this.state.imageURLs.forEach(url => URL.revokeObjectURL(url));
 
       // mapに飛ばす
-      alert("登録が完了しました。\nご協力ありがとうございました。");
-      Router.push("/map");
+      alert('登録が完了しました。\nご協力ありがとうございました。');
+      Router.push('/map');
     } catch (e) {
-      console.error("アップロードエラー", e);
+      console.error('アップロードエラー', e);
       alert(`登録に失敗しました。\n${e}`);
       this.setState({ isProcessing: false });
     }
@@ -148,29 +147,29 @@ class ConfirmEditedInfo extends React.Component {
       // 送信用データ生成
       const body = new FormData();
       for (let i = 0; i < this.state.imageBlobs.length; i++) {
-        body.append("files[]", this.state.imageBlobs[i]);
+        body.append('files[]', this.state.imageBlobs[i]);
       }
-      const url = SERVER_URI + "/Image/AddImage?type=" + this.state.type;
+      const url = SERVER_URI + '/Image/AddImage?type=' + this.state.type;
       const req = {
-        credentials: "include",
-        method: "POST",
+        credentials: 'include',
+        method: 'POST',
         body: body,
         header: {
-          "Content-Type": "multipart/form-data"
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       };
       // 通信
       try {
         const r = await fetch(url, req);
         const json = await r.json();
-        if (json["status"] == 200) {
+        if (json['status'] == 200) {
           // 通信成功
-          json["results"].forEach(element => {
-            ids.push({ id: element["id"], error: 0 });
+          json['results'].forEach(element => {
+            ids.push({ id: element['id'], error: 0 });
           });
           resolve(ids);
         } else {
-          reject(json["reason"]);
+          reject(json['reason']);
         }
       } catch (e) {
         // 通信orデコード失敗
@@ -182,33 +181,33 @@ class ConfirmEditedInfo extends React.Component {
   // 消された画像をサーバーからも消す
   deleteImages() {
     // TODO
-    console.log("削除画像", this.state.deletedIDs);
+    console.log('削除画像', this.state.deletedIDs);
     // 一枚ずつ消す
     const deleteImage = id => {
       return new Promise(async (resolve, reject) => {
         try {
           const data = new FormData();
-          data.append("id", id);
+          data.append('id', id);
           const options = {
-            credentials: "include",
-            method: "POST",
+            credentials: 'include',
+            method: 'POST',
             body: data,
             headers: {
-              Accept: "application/json",
-              "Content-Type": "application/x-www-form-urlencoded"
-            }
+              Accept: 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
           };
-          delete options.headers["Content-Type"];
+          delete options.headers['Content-Type'];
           const res = await fetch(
             `${SERVER_URI}/Image/DeleteImage.php`,
-            options
+            options,
           );
           const json = await res.json();
-          console.log("deleteImage", json);
+          console.log('deleteImage', json);
           if (res.status === 200) {
             resolve();
           } else {
-            reject(json["reason"]);
+            reject(json['reason']);
           }
         } catch (e) {
           reject(e);
@@ -226,39 +225,39 @@ class ConfirmEditedInfo extends React.Component {
       const reg_ids = [].concat(this.state.imageIDs);
       for (let i = 0; i < imageRes.length; i++) {
         const data = imageRes[i];
-        if (data["id"] !== "") {
-          reg_ids.push(data["id"]);
+        if (data['id'] !== '') {
+          reg_ids.push(data['id']);
         }
       }
-      const send_ids = reg_ids.join(",");
-      feature["properties"]["画像ID"] = send_ids;
-      console.log("登録フィーチャ", feature);
+      const send_ids = reg_ids.join(',');
+      feature['properties']['画像ID'] = send_ids;
+      console.log('登録フィーチャ', feature);
 
       // 登録データ生成
       const data = {
         layerId: layerId,
         srid: 4326,
-        features: [feature]
+        features: [feature],
       };
 
       // post
       try {
-        const res = await fetch(SERVER_URI + "/Feature/UpdateFeatures", {
-          method: "POST",
+        const res = await fetch(SERVER_URI + '/Feature/UpdateFeatures', {
+          method: 'POST',
           headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
-          mode: "cors",
-          credentials: "include",
-          body: JSON.stringify(data)
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify(data),
         });
         const json = await res.json();
         console.log(json);
         if (res.status === 200) {
           resolve();
         } else {
-          reject(json["reason"]);
+          reject(json['reason']);
         }
       } catch (e) {
         reject(e);
@@ -267,25 +266,25 @@ class ConfirmEditedInfo extends React.Component {
   }
 
   onClickPrev() {
-    const url = "/edit/info";
+    const url = '/edit/info';
     Router.push(
       {
         pathname: url,
         query: {
-          id: this.state.detail["properties"]["ID$"],
+          id: this.state.detail['properties']['ID$'],
           type: this.state.type,
           detail: JSON.stringify(this.state.detail),
           imageIDs: JSON.stringify(this.state.imageIDs),
           objectURLs: JSON.stringify(this.state.imageURLs),
-          deletedIDs: JSON.stringify(this.state.deletedIDs)
-        }
+          deletedIDs: JSON.stringify(this.state.deletedIDs),
+        },
       },
-      url
+      url,
     );
   }
 
   async onClickNext() {
-    const result = window.confirm("この内容でよろしいですか？");
+    const result = window.confirm('この内容でよろしいですか？');
     if (result) {
       await this.submitInfo();
     }
@@ -295,7 +294,7 @@ class ConfirmEditedInfo extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">捕獲情報編集</Header>;
     switch (this.state.type) {
-      case "boar":
+      case 'boar':
         header = <Header color="boar">捕獲情報編集</Header>;
         detaildiv = (
           <BoarInfo
@@ -307,7 +306,7 @@ class ConfirmEditedInfo extends React.Component {
           />
         );
         break;
-      case "trap":
+      case 'trap':
         header = <Header color="trap">わな情報編集</Header>;
         detaildiv = (
           <TrapInfo
@@ -319,7 +318,7 @@ class ConfirmEditedInfo extends React.Component {
           />
         );
         break;
-      case "vaccine":
+      case 'vaccine':
         header = <Header color="vaccine">ワクチン情報編集</Header>;
         detaildiv = (
           <VaccineInfo

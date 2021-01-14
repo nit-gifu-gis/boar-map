@@ -1,10 +1,10 @@
-import style from "./header.scss";
-import "./header.scss";
-import React from "react";
-import "../../../utils/statics";
-import Link from "next/link";
-import SessionManager from "../../../utils/session";
-import UserData from "../../../utils/userData";
+import style from './header.scss';
+import './header.scss';
+import React from 'react';
+import '../../../utils/statics';
+import Link from 'next/link';
+import SessionManager from '../../../utils/session';
+import UserData from '../../../utils/userData';
 
 class Header extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class Header extends React.Component {
     this.state = {
       clicked: false,
       userData: UserData.getUserData(),
-      userDepartment: null
+      userDepartment: null,
     };
   }
 
@@ -22,16 +22,17 @@ class Header extends React.Component {
   }
 
   onClickHam() {
-    const ham = document.getElementById("ham");
-    const header = document.getElementById("header");
-    ham.classList.toggle("clicked");
-    header.classList.toggle("clicked");
+    const ham = document.getElementById('ham');
+    const header = document.getElementById('header');
+    ham.classList.toggle('clicked');
+    header.classList.toggle('clicked');
     const c = this.state.clicked;
     this.setState({ clicked: !c });
   }
 
-  onLogout() {
-    const result = window.confirm("本当にログアウトしてよろしいですか？");
+  onLogout(e) {
+    e.preventDefault();
+    const result = window.confirm('本当にログアウトしてよろしいですか？');
     if (result) {
       SessionManager.logout(document);
     }
@@ -47,21 +48,21 @@ class Header extends React.Component {
         <Link href="/map">
           <a>マップ</a>
         </Link>
-      </div>
+      </div>,
     );
 
     // K,R,S権限であれば一覧表
     if (
-      this.state.userDepartment === "K" ||
-      this.state.userDepartment === "R" ||
-      this.state.userDepartment === "S"
+      this.state.userDepartment === 'K' ||
+      this.state.userDepartment === 'R' ||
+      this.state.userDepartment === 'S'
     ) {
       contents.push(
         <div className="menu_item" key="menu_item_list">
           <Link href="/list">
             <a>一覧表</a>
           </Link>
-        </div>
+        </div>,
       );
     }
 
@@ -75,7 +76,7 @@ class Header extends React.Component {
         >
           アンケート
         </a>
-      </div>
+      </div>,
     );
 
     // バージョン情報
@@ -84,18 +85,18 @@ class Header extends React.Component {
         <Link href="/version">
           <a>バージョン情報</a>
         </Link>
-      </div>
+      </div>,
     );
 
     // ログアウト
     contents.push(
       <div className="menu_item danger_item" key="menu_item_logout">
-        <Link href="#">
+        <Link href="/map">
           <a className="logout_link" onClick={this.onLogout}>
             ログアウト
           </a>
         </Link>
-      </div>
+      </div>,
     );
 
     // ヘッダー高さ決定
@@ -112,7 +113,7 @@ class Header extends React.Component {
 
     // フォントサイズ決定（要修正）
     let textFontSize = 30;
-    if (typeof this.props.children == "string") {
+    if (typeof this.props.children == 'string') {
       const textLength = this.props.children.length;
       if (textLength != null && textLength >= 7) {
         textFontSize = 25;
@@ -120,8 +121,8 @@ class Header extends React.Component {
     }
 
     // アニメーション
-    const anim1 = "all 0.2s ease-in-out";
-    const anim2 = "all 0.2s 0.2s ease-in-out";
+    const anim1 = 'all 0.2s ease-in-out';
+    const anim2 = 'all 0.2s 0.2s ease-in-out';
 
     return (
       <div
@@ -130,7 +131,7 @@ class Header extends React.Component {
         style={{
           backgroundColor: bgColor,
           height: height,
-          transition: this.state.clicked ? anim1 : anim2
+          transition: this.state.clicked ? anim1 : anim2,
         }}
       >
         <div className="title">
@@ -152,7 +153,7 @@ class Header extends React.Component {
           className="menu"
           style={{
             height: itemHeight * itemLength,
-            transition: this.state.clicked ? anim2 : anim1
+            transition: this.state.clicked ? anim2 : anim1,
           }}
         >
           {contents}

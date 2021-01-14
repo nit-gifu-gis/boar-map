@@ -1,7 +1,7 @@
-import "./imagesInput.scss";
-import "../../../utils/statics";
-import React from "react";
-import RoundButton from "../roundButton";
+import './imagesInput.scss';
+import '../../../utils/statics';
+import React from 'react';
+import RoundButton from '../roundButton';
 
 class ImagesInput extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class ImagesInput extends React.Component {
       name: this.props.name,
       objectURLs: [],
       imageIDs: [],
-      type: props.type
+      type: props.type,
     };
 
     if (this.props.onChange != undefined) {
@@ -51,23 +51,23 @@ class ImagesInput extends React.Component {
           const w = wRow * ratio;
           const h = hRow * ratio;
           // キャンバスに描画
-          const canvas = document.getElementById("canvas");
-          const ctx = canvas.getContext("2d");
-          canvas.setAttribute("width", w);
-          canvas.setAttribute("height", h);
+          const canvas = document.getElementById('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.setAttribute('width', w);
+          canvas.setAttribute('height', h);
           ctx.drawImage(imageData, 0, 0, w, h);
           // Blobを生成
           if (canvas.msToBlob) {
             // msToBlobが実装されているブラウザ(IE/レガシーEdge)ではこの方法
             // dataURLを生成
-            const url = canvas.toDataURL("image/jpeg", 0.5);
+            const url = canvas.toDataURL('image/jpeg', 0.5);
             // blobを生成
-            const bin = atob(url.replace(/^.*,/, ""));
+            const bin = atob(url.replace(/^.*,/, ''));
             const buffer = new Uint8Array(bin.length);
             for (let i = 0; i < bin.length; i++) {
               buffer[i] = bin.charCodeAt(i);
             }
-            const blob = new Blob([buffer.buffer], { type: "image/png" });
+            const blob = new Blob([buffer.buffer], { type: 'image/png' });
             console.log(blob.size);
             // objectURLを生成
             const objectURL = URL.createObjectURL(blob);
@@ -79,14 +79,14 @@ class ImagesInput extends React.Component {
                 const objectURL = URL.createObjectURL(blob);
                 resolve(objectURL);
               },
-              "image/jpeg",
-              0.5
+              'image/jpeg',
+              0.5,
             );
           }
         };
         imageData.onerror = e => reject(e);
       } else {
-        reject("window is not defined.");
+        reject('window is not defined.');
       }
     });
   }
@@ -100,7 +100,7 @@ class ImagesInput extends React.Component {
         input.files.length >
       10
     ) {
-      alert("一度に登録できる画像は10枚までです");
+      alert('一度に登録できる画像は10枚までです');
       return;
     }
     // 入力された各画像に関して
@@ -118,7 +118,7 @@ class ImagesInput extends React.Component {
       // onChangeを呼ぶ
       this.state.onChange(newlist);
       return {
-        objectURLs: newlist
+        objectURLs: newlist,
       };
     });
     // this.state.onChange(data);
@@ -126,7 +126,7 @@ class ImagesInput extends React.Component {
 
   // 各画像の上のバツボタンを押したときの処理
   onClickEreseButton(index) {
-    if (confirm("この画像の登録を取り消しますか？")) {
+    if (confirm('この画像の登録を取り消しますか？')) {
       console.log(index);
       console.log(this.state.objectURLs[index]);
       // 押された番号のobjectURLを消す
@@ -138,7 +138,7 @@ class ImagesInput extends React.Component {
         // onChangeを呼ぶ
         this.state.onChange(newlist);
         return {
-          objectURLs: newlist
+          objectURLs: newlist,
         };
       });
     }
@@ -146,7 +146,7 @@ class ImagesInput extends React.Component {
 
   // もともと登録されている画像のバツボタン
   onClickEreseButtonForServerImage(index) {
-    if (confirm("この画像の登録を取り消しますか？")) {
+    if (confirm('この画像の登録を取り消しますか？')) {
       console.log(index);
       console.log(this.state.imageIDs[index]);
       // 押された番号のimageIDを消す
@@ -156,7 +156,7 @@ class ImagesInput extends React.Component {
         // onChangeを呼ぶ
         this.state.onDeleteServerImage(newlist, this.state.imageIDs[index]);
         return {
-          imageIDs: newlist
+          imageIDs: newlist,
         };
       });
     }
@@ -168,9 +168,9 @@ class ImagesInput extends React.Component {
   }
 
   render() {
-    let className = "images-input";
+    let className = 'images-input';
     if (this.props.error) {
-      className += "--error";
+      className += '--error';
     }
     // プレビューを描画
     const previewChildren = [];
@@ -220,7 +220,7 @@ class ImagesInput extends React.Component {
             accept="image/png,image/jpeg"
             multiple
             onChange={this.formChanged.bind(this)}
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
           />
         </form>
         <div className="images-input__preview" id="preview">

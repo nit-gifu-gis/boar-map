@@ -1,7 +1,7 @@
-import "./footer.scss";
-import React from "react";
-import "../../../public/static/css/global.scss";
-import "../../../utils/statics";
+import './footer.scss';
+import React from 'react';
+
+import '../../../utils/statics';
 
 class Footer extends React.Component {
   render() {
@@ -9,7 +9,7 @@ class Footer extends React.Component {
     let children;
     if (Array.isArray(this.props.children)) {
       const len = this.props.children.length;
-      const width = "calc(100vw / " + len + ")";
+      const width = 'calc(100vw / ' + len + ')';
       // console.log("width", width);
       children = [];
       this.props.children.forEach(c => {
@@ -22,7 +22,7 @@ class Footer extends React.Component {
       });
     } else {
       children = (
-        <div className="footer__child" style={{ width: "75vw" }}>
+        <div className="footer__child" style={{ width: '75vw' }}>
           {this.props.children}
         </div>
       );

@@ -1,15 +1,15 @@
-import "./versionInfo.scss";
-import "../../../public/static/css/global.scss";
-import React from "react";
-import ReactMarkDown from "react-markdown/with-html";
-import { getVersionInfomation } from "../../../utils/versioninfo";
+import './versionInfo.scss';
+
+import React from 'react';
+import ReactMarkDown from 'react-markdown/with-html';
+import { getVersionInfomation } from '../../../utils/versioninfo';
 
 class VersionInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       markdown: null,
-      latest: null
+      latest: null,
     };
   }
 
@@ -19,10 +19,10 @@ class VersionInfo extends React.Component {
       const version = await getVersionInfomation();
       this.setState({
         markdown: version.allText,
-        latest: version.latestNumber
+        latest: version.latestNumber,
       });
     } catch (e) {
-      console.error("Login: get version error:", e);
+      console.error('Login: get version error:', e);
     }
   }
 

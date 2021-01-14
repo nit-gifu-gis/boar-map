@@ -1,12 +1,11 @@
-import React from "react";
-import "./selectInput.scss";
-import "../../../public/static/css/global.scss";
+import React from 'react';
+import './selectInput.scss';
 
 class SelectInput extends React.Component {
   render() {
-    let className = "select-input-div__select-input";
+    let className = 'select-input-div__select-input';
     if (this.props.error) {
-      className += "--error";
+      className += '--error';
     }
 
     const options = [];

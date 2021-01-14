@@ -1,9 +1,9 @@
-import "./miniMapDiv.scss";
-import React from "react";
-import L from "leaflet";
-import "../../../utils/extwms";
-import EventListener from "react-event-listener";
-import UserData from "../../../utils/userData";
+import './miniMapDiv.scss';
+import React from 'react';
+import L from 'leaflet';
+import '../../../utils/extwms';
+import EventListener from 'react-event-listener';
+import UserData from '../../../utils/userData';
 
 class MiniMapDiv extends React.Component {
   constructor(props) {
@@ -12,11 +12,11 @@ class MiniMapDiv extends React.Component {
     // もしCookieにlast_xxがあったら読み込む
     let defaultZoom = 17;
     if (process.browser) {
-      const r = document.cookie.split(";");
+      const r = document.cookie.split(';');
       r.forEach(value => {
-        const content = value.split("=");
-        content[0] = content[0].replace(" ", "");
-        if (content[0] == "last_zoom") {
+        const content = value.split('=');
+        content[0] = content[0].replace(' ', '');
+        if (content[0] == 'last_zoom') {
           defaultZoom = parseFloat(content[1]);
         }
       });
@@ -26,7 +26,7 @@ class MiniMapDiv extends React.Component {
       myMap: null,
       lat: this.props.lat,
       lng: this.props.lng,
-      zoom: defaultZoom
+      zoom: defaultZoom,
     };
   }
 
@@ -42,54 +42,54 @@ class MiniMapDiv extends React.Component {
     const node = this.node;
     this.state.myMap = L.map(node, { keyboard: false }).setView(
       [this.state.lat, this.state.lng],
-      this.state.zoom
+      this.state.zoom,
     );
 
     // ユーザーデータ取得(cookieから持ってくる)
     const userData = UserData.getUserData();
 
     const mainLayer = L.TileLayer.wmsHeader(
-      "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
+      'https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S',
       {
-        version: "1.3.0",
-        layers: "999999194",
-        format: "image/png",
+        version: '1.3.0',
+        layers: '999999194',
+        format: 'image/png',
         maxZoom: 18,
         tileSize: 256,
         crs: L.CRS.EPSG3857,
-        uppercase: true
+        uppercase: true,
       },
       [
         {
-          header: "X-Map-Api-Access-Token",
-          value: userData.access_token
-        }
-      ]
+          header: 'X-Map-Api-Access-Token',
+          value: userData.access_token,
+        },
+      ],
     ).addTo(this.state.myMap);
 
     L.control.scale().addTo(this.state.myMap);
 
     // 十字
     const centerCrossIcon = L.icon({
-      iconUrl: "../../../static/images/map/centerCross.svg",
-      iconRetinaUrl: "../../../static/images/map/centerCross.svg",
+      iconUrl: '../../../static/images/map/centerCross.svg',
+      iconRetinaUrl: '../../../static/images/map/centerCross.svg',
       iconSize: [40, 20],
-      iconAnchor: [21, 11]
+      iconAnchor: [21, 11],
     });
     const centerCross = L.marker([this.state.lat, this.state.lng], {
       icon: centerCrossIcon,
-      zIndexOffset: 400
+      zIndexOffset: 400,
     }).addTo(this.state.myMap);
     // ピン
     const centerPinIcon = L.icon({
-      iconUrl: "../../../static/images/map/centerPin.svg",
-      iconRetinaUrl: "../../../static/images/map/centerPin.svg",
+      iconUrl: '../../../static/images/map/centerPin.svg',
+      iconRetinaUrl: '../../../static/images/map/centerPin.svg',
       iconSize: [31, 45],
-      iconAnchor: [17, 45]
+      iconAnchor: [17, 45],
     });
     const centerPin = L.marker([this.state.lat, this.state.lng], {
       icon: centerPinIcon,
-      zIndexOffset: 400
+      zIndexOffset: 400,
     }).addTo(this.state.myMap);
   }
 

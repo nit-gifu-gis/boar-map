@@ -1,9 +1,9 @@
-import "./vaccineForm.scss";
-import "../../../public/static/css/global.scss";
-import Router from "next/router";
-import React from "react";
-import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
+import './vaccineForm.scss';
+
+import Router from 'next/router';
+import React from 'react';
+import InfoInput from '../../molecules/infoInput';
+import UserData from '../../../utils/userData';
 
 class VaccineForm extends React.Component {
   constructor(props) {
@@ -21,8 +21,8 @@ class VaccineForm extends React.Component {
         eatenNumber: null,
         damageNumber: null,
         noDamageNumber: null,
-        lostNumber: null
-      }
+        lostNumber: null,
+      },
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -41,15 +41,15 @@ class VaccineForm extends React.Component {
   componentDidMount() {
     // W, K以外は登録不可
     const userDepartment = this.state.userData.department;
-    if (userDepartment != "W" && userDepartment != "K") {
-      console.log("Permission Denied: この情報にはアクセスできません");
-      Router.push("/map");
+    if (userDepartment != 'W' && userDepartment != 'K') {
+      console.log('Permission Denied: この情報にはアクセスできません');
+      Router.push('/map');
       return;
     }
     // detailが与えられた場合
     if (this.state.detail != null) {
       const detail = this.state.detail;
-      const recover = detail["properties"]["回収年月日"];
+      const recover = detail['properties']['回収年月日'];
       if (recover) {
         this.setState(_ => {
           return { recover: true };
@@ -72,11 +72,11 @@ class VaccineForm extends React.Component {
     const form = document.forms.form;
     const meshNo = form.meshNo.value;
     // データが無いならエラー
-    if (meshNo === "") {
-      await this.updateError("meshNo", "入力されていません。");
+    if (meshNo === '') {
+      await this.updateError('meshNo', '入力されていません。');
       return false;
     } else {
-      await this.updateError("meshNo", null);
+      await this.updateError('meshNo', null);
       return true;
     }
   }
@@ -95,18 +95,18 @@ class VaccineForm extends React.Component {
 
   async validateTreatNumber() {
     const form = document.forms.form;
-    const numberStr = form.elements["treatNumber"].value;
+    const numberStr = form.elements['treatNumber'].value;
     const error = checkNumberError(numberStr);
     if (error != null) {
-      await this.updateError("treatNumber", error);
+      await this.updateError('treatNumber', error);
       return false;
     }
     const num = parseInt(numberStr);
     if (num <= 0) {
-      await this.updateError("treatNumber", "0以下の数値が入力されています。");
+      await this.updateError('treatNumber', '0以下の数値が入力されています。');
       return false;
     }
-    await this.updateError("treatNumber", null);
+    await this.updateError('treatNumber', null);
     return true;
   }
 
@@ -120,7 +120,7 @@ class VaccineForm extends React.Component {
     }
     const num = parseInt(numberStr);
     if (num < 0) {
-      await this.updateError(name, "0未満の数値が入力されています。");
+      await this.updateError(name, '0未満の数値が入力されています。');
       return false;
     }
     await this.updateError(name, null);
@@ -129,16 +129,16 @@ class VaccineForm extends React.Component {
 
   async validateDates() {
     // 散布年月日をチェック
-    if (!(await this.validateEachDate("treatDate"))) {
+    if (!(await this.validateEachDate('treatDate'))) {
       return false;
     }
     // 未回収なら，それ以外のエラーを消して終了
     if (!this.state.recover) {
-      await this.updateError("recoverDate", null);
+      await this.updateError('recoverDate', null);
       return true;
     }
     // 回収済みなら，回収年月日をチェック
-    if (!(await this.validateEachDate("recoverDate"))) {
+    if (!(await this.validateEachDate('recoverDate'))) {
       return false;
     }
     // ここまできたら，それぞれの日付はOK，前後関係を確認する
@@ -148,13 +148,13 @@ class VaccineForm extends React.Component {
     // 散布年月日 > 回収年月日ならエラー
     if (compareDate(treatDateStr, recoverDateStr) > 0) {
       await this.updateError(
-        "recoverDate",
-        "散布年月日よりも前の日付が入力されています。"
+        'recoverDate',
+        '散布年月日よりも前の日付が入力されています。',
       );
       return false;
     }
-    await this.updateError("treatDate", null);
-    await this.updateError("removeDate", null);
+    await this.updateError('treatDate', null);
+    await this.updateError('removeDate', null);
     return true;
   }
 
@@ -165,18 +165,18 @@ class VaccineForm extends React.Component {
     }
     // 未回収なら，それ以外のエラーを消して終了
     if (!this.state.recover) {
-      this.updateError("treatNumber", null);
-      this.updateError("eatenNumber", null);
-      this.updateError("damageNumber", null);
-      this.updateError("noDamageNumber", null);
-      this.updateError("lostNumber", null);
+      this.updateError('treatNumber', null);
+      this.updateError('eatenNumber', null);
+      this.updateError('damageNumber', null);
+      this.updateError('noDamageNumber', null);
+      this.updateError('lostNumber', null);
       return true;
     }
     // 回収済みなら，各種エラーをチェック
-    let pass = await this.validateEachNumber("eatenNumber");
-    pass &= await this.validateEachNumber("damageNumber");
-    pass &= await this.validateEachNumber("noDamageNumber");
-    pass &= await this.validateEachNumber("lostNumber");
+    let pass = await this.validateEachNumber('eatenNumber');
+    pass &= await this.validateEachNumber('damageNumber');
+    pass &= await this.validateEachNumber('noDamageNumber');
+    pass &= await this.validateEachNumber('lostNumber');
     if (!pass) {
       return false;
     }
@@ -191,24 +191,24 @@ class VaccineForm extends React.Component {
       eatenNumber + damageNumber + noDamageNumber + lostNumber;
     if (treatNumber != totalNumber) {
       this.updateError(
-        "treatNumber",
-        "散布数と回収に係る数の合計が合っていません。"
+        'treatNumber',
+        '散布数と回収に係る数の合計が合っていません。',
       );
       this.updateError(
-        "eatenNumber",
-        "散布数と回収に係る数の合計が合っていません。"
+        'eatenNumber',
+        '散布数と回収に係る数の合計が合っていません。',
       );
       this.updateError(
-        "damageNumber",
-        "散布数と回収に係る数の合計が合っていません。"
+        'damageNumber',
+        '散布数と回収に係る数の合計が合っていません。',
       );
       this.updateError(
-        "noDamageNumber",
-        "散布数と回収に係る数の合計が合っていません。"
+        'noDamageNumber',
+        '散布数と回収に係る数の合計が合っていません。',
       );
       this.updateError(
-        "lostNumber",
-        "散布数と回収に係る数の合計が合っていません。"
+        'lostNumber',
+        '散布数と回収に係る数の合計が合っていません。',
       );
     }
   }
@@ -249,15 +249,15 @@ class VaccineForm extends React.Component {
     // 隠し情報 回収済みかどうか
     const recover = this.state.recover;
     // 5 回収年月日
-    let recoverDate = "";
+    let recoverDate = '';
     // 6 摂食数
-    let eatenNumber = "";
+    let eatenNumber = '';
     // 7 その他の破損数
-    let damageNumber = "";
+    let damageNumber = '';
     // 8 破損なし
-    let noDamageNumber = "";
+    let noDamageNumber = '';
     // 8-1 ロスト数
-    let lostNumber = "";
+    let lostNumber = '';
     // 9 備考
     const note = form.note.value;
     if (recover) {
@@ -269,14 +269,14 @@ class VaccineForm extends React.Component {
     }
 
     return {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "Point",
-        coordinates: [parseFloat(lng), parseFloat(lat)]
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)],
       },
       properties: {
         入力者: user,
-        位置情報: "(" + lat + "," + lng + ")",
+        位置情報: '(' + lat + ',' + lng + ')',
         メッシュNO: meshNo,
         散布年月日: treatDate,
         散布数: treatNumber,
@@ -285,8 +285,8 @@ class VaccineForm extends React.Component {
         その他の破損数: damageNumber,
         破損なし: noDamageNumber,
         ロスト数: lostNumber,
-        備考: note
-      }
+        備考: note,
+      },
     };
   }
 
@@ -294,7 +294,7 @@ class VaccineForm extends React.Component {
   onChangeRecover() {
     const recoverSelect = document.forms.form.recover;
     const recover = recoverSelect.options[recoverSelect.selectedIndex].value;
-    if (recover == "回収済") {
+    if (recover == '回収済') {
       this.setState(_ => {
         return { recover: true };
       });
@@ -321,11 +321,11 @@ class VaccineForm extends React.Component {
             name="recoverDate"
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["回収年月日"]
+                ? this.state.detail['properties']['回収年月日']
                 : null
             }
             required={true}
-            onChange={this.validateEachDate.bind(this, "recoverDate")}
+            onChange={this.validateEachDate.bind(this, 'recoverDate')}
             errorMessage={this.state.error.recoverDate}
           />,
           <InfoInput
@@ -336,11 +336,11 @@ class VaccineForm extends React.Component {
             step={1}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["摂食数"]
+                ? this.state.detail['properties']['摂食数']
                 : null
             }
             required={true}
-            onChange={this.validateEachNumber.bind(this, "eatenNumber")}
+            onChange={this.validateEachNumber.bind(this, 'eatenNumber')}
             errorMessage={this.state.error.eatenNumber}
           />,
           <InfoInput
@@ -351,11 +351,11 @@ class VaccineForm extends React.Component {
             step={1}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["その他の破損数"]
+                ? this.state.detail['properties']['その他の破損数']
                 : null
             }
             required={true}
-            onChange={this.validateEachNumber.bind(this, "damageNumber")}
+            onChange={this.validateEachNumber.bind(this, 'damageNumber')}
             errorMessage={this.state.error.damageNumber}
           />,
           <InfoInput
@@ -366,11 +366,11 @@ class VaccineForm extends React.Component {
             step={1}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["破損なし"]
+                ? this.state.detail['properties']['破損なし']
                 : null
             }
             required={true}
-            onChange={this.validateEachNumber.bind(this, "noDamageNumber")}
+            onChange={this.validateEachNumber.bind(this, 'noDamageNumber')}
             errorMessage={this.state.error.noDamageNumber}
           />,
           <InfoInput
@@ -381,13 +381,13 @@ class VaccineForm extends React.Component {
             step={1}
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["ロスト数"]
+                ? this.state.detail['properties']['ロスト数']
                 : null
             }
             required={true}
-            onChange={this.validateEachNumber.bind(this, "lostNumber")}
+            onChange={this.validateEachNumber.bind(this, 'lostNumber')}
             errorMessage={this.state.error.lostNumber}
-          />
+          />,
         ];
       }
       return (
@@ -410,7 +410,7 @@ class VaccineForm extends React.Component {
                 name="meshNo"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["メッシュNO"]
+                    ? this.state.detail['properties']['メッシュNO']
                     : null
                 }
                 lat={this.state.lat}
@@ -425,11 +425,11 @@ class VaccineForm extends React.Component {
                 name="treatDate"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["散布年月日"]
+                    ? this.state.detail['properties']['散布年月日']
                     : null
                 }
                 required={true}
-                onChange={this.validateEachDate.bind(this, "treatDate")}
+                onChange={this.validateEachDate.bind(this, 'treatDate')}
                 errorMessage={this.state.error.treatDate}
               />
               <InfoInput
@@ -439,7 +439,7 @@ class VaccineForm extends React.Component {
                 min="1"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["散布数"]
+                    ? this.state.detail['properties']['散布数']
                     : null
                 }
                 onChange={this.validateTreatNumber.bind(this)}
@@ -451,8 +451,8 @@ class VaccineForm extends React.Component {
                 type="select"
                 name="recover"
                 onChange={this.onChangeRecover.bind(this)}
-                options={["未回収", "回収済"]}
-                defaultValue={this.state.recover ? "回収済" : "未回収"}
+                options={['未回収', '回収済']}
+                defaultValue={this.state.recover ? '回収済' : '未回収'}
               />
               {recoverInfoForm}
               <InfoInput
@@ -462,7 +462,7 @@ class VaccineForm extends React.Component {
                 name="note"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["備考"]
+                    ? this.state.detail['properties']['備考']
                     : null
                 }
               />

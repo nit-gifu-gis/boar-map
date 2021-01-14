@@ -1,18 +1,18 @@
-import "./searchForm.scss";
-import "../../../public/static/css/global.scss";
-import Router from "next/router";
-import React from "react";
-import RoundButton from "../../atomos/roundButton";
-import TextInput from "../../atomos/textInput";
-import DateInput from "../../atomos/dateInput";
-import SelectInput from "../../atomos/selectInput";
+import './searchForm.scss';
+
+import Router from 'next/router';
+import React from 'react';
+import RoundButton from '../../atomos/roundButton';
+import TextInput from '../../atomos/textInput';
+import DateInput from '../../atomos/dateInput';
+import SelectInput from '../../atomos/selectInput';
 
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       dateErr: false,
-      onClick: data => {}
+      onClick: data => {},
     };
     if (props.onClick != undefined) {
       this.state.onClick = props.onClick;
@@ -23,10 +23,10 @@ class SearchForm extends React.Component {
     const value = document.getElementById(id).value;
     console.log(value);
     // 市町村はスペース区切りで配列化
-    if (id === "cities") {
+    if (id === 'cities') {
       const tmpArr = value.split(/[\s\n,\.，．、。]/);
       // 空白の配列は削除
-      const arr = tmpArr.filter(e => e !== "");
+      const arr = tmpArr.filter(e => e !== '');
       console.log(arr);
       this.state[id] = arr;
     } else {
@@ -46,25 +46,25 @@ class SearchForm extends React.Component {
   }
 
   onClickSearchButton() {
-    const date1 = document.getElementById("date1").value;
-    const date2 = document.getElementById("date2").value;
+    const date1 = document.getElementById('date1').value;
+    const date2 = document.getElementById('date2').value;
     if (!this.validateDate(date1, date2)) {
-      alert("日付の前後が間違っています。");
+      alert('日付の前後が間違っています。');
       return;
     }
-    const citiesStr = document.getElementById("cities").value;
+    const citiesStr = document.getElementById('cities').value;
     // 市町村はスペース（等）区切りをカンマ区切りに直す
-    const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== "");
-    const division = document.getElementById("division").value;
+    const cities = citiesStr.split(/[\s\n,\.，．、。]/).filter(e => e !== '');
+    const division = document.getElementById('division').value;
     // ファイルを取得しておく
-    const userList = document.getElementById("userList").files;
+    const userList = document.getElementById('userList').files;
     const data = new FormData();
-    data.append("fromDate", date1);
-    data.append("toDate", date2);
-    data.append("cities", cities);
-    data.append("divisions", division);
+    data.append('fromDate', date1);
+    data.append('toDate', date2);
+    data.append('cities', cities);
+    data.append('divisions', division);
     if (userList.length !== 0) {
-      data.append("userList", userList[0]);
+      data.append('userList', userList[0]);
     }
     // 親に通知
     this.state.onClick(data);
@@ -104,14 +104,14 @@ class SearchForm extends React.Component {
               <SelectInput
                 id="division"
                 options={[
-                  "すべて",
-                  "調査捕獲",
-                  "有害捕獲",
-                  "死亡",
-                  "狩猟",
-                  "その他"
+                  'すべて',
+                  '調査捕獲',
+                  '有害捕獲',
+                  '死亡',
+                  '狩猟',
+                  'その他',
                 ]}
-                defaultValue={"すべて"}
+                defaultValue={'すべて'}
               />
             </div>
             <div className="search-form__form__grid__title search-form__form__grid__user-list">

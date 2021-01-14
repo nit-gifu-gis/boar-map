@@ -1,12 +1,11 @@
-import React from "react";
-import "./textAreaInput.scss";
-import "../../../public/static/css/global.scss";
+import React from 'react';
+import './textAreaInput.scss';
 
 class TextAreaInput extends React.Component {
   render() {
-    let className = "text-area-input__input";
+    let className = 'text-area-input__input';
     if (this.props.error) {
-      className += "--error";
+      className += '--error';
     }
     let input;
     if (this.props.required) {

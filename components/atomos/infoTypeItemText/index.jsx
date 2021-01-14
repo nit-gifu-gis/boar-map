@@ -1,5 +1,5 @@
-import React from "react";
-import "./infoTypeItemText.scss";
+import React from 'react';
+import './infoTypeItemText.scss';
 
 class InfoTypeItemText extends React.Component {
   render() {

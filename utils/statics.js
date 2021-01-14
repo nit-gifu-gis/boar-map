@@ -1,6 +1,6 @@
 // 定数一覧
 
-SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 本番
+SERVER_URI = 'https://gis-dev.junki-t.net/v1'; // 本番
 // SERVER_URI = "https://localhost"; // 開発用ローカル
 MAX_UPLOAD_SIZE = 20 * (1024 * 1024);
 
@@ -9,25 +9,25 @@ TRAP_LAYER_ID = 5000009;
 VACCINE_LAYER_ID = 5000010;
 
 getColorCode = colorText => {
-  let colorCode = "#ff9800";
+  let colorCode = '#ff9800';
   switch (colorText) {
-    case "primary":
-      colorCode = "#ff9800";
+    case 'primary':
+      colorCode = '#ff9800';
       break;
-    case "accent":
-      colorCode = "#536dfe";
+    case 'accent':
+      colorCode = '#536dfe';
       break;
-    case "danger":
-      colorCode = "#ff0000";
+    case 'danger':
+      colorCode = '#ff0000';
       break;
-    case "boar":
-      colorCode = "#842929";
+    case 'boar':
+      colorCode = '#842929';
       break;
-    case "trap":
-      colorCode = "#fbc02d";
+    case 'trap':
+      colorCode = '#fbc02d';
       break;
-    case "vaccine":
-      colorCode = "#0288d1";
+    case 'vaccine':
+      colorCode = '#0288d1';
       break;
     default:
       break;

@@ -1,11 +1,11 @@
-import "./loginForm.scss";
-import Router from "next/router";
-import RoundButton from "../../atomos/roundButton";
-import TextInput from "../../atomos/textInput";
-import "../../../public/static/css/global.scss";
-import "../../../utils/statics";
-import React from "react";
-import { getVersionInfomation } from "../../../utils/versioninfo";
+import './loginForm.scss';
+import Router from 'next/router';
+import RoundButton from '../../atomos/roundButton';
+import TextInput from '../../atomos/textInput';
+
+import '../../../utils/statics';
+import React from 'react';
+import { getVersionInfomation } from '../../../utils/versioninfo';
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class LoginForm extends React.Component {
     this.state = {
       isLogining: false,
       isError: false,
-      versionNum: ""
+      versionNum: '',
     };
     this.onSubmitting.bind(this);
   }
@@ -24,7 +24,7 @@ class LoginForm extends React.Component {
       const version = await getVersionInfomation();
       this.setState({ versionNum: version.latestNumber });
     } catch (e) {
-      console.error("Login: get version error:", e);
+      console.error('Login: get version error:', e);
     }
   }
 
@@ -32,26 +32,26 @@ class LoginForm extends React.Component {
     event.preventDefault();
     // ボタン無効化
     this.setState({
-      isLogining: true
+      isLogining: true,
     });
-    const id = document.getElementById("login__id").value;
-    const pass = document.getElementById("login__pass").value;
+    const id = document.getElementById('login__id').value;
+    const pass = document.getElementById('login__pass').value;
 
     const body = {
       userId: id,
-      password: pass
+      password: pass,
     };
 
     try {
-      const res = await fetch(SERVER_URI + "/Authorization/GetToken.php", {
-        method: "POST",
+      const res = await fetch(SERVER_URI + '/Authorization/GetToken.php', {
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        mode: "cors",
-        credentials: "include",
-        body: JSON.stringify(body)
+        mode: 'cors',
+        credentials: 'include',
+        body: JSON.stringify(body),
       });
       if (res.status === 200) {
         // ログイン成功時
@@ -62,29 +62,29 @@ class LoginForm extends React.Component {
         document.cookie = `access_token=${json.accessToken}; path=/`;
         document.cookie = `login_time=${time}; path=/`;
         document.cookie =
-          "last_lat=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+          'last_lat=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         document.cookie =
-          "last_lng=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+          'last_lng=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         document.cookie =
-          "last_zoom=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+          'last_zoom=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         // mapへジャンプ
-        Router.push("/map");
+        Router.push('/map');
       } else {
         const json = await res.json();
         console.log(json);
-        document.getElementsByClassName("login_error")[0].innerHTML =
-          json["reason"];
+        document.getElementsByClassName('login_error')[0].innerHTML =
+          json['reason'];
         this.setState({
           isLogining: false,
-          isError: true
+          isError: true,
         });
       }
     } catch (error) {
       console.log(error);
-      document.getElementsByClassName("login_error")[0].innerHTML = error;
+      document.getElementsByClassName('login_error')[0].innerHTML = error;
       this.setState({
         isLogining: false,
-        isError: true
+        isError: true,
       });
     }
   };

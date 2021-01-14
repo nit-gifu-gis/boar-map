@@ -1,8 +1,8 @@
-import "./login.scss";
+import './login.scss';
 
-import Header from "../../organisms/header";
-import LoginForm from "../../organisms/loginForm";
-import Footer from "../../organisms/footer";
+import Header from '../../organisms/header';
+import LoginForm from '../../organisms/loginForm';
+import Footer from '../../organisms/footer';
 
 const Login = () => (
   <>

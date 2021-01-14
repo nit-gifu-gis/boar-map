@@ -12,10 +12,10 @@ deepClone = obj => {
 
 // Array
 isArray = item => {
-  return Object.prototype.toString.call(item) === "[object Array]";
+  return Object.prototype.toString.call(item) === '[object Array]';
 };
 
 // OBJECT
 isObject = item => {
-  return typeof item === "object" && item !== null && !isArray(item);
+  return typeof item === 'object' && item !== null && !isArray(item);
 };

@@ -1,19 +1,19 @@
-import "./trapInfo.scss";
-import React from "react";
-import InfoDiv from "../../molecules/infoDiv";
+import './trapInfo.scss';
+import React from 'react';
+import InfoDiv from '../../molecules/infoDiv';
 
 class TrapInfo extends React.Component {
   state = {
-    removeDateDiv: null
+    removeDateDiv: null,
   };
   render() {
     let removediv = undefined;
-    if (this.props.detail["properties"]["撤去年月日"] != "") {
+    if (this.props.detail['properties']['撤去年月日'] != '') {
       removediv = (
         <InfoDiv
           title="撤去年月日"
           type="date"
-          data={this.props.detail["properties"]["撤去年月日"]}
+          data={this.props.detail['properties']['撤去年月日']}
         />
       );
     }
@@ -23,34 +23,34 @@ class TrapInfo extends React.Component {
           title="場所"
           type="location"
           data={{
-            lat: this.props.detail["geometry"]["coordinates"][1],
-            lng: this.props.detail["geometry"]["coordinates"][0]
+            lat: this.props.detail['geometry']['coordinates'][1],
+            lng: this.props.detail['geometry']['coordinates'][0],
           }}
         />
         <InfoDiv
           title="画像"
           type="images"
           data={{
-            type: "trap",
+            type: 'trap',
             objectURLs: this.props.objectURLs,
             imageIDs: this.props.imageIDs,
-            confirmMode: this.props.confirmMode
+            confirmMode: this.props.confirmMode,
           }}
         />
         <InfoDiv
           title="設置年月日"
           type="date"
-          data={this.props.detail["properties"]["設置年月日"]}
+          data={this.props.detail['properties']['設置年月日']}
         />
         <InfoDiv
           title="わなの種類"
           type="text"
-          data={this.props.detail["properties"]["罠の種類"]}
+          data={this.props.detail['properties']['罠の種類']}
         />
         <InfoDiv
           title="捕獲の有無"
           type="text"
-          data={this.props.detail["properties"]["捕獲の有無"]}
+          data={this.props.detail['properties']['捕獲の有無']}
         />
         {removediv}
       </div>

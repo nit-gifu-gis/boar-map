@@ -1,16 +1,16 @@
-import "./detail.scss";
-import Router from "next/router";
+import './detail.scss';
+import Router from 'next/router';
 
-import BoarInfo from "../../organisms/boarInfo";
-import TrapInfo from "../../organisms/trapInfo";
-import VaccineInfo from "../../organisms/vaccineInfo";
+import BoarInfo from '../../organisms/boarInfo';
+import TrapInfo from '../../organisms/trapInfo';
+import VaccineInfo from '../../organisms/vaccineInfo';
 
-import "../../../utils/statics";
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import RoundButton from "../../atomos/roundButton";
-import FooterAdjustment from "../../organisms/footerAdjustment";
-import UserData from "../../../utils/userData";
+import '../../../utils/statics';
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import RoundButton from '../../atomos/roundButton';
+import FooterAdjustment from '../../organisms/footerAdjustment';
+import UserData from '../../../utils/userData';
 
 class Detail extends React.Component {
   state = {
@@ -18,21 +18,21 @@ class Detail extends React.Component {
     retry: 0,
     type: undefined,
     imageIDs: [],
-    userData: UserData.getUserData()
+    userData: UserData.getUserData(),
   };
   async getFeatureDetail() {
     if (Router.query.type == undefined) {
-      Router.push("/map");
+      Router.push('/map');
       return;
     }
 
     // W,K以外でワクチン情報を表示しようとするのは禁止
     if (
-      this.state.userData.department != "W" &&
-      this.state.userData.department != "K"
+      this.state.userData.department != 'W' &&
+      this.state.userData.department != 'K'
     ) {
-      if (Router.query.type == "2") {
-        console.log("Permission Denied: ワクチン情報にはアクセスできません");
+      if (Router.query.type == '2') {
+        console.log('Permission Denied: ワクチン情報にはアクセスできません');
         return;
       }
     }
@@ -40,34 +40,34 @@ class Detail extends React.Component {
     const data = {
       layerId: BOAR_LAYER_ID + parseInt(Router.query.type),
       shapeIds: [Router.query.FeatureID],
-      srid: 3857
+      srid: 3857,
     };
 
     try {
-      const res = await fetch(SERVER_URI + "/Feature/GetFeaturesById", {
-        method: "POST",
+      const res = await fetch(SERVER_URI + '/Feature/GetFeaturesById', {
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        mode: "cors",
-        body: JSON.stringify(data)
+        credentials: 'include',
+        mode: 'cors',
+        body: JSON.stringify(data),
       });
       const json = await res.json();
-      const feature = json["features"][0];
+      const feature = json['features'][0];
       const imageIDs =
-        feature["properties"]["画像ID"] !== ""
-          ? feature["properties"]["画像ID"].split(",")
+        feature['properties']['画像ID'] !== ''
+          ? feature['properties']['画像ID'].split(',')
           : [];
       console.log(feature);
       this.setState({
         detail: feature,
-        imageIDs: imageIDs
+        imageIDs: imageIDs,
       });
     } catch (error) {
       console.log(error);
-      alert("情報の取得に失敗しました。");
+      alert('情報の取得に失敗しました。');
     }
   }
 
@@ -80,72 +80,72 @@ class Detail extends React.Component {
       console.log(JSON.stringify(this.state.detail));
       const typeNum = Router.query.type;
       // console.log(typeNum);
-      let type = "";
+      let type = '';
       if (typeNum == 0) {
-        type = "boar";
+        type = 'boar';
       } else if (typeNum == 1) {
-        type = "trap";
+        type = 'trap';
       } else if (typeNum == 2) {
-        type = "vaccine";
+        type = 'vaccine';
       }
       // console.log(type);
-      const url = "/edit/info";
+      const url = '/edit/info';
       Router.push(
         {
           pathname: url,
           query: {
             type: type,
             detail: JSON.stringify(this.state.detail),
-            imageIDs: JSON.stringify(this.state.imageIDs)
-          }
+            imageIDs: JSON.stringify(this.state.imageIDs),
+          },
         },
-        url
+        url,
       );
     } else {
-      alert("情報取得中です");
+      alert('情報取得中です');
     }
   }
 
   onClickPrev() {
-    Router.push("/map");
+    Router.push('/map');
   }
 
   async onClickDelete() {
-    const res = confirm("この情報を削除します。\n本当によろしいですか？");
+    const res = confirm('この情報を削除します。\n本当によろしいですか？');
     if (res) {
       // id取得
-      const id = this.state.detail["properties"]["ID$"];
+      const id = this.state.detail['properties']['ID$'];
       const layerId = BOAR_LAYER_ID + parseInt(Router.query.type);
       // 画像を消す
-      const deleteImageIds = this.state.detail["properties"]["画像ID"].split(
-        ","
+      const deleteImageIds = this.state.detail['properties']['画像ID'].split(
+        ',',
       );
       const deleteImage = id => {
         console.log(id);
         return new Promise(async (resolve, reject) => {
           try {
             const data = new FormData();
-            data.append("id", id);
+            data.append('id', id);
             const options = {
-              credentials: "include",
-              method: "POST",
+              credentials: 'include',
+              method: 'POST',
               body: data,
               headers: {
-                Accept: "application/json",
-                "Content-Type": "application/x-www-form-urlencoded"
-              }
+                Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
             };
-            delete options.headers["Content-Type"];
+            delete options.headers['Content-Type'];
             const res = await fetch(
               `${SERVER_URI}/Image/DeleteImage.php`,
-              options
+              options,
             );
             const json = await res.json();
-            console.log("deleteImage", json);
+            console.log('deleteImage', json);
             if (res.status === 200) {
               resolve();
             } else {
-              reject(json["reason"]);
+              reject(json['reason']);
             }
           } catch (e) {
             reject(e);
@@ -155,29 +155,29 @@ class Detail extends React.Component {
       // GISにフェッチ
       const body = {
         layerId: layerId,
-        shapeIds: [id]
+        shapeIds: [id],
       };
       try {
         // 先に画像を消す
         Promise.all(deleteImageIds.map(id => deleteImage(id)));
-        const res = await fetch(SERVER_URI + "/Feature/DeleteFeatures.php", {
-          method: "POST",
+        const res = await fetch(SERVER_URI + '/Feature/DeleteFeatures.php', {
+          method: 'POST',
           headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
           },
-          mode: "cors",
-          credentials: "include",
-          body: JSON.stringify(body)
+          mode: 'cors',
+          credentials: 'include',
+          body: JSON.stringify(body),
         });
         if (res.status === 200) {
           const json = await res.json();
-          console.log(json["status"]);
-          alert("削除しました。");
-          Router.push("/map");
+          console.log(json['status']);
+          alert('削除しました。');
+          Router.push('/map');
         } else {
           const json = await res.json();
-          alert(json["reason"]);
+          alert(json['reason']);
         }
       } catch (error) {
         alert(error);
@@ -194,21 +194,21 @@ class Detail extends React.Component {
     if (this.state.detail && this.state.userData) {
       // ユーザーIDが入力者なら編集を有効化
       const editEnabled =
-        this.state.detail["properties"]["入力者"] ===
-          this.state.userData.user_id || this.state.userData.department === "K";
+        this.state.detail['properties']['入力者'] ===
+          this.state.userData.user_id || this.state.userData.department === 'K';
 
       if (Object.keys(this.state.detail).length != 0) {
         const type = Router.query.type;
         if (type == 0) {
-          this.state.type = "boar";
+          this.state.type = 'boar';
           header = <Header color="boar">捕獲情報</Header>;
           detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
         } else if (type == 1) {
-          this.state.type = "trap";
+          this.state.type = 'trap';
           header = <Header color="trap">わな情報</Header>;
           detaildiv = <TrapInfo detail={this.state.detail} imageIDs={imgIds} />;
         } else if (type == 2) {
-          this.state.type = "vaccine";
+          this.state.type = 'vaccine';
           header = <Header color="vaccine">ワクチン情報</Header>;
           detaildiv = (
             <VaccineInfo detail={this.state.detail} imageIDs={imgIds} />

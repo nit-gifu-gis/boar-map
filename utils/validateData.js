@@ -40,36 +40,36 @@ compareDate = (date1, date2) => {
 ignoreInvalidDate = dateString => {
   // 不正な日付は今日にする
   let date = new Date(dateString);
-  if (date.toString() === "Invalid Date") {
+  if (date.toString() === 'Invalid Date') {
     date = new Date();
   }
   return (
-    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
   );
 };
 
 checkDateError = dateString => {
   const date = new Date(dateString);
   // 不正な日付
-  if (date.toString() === "Invalid Date") {
-    return "日付が入力されていません。";
+  if (date.toString() === 'Invalid Date') {
+    return '日付が入力されていません。';
   }
   // 今日の日付
   const today = new Date();
   if (compareDate(date, today) > 0) {
     // 未来の日付だったら不正
-    return "未来の日付が入力されています。";
+    return '未来の日付が入力されています。';
   }
   return null;
 };
 
 checkNumberError = numString => {
-  if (numString == "") {
-    return "入力されていません。";
+  if (numString == '') {
+    return '入力されていません。';
   }
   const num = Number(numString);
   if (Number.isNaN(num)) {
-    return "数値以外が入力されています。";
+    return '数値以外が入力されています。';
   }
   return null;
 };

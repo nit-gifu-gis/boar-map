@@ -1,5 +1,5 @@
-import React from "react";
-import "./infoTypeItemImage.scss";
+import React from 'react';
+import './infoTypeItemImage.scss';
 
 class InfoTypeItemImage extends React.Component {
   render() {

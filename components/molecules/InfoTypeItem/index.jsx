@@ -1,7 +1,7 @@
-import React from "react";
-import "./infoTypeItem.scss";
-import InfoTypeItemImage from "../../atomos/infoTypeItemImage";
-import InfoTypeItemText from "../../atomos/infoTypeItemText";
+import React from 'react';
+import './infoTypeItem.scss';
+import InfoTypeItemImage from '../../atomos/infoTypeItemImage';
+import InfoTypeItemText from '../../atomos/infoTypeItemText';
 
 class InfoTypeItem extends React.Component {
   render() {

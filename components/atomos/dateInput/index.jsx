@@ -1,7 +1,7 @@
-import React from "react";
-import "./deteInput.scss";
-import "../../../public/static/css/global.scss";
-import TextInput from "../textInput";
+import React from 'react';
+import './deteInput.scss';
+
+import TextInput from '../textInput';
 
 // 初期値を設定しないと自動で今日の日付を初期値にします
 
@@ -10,7 +10,7 @@ class DateInput extends React.Component {
     super(props);
     this.state = {
       isSafari: false,
-      onChange: function changed() {}
+      onChange: function changed() {},
     };
     if (this.props.onChange != undefined) {
       this.state.onChange = this.props.onChange;
@@ -23,14 +23,14 @@ class DateInput extends React.Component {
   confirmSafari() {
     const userAgent = window.navigator.userAgent.toLowerCase();
 
-    if (userAgent.indexOf("iphone") != -1) {
+    if (userAgent.indexOf('iphone') != -1) {
       // console.log("iPhone");
       return false;
-    } else if (userAgent.indexOf("ipad") != -1) {
+    } else if (userAgent.indexOf('ipad') != -1) {
       // console.log("iPad");
       return false;
-    } else if (userAgent.indexOf("android") != -1) {
-      if (userAgent.indexOf("mobile") != -1) {
+    } else if (userAgent.indexOf('android') != -1) {
+      if (userAgent.indexOf('mobile') != -1) {
         // console.log("android");
         return false;
       } else {
@@ -38,24 +38,24 @@ class DateInput extends React.Component {
         return false;
       }
     } else if (
-      userAgent.indexOf("msie") != -1 ||
-      userAgent.indexOf("trident") != -1
+      userAgent.indexOf('msie') != -1 ||
+      userAgent.indexOf('trident') != -1
     ) {
       // console.log("Internet Explorer");
       return true;
-    } else if (userAgent.indexOf("edge") != -1) {
+    } else if (userAgent.indexOf('edge') != -1) {
       // console.log("Edge");
       return false;
-    } else if (userAgent.indexOf("chrome") != -1) {
+    } else if (userAgent.indexOf('chrome') != -1) {
       // console.log("Google Chrome");
       return false;
-    } else if (userAgent.indexOf("safari") != -1) {
+    } else if (userAgent.indexOf('safari') != -1) {
       // console.log("Safari");
       return true;
-    } else if (userAgent.indexOf("firefox") != -1) {
+    } else if (userAgent.indexOf('firefox') != -1) {
       // console.log("FireFox");
       return false;
-    } else if (userAgent.indexOf("opera") != -1) {
+    } else if (userAgent.indexOf('opera') != -1) {
       // console.log("Opera");
       return false;
     } else {
@@ -65,9 +65,9 @@ class DateInput extends React.Component {
   }
 
   onChangeValueForSafari() {
-    const yearValue = document.getElementById(this.props.id + "Year").value;
-    const monthValue = document.getElementById(this.props.id + "Month").value;
-    const dayValue = document.getElementById(this.props.id + "Day").value;
+    const yearValue = document.getElementById(this.props.id + 'Year').value;
+    const monthValue = document.getElementById(this.props.id + 'Month').value;
+    const dayValue = document.getElementById(this.props.id + 'Day').value;
     this.setDate(yearValue, monthValue, dayValue);
     this.state.onChange();
   }
@@ -75,15 +75,15 @@ class DateInput extends React.Component {
   setDate(year, month, day) {
     // 空文字がある場合はエラー
     // 年が4桁じゃ無いのもエラー
-    if ((year + "").length != 4 || month + "" == "" || day + "" == "") {
+    if ((year + '').length != 4 || month + '' == '' || day + '' == '') {
       // 未入力欄がある場合
       document.getElementById(this.props.id).value = null;
       return;
     }
-    const yyyy = ("0000" + year).slice(-4);
-    const mm = ("00" + month).slice(-2);
-    const dd = ("00" + day).slice(-2);
-    const date = yyyy + "-" + mm + "-" + dd;
+    const yyyy = ('0000' + year).slice(-4);
+    const mm = ('00' + month).slice(-2);
+    const dd = ('00' + day).slice(-2);
+    const date = yyyy + '-' + mm + '-' + dd;
     // window.alert(date);
     // 全部空文字じゃ無いなら日付として正しいか判定
     const dt = new Date(yyyy, mm - 1, dd);
@@ -104,7 +104,7 @@ class DateInput extends React.Component {
     // 初期値の確認
     if (this.props.date != null) {
       // 正規表現でチェック，区切りは"-"または"/"
-      const regexp = new RegExp("(\\d{4})[/-](\\d{1,2})[/-](\\d{1,2})", "g");
+      const regexp = new RegExp('(\\d{4})[/-](\\d{1,2})[/-](\\d{1,2})', 'g');
       const result = regexp.exec(this.props.date);
       if (result == null) {
         // 正規表現に引っかからないなら，初期値なしのときの処理
@@ -119,9 +119,9 @@ class DateInput extends React.Component {
       this.setDate(yearValue, monthValue, dayValue);
       // safariは見た目もセット
       if (this.state.isSafari) {
-        document.getElementById(this.props.id + "Year").value = yearValue;
-        document.getElementById(this.props.id + "Month").value = monthValue;
-        document.getElementById(this.props.id + "Day").value = dayValue;
+        document.getElementById(this.props.id + 'Year').value = yearValue;
+        document.getElementById(this.props.id + 'Month').value = monthValue;
+        document.getElementById(this.props.id + 'Day').value = dayValue;
       }
       return;
     } else {
@@ -133,14 +133,14 @@ class DateInput extends React.Component {
 
   initForm() {
     const today = new Date();
-    const yearValue = ("0000" + today.getFullYear()).slice(-4);
-    const monthValue = ("00" + (today.getMonth() + 1)).slice(-2);
-    const dayValue = ("00" + today.getDate()).slice(-2);
+    const yearValue = ('0000' + today.getFullYear()).slice(-4);
+    const monthValue = ('00' + (today.getMonth() + 1)).slice(-2);
+    const dayValue = ('00' + today.getDate()).slice(-2);
     this.setDate(yearValue, monthValue, dayValue);
     if (this.state.isSafari) {
-      document.getElementById(this.props.id + "Year").value = yearValue;
-      document.getElementById(this.props.id + "Month").value = monthValue;
-      document.getElementById(this.props.id + "Day").value = dayValue;
+      document.getElementById(this.props.id + 'Year').value = yearValue;
+      document.getElementById(this.props.id + 'Month').value = monthValue;
+      document.getElementById(this.props.id + 'Day').value = dayValue;
     }
   }
 
@@ -155,7 +155,7 @@ class DateInput extends React.Component {
                 type="number"
                 min="1900"
                 step="1"
-                id={this.props.id + "Year"}
+                id={this.props.id + 'Year'}
                 placeholder="西暦"
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
@@ -171,7 +171,7 @@ class DateInput extends React.Component {
                 max="12"
                 min="1"
                 step="1"
-                id={this.props.id + "Month"}
+                id={this.props.id + 'Month'}
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
                 disabled={this.props.disabled}
@@ -186,7 +186,7 @@ class DateInput extends React.Component {
                 max="31"
                 min="1"
                 step="1"
-                id={this.props.id + "Day"}
+                id={this.props.id + 'Day'}
                 onChange={this.onChangeValueForSafari.bind(this)}
                 error={this.props.error}
                 disabled={this.props.disabled}
@@ -202,14 +202,14 @@ class DateInput extends React.Component {
             min={this.props.min}
             max={this.props.max}
             disabled={this.props.disabled}
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
           />
         </div>
       );
     } else {
-      className = "date-input-div__input";
+      className = 'date-input-div__input';
       if (this.props.error) {
-        className += "--error";
+        className += '--error';
       }
       return (
         <div className="date-input-div">
@@ -218,7 +218,7 @@ class DateInput extends React.Component {
             className={className}
             name={this.props.name}
             id={this.props.id}
-            placeholder={"年/月/日"}
+            placeholder={'年/月/日'}
             onChange={this.state.onChange}
             min={this.props.min}
             max={this.props.max}

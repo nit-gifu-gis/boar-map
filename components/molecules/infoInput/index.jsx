@@ -1,18 +1,18 @@
-import React from "react";
-import "./infoInput.scss";
-import "../../../public/static/css/global.scss";
-import TextInput from "../../atomos/textInput";
-import DateInput from "../../atomos/dateInput";
-import SelectInput from "../../atomos/selectInput";
-import TextAreaInput from "../../atomos/textAreaInput";
-import ImagesInput from "../../atomos/imagesInput";
-import MeshNoInput from "../../atomos/meshNoInput";
+import React from 'react';
+import './infoInput.scss';
+
+import TextInput from '../../atomos/textInput';
+import DateInput from '../../atomos/dateInput';
+import SelectInput from '../../atomos/selectInput';
+import TextAreaInput from '../../atomos/textAreaInput';
+import ImagesInput from '../../atomos/imagesInput';
+import MeshNoInput from '../../atomos/meshNoInput';
 
 class InfoInput extends React.Component {
   render() {
     let input = null;
     switch (this.props.type) {
-      case "number":
+      case 'number':
         input = (
           <TextInput
             type="number"
@@ -28,7 +28,7 @@ class InfoInput extends React.Component {
           />
         );
         break;
-      case "date":
+      case 'date':
         input = (
           <DateInput
             name={this.props.name}
@@ -39,7 +39,7 @@ class InfoInput extends React.Component {
           />
         );
         break;
-      case "select":
+      case 'select':
         input = (
           <SelectInput
             name={this.props.name}
@@ -51,7 +51,7 @@ class InfoInput extends React.Component {
           />
         );
         break;
-      case "text-area":
+      case 'text-area':
         input = (
           <TextAreaInput
             name={this.props.name}
@@ -66,7 +66,7 @@ class InfoInput extends React.Component {
           />
         );
         break;
-      case "images":
+      case 'images':
         input = (
           <ImagesInput
             onChange={this.props.onChange}
@@ -79,7 +79,7 @@ class InfoInput extends React.Component {
           />
         );
         break;
-      case "mesh-num":
+      case 'mesh-num':
         input = (
           <MeshNoInput
             name={this.props.name}

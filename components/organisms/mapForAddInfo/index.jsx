@@ -1,40 +1,40 @@
-import "./mapForAddInfo.scss";
-import React from "react";
-import L from "leaflet";
-import MapBase from "../mapBase";
-import Router from "next/router";
-import "leaflet-easybutton";
-import "../../../public/static/css/global.scss";
-import EventListener from "react-event-listener";
+import './mapForAddInfo.scss';
+import React from 'react';
+import L from 'leaflet';
+import MapBase from '../mapBase';
+import Router from 'next/router';
+import 'leaflet-easybutton';
+
+import EventListener from 'react-event-listener';
 
 class MapForAddInfo extends MapBase {
-  myLocIcon = "../../static/images/map/location_marker.svg";
+  myLocIcon = '../../static/images/map/location_marker.svg';
 
   boarIcon = L.icon({
-    iconUrl: "../../static/images/icons/boar.svg",
-    iconRetinaUrl: "../../static/images/icons/boar.svg",
+    iconUrl: '../../static/images/icons/boar.svg',
+    iconRetinaUrl: '../../static/images/icons/boar.svg',
     // 縦横比＝285:193 ＝ 1:0.67719 〜 37:25
     iconSize: [37, 25],
-    iconAnchor: [16, 13]
+    iconAnchor: [16, 13],
   });
   trapIcon = L.icon({
-    iconUrl: "../../static/images/icons/trap.svg",
-    iconRetinaUrl: "../../static/images/icons/trap.svg",
+    iconUrl: '../../static/images/icons/trap.svg',
+    iconRetinaUrl: '../../static/images/icons/trap.svg',
     iconSize: [25, 25],
-    iconAnchor: [13, 13]
+    iconAnchor: [13, 13],
   });
   vaccineIcon = L.icon({
-    iconUrl: "../../static/images/icons/vaccine.svg",
-    iconRetinaUrl: "../../static/images/icons/vaccine.svg",
+    iconUrl: '../../static/images/icons/vaccine.svg',
+    iconRetinaUrl: '../../static/images/icons/vaccine.svg',
     iconSize: [25, 25],
-    iconAnchor: [13, 13]
+    iconAnchor: [13, 13],
   });
 
   constructor(props) {
     super(props);
     console.log(this.props.lat);
     if (this.props.lat != null && this.props.lng != null) {
-      console.log("check");
+      console.log('check');
       this.state.lat = this.props.lat;
       this.state.lng = this.props.lng;
     }
@@ -46,28 +46,28 @@ class MapForAddInfo extends MapBase {
     const mapObj = this.state.myMap;
     // 十字
     const centerCrossIcon = L.icon({
-      iconUrl: "../../static/images/map/centerCross.svg",
-      iconRetinaUrl: "../../static/images/map/centerCross.svg",
+      iconUrl: '../../static/images/map/centerCross.svg',
+      iconRetinaUrl: '../../static/images/map/centerCross.svg',
       iconSize: [40, 20],
-      iconAnchor: [21, 11]
+      iconAnchor: [21, 11],
     });
     const centerCross = L.marker(mapObj.getCenter(), {
       icon: centerCrossIcon,
-      zIndexOffset: 400
+      zIndexOffset: 400,
     }).addTo(mapObj);
     // ピン
     const centerPinIcon = L.icon({
-      iconUrl: "../../static/images/map/centerPin.svg",
-      iconRetinaUrl: "../../static/images/map/centerPin.svg",
+      iconUrl: '../../static/images/map/centerPin.svg',
+      iconRetinaUrl: '../../static/images/map/centerPin.svg',
       iconSize: [31, 45],
-      iconAnchor: [17, 45]
+      iconAnchor: [17, 45],
     });
     const centerPin = L.marker(mapObj.getCenter(), {
       icon: centerPinIcon,
-      zIndexOffset: 400
+      zIndexOffset: 400,
     }).addTo(mapObj);
     // ピンを動かしている間、ピンを少し浮かせる
-    mapObj.on("move", function(e) {
+    mapObj.on('move', function(e) {
       const point = mapObj.latLngToLayerPoint(mapObj.getCenter()); // 中心を直交座標系に変換
       const upperCenter = mapObj.layerPointToLatLng([point.x, point.y - 20]); // 中心の少し上を直交座標系で求めて緯度経度に戻す
 
@@ -77,13 +77,13 @@ class MapForAddInfo extends MapBase {
     });
     // 動かし終わったらピンを戻す
     mapObj.on(
-      "moveend",
+      'moveend',
       function(e) {
         const center = mapObj.getCenter();
         centerPin.setLatLng(center);
         // 親コンポーネントにセンターを送る
         this.props.saveCenterMethod(center);
-      }.bind(this)
+      }.bind(this),
     );
   }
 
@@ -95,10 +95,10 @@ class MapForAddInfo extends MapBase {
   handleResize = () => {
     setTimeout(
       function() {
-        console.log("tests");
+        console.log('tests');
         this.state.myMap.invalidateSize();
       }.bind(this),
-      200
+      200,
     );
   };
 

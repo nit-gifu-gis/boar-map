@@ -1,7 +1,7 @@
-import React from "react";
-import "./imagesDiv.scss";
-import "../../../public/static/css/global.scss";
-import "../../../utils/statics";
+import React from 'react';
+import './imagesDiv.scss';
+
+import '../../../utils/statics';
 
 class ImagesDiv extends React.Component {
   constructor(props) {
@@ -10,14 +10,14 @@ class ImagesDiv extends React.Component {
       type: props.type,
       objectURLs: props.objectURLs !== undefined ? props.objectURLs : [],
       imageIDs: props.imageIDs !== undefined ? props.imageIDs : [],
-      confirmMode: props.confirmMode !== undefined ? props.confirmMode : false
+      confirmMode: props.confirmMode !== undefined ? props.confirmMode : false,
     };
   }
 
   render() {
     let description = null;
     let imgs = [];
-    let className = "";
+    let className = '';
 
     // プレビュー時
     if (this.state.confirmMode) {
@@ -31,9 +31,9 @@ class ImagesDiv extends React.Component {
         // アップロードされる画像が1枚以上
         // 1枚とそれ以外でクラス名が変わる
         if (len === 1) {
-          className = "imagesDiv__singleBox";
+          className = 'imagesDiv__singleBox';
         } else {
-          className = "imagesDiv__multiBox";
+          className = 'imagesDiv__multiBox';
         }
         // 説明文とimg要素
         description = (
@@ -69,9 +69,9 @@ class ImagesDiv extends React.Component {
         } else {
           // 1枚とそれ以外でクラス名が変わる
           if (len === 1) {
-            className = "imagesDiv__singleBox";
+            className = 'imagesDiv__singleBox';
           } else {
-            className = "imagesDiv__multiBox";
+            className = 'imagesDiv__multiBox';
           }
           imgs = this.state.imageIDs.map(data => {
             const url = `${SERVER_URI}/Image/GetImage?id=${data}`;

@@ -1,6 +1,5 @@
-import React from "react";
-import "./infoText.scss";
-import "../../../public/static/css/global.scss";
+import React from 'react';
+import './infoText.scss';
 
 class InfoText extends React.Component {
   render() {

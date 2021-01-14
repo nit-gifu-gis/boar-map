@@ -1,17 +1,17 @@
-import "./listTable.scss";
-import "../../../public/static/css/global.scss";
-import Router from "next/router";
-import React from "react";
-import "../../../utils/statics";
-import RoundButton from "../../atomos/roundButton";
+import './listTable.scss';
+
+import Router from 'next/router';
+import React from 'react';
+import '../../../utils/statics';
+import RoundButton from '../../atomos/roundButton';
 
 class ListTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sortKey: "ID$",
+      sortKey: 'ID$',
       sortReverse: false,
-      onClick: () => {}
+      onClick: () => {},
     };
     if (props.onClick != undefined) {
       this.state.onClick = props.onClick;
@@ -22,7 +22,7 @@ class ListTable extends React.Component {
     // プリロードしておいた画像を引っ張ってくる
     const images = this.props.images.find(v => v.id === id).images;
     const imgs = images.map(image => {
-      if (id == "") {
+      if (id == '') {
         return <div className="">画像なし</div>;
       }
       const url = `${SERVER_URI}/Image/GetImage.php?id=${image.id}`;
@@ -68,22 +68,22 @@ class ListTable extends React.Component {
         const p = feature.properties;
         // 数値データの時
         if (
-          this.state.sortKey == "ID$" ||
-          this.state.sortKey == "捕獲頭数" ||
-          this.state.sortKey == "体長" ||
-          this.state.sortKey == "体重"
+          this.state.sortKey == 'ID$' ||
+          this.state.sortKey == '捕獲頭数' ||
+          this.state.sortKey == '体長' ||
+          this.state.sortKey == '体重'
         ) {
           // 空文字はいつも下に来るようにする
-          if (p[this.state.sortKey] == "") {
+          if (p[this.state.sortKey] == '') {
             return this.state.sortReverse ? Number.MIN_VALUE : Number.MAX_VALUE;
           }
           // 実数に変換
           return parseFloat(p[this.state.sortKey]);
         }
         // 日付データの時
-        if (this.state.sortKey == "捕獲年月日") {
+        if (this.state.sortKey == '捕獲年月日') {
           // 空の時は0
-          if (p[this.state.sortKey] == "") {
+          if (p[this.state.sortKey] == '') {
             return new Date(0);
           }
           return new Date(p[this.state.sortKey]);
@@ -95,10 +95,10 @@ class ListTable extends React.Component {
       const aItem = getItem(a);
       const bItem = getItem(b);
       // 空文字＝未入力データ＝下に寄せる
-      if (aItem == "" && bItem != "") {
+      if (aItem == '' && bItem != '') {
         return 1;
       }
-      if (bItem == "" && aItem != "") {
+      if (bItem == '' && aItem != '') {
         return -1;
       }
       const rev = this.state.sortReverse ? -1 : 1;
@@ -108,8 +108,8 @@ class ListTable extends React.Component {
         return -1 * rev;
       } else {
         // データが同じ時はIDで比較
-        const aId = parseInt(a.properties["ID$"]);
-        const bId = parseInt(b.properties["ID$"]);
+        const aId = parseInt(a.properties['ID$']);
+        const bId = parseInt(b.properties['ID$']);
         if (aId > bId) {
           return 1;
         } else if (aId < bId) {
@@ -150,25 +150,25 @@ class ListTable extends React.Component {
     const featuresList = sorted.map(f => {
       const data = f.properties;
       return (
-        <tr className="list-table__table__row" key={data["ID$"]}>
-          <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
-          <td style={{ textAlign: "left" }}>{data["入力者"]}</td>
-          <td style={{ textAlign: "left" }}>{data["メッシュ番号"]}</td>
-          <td style={{ textAlign: "left" }}>{data["区分"]}</td>
-          <td style={{ textAlign: "left" }}>{data["捕獲年月日"]}</td>
-          <td style={{ textAlign: "left" }}>{data["罠・発見場所"]}</td>
-          <td style={{ textAlign: "left" }}>{data["位置情報"]}</td>
-          <td style={{ textAlign: "right" }}>{data["捕獲頭数"]}</td>
-          <td style={{ textAlign: "right" }}>{data["幼獣の頭数"]}</td>
-          <td style={{ textAlign: "right" }}>{data["成獣の頭数"]}</td>
-          <td style={{ textAlign: "left" }}>{data["幼獣・成獣"]}</td>
-          <td style={{ textAlign: "left" }}>{data["性別"]}</td>
-          <td style={{ textAlign: "left" }}>{data["妊娠の状況"]}</td>
-          <td style={{ textAlign: "right" }}>{data["体長"]}</td>
-          <td style={{ textAlign: "right" }}>{data["体重"]}</td>
-          <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
-          <td style={{ textAlign: "left" }}>{data["備考"]}</td>
-          <td style={{ textAlign: "left" }}>{this.showImages(data["ID$"])}</td>
+        <tr className="list-table__table__row" key={data['ID$']}>
+          <td style={{ textAlign: 'right' }}>{data['ID$']}</td>
+          <td style={{ textAlign: 'left' }}>{data['入力者']}</td>
+          <td style={{ textAlign: 'left' }}>{data['メッシュ番号']}</td>
+          <td style={{ textAlign: 'left' }}>{data['区分']}</td>
+          <td style={{ textAlign: 'left' }}>{data['捕獲年月日']}</td>
+          <td style={{ textAlign: 'left' }}>{data['罠・発見場所']}</td>
+          <td style={{ textAlign: 'left' }}>{data['位置情報']}</td>
+          <td style={{ textAlign: 'right' }}>{data['捕獲頭数']}</td>
+          <td style={{ textAlign: 'right' }}>{data['幼獣の頭数']}</td>
+          <td style={{ textAlign: 'right' }}>{data['成獣の頭数']}</td>
+          <td style={{ textAlign: 'left' }}>{data['幼獣・成獣']}</td>
+          <td style={{ textAlign: 'left' }}>{data['性別']}</td>
+          <td style={{ textAlign: 'left' }}>{data['妊娠の状況']}</td>
+          <td style={{ textAlign: 'right' }}>{data['体長']}</td>
+          <td style={{ textAlign: 'right' }}>{data['体重']}</td>
+          <td style={{ textAlign: 'left' }}>{data['処分方法']}</td>
+          <td style={{ textAlign: 'left' }}>{data['備考']}</td>
+          <td style={{ textAlign: 'left' }}>{this.showImages(data['ID$'])}</td>
         </tr>
       );
     });
@@ -176,12 +176,12 @@ class ListTable extends React.Component {
     const thClassName = key => {
       if (this.state.sortKey == key) {
         if (this.state.sortReverse) {
-          return "sortable desc";
+          return 'sortable desc';
         } else {
-          return "sortable asc";
+          return 'sortable asc';
         }
       } else {
-        return "sortable";
+        return 'sortable';
       }
     };
     return (
@@ -202,112 +202,112 @@ class ListTable extends React.Component {
           <tbody>
             <tr className="list-table__table__header">
               <th
-                className={thClassName("ID$")}
-                onClick={this.onClickHeader.bind(this, "ID$")}
+                className={thClassName('ID$')}
+                onClick={this.onClickHeader.bind(this, 'ID$')}
               >
                 ID
               </th>
               <th
-                className={thClassName("入力者")}
-                onClick={this.onClickHeader.bind(this, "入力者")}
+                className={thClassName('入力者')}
+                onClick={this.onClickHeader.bind(this, '入力者')}
               >
                 入力者
               </th>
               <th
-                className={thClassName("メッシュ番号")}
-                onClick={this.onClickHeader.bind(this, "メッシュ番号")}
+                className={thClassName('メッシュ番号')}
+                onClick={this.onClickHeader.bind(this, 'メッシュ番号')}
               >
                 メッシュ番号
               </th>
               <th
-                className={thClassName("区分")}
-                onClick={this.onClickHeader.bind(this, "区分")}
+                className={thClassName('区分')}
+                onClick={this.onClickHeader.bind(this, '区分')}
               >
                 区分
               </th>
               <th
-                className={thClassName("捕獲年月日")}
-                onClick={this.onClickHeader.bind(this, "捕獲年月日")}
+                className={thClassName('捕獲年月日')}
+                onClick={this.onClickHeader.bind(this, '捕獲年月日')}
               >
                 捕獲
                 <br />
                 年月日
               </th>
               <th
-                className={thClassName("罠・発見場所")}
-                onClick={this.onClickHeader.bind(this, "罠・発見場所")}
+                className={thClassName('罠・発見場所')}
+                onClick={this.onClickHeader.bind(this, '罠・発見場所')}
               >
                 わなの種類
                 <br />
                 発見場所
               </th>
               <th
-                className={thClassName("位置情報")}
-                onClick={this.onClickHeader.bind(this, "位置情報")}
+                className={thClassName('位置情報')}
+                onClick={this.onClickHeader.bind(this, '位置情報')}
               >
                 座標
               </th>
               <th
-                className={thClassName("捕獲頭数")}
-                onClick={this.onClickHeader.bind(this, "捕獲頭数")}
+                className={thClassName('捕獲頭数')}
+                onClick={this.onClickHeader.bind(this, '捕獲頭数')}
               >
                 捕獲
                 <br />
                 頭数
               </th>
               <th
-                className={thClassName("幼獣の頭数")}
-                onClick={this.onClickHeader.bind(this, "幼獣の頭数")}
+                className={thClassName('幼獣の頭数')}
+                onClick={this.onClickHeader.bind(this, '幼獣の頭数')}
               >
                 幼獣の
                 <br />
                 頭数
               </th>
               <th
-                className={thClassName("成獣の頭数")}
-                onClick={this.onClickHeader.bind(this, "成獣の頭数")}
+                className={thClassName('成獣の頭数')}
+                onClick={this.onClickHeader.bind(this, '成獣の頭数')}
               >
                 成獣の
                 <br />
                 頭数
               </th>
               <th
-                className={thClassName("幼獣・成獣")}
-                onClick={this.onClickHeader.bind(this, "幼獣・成獣")}
+                className={thClassName('幼獣・成獣')}
+                onClick={this.onClickHeader.bind(this, '幼獣・成獣')}
               >
                 幼獣
                 <br />
                 成獣
               </th>
               <th
-                className={thClassName("性別")}
-                onClick={this.onClickHeader.bind(this, "性別")}
+                className={thClassName('性別')}
+                onClick={this.onClickHeader.bind(this, '性別')}
               >
                 性別
               </th>
               <th
-                className={thClassName("妊娠の状況")}
-                onClick={this.onClickHeader.bind(this, "妊娠の状況")}
+                className={thClassName('妊娠の状況')}
+                onClick={this.onClickHeader.bind(this, '妊娠の状況')}
               >
                 妊娠の
                 <br />
                 状況
               </th>
               <th
-                className={thClassName("体長")}
-                onClick={this.onClickHeader.bind(this, "体長")}
+                className={thClassName('体長')}
+                onClick={this.onClickHeader.bind(this, '体長')}
               >
                 体長
               </th>
               <th
-                className={thClassName("体重")}
-                onClick={this.onClickHeader.bind(this, "体重")}
+                className={thClassName('体重')}
+                onClick={this.onClickHeader.bind(this, '体重')}
               >
                 体重
               </th>
               <th
-                className={thClassName("処分方法")}
-                onClick={this.onClickHeader.bind(this, "処分方法")}
+                className={thClassName('処分方法')}
+                onClick={this.onClickHeader.bind(this, '処分方法')}
               >
                 処分
                 <br />

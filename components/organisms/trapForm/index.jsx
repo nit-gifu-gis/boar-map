@@ -1,10 +1,10 @@
-import "./trapForm.scss";
-import "../../../public/static/css/global.scss";
-import Router from "next/router";
-import React from "react";
-import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
-import "../../../utils/validateData";
+import './trapForm.scss';
+
+import Router from 'next/router';
+import React from 'react';
+import InfoInput from '../../molecules/infoInput';
+import UserData from '../../../utils/userData';
+import '../../../utils/validateData';
 
 class TrapForm extends React.Component {
   constructor(props) {
@@ -17,8 +17,8 @@ class TrapForm extends React.Component {
       detail: null,
       error: {
         setDate: null,
-        removeDate: null
-      }
+        removeDate: null,
+      },
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -34,27 +34,27 @@ class TrapForm extends React.Component {
     // T, U, S, K, R以外は登録不可
     const userDepartment = this.state.userData.department;
     if (
-      userDepartment != "T" &&
-      userDepartment != "U" &&
-      userDepartment != "S" &&
-      userDepartment != "K" &&
-      userDepartment != "R"
+      userDepartment != 'T' &&
+      userDepartment != 'U' &&
+      userDepartment != 'S' &&
+      userDepartment != 'K' &&
+      userDepartment != 'R'
     ) {
-      console.log("Permission Denied: この情報にはアクセスできません");
-      Router.push("/map");
+      console.log('Permission Denied: この情報にはアクセスできません');
+      Router.push('/map');
       return;
     }
     // detailが与えられた場合
     if (this.state.detail != null) {
       const detail = this.state.detail;
-      const capture = detail["properties"]["捕獲の有無"];
-      if (capture == "あり") {
+      const capture = detail['properties']['捕獲の有無'];
+      if (capture == 'あり') {
         this.setState({
-          captured: true
+          captured: true,
         });
       } else {
         this.setState({
-          captured: false
+          captured: false,
         });
       }
     }
@@ -80,16 +80,16 @@ class TrapForm extends React.Component {
 
   async validateDates() {
     // 設置年月日がエラー
-    if (!(await this.validateEachDate("setDate"))) {
+    if (!(await this.validateEachDate('setDate'))) {
       return false;
     }
     // 捕獲済みではない
     if (!this.state.captured) {
-      await this.updateError("removeDate", null);
+      await this.updateError('removeDate', null);
       return true;
     }
     // 捕獲済みなら撤去年月日をチェック
-    if (!(await this.validateEachDate("removeDate"))) {
+    if (!(await this.validateEachDate('removeDate'))) {
       return false;
     }
     // ここまできたら，それぞれの日付はOK
@@ -101,17 +101,17 @@ class TrapForm extends React.Component {
     // 設置年月日 > 撤去年月日ならエラー
     if (compareDate(setDate, removeDate) > 0) {
       await this.updateError(
-        "setDate",
-        "撤去年月日よりも後の日付が入力されています。"
+        'setDate',
+        '撤去年月日よりも後の日付が入力されています。',
       );
       await this.updateError(
-        "removeDate",
-        "設置年月日よりも前の日付が入力されています。"
+        'removeDate',
+        '設置年月日よりも前の日付が入力されています。',
       );
       return false;
     }
-    await this.updateError("setDate", null);
-    await this.updateError("removeDate", null);
+    await this.updateError('setDate', null);
+    await this.updateError('removeDate', null);
     return true;
   }
 
@@ -146,33 +146,33 @@ class TrapForm extends React.Component {
     // 5 捕獲の有無
     const capture = form.capture.options[form.capture.selectedIndex].value;
     // 2 捕獲年月日
-    let removeDate = "";
+    let removeDate = '';
     if (this.state.captured) {
       removeDate = form.removeDate.value;
     }
     // 6 写真?
 
     return {
-      type: "Feature",
+      type: 'Feature',
       geometry: {
-        type: "Point",
-        coordinates: [parseFloat(lng), parseFloat(lat)]
+        type: 'Point',
+        coordinates: [parseFloat(lng), parseFloat(lat)],
       },
       properties: {
         入力者: user,
         設置年月日: setDate,
         撤去年月日: removeDate,
-        位置情報: "(" + lat + "," + lng + ")",
+        位置情報: '(' + lat + ',' + lng + ')',
         罠の種類: kind,
-        捕獲の有無: capture
-      }
+        捕獲の有無: capture,
+      },
     };
   }
 
   onChangeCapture() {
     const captureSelect = document.forms.form.capture;
     const capture = captureSelect.options[captureSelect.selectedIndex].value;
-    if (capture == "あり") {
+    if (capture == 'あり') {
       this.setState(_ => {
         return { captured: true };
       });
@@ -199,10 +199,10 @@ class TrapForm extends React.Component {
             name="removeDate"
             defaultValue={
               this.state.detail != null
-                ? this.state.detail["properties"]["撤去年月日"]
+                ? this.state.detail['properties']['撤去年月日']
                 : null
             }
-            onChange={this.validateEachDate.bind(this, "removeDate")}
+            onChange={this.validateEachDate.bind(this, 'removeDate')}
             errorMessage={this.state.error.removeDate}
             required={true}
           />
@@ -228,22 +228,22 @@ class TrapForm extends React.Component {
                 name="setDate"
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["設置年月日"]
+                    ? this.state.detail['properties']['設置年月日']
                     : null
                 }
                 required={true}
-                onChange={this.validateEachDate.bind(this, "setDate")}
+                onChange={this.validateEachDate.bind(this, 'setDate')}
                 errorMessage={this.state.error.setDate}
               />
               <InfoInput
                 title="わなの種類"
                 type="select"
                 name="kind"
-                options={["くくりわな", "箱わな", "その他"]}
+                options={['くくりわな', '箱わな', 'その他']}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["罠の種類"]
-                    : "くくりわな"
+                    ? this.state.detail['properties']['罠の種類']
+                    : 'くくりわな'
                 }
               />
               <InfoInput
@@ -251,10 +251,10 @@ class TrapForm extends React.Component {
                 type="select"
                 name="capture"
                 onChange={this.onChangeCapture.bind(this)}
-                options={["なし", "あり"]}
+                options={['なし', 'あり']}
                 defaultValue={
                   this.state.detail != null
-                    ? this.state.detail["properties"]["捕獲の有無"]
+                    ? this.state.detail['properties']['捕獲の有無']
                     : null
                 }
               />

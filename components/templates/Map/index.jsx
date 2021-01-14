@@ -1,23 +1,23 @@
-import "./map.scss";
+import './map.scss';
 
-import dynamic from "next/dynamic";
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import RoundButton from "../../atomos/roundButton";
-import Link from "next/link";
-import Router from "next/router";
+import dynamic from 'next/dynamic';
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import RoundButton from '../../atomos/roundButton';
+import Link from 'next/link';
+import Router from 'next/router';
 
 const DynamicMapComponentWithNoSSR = dynamic(
-  () => import("../../organisms/mapBase"),
+  () => import('../../organisms/mapBase'),
   {
-    ssr: false
-  }
+    ssr: false,
+  },
 );
 
 // 文字化け回避の文字列だよ
 class Map extends React.Component {
   onClickAddInformationButton() {
-    Router.push("/add/select");
+    Router.push('/add/select');
   }
 
   render() {

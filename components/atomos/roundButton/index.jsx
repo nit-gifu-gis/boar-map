@@ -1,6 +1,5 @@
-import React from "react";
-import "./roundButton.scss";
-import "../../../public/static/css/global.scss";
+import React from 'react';
+import './roundButton.scss';
 
 class RoundButton extends React.Component {
   // クリック時の処理は親の方で定義
@@ -9,19 +8,19 @@ class RoundButton extends React.Component {
   }
 
   render() {
-    let bgColor = "#ff9800";
+    let bgColor = '#ff9800';
     switch (this.props.color) {
-      case "primary":
-        bgColor = "#ff9800";
+      case 'primary':
+        bgColor = '#ff9800';
         break;
-      case "accent":
-        bgColor = "#536dfe";
+      case 'accent':
+        bgColor = '#536dfe';
         break;
-      case "danger":
-        bgColor = "#ff0000";
+      case 'danger':
+        bgColor = '#ff0000';
         break;
-      case "excel":
-        bgColor = "#217346";
+      case 'excel':
+        bgColor = '#217346';
         break;
       default:
         break;

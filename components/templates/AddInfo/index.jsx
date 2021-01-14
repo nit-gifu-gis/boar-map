@@ -1,14 +1,14 @@
-import "./addInfo.scss";
+import './addInfo.scss';
 
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import FooterAdjustment from "../../organisms/footerAdjustment";
-import RoundButton from "../../atomos/roundButton";
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import FooterAdjustment from '../../organisms/footerAdjustment';
+import RoundButton from '../../atomos/roundButton';
 
-import BoarForm from "../../organisms/boarForm";
-import TrapForm from "../../organisms/trapForm";
-import VaccineForm from "../../organisms/vaccineForm";
-import Router from "next/router";
+import BoarForm from '../../organisms/boarForm';
+import TrapForm from '../../organisms/trapForm';
+import VaccineForm from '../../organisms/vaccineForm';
+import Router from 'next/router';
 
 class AddInfo extends React.Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class AddInfo extends React.Component {
       type: null,
       detail: null,
       isProcessing: false,
-      objectURLs: []
+      objectURLs: [],
     };
     this.formRef = React.createRef();
   }
@@ -37,16 +37,16 @@ class AddInfo extends React.Component {
       this.setState({
         lat: Router.query.lat,
         lng: Router.query.lng,
-        type: Router.query.type
+        type: Router.query.type,
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/map");
+      alert('情報の取得に失敗しました。\nもう一度やり直してください。');
+      Router.push('/map');
     }
     // console.log(Router.query.detail);
-    if (Router.query.detail != "") {
+    if (Router.query.detail != '') {
       this.setState({
-        detail: JSON.parse(Router.query.detail)
+        detail: JSON.parse(Router.query.detail),
       });
     }
 
@@ -55,14 +55,14 @@ class AddInfo extends React.Component {
     if (imageURLsStr) {
       const urls = JSON.parse(imageURLsStr);
       this.setState({
-        objectURLs: urls
+        objectURLs: urls,
       });
     }
   }
 
   onClickPrev() {
     const data = this.formRef.current.createDetail();
-    const url = "/add/location";
+    const url = '/add/location';
     Router.push(
       {
         pathname: url,
@@ -71,10 +71,10 @@ class AddInfo extends React.Component {
           lng: this.state.lng,
           type: this.state.type,
           detail: JSON.stringify(data),
-          objectURLs: JSON.stringify(this.state.objectURLs)
-        }
+          objectURLs: JSON.stringify(this.state.objectURLs),
+        },
       },
-      url
+      url,
     );
   }
 
@@ -87,7 +87,7 @@ class AddInfo extends React.Component {
       const data = this.formRef.current.createDetail();
       if (data != null) {
         this.setState({ isProcessing: true });
-        const url = "/add/confirm";
+        const url = '/add/confirm';
         Router.push(
           {
             pathname: url,
@@ -96,16 +96,16 @@ class AddInfo extends React.Component {
               lng: this.state.lng,
               type: this.state.type,
               detail: JSON.stringify(data),
-              objectURLs: JSON.stringify(this.state.objectURLs)
-            }
+              objectURLs: JSON.stringify(this.state.objectURLs),
+            },
           },
-          url
+          url,
         );
       } else {
         this.setState({ isProcessing: false });
       }
     } else {
-      window.alert("入力内容にエラーがあります。ご確認ください。");
+      window.alert('入力内容にエラーがあります。ご確認ください。');
       this.setState({ isProcessing: false });
     }
   }
@@ -115,7 +115,7 @@ class AddInfo extends React.Component {
     let header = <Header color="primary">位置情報登録</Header>;
     let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
-      case "boar":
+      case 'boar':
         header = <Header color="boar">捕獲情報登録</Header>;
         form = (
           <BoarForm
@@ -128,7 +128,7 @@ class AddInfo extends React.Component {
           />
         );
         break;
-      case "trap":
+      case 'trap':
         header = <Header color="trap">わな情報登録</Header>;
         form = (
           <TrapForm
@@ -141,7 +141,7 @@ class AddInfo extends React.Component {
           />
         );
         break;
-      case "vaccine":
+      case 'vaccine':
         header = <Header color="vaccine">ワクチン情報登録</Header>;
         form = (
           <VaccineForm

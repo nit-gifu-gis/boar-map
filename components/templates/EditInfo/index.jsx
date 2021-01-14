@@ -1,14 +1,14 @@
-import "./editInfo.scss";
+import './editInfo.scss';
 
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import FooterAdjustment from "../../organisms/footerAdjustment";
-import RoundButton from "../../atomos/roundButton";
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import FooterAdjustment from '../../organisms/footerAdjustment';
+import RoundButton from '../../atomos/roundButton';
 
-import BoarForm from "../../organisms/boarForm";
-import TrapForm from "../../organisms/trapForm";
-import VaccineForm from "../../organisms/vaccineForm";
-import Router from "next/router";
+import BoarForm from '../../organisms/boarForm';
+import TrapForm from '../../organisms/trapForm';
+import VaccineForm from '../../organisms/vaccineForm';
+import Router from 'next/router';
 
 // import ImageInput from "../../organisms/imageInput";
 
@@ -24,7 +24,7 @@ class EditInfo extends React.Component {
       imageIDs: [],
       isProcessing: false,
       objectURLs: [],
-      deletedIDs: []
+      deletedIDs: [],
     };
     this.formRef = React.createRef();
   }
@@ -45,14 +45,14 @@ class EditInfo extends React.Component {
       this.setState({
         type: Router.query.type,
         detail: detail,
-        id: detail["properties"]["ID$"],
-        lat: detail["geometry"]["coordinates"][1],
-        lng: detail["geometry"]["coordinates"][0],
-        imageIDs: JSON.parse(Router.query.imageIDs)
+        id: detail['properties']['ID$'],
+        lat: detail['geometry']['coordinates'][1],
+        lng: detail['geometry']['coordinates'][0],
+        imageIDs: JSON.parse(Router.query.imageIDs),
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/map");
+      alert('情報の取得に失敗しました。\nもう一度やり直してください。');
+      Router.push('/map');
     }
     // console.log(Router.query.detail);
     // 戻ってきた人用，入力画像初期値
@@ -61,7 +61,7 @@ class EditInfo extends React.Component {
     if (imageURLsStr) {
       const urls = JSON.parse(imageURLsStr);
       this.setState({
-        objectURLs: urls
+        objectURLs: urls,
       });
     }
 
@@ -73,21 +73,21 @@ class EditInfo extends React.Component {
 
   onClickPrev() {
     // const data = this.formRef.current.createDetail();
-    const url = "/detail";
+    const url = '/detail';
     const typeStr = this.state.type;
     let type = null;
     switch (typeStr) {
-      case "boar":
+      case 'boar':
         type = 0;
         break;
-      case "trap":
+      case 'trap':
         type = 1;
         break;
-      case "vaccine":
+      case 'vaccine':
         type = 2;
         break;
       default:
-        console.log("err");
+        console.log('err');
         break;
     }
     console.log(type);
@@ -95,9 +95,9 @@ class EditInfo extends React.Component {
     Router.push(
       {
         pathname: url,
-        query: { type: type, FeatureID: this.state.id }
+        query: { type: type, FeatureID: this.state.id },
       },
-      url
+      url,
     );
   }
 
@@ -110,9 +110,9 @@ class EditInfo extends React.Component {
       const data = this.formRef.current.createDetail();
       if (data != null) {
         // 編集時はidを付け足す
-        data["properties"]["ID$"] = this.state.id;
+        data['properties']['ID$'] = this.state.id;
         this.setState({ isProcessing: true });
-        const url = "/edit/confirm";
+        const url = '/edit/confirm';
         Router.push(
           {
             pathname: url,
@@ -121,16 +121,16 @@ class EditInfo extends React.Component {
               detail: JSON.stringify(data),
               imageIDs: JSON.stringify(this.state.imageIDs),
               objectURLs: JSON.stringify(this.state.objectURLs),
-              deletedIDs: JSON.stringify(this.state.deletedIDs)
-            }
+              deletedIDs: JSON.stringify(this.state.deletedIDs),
+            },
           },
-          url
+          url,
         );
       } else {
         this.setState({ isProcessing: false });
       }
     } else {
-      window.alert("入力内容にエラーがあります。ご確認ください。");
+      window.alert('入力内容にエラーがあります。ご確認ください。');
       this.setState({ isProcessing: false });
     }
   }
@@ -140,7 +140,7 @@ class EditInfo extends React.Component {
     let header = <Header color="primary">登録情報編集</Header>;
     let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
-      case "boar":
+      case 'boar':
         header = <Header color="boar">捕獲情報編集</Header>;
         form = (
           <BoarForm
@@ -155,7 +155,7 @@ class EditInfo extends React.Component {
           />
         );
         break;
-      case "trap":
+      case 'trap':
         header = <Header color="trap">わな情報編集</Header>;
         form = (
           <TrapForm
@@ -170,7 +170,7 @@ class EditInfo extends React.Component {
           />
         );
         break;
-      case "vaccine":
+      case 'vaccine':
         header = <Header color="vaccine">ワクチン情報編集</Header>;
         form = (
           <VaccineForm

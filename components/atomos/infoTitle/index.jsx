@@ -1,6 +1,5 @@
-import React from "react";
-import "./infoTitle.scss";
-import "../../../public/static/css/global.scss";
+import React from 'react';
+import './infoTitle.scss';
 
 class InfoTitle extends React.Component {
   render() {

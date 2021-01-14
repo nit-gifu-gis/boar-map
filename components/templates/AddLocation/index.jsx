@@ -1,18 +1,18 @@
-import "./addLocation.scss";
+import './addLocation.scss';
 
-import React from "react";
+import React from 'react';
 
-import dynamic from "next/dynamic";
-import Header from "../../organisms/header";
-import Footer from "../../organisms/footer";
-import Router from "next/router";
-import RoundButton from "../../atomos/roundButton";
+import dynamic from 'next/dynamic';
+import Header from '../../organisms/header';
+import Footer from '../../organisms/footer';
+import Router from 'next/router';
+import RoundButton from '../../atomos/roundButton';
 
 const DynamicMapComponentWithNoSSR = dynamic(
-  () => import("../../organisms/mapForAddInfo"),
+  () => import('../../organisms/mapForAddInfo'),
   {
-    ssr: false
-  }
+    ssr: false,
+  },
 );
 
 class AddLocation extends React.Component {
@@ -23,13 +23,13 @@ class AddLocation extends React.Component {
     let defaultLat = 35.3911666;
     let defautlLng = 136.7134442;
     if (process.browser) {
-      const r = document.cookie.split(";");
+      const r = document.cookie.split(';');
       r.forEach(value => {
-        const content = value.split("=");
-        content[0] = content[0].replace(" ", "");
-        if (content[0] == "last_lat") {
+        const content = value.split('=');
+        content[0] = content[0].replace(' ', '');
+        if (content[0] == 'last_lat') {
           defaultLat = parseFloat(content[1]);
-        } else if (content[0] == "last_lng") {
+        } else if (content[0] == 'last_lng') {
           defautlLng = parseFloat(content[1]);
         }
       });
@@ -40,7 +40,7 @@ class AddLocation extends React.Component {
       lng: defautlLng,
       type: null,
       detail: null,
-      objectURLs: []
+      objectURLs: [],
     };
     this.saveCenter.bind(this);
   }
@@ -61,21 +61,21 @@ class AddLocation extends React.Component {
     console.log(Router.query);
     if (Router.query.type != null) {
       this.setState({
-        type: Router.query.type
+        type: Router.query.type,
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
-      Router.push("/add/select");
+      alert('情報の取得に失敗しました。\nもう一度やり直してください。');
+      Router.push('/add/select');
     }
   }
 
   onClickPrev() {
-    Router.push("/add/select");
+    Router.push('/add/select');
   }
 
   onClickNext() {
     // const url = "/add/info/" + Router.query.type;
-    const url = "/add/info";
+    const url = '/add/info';
     Router.push(
       {
         pathname: url,
@@ -84,10 +84,10 @@ class AddLocation extends React.Component {
           lng: this.state.lng,
           type: this.state.type,
           detail: this.state.detail,
-          objectURLs: JSON.stringify(this.state.objectURLs)
-        }
+          objectURLs: JSON.stringify(this.state.objectURLs),
+        },
       },
-      url
+      url,
     );
   }
 
@@ -101,13 +101,13 @@ class AddLocation extends React.Component {
     // ヘッダーの色を決定
     let header = <Header color="primary">位置情報登録</Header>;
     switch (this.state.type) {
-      case "boar":
+      case 'boar':
         header = <Header color="boar">捕獲情報登録</Header>;
         break;
-      case "trap":
+      case 'trap':
         header = <Header color="trap">わな情報登録</Header>;
         break;
-      case "vaccine":
+      case 'vaccine':
         header = <Header color="vaccine">ワクチン情報登録</Header>;
         break;
       default:
