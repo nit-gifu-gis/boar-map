@@ -157,6 +157,7 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "left" }}>{data["区分"]}</td>
           <td style={{ textAlign: "left" }}>{data["捕獲年月日"]}</td>
           <td style={{ textAlign: "left" }}>{data["罠・発見場所"]}</td>
+          <td style={{ textAlign: "left" }}>{data["位置情報"]}</td>
           <td style={{ textAlign: "right" }}>{data["捕獲頭数"]}</td>
           <td style={{ textAlign: "right" }}>{data["幼獣の頭数"]}</td>
           <td style={{ textAlign: "right" }}>{data["成獣の頭数"]}</td>
@@ -241,6 +242,12 @@ class ListTable extends React.Component {
                 発見場所
               </th>
               <th
+                className={thClassName("位置情報")}
+                onClick={this.onClickHeader.bind(this, "位置情報")}
+              >
+                座標
+              </th>
+              <th
                 className={thClassName("捕獲頭数")}
                 onClick={this.onClickHeader.bind(this, "捕獲頭数")}
               >
@@ -310,6 +317,8 @@ class ListTable extends React.Component {
                 備考
                 <br />
                 （遠沈管番号）
+                <br />
+                （作業時間）
               </th>
               <th>写真</th>
             </tr>

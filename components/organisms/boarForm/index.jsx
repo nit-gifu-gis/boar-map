@@ -67,8 +67,6 @@ class BoarForm extends React.Component {
       const division = detail["properties"]["区分"];
       switch (division) {
         case "死亡":
-        case "狩猟":
-        case "その他":
           this.setState(_ => {
             return {
               trapOrEnv: ENV,
@@ -266,8 +264,6 @@ class BoarForm extends React.Component {
     let trapOrEnv;
     switch (division) {
       case "死亡":
-      case "狩猟":
-      case "その他":
         trapOrEnv = form.env.options[form.env.selectedIndex].value;
         break;
       default:
@@ -341,8 +337,6 @@ class BoarForm extends React.Component {
     const division = divisonSelect.options[divisonSelect.selectedIndex].value;
     switch (division) {
       case "死亡":
-      case "狩猟":
-      case "その他":
         this.setState(_ => {
           return { trapOrEnv: ENV, isBox: false };
         });
@@ -625,7 +619,7 @@ class BoarForm extends React.Component {
                 }
               />
               <InfoInput
-                title="備考（遠沈管番号）"
+                title="備考（遠沈管番号）（作業時間）"
                 type="text-area"
                 rows="4"
                 name="note"
