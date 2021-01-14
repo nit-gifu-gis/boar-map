@@ -20,12 +20,12 @@
   },
   "exclude": [
     "node_modules",
-    "next.config.js"
+    "next.config.js",
+    "**/*.jsx"
   ],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx",
-    "pages/index.jsx"
+    "**/*.tsx"
   ]
 }
