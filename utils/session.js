@@ -1,6 +1,5 @@
 import Router from "next/router";
 import cookies from "next-cookies";
-import UserData from "./userData";
 import "./statics";
 
 export default class SessionManager {

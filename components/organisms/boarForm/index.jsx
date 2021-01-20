@@ -3,9 +3,9 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
 import "../../../utils/validateData";
 import "../../../utils/dict";
+import { getUserData, hasWritePermission } from "../../../utils/gis";
 
 const TRAP = 1;
 const ENV = 2;
@@ -19,7 +19,6 @@ class BoarForm extends React.Component {
       envValue: "山際",
       lat: props.lat,
       lng: props.lng,
-      userData: UserData.getUserData(),
       detail: null,
       error: {
         date: null,
@@ -49,14 +48,8 @@ class BoarForm extends React.Component {
 
   componentDidMount() {
     // T, U, S, K, R以外は登録不可
-    if (
-      this.state.userData.department != "T" &&
-      this.state.userData.department != "U" &&
-      this.state.userData.department != "S" &&
-      this.state.userData.department != "K" &&
-      this.state.userData.department != "R"
-    ) {
-      console.log("Permission Denied: この情報にはアクセスできません");
+    if (!hasWritePermission("boar")) {
+      alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }
@@ -250,7 +243,7 @@ class BoarForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
-    const user = this.state.userData.user_id;
+    const user = getUserData().userId;
     // 0-1 メッシュ番号
     const meshNo = form.meshNo.value;
     // 1 区分

@@ -10,16 +10,16 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
-import UserData from "../../../utils/userData";
+import { getLayerId, getUserData, hasReadPermission } from "../../../utils/gis";
 
 class Detail extends React.Component {
   state = {
     detail: undefined,
     retry: 0,
     type: undefined,
-    imageIDs: [],
-    userData: UserData.getUserData()
+    imageIDs: []
   };
+
   async getFeatureDetail() {
     if (Router.query.type == undefined) {
       Router.push("/map");
@@ -27,18 +27,15 @@ class Detail extends React.Component {
     }
 
     // W,K以外でワクチン情報を表示しようとするのは禁止
-    if (
-      this.state.userData.department != "W" &&
-      this.state.userData.department != "K"
-    ) {
-      if (Router.query.type == "2") {
+    if (!hasReadPermission("vaccine")) {
+      if (Router.query.type === "vaccine") {
         console.log("Permission Denied: ワクチン情報にはアクセスできません");
         return;
       }
     }
 
     const data = {
-      layerId: BOAR_LAYER_ID + parseInt(Router.query.type),
+      layerId: getLayerId(Router.query.type),
       shapeIds: [Router.query.FeatureID],
       srid: 3857
     };
@@ -78,16 +75,7 @@ class Detail extends React.Component {
   onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
-      const typeNum = Router.query.type;
-      // console.log(typeNum);
-      let type = "";
-      if (typeNum == 0) {
-        type = "boar";
-      } else if (typeNum == 1) {
-        type = "trap";
-      } else if (typeNum == 2) {
-        type = "vaccine";
-      }
+      const type = Router.query.type;
       // console.log(type);
       const url = "/edit/info";
       Router.push(
@@ -115,7 +103,7 @@ class Detail extends React.Component {
     if (res) {
       // id取得
       const id = this.state.detail["properties"]["ID$"];
-      const layerId = BOAR_LAYER_ID + parseInt(Router.query.type);
+      const layerId = getLayerId(Router.query.type);
       // 画像を消す
       const deleteImageIds = this.state.detail["properties"]["画像ID"].split(
         ","
@@ -190,24 +178,25 @@ class Detail extends React.Component {
     let header = <Header color="primary">詳細情報</Header>;
 
     const imgIds = this.state.imageIDs;
+    const userData = getUserData();
 
-    if (this.state.detail && this.state.userData) {
+    if (this.state.detail && userData) {
       // ユーザーIDが入力者なら編集を有効化
       const editEnabled =
-        this.state.detail["properties"]["入力者"] ===
-          this.state.userData.user_id || this.state.userData.department === "K";
+        this.state.detail["properties"]["入力者"] === userData.userId ||
+        userData.department === "K";
 
       if (Object.keys(this.state.detail).length != 0) {
         const type = Router.query.type;
-        if (type == 0) {
+        if (type == "boar") {
           this.state.type = "boar";
           header = <Header color="boar">捕獲情報</Header>;
           detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
-        } else if (type == 1) {
+        } else if (type == "trap") {
           this.state.type = "trap";
           header = <Header color="trap">わな情報</Header>;
           detaildiv = <TrapInfo detail={this.state.detail} imageIDs={imgIds} />;
-        } else if (type == 2) {
+        } else if (type == "vaccine") {
           this.state.type = "vaccine";
           header = <Header color="vaccine">ワクチン情報</Header>;
           detaildiv = (

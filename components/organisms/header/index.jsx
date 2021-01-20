@@ -4,21 +4,14 @@ import React from "react";
 import "../../../utils/statics";
 import Link from "next/link";
 import SessionManager from "../../../utils/session";
-import UserData from "../../../utils/userData";
+import { hasListPermission } from "../../../utils/gis";
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      clicked: false,
-      userData: UserData.getUserData(),
-      userDepartment: null
+      clicked: false
     };
-  }
-
-  componentDidMount() {
-    const department = this.state.userData.department;
-    this.setState({ userDepartment: department });
   }
 
   onClickHam() {
@@ -51,11 +44,7 @@ class Header extends React.Component {
     );
 
     // K,R,S権限であれば一覧表
-    if (
-      this.state.userDepartment === "K" ||
-      this.state.userDepartment === "R" ||
-      this.state.userDepartment === "S"
-    ) {
+    if (hasListPermission("boar")) {
       contents.push(
         <div className="menu_item" key="menu_item_list">
           <Link href="/list">

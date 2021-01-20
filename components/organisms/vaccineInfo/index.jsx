@@ -1,14 +1,23 @@
 import "./vaccineInfo.scss";
 import React from "react";
 import InfoDiv from "../../molecules/infoDiv";
-import UserData from "../../../utils/userData";
+import { hasReadPermission } from "../../../utils/gis";
 
 class VaccineInfo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      readable: false
+    };
+  }
+
+  componentDidMount() {
+    if (hasReadPermission("vaccine")) this.setState({ readable: true });
+  }
+
   render() {
     // W,K以外には表示しない
-    const userData = UserData.getUserData();
-    const userDepartment = userData.department;
-    if (userDepartment != "W" && userDepartment != "K") {
+    if (!this.state.readable) {
       return (
         <div className="vaccine_info_form">
           エラー：情報を表示する権限がありません。
