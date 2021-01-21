@@ -74,22 +74,7 @@ class EditInfo extends React.Component {
   onClickPrev() {
     // const data = this.formRef.current.createDetail();
     const url = "/detail";
-    const typeStr = this.state.type;
-    let type = null;
-    switch (typeStr) {
-      case "boar":
-        type = 0;
-        break;
-      case "trap":
-        type = 1;
-        break;
-      case "vaccine":
-        type = 2;
-        break;
-      default:
-        console.log("err");
-        break;
-    }
+    const type = this.state.type;
     console.log(type);
     console.log(this.state.id);
     Router.push(
