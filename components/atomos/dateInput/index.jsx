@@ -2,6 +2,7 @@ import React from "react";
 import "./deteInput.scss";
 import "../../../public/static/css/global.scss";
 import TextInput from "../textInput";
+import { getDevice, getBrowser } from "../../../utils/utils";
 
 // 初期値を設定しないと自動で今日の日付を初期値にします
 
@@ -21,47 +22,20 @@ class DateInput extends React.Component {
   }
 
   confirmSafari() {
-    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isSafari = () => {
+      const device = getDevice();
+      // PC以外は大丈夫
+      if (device !== "mac" && device !== "windows_pc") return false;
+      // ieとsafariだけtrue
+      const browser = getBrowser();
+      if (browser === "ie" || browser === "safari") return true;
+      else return false;
+    };
 
-    if (userAgent.indexOf("iphone") != -1) {
-      // console.log("iPhone");
-      return false;
-    } else if (userAgent.indexOf("ipad") != -1) {
-      // console.log("iPad");
-      return false;
-    } else if (userAgent.indexOf("android") != -1) {
-      if (userAgent.indexOf("mobile") != -1) {
-        // console.log("android");
-        return false;
-      } else {
-        // console.log("android");
-        return false;
-      }
-    } else if (
-      userAgent.indexOf("msie") != -1 ||
-      userAgent.indexOf("trident") != -1
-    ) {
-      // console.log("Internet Explorer");
-      return true;
-    } else if (userAgent.indexOf("edge") != -1) {
-      // console.log("Edge");
-      return false;
-    } else if (userAgent.indexOf("chrome") != -1) {
-      // console.log("Google Chrome");
-      return false;
-    } else if (userAgent.indexOf("safari") != -1) {
-      // console.log("Safari");
-      return true;
-    } else if (userAgent.indexOf("firefox") != -1) {
-      // console.log("FireFox");
-      return false;
-    } else if (userAgent.indexOf("opera") != -1) {
-      // console.log("Opera");
-      return false;
-    } else {
-      // console.log("不明なブラウザ");
-      return false;
-    }
+    const res = isSafari();
+    return new Promise(resolve => {
+      this.setState({ isSafari: res }, resolve(res));
+    });
   }
 
   onChangeValueForSafari() {
@@ -100,7 +74,7 @@ class DateInput extends React.Component {
   }
 
   async componentDidMount() {
-    await this.setState({ isSafari: this.confirmSafari() });
+    await this.confirmSafari();
     // 初期値の確認
     if (this.props.date != null) {
       // 正規表現でチェック，区切りは"-"または"/"

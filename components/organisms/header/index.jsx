@@ -5,13 +5,19 @@ import "../../../utils/statics";
 import Link from "next/link";
 import SessionManager from "../../../utils/session";
 import { hasListPermission } from "../../../utils/gis";
+import { getFormUrl } from "../../../utils/questionnaire";
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      clicked: false
+      clicked: false,
+      formUrl: ""
     };
+  }
+
+  componentDidMount() {
+    this.setState({ formUrl: getFormUrl() });
   }
 
   onClickHam() {
@@ -57,11 +63,7 @@ class Header extends React.Component {
     // アンケート
     contents.push(
       <div className="menu_item" key="menu_item_questionnaire">
-        <a
-          href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={this.state.formUrl} target="_blank" rel="noopener noreferrer">
           アンケート
         </a>
       </div>
