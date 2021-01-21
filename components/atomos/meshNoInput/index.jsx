@@ -218,7 +218,7 @@ class MeshNoInput extends React.Component {
             error={this.props.error}
           />
         </div>
-        <div className="mesh-num-input__city-num1-break"></div>
+        <div className="mesh-num-input__city-num-break"></div>
         <div className="mesh-num-input__num-input">
           <TextInput
             type="text"
