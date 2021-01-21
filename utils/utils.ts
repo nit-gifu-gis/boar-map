@@ -30,7 +30,7 @@ export const getDevice = (): Device => {
   const ua = window.navigator.userAgent.toLowerCase();
   if (ua.indexOf("windows nt") !== -1) return "windows_pc";
   if (ua.indexOf("iphone") !== -1) return "iphone";
-  if (ua.indexOf("ipad") !== -1) return "ipad";
+  if (ua.indexOf("ipad") !== -1 || (ua.indexOf("mac") !== -1 && 'ontouchend' in document)) return "ipad";
   if (ua.indexOf("mac os") !== -1) return "mac";
   if (ua.indexOf("android") !== -1) {
     if (ua.indexOf("mobile")) return "android_mobile";
