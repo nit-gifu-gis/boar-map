@@ -36,6 +36,12 @@ export default class SessionManager {
         Router.push("/login");
       } else {
         const json = await res.json();
+        document.cookie =
+          "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        document.cookie =
+          "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        document.cookie =
+          "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
         alert(json["reason"]);
       }
     } catch (error) {
