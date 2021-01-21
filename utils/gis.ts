@@ -66,9 +66,9 @@ export type LayerType = 'boar' | 'trap' | 'vaccine';
 const BOAR_LAYER_ID = 5000008;
 const TRAP_LAYER_ID = 5000009;
 const VACCINE_LAYER_ID = 5000010;
-const BOAR_DEMO_LAYER_ID = 5000011;     // 暫定
-const TRAP_DEMO_LAYER_ID = 5000012;     // 暫定
-const VACCINE_DEMO_LAYER_ID = 5000013;  // 暫定
+const BOAR_DEMO_LAYER_ID = 5000612;
+const TRAP_DEMO_LAYER_ID = 5000613;
+const VACCINE_DEMO_LAYER_ID = 5000614;
 export type LayerId = number;
 
 // レイヤーIDを取得する
