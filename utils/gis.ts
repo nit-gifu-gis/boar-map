@@ -101,7 +101,7 @@ export const getLayerId = (type: LayerType): LayerId | undefined => {
 
 
 // 読み取り権限チェック
-const READ_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
+const READ_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['T', 'U', 'S', 'R', 'W', 'K', 'D'],
   trap: ['T', 'U', 'S', 'R', 'W', 'K', 'D'],
   vaccine: ['W', 'K', 'D']
@@ -110,11 +110,11 @@ const READ_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
 export const hasReadPermission = (type: LayerType) => {
   const userData = getUserData();
   if (!userData) return false;
-  return READ_PARMISSION[type].indexOf(userData.department) !== -1;
+  return READ_PERMISSION[type].indexOf(userData.department) !== -1;
 };
 
 // 書き込み権限チェック
-const WRITE_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
+const WRITE_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['T', 'U', 'S', 'R', 'K', 'D'],
   trap: ['T', 'U', 'S', 'R', 'K', 'D'],
   vaccine: ['W', 'K', 'D']
@@ -123,11 +123,11 @@ const WRITE_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
 export const hasWritePermission = (type: LayerType) => {
   const userData = getUserData();
   if (!userData) return false;
-  return WRITE_PARMISSION[type].indexOf(userData.department) !== -1;
+  return WRITE_PERMISSION[type].indexOf(userData.department) !== -1;
 }
 
 // 一覧表権限チェック
-const LIST_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
+const LIST_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['S', 'R', 'K'],
   trap: ['K'],        // 将来のための予約
   vaccine: ['W', 'K'] // 将来のための予約
@@ -136,5 +136,5 @@ const LIST_PARMISSION: { [type in LayerType]: Array<UserDepartment> } = {
 export const hasListPermission = (type: LayerType) => {
   const userData = getUserData();
   if (!userData) return false;
-  return LIST_PARMISSION[type].indexOf(userData.department) !== -1;
+  return LIST_PERMISSION[type].indexOf(userData.department) !== -1;
 }
