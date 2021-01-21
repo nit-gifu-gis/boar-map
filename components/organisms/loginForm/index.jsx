@@ -55,6 +55,7 @@ class LoginForm extends React.Component {
         body: JSON.stringify(body)
       });
       if (res.status === 200) {
+        res.headers.forEach(h => console.log(h));
         // ログイン成功時
         const json = await res.json();
         // cookieに記載

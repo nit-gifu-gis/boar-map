@@ -43,6 +43,7 @@ export default class SessionManager {
         document.cookie =
           "login_time=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
         alert(json["reason"]);
+        Router.push("/login");
       }
     } catch (error) {
       alert(error);
