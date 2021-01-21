@@ -1,6 +1,7 @@
 import Router from "next/router";
 import cookies from "next-cookies";
 import "./statics";
+import { SERVER_URI } from "./gis";
 
 export default class SessionManager {
   static isLogin(ctx) {

@@ -5,6 +5,8 @@ import React from "react";
 import "../../../utils/statics";
 import RoundButton from "../../atomos/roundButton";
 
+import { SERVER_URI } from "../../../utils/gis";
+
 class ListTable extends React.Component {
   constructor(props) {
     super(props);

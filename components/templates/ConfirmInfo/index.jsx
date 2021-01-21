@@ -12,7 +12,7 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
-import { getLayerId, hasWritePermission } from "../../../utils/gis";
+import { getLayerId, hasWritePermission, SERVER_URI } from "../../../utils/gis";
 
 import "whatwg-fetch";
 

@@ -4,6 +4,8 @@ import "../../../public/static/css/global.scss";
 import SelectInput from "../selectInput";
 import TextInput from "../textInput";
 
+import { SERVER_URI } from "../../../utils/gis";
+
 // 市町村名一覧
 const CITY_LIST = [
   "安八町",

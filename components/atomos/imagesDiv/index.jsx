@@ -2,6 +2,7 @@ import React from "react";
 import "./imagesDiv.scss";
 import "../../../public/static/css/global.scss";
 import "../../../utils/statics";
+import { SERVER_URI } from "../../../utils/gis";
 
 class ImagesDiv extends React.Component {
   constructor(props) {

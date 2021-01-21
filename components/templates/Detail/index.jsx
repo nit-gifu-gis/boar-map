@@ -10,7 +10,12 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
-import { getLayerId, getUserData, hasReadPermission } from "../../../utils/gis";
+import {
+  getLayerId,
+  getUserData,
+  hasReadPermission,
+  SERVER_URI
+} from "../../../utils/gis";
 
 class Detail extends React.Component {
   state = {

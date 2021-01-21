@@ -1,7 +1,5 @@
 // 定数一覧
 
-SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 本番
-// SERVER_URI = "https://localhost"; // 開発用ローカル
 MAX_UPLOAD_SIZE = 20 * (1024 * 1024);
 
 getColorCode = colorText => {

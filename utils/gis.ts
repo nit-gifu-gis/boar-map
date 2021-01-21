@@ -1,7 +1,10 @@
 // GISのデータ周りの管理
 
-import { type } from "os";
 import { strEnum } from "./utils";
+
+// サーバーURI
+export const SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 本番
+// export const SERVER_URI = "https://localhost"; // 開発用ローカル
 
 // ユーザーデータ
 export type UserId = string;

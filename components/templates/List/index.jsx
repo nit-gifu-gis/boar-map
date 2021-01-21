@@ -6,7 +6,7 @@ import Header from "../../organisms/header";
 import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
-import { hasListPermission } from "../../../utils/gis";
+import { hasListPermission, SERVER_URI } from "../../../utils/gis";
 
 class List extends React.Component {
   constructor(props) {

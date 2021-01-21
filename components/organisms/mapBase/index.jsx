@@ -9,7 +9,12 @@ import "leaflet-easybutton";
 import "../../../utils/statics";
 import EventListener from "react-event-listener";
 import "leaflet.markercluster";
-import { getLayerId, getUserData, hasReadPermission } from "../../../utils/gis";
+import {
+  getLayerId,
+  getUserData,
+  hasReadPermission,
+  SERVER_URI
+} from "../../../utils/gis";
 
 class MapBase extends React.Component {
   boarIcon = L.icon({

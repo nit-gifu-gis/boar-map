@@ -6,6 +6,7 @@ import "../../../public/static/css/global.scss";
 import "../../../utils/statics";
 import React from "react";
 import { getVersionInfomation } from "../../../utils/versioninfo";
+import { SERVER_URI } from "../../../utils/gis";
 
 class LoginForm extends React.Component {
   constructor(props) {
