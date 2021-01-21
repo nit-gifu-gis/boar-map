@@ -3,16 +3,15 @@ import "./list.scss";
 import React from "react";
 import Router from "next/router";
 import Header from "../../organisms/header";
-import UserData from "../../../utils/userData";
 import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
+import { hasListPermission, SERVER_URI } from "../../../utils/gis";
 
 class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: UserData.getUserData(),
       features: [],
       searching: false,
       searched: false,
@@ -25,8 +24,7 @@ class List extends React.Component {
 
   componentDidMount() {
     // 権限がない人はアクセス不可
-    const department = this.state.userData.department;
-    if (department !== "K" && department !== "R" && department !== "S") {
+    if (!hasListPermission("boar")) {
       Router.push("/map");
     }
   }

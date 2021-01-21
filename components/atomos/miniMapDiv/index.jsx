@@ -2,8 +2,7 @@ import "./miniMapDiv.scss";
 import React from "react";
 import L from "leaflet";
 import "../../../utils/extwms";
-import EventListener from "react-event-listener";
-import UserData from "../../../utils/userData";
+import { getUserData } from "../../../utils/gis";
 
 class MiniMapDiv extends React.Component {
   constructor(props) {
@@ -46,7 +45,8 @@ class MiniMapDiv extends React.Component {
     );
 
     // ユーザーデータ取得(cookieから持ってくる)
-    const userData = UserData.getUserData();
+    const userData = getUserData();
+    if (!userData) return; // 取得失敗
 
     const mainLayer = L.TileLayer.wmsHeader(
       "https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S",
@@ -62,7 +62,7 @@ class MiniMapDiv extends React.Component {
       [
         {
           header: "X-Map-Api-Access-Token",
-          value: userData.access_token
+          value: userData.accessToken
         }
       ]
     ).addTo(this.state.myMap);

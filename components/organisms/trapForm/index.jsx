@@ -3,8 +3,8 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
 import "../../../utils/validateData";
+import { getUserData, hasWritePermission } from "../../../utils/gis";
 
 class TrapForm extends React.Component {
   constructor(props) {
@@ -13,7 +13,6 @@ class TrapForm extends React.Component {
       captured: false,
       lat: props.lat,
       lng: props.lng,
-      userData: UserData.getUserData(),
       detail: null,
       error: {
         setDate: null,
@@ -31,16 +30,8 @@ class TrapForm extends React.Component {
   }
 
   componentDidMount() {
-    // T, U, S, K, R以外は登録不可
-    const userDepartment = this.state.userData.department;
-    if (
-      userDepartment != "T" &&
-      userDepartment != "U" &&
-      userDepartment != "S" &&
-      userDepartment != "K" &&
-      userDepartment != "R"
-    ) {
-      console.log("Permission Denied: この情報にはアクセスできません");
+    if (!hasWritePermission("trap")) {
+      alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }
@@ -135,7 +126,7 @@ class TrapForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
-    const user = this.state.userData.user_id;
+    const user = getUserData().userId;
     // 1 設置年月日
     const setDate = form.setDate.value;
     // // 3 位置情報

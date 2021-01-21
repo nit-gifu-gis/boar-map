@@ -12,7 +12,7 @@ import Header from "../../organisms/header";
 import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
-import UserData from "../../../utils/userData";
+import { getLayerId, hasWritePermission, SERVER_URI } from "../../../utils/gis";
 
 import "whatwg-fetch";
 
@@ -25,7 +25,6 @@ class ConfirmInfo extends React.Component {
       type: null,
       detail: null,
       isProcessing: false,
-      userData: UserData.getUserData(),
       imageURLs: [],
       imageBlobs: []
     };
@@ -73,49 +72,23 @@ class ConfirmInfo extends React.Component {
 
   async submitInfo() {
     this.setState({ isProcessing: true });
-    const userDepartment = this.state.userData.department;
-    let layerId = null;
-    // レイヤーIDを選択すると同時に，書き込み権限をチェック
-    switch (this.state.type) {
-      case "boar":
-        if (
-          userDepartment != "T" &&
-          userDepartment != "U" &&
-          userDepartment != "S" &&
-          userDepartment != "K" &&
-          userDepartment != "R"
-        ) {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
-          return;
-        }
-        layerId = BOAR_LAYER_ID;
-        break;
-      case "trap":
-        if (
-          userDepartment != "T" &&
-          userDepartment != "U" &&
-          userDepartment != "S" &&
-          userDepartment != "K" &&
-          userDepartment != "R"
-        ) {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
-          return;
-        }
-        layerId = TRAP_LAYER_ID;
-        break;
-      case "vaccine":
-        if (userDepartment != "W" && userDepartment != "K") {
-          console.log("Permission Denied: この情報にはアクセスできません");
-          Router.push("/map");
-          return;
-        }
-        layerId = VACCINE_LAYER_ID;
-        break;
-      default:
-        break;
+
+    if (
+      this.state.type != "boar" &&
+      this.state.type != "trap" &&
+      this.state.type != "vaccine"
+    ) {
+      // このif文は型定義がちゃんとしたら不要
+      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      Router.push("/map");
+      return;
     }
+    if (!hasWritePermission(this.state.type)) {
+      alert("Permission Denied: この情報にはアクセスできません");
+      Router.push("/map");
+      return;
+    }
+    const layerId = getLayerId(this.state.type);
 
     try {
       // 画像をアップロード（画像idを取得）

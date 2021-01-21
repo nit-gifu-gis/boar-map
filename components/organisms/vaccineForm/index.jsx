@@ -3,7 +3,7 @@ import "../../../public/static/css/global.scss";
 import Router from "next/router";
 import React from "react";
 import InfoInput from "../../molecules/infoInput";
-import UserData from "../../../utils/userData";
+import { getUserData, hasWritePermission } from "../../../utils/gis";
 
 class VaccineForm extends React.Component {
   constructor(props) {
@@ -12,7 +12,6 @@ class VaccineForm extends React.Component {
       recover: false,
       lat: props.lat,
       lng: props.lng,
-      userData: UserData.getUserData(),
       error: {
         meshNo: null,
         treatDate: null,
@@ -39,10 +38,8 @@ class VaccineForm extends React.Component {
   }
 
   componentDidMount() {
-    // W, K以外は登録不可
-    const userDepartment = this.state.userData.department;
-    if (userDepartment != "W" && userDepartment != "K") {
-      console.log("Permission Denied: この情報にはアクセスできません");
+    if (!hasWritePermission("vaccine")) {
+      alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }
@@ -236,7 +233,7 @@ class VaccineForm extends React.Component {
     const form = document.forms.form;
     // 送信に必要な情報を集めておく
     // 0 入力者
-    const user = this.state.userData.user_id;
+    const user = getUserData().userId;
     // 1 位置情報
     const lat = this.state.lat;
     const lng = this.state.lng;

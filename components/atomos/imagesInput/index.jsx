@@ -3,6 +3,8 @@ import "../../../utils/statics";
 import React from "react";
 import RoundButton from "../roundButton";
 
+import { SERVER_URI } from "../../../utils/gis";
+
 class ImagesInput extends React.Component {
   constructor(props) {
     super(props);

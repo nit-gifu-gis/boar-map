@@ -8,8 +8,13 @@ import "../../../utils/extwms";
 import "leaflet-easybutton";
 import "../../../utils/statics";
 import EventListener from "react-event-listener";
-import UserData from "../../../utils/userData";
 import "leaflet.markercluster";
+import {
+  getLayerId,
+  getUserData,
+  hasReadPermission,
+  SERVER_URI
+} from "../../../utils/gis";
 
 class MapBase extends React.Component {
   boarIcon = L.icon({
@@ -36,9 +41,6 @@ class MapBase extends React.Component {
 
   constructor(props) {
     super(props);
-    // アクセストークンを取得
-    // ユーザーデータ取得(cookieから持ってくる)
-    const userData = UserData.getUserData();
 
     // 再読み込みボタンを作る
     const reloadButton = L.easyButton({
@@ -56,7 +58,7 @@ class MapBase extends React.Component {
               document.getElementById("loading-mark").style.visibility =
                 "visible";
             }
-            this.updateMarkers(map, this.state.userData.access_token);
+            this.updateMarkers();
           }.bind(this),
           title: "reload",
           icon: "fa-undo"
@@ -129,7 +131,6 @@ class MapBase extends React.Component {
       clusterGroup: undefined,
       pauseEvent: false,
       retry: 0,
-      userData: userData,
       reloadButton: reloadButton,
       isMainMap: false,
       mapLoading: true,
@@ -140,10 +141,7 @@ class MapBase extends React.Component {
     };
 
     // 必要に応じてワクチンレイヤー追加
-    if (
-      this.state.userData.department === "K" ||
-      this.state.userData.department === "W"
-    ) {
+    if (hasReadPermission("vaccine")) {
       this.state.overlays["ワクチン"] = L.markerClusterGroup({
         ...clusterGroupOption,
         iconCreateFunction: clusterIconCreate("vaccine"),
@@ -180,8 +178,6 @@ class MapBase extends React.Component {
       this.getFirstCurrentLocation();
     }
 
-    const userData = this.state.userData;
-
     if (this.props.isMainMap != undefined) {
       this.state.isMainMap = this.props.isMainMap;
     }
@@ -200,31 +196,31 @@ class MapBase extends React.Component {
       [
         {
           header: "X-Map-Api-Access-Token",
-          value: userData.access_token
+          value: getUserData().accessToken
         }
       ]
     ).addTo(this.state.myMap);
 
-    this.updateMarkers(this.state.myMap, userData.access_token);
+    this.updateMarkers();
 
     const me = this;
 
     this.state.myMap.on("moveend", function(e) {
       console.log("map-moveend");
-      me.saveMapState(me.state.myMap);
-      me.updateMarkers(me.state.myMap, userData.access_token);
+      me.saveMapState();
+      me.updateMarkers();
     });
 
     this.state.myMap.on("zoomend", function(e) {
       console.log("map-zoomend");
-      me.saveMapState(me.state.myMap);
-      me.updateMarkers(me.state.myMap, userData.access_token);
+      me.saveMapState();
+      me.updateMarkers();
     });
 
     this.state.myMap.on("resize", function(e) {
       console.log("map-resize");
-      me.saveMapState(me.state.myMap);
-      me.updateMarkers(me.state.myMap, userData.access_token);
+      me.saveMapState();
+      me.updateMarkers();
     });
 
     // 拡大縮小ボタン追加
@@ -261,16 +257,14 @@ class MapBase extends React.Component {
     this.state.reloadButton.addTo(this.state.myMap);
   }
 
-  async updateMarkers(map) {
-    // 所属を取得
-    const userDepartment = this.state.userData.department;
+  async updateMarkers() {
     // 表示範囲を取得
-    const bounds = map.getBounds();
+    const bounds = this.state.myMap.getBounds();
 
     // 各フィーチャーを取得
     try {
-      const boars = await this.getFeatures(bounds, BOAR_LAYER_ID);
-      const traps = await this.getFeatures(bounds, TRAP_LAYER_ID);
+      const boars = await this.getFeatures(bounds, getLayerId("boar"));
+      const traps = await this.getFeatures(bounds, getLayerId("trap"));
 
       // まだ描画してないフィーチャーだけ抜き出す
       const newBoars = boars.filter(
@@ -306,9 +300,9 @@ class MapBase extends React.Component {
     }
 
     // ワクチン
-    if (userDepartment == "W" || userDepartment == "K") {
+    if (hasReadPermission("vaccine")) {
       try {
-        const vaccines = await this.getFeatures(bounds, VACCINE_LAYER_ID);
+        const vaccines = await this.getFeatures(bounds, getLayerId("vaccine"));
         const newVaccines = vaccines.filter(
           f =>
             !this.state.featureIDs["vaccine"].find(
@@ -470,7 +464,7 @@ class MapBase extends React.Component {
             pathname: "/detail",
             query: {
               FeatureID: feature["properties"]["ID$"],
-              type: typeNum
+              type: type
             }
           },
           "/detail"
@@ -614,10 +608,10 @@ class MapBase extends React.Component {
   }
 
   // 現在の表示状態（中心座標，ズームレベル）を記録する
-  saveMapState(map) {
+  saveMapState() {
     if (process.browser) {
-      const center = map.getCenter();
-      const zoom = map.getZoom();
+      const center = this.state.myMap.getCenter();
+      const zoom = this.state.myMap.getZoom();
       document.cookie = `last_lat=${center.lat}; path=/`;
       document.cookie = `last_lng=${center.lng}; path=/`;
       document.cookie = `last_zoom=${zoom}; path=/`;

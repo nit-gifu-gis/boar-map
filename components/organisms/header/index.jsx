@@ -4,21 +4,20 @@ import React from "react";
 import "../../../utils/statics";
 import Link from "next/link";
 import SessionManager from "../../../utils/session";
-import UserData from "../../../utils/userData";
+import { hasListPermission } from "../../../utils/gis";
+import { getFormUrl } from "../../../utils/questionnaire";
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       clicked: false,
-      userData: UserData.getUserData(),
-      userDepartment: null
+      formUrl: ""
     };
   }
 
   componentDidMount() {
-    const department = this.state.userData.department;
-    this.setState({ userDepartment: department });
+    this.setState({ formUrl: getFormUrl() });
   }
 
   onClickHam() {
@@ -51,11 +50,7 @@ class Header extends React.Component {
     );
 
     // K,R,S権限であれば一覧表
-    if (
-      this.state.userDepartment === "K" ||
-      this.state.userDepartment === "R" ||
-      this.state.userDepartment === "S"
-    ) {
+    if (hasListPermission("boar")) {
       contents.push(
         <div className="menu_item" key="menu_item_list">
           <Link href="/list">
@@ -68,11 +63,7 @@ class Header extends React.Component {
     // アンケート
     contents.push(
       <div className="menu_item" key="menu_item_questionnaire">
-        <a
-          href="https://docs.google.com/forms/d/e/1FAIpQLScPKvUYooxHltgI7oqwTEjURQJBft8Y1vd_ervmfmNg4NDdGA/viewform?usp=sf_link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={this.state.formUrl} target="_blank" rel="noopener noreferrer">
           アンケート
         </a>
       </div>

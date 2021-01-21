@@ -2,7 +2,7 @@ import "./infoTypeSelector.scss";
 import Router from "next/router";
 import React from "react";
 import InfoTypeItem from "../../molecules/InfoTypeItem";
-import UserData from "../../../utils/userData";
+import { hasWritePermission } from "../../../utils/gis";
 
 const BoarDiv = () => (
   <div className="boar-div select-div">
@@ -47,7 +47,6 @@ class InfoTypeSelector extends React.Component {
   constructor() {
     super();
     this.state = {
-      userData: UserData.getUserData(),
       selected: []
     };
   }
@@ -66,28 +65,11 @@ class InfoTypeSelector extends React.Component {
   }
 
   render() {
-    let choices = [];
+    const choices = [];
 
-    if (this.state.userData) {
-      // userDepartmentに応じて表示するものを変更する
-      switch (this.state.userData.department) {
-        case "T":
-        case "U":
-        case "S":
-        case "R":
-          choices = [<BoarDiv />, <TrapDiv />];
-          break;
-        case "W":
-          choices = [<VaccineDiv />];
-          break;
-        case "K":
-          choices = [<BoarDiv />, <TrapDiv />, <VaccineDiv />];
-          break;
-        default:
-          choices = [];
-          break;
-      }
-    }
+    if (hasWritePermission("boar")) choices.push(<BoarDiv />);
+    if (hasWritePermission("trap")) choices.push(<TrapDiv />);
+    if (hasWritePermission("vaccine")) choices.push(<VaccineDiv />);
 
     return (
       <div className="info-type-selector">

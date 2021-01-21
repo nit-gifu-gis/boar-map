@@ -4,6 +4,8 @@ import "../../../public/static/css/global.scss";
 import SelectInput from "../selectInput";
 import TextInput from "../textInput";
 
+import { SERVER_URI } from "../../../utils/gis";
+
 // 市町村名一覧
 const CITY_LIST = [
   "安八町",
@@ -216,7 +218,7 @@ class MeshNoInput extends React.Component {
             error={this.props.error}
           />
         </div>
-        <div className="mesh-num-input__city-num1-break"></div>
+        <div className="mesh-num-input__city-num-break"></div>
         <div className="mesh-num-input__num-input">
           <TextInput
             type="text"

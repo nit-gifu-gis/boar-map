@@ -6,6 +6,7 @@ import "../../../public/static/css/global.scss";
 import "../../../utils/statics";
 import React from "react";
 import { getVersionInfomation } from "../../../utils/versioninfo";
+import { SERVER_URI } from "../../../utils/gis";
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -54,6 +55,7 @@ class LoginForm extends React.Component {
         body: JSON.stringify(body)
       });
       if (res.status === 200) {
+        res.headers.forEach(h => console.log(h));
         // ログイン成功時
         const json = await res.json();
         // cookieに記載
