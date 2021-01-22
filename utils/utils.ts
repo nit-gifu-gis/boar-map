@@ -42,7 +42,7 @@ export const getDevice = (): Device => {
 export const getBrowser = (): Browser => {
   const ua = window.navigator.userAgent.toLowerCase();
   if (ua.indexOf("msie") !== -1 || ua.indexOf("trident") !== -1) return "ie";
-  if (ua.indexOf("edge") !== -1) return "edge";
+  if (ua.indexOf("edg") !== -1) return "edge";
   if (ua.indexOf("chrome") !== -1 || ua.indexOf("crios") !== -1) return "chrome";
   if (ua.indexOf("firefox") !== -1 || ua.indexOf("fxios") !== -1) return "firefox";
   if (ua.indexOf("safari") !== -1) return "safari";
