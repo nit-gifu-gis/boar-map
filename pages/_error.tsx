@@ -5,6 +5,8 @@ import "./error.scss";
 // production時のみ有効
 // そのため，ビルドした場合のみここが表示される
 
+// このページは404以外を捕捉する
+
 interface Props {
   statusCode: number;
 }
@@ -19,16 +21,7 @@ const ErrorMessage = (statusCode: number) => {
         </p>
       </div>
     );
-  } else if (statusCode === 404 || statusCode === 405) {
-    // not found
-    return (
-      <div className="description">
-        <p>
-          URLが間違っているようです。もう一度URLをご確認ください。
-        </p>
-      </div>
-    );
-  } else if (statusCode >= 500 || statusCode <= 599) {
+  } else if (statusCode >= 500 && statusCode <= 599) {
     // server error
     return (
       <div className="description">
