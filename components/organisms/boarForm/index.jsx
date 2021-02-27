@@ -501,7 +501,7 @@ class BoarForm extends React.Component {
             errorMessage={this.state.error.adultsNum}
           />,
           <p className="boar-form__description">
-            ※以下の項目については、代表的なイノシシ1体の情報を入力してください。
+            ※以下の項目については、血液を採取した個体の情報を入力してください。
           </p>
         ];
       }
