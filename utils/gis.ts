@@ -3,7 +3,8 @@
 import { strEnum } from "./utils";
 
 // サーバーURI
-export const SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 本番
+export const SERVER_URI = "https://boar-map.gifugis.jp/v1"
+// export const SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 開発用
 // export const SERVER_URI = "https://localhost"; // 開発用ローカル
 
 // ユーザーデータ

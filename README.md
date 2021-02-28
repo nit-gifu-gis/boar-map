@@ -55,6 +55,7 @@ ex) `メイン画面の実装 #1`
 ## デプロイ先
 1. https://boar-map.nit-gifu-gis.now.sh/
 2. https://app-gis-dev.junki-t.net/
+3. https://boar-map.gis.gifu.jp/
 
 ## その他
 - [homebrewのインストール方法](https://brew.sh/)
