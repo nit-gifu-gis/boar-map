@@ -2,10 +2,6 @@
 
 import { strEnum } from "./utils";
 
-// export const SERVER_URI = "https://boar-map.gifugis.jp/v1"
-// export const SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 開発用
-// export const SERVER_URI = "https://localhost"; // 開発用ローカル
-
 // ユーザーデータ
 export type UserId = string;
 export type AccessToken = string;
@@ -86,7 +82,7 @@ const getServerURI = (): string => {
       return "https://gis-dev.junki-t.net/v1";
     } else if(domain.endsWith("localhost")){
       // 開発用ローカル
-      return "https://localhost/v1";
+      return "https://localhost";
     }
   }
   return "https://boar-map.gifugis.jp/v1"; // デフォルト
