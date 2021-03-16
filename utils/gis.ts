@@ -79,11 +79,13 @@ const getServerURI = (): string => {
   if (process.browser) {
     // ブラウザで処理が行われている時はアクセスされているドメインを見る
     const domain = document.domain.toLowerCase();
-    if (domain.endsWith(".junki-t.net")) {
+    if (domain.endsWith(".junki-t.net")
+    || domain.endsWith(".vercel.app")
+    || domain.endsWith(".now.sh")) {
       // 開発用サーバー (develop)
       return "https://gis-dev.junki-t.net/v1";
     } else if(domain.endsWith("localhost")){
-      // 開発ようローカル
+      // 開発用ローカル
       return "https://localhost/v1";
     }
   }
