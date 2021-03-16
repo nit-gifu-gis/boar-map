@@ -2,11 +2,6 @@
 
 import { strEnum } from "./utils";
 
-// サーバーURI
-export const SERVER_URI = "https://boar-map.gifugis.jp/v1"
-// export const SERVER_URI = "https://gis-dev.junki-t.net/v1"; // 開発用
-// export const SERVER_URI = "https://localhost"; // 開発用ローカル
-
 // ユーザーデータ
 export type UserId = string;
 export type AccessToken = string;
@@ -75,6 +70,24 @@ const TRAP_DEMO_LAYER_ID = 5000613;
 const VACCINE_DEMO_LAYER_ID = 5000614;
 export type LayerId = number;
 
+// 中間サーバー選択用
+const getServerURI = (): string => {
+  if (process.browser) {
+    // ブラウザで処理が行われている時はアクセスされているドメインを見る
+    const domain = document.domain.toLowerCase();
+    if (domain.endsWith(".junki-t.net")
+    || domain.endsWith(".vercel.app")
+    || domain.endsWith(".now.sh")) {
+      // 開発用サーバー (develop)
+      return "https://gis-dev.junki-t.net/v1";
+    } else if(domain.endsWith("localhost")){
+      // 開発用ローカル
+      return "https://localhost";
+    }
+  }
+  return "https://boar-map.gifugis.jp/v1"; // デフォルト
+}
+
 // レイヤーIDを取得する
 export const getLayerId = (type: LayerType): LayerId | undefined => {
   const userData = getUserData();
@@ -139,3 +152,6 @@ export const hasListPermission = (type: LayerType) => {
   if (!userData) return false;
   return LIST_PERMISSION[type].indexOf(userData.department) !== -1;
 }
+
+// サーバーURI
+export const SERVER_URI = getServerURI()
