@@ -129,9 +129,9 @@ export const hasWritePermission = (type: LayerType) => {
 
 // 一覧表権限チェック
 const LIST_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
-  boar: ['S', 'R', 'K'],
-  trap: ['K'],        // 将来のための予約
-  vaccine: ['W', 'K'] // 将来のための予約
+  boar: ['S', 'R', 'K', 'D'],
+  trap: ['K', 'D'],        // 将来のための予約
+  vaccine: ['W', 'K', 'D'] // 将来のための予約
 }
 
 export const hasListPermission = (type: LayerType) => {
