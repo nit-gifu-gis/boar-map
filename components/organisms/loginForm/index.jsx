@@ -27,6 +27,20 @@ class LoginForm extends React.Component {
     } catch (e) {
       console.error("Login: get version error:", e);
     }
+
+    // 開発用サーバーだった場合には通知を表示する
+    if (
+      document.domain.toLowerCase().endsWith(".junki-t.net") ||
+      document.domain.toLowerCase().endsWith(".vercel.app") ||
+      document.domain.toLowerCase().endsWith(".now.sh")
+    ) {
+      // TODO: #173が終わったらそれに置き換える
+      if (
+        confirm("このサイトは開発版です。\n安定動作版のサイトへ移動しますか？")
+      ) {
+        location.href = "https://boar-map.gifugis.jp/";
+      }
+    }
   }
 
   onSubmitting = async event => {
