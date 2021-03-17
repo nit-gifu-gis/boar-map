@@ -17,7 +17,7 @@ import {
   SERVER_URI
 } from "../../../utils/gis";
 
-import { alert } from "../../../utils/modals";
+import { alert, confirm } from "../../../utils/modals";
 
 class Detail extends React.Component {
   state = {
@@ -106,7 +106,7 @@ class Detail extends React.Component {
   }
 
   async onClickDelete() {
-    const res = confirm("この情報を削除します。\n本当によろしいですか？");
+    const res = await confirm("この情報を削除します。\n本当によろしいですか？");
     if (res) {
       // id取得
       const id = this.state.detail["properties"]["ID$"];

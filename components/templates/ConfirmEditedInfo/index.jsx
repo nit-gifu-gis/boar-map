@@ -14,7 +14,7 @@ import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
 import { getLayerId, hasWritePermission, SERVER_URI } from "../../../utils/gis";
 
-import { alert } from "../../../utils/modals";
+import { alert, confirm } from "../../../utils/modals";
 
 import "whatwg-fetch";
 
@@ -260,7 +260,7 @@ class ConfirmEditedInfo extends React.Component {
   }
 
   async onClickNext() {
-    const result = window.confirm("この内容でよろしいですか？");
+    const result = await confirm("この内容でよろしいですか？");
     if (result) {
       await this.submitInfo();
     }
