@@ -4,6 +4,7 @@ import React from "react";
 import RoundButton from "../roundButton";
 
 import { SERVER_URI } from "../../../utils/gis";
+import { alert } from "../../../utils/modals";
 
 class ImagesInput extends React.Component {
   constructor(props) {
@@ -102,7 +103,7 @@ class ImagesInput extends React.Component {
         input.files.length >
       10
     ) {
-      alert("一度に登録できる画像は10枚までです");
+      await alert("一度に登録できる画像は10枚までです");
       return;
     }
     // 入力された各画像に関して

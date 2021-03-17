@@ -10,6 +10,8 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
+import { alert } from "../../../utils/modals";
+
 // import ImageInput from "../../organisms/imageInput";
 
 class EditInfo extends React.Component {
@@ -39,7 +41,7 @@ class EditInfo extends React.Component {
     this.state.deletedIDs.push(deletedID);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (Router.query.type != undefined || Router.query.detail != undefined) {
       const detail = JSON.parse(Router.query.detail);
       this.setState({
@@ -51,7 +53,7 @@ class EditInfo extends React.Component {
         imageIDs: JSON.parse(Router.query.imageIDs)
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      await alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
     // console.log(Router.query.detail);
@@ -115,7 +117,7 @@ class EditInfo extends React.Component {
         this.setState({ isProcessing: false });
       }
     } else {
-      window.alert("入力内容にエラーがあります。ご確認ください。");
+      await alert("入力内容にエラーがあります。ご確認ください。");
       this.setState({ isProcessing: false });
     }
   }

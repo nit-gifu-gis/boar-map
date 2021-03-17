@@ -17,6 +17,8 @@ import {
   SERVER_URI
 } from "../../../utils/gis";
 
+import { alert } from "../../../utils/modals";
+
 class Detail extends React.Component {
   state = {
     detail: undefined,
@@ -34,7 +36,7 @@ class Detail extends React.Component {
     // W,K以外でワクチン情報を表示しようとするのは禁止
     if (!hasReadPermission("vaccine")) {
       if (Router.query.type === "vaccine") {
-        console.log("Permission Denied: ワクチン情報にはアクセスできません");
+        await alert("Permission Denied: ワクチン情報にはアクセスできません");
         return;
       }
     }
@@ -69,7 +71,7 @@ class Detail extends React.Component {
       });
     } catch (error) {
       console.log(error);
-      alert("情報の取得に失敗しました。");
+      await alert("情報の取得に失敗しました。");
     }
   }
 
@@ -77,7 +79,7 @@ class Detail extends React.Component {
     this.getFeatureDetail();
   }
 
-  onClickNext() {
+  async onClickNext() {
     if (Object.keys(this.state.detail).length != 0) {
       console.log(JSON.stringify(this.state.detail));
       const type = Router.query.type;
@@ -95,7 +97,7 @@ class Detail extends React.Component {
         url
       );
     } else {
-      alert("情報取得中です");
+      await alert("情報取得中です");
     }
   }
 
@@ -166,14 +168,14 @@ class Detail extends React.Component {
         if (res.status === 200) {
           const json = await res.json();
           console.log(json["status"]);
-          alert("削除しました。");
+          await alert("削除しました。");
           Router.push("/map");
         } else {
           const json = await res.json();
-          alert(json["reason"]);
+          await alert(json["reason"]);
         }
       } catch (error) {
-        alert(error);
+        await alert(error);
       }
     }
   }

@@ -48,3 +48,4 @@ export const getBrowser = (): Browser => {
   if (ua.indexOf("safari") !== -1) return "safari";
   return "other";
 }
+
