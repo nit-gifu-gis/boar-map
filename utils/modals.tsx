@@ -16,7 +16,11 @@ export const confirm = async (message: string) => {
 const showModal = (type: "confirm" | "alert", message: string) => {
   // nextのアプリケーションが描画される要素を取得
   const nextDiv = document.getElementById("__next");
-  // スクロール禁止（結構無理やり止めてる）
+  // スクロールのきっかけになるイベントを停止
+  const handleScrollEvent = (e: TouchEvent | WheelEvent) => e.preventDefault();
+  nextDiv.addEventListener('wheel', handleScrollEvent, { passive: false });
+  nextDiv.addEventListener('touchmove', handleScrollEvent, { passive: false });
+  // 上記以外の方法でもスクロール禁止（結構無理やり止めてる）
   const x = window.pageXOffset;
   const y = window.pageYOffset;
   const handleScroll = () => window.scrollTo(x, y);
@@ -25,12 +29,13 @@ const showModal = (type: "confirm" | "alert", message: string) => {
   const wrapper = nextDiv.appendChild(document.createElement("div"));
   wrapper.style.width = '100vw';
   wrapper.style.height = '100vh';
-  wrapper.style.position = 'absolute';
-  wrapper.style.top = y + 'px';
-  wrapper.style.left = x + 'px';
+  wrapper.style.position = 'fixed';
+  wrapper.style.zIndex = '100';
   // モーダルを消去する関数
   const cleanup = () => {
     ReactDOM.unmountComponentAtNode(wrapper);
+    nextDiv.removeEventListener('wheel', handleScrollEvent);
+    nextDiv.removeEventListener('touchmove', handleScrollEvent);
     window.removeEventListener('scroll', handleScroll);
     return setTimeout(() => wrapper.remove());
   };
