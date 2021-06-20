@@ -8,6 +8,8 @@ import Footer from "../../organisms/footer";
 import Router from "next/router";
 import RoundButton from "../../atomos/roundButton";
 
+import { alert } from "../../../utils/modals";
+
 const DynamicMapComponentWithNoSSR = dynamic(
   () => import("../../organisms/mapForAddInfo"),
   {
@@ -45,7 +47,7 @@ class AddLocation extends React.Component {
     this.saveCenter.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (Router.query.lat != null || Router.query.lng != null) {
       this.state.lat = Router.query.lat;
       this.state.lng = Router.query.lng;
@@ -64,7 +66,7 @@ class AddLocation extends React.Component {
         type: Router.query.type
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      await alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/add/select");
     }
   }

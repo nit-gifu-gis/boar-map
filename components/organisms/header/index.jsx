@@ -6,6 +6,7 @@ import Link from "next/link";
 import SessionManager from "../../../utils/session";
 import { hasListPermission } from "../../../utils/gis";
 import { getFormUrl } from "../../../utils/questionnaire";
+import { confirm } from "../../../utils/modals";
 
 class Header extends React.Component {
   constructor(props) {
@@ -29,8 +30,8 @@ class Header extends React.Component {
     this.setState({ clicked: !c });
   }
 
-  onLogout() {
-    const result = window.confirm("本当にログアウトしてよろしいですか？");
+  async onLogout() {
+    const result = await confirm("本当にログアウトしてよろしいですか？");
     if (result) {
       SessionManager.logout(document);
     }

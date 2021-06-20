@@ -15,6 +15,7 @@ import {
   hasReadPermission,
   SERVER_URI
 } from "../../../utils/gis";
+import { alert } from "../../../utils/modals";
 
 class MapBase extends React.Component {
   boarIcon = L.icon({

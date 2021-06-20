@@ -10,6 +10,8 @@ import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
 
+import { alert } from "../../../utils/modals";
+
 class AddInfo extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +30,7 @@ class AddInfo extends React.Component {
     this.state.objectURLs = objectURLs;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (
       Router.query.lat != undefined ||
       Router.query.lng != undefined ||
@@ -40,7 +42,7 @@ class AddInfo extends React.Component {
         type: Router.query.type
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      await alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
     // console.log(Router.query.detail);
@@ -105,7 +107,7 @@ class AddInfo extends React.Component {
         this.setState({ isProcessing: false });
       }
     } else {
-      window.alert("入力内容にエラーがあります。ご確認ください。");
+      await alert("入力内容にエラーがあります。ご確認ください。");
       this.setState({ isProcessing: false });
     }
   }

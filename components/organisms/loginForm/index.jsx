@@ -7,6 +7,7 @@ import "../../../utils/statics";
 import React from "react";
 import { getVersionInfomation } from "../../../utils/versioninfo";
 import { SERVER_URI } from "../../../utils/gis";
+import { confirm } from "../../../utils/modals";
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -36,7 +37,9 @@ class LoginForm extends React.Component {
     ) {
       // TODO: #173が終わったらそれに置き換える
       if (
-        confirm("このサイトは開発版です。\n安定動作版のサイトへ移動しますか？")
+        await confirm(
+          "このサイトは開発版です。\n安定動作版のサイトへ移動しますか？"
+        )
       ) {
         location.href = "https://boar-map.gifugis.jp/";
       }

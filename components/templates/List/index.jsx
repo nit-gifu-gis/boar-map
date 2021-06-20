@@ -8,6 +8,8 @@ import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
 import { hasListPermission, SERVER_URI } from "../../../utils/gis";
 
+import { alert } from "../../../utils/modals";
+
 class List extends React.Component {
   constructor(props) {
     super(props);
@@ -37,7 +39,7 @@ class List extends React.Component {
       const features = await this.getFeatures(data);
       console.log(features);
       if (features.length === 0) {
-        alert("データが1件も見つかりませんでした。");
+        await alert("データが1件も見つかりませんでした。");
         this.setState({
           searched: false,
           searching: false
@@ -53,7 +55,7 @@ class List extends React.Component {
         searching: false
       });
     } catch (error) {
-      alert(`エラーが発生しました．\n${error}`);
+      await alert(`エラーが発生しました．\n${error}`);
       this.setState({ searching: false });
     }
   }
@@ -167,11 +169,11 @@ class List extends React.Component {
         this.setState({ downloading: false });
       } else {
         const json = await res.json();
-        alert(json["reason"]);
+        await alert(json["reason"]);
         this.setState({ downloading: false });
       }
     } catch (error) {
-      alert(error);
+      await alert(error);
       this.setState({ downloading: false });
     }
   }
