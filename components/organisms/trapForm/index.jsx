@@ -5,6 +5,7 @@ import React from "react";
 import InfoInput from "../../molecules/infoInput";
 import "../../../utils/validateData";
 import { getUserData, hasWritePermission } from "../../../utils/gis";
+import { alert } from "../../../utils/modals";
 
 class TrapForm extends React.Component {
   constructor(props) {
@@ -29,9 +30,9 @@ class TrapForm extends React.Component {
     this.validateDetail.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (!hasWritePermission("trap")) {
-      alert("Permission Denied: この情報にはアクセスできません");
+      await alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }

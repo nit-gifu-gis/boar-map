@@ -8,6 +8,7 @@ import Footer from "../../organisms/footer";
 import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
 
+import { alert } from "../../../utils/modals";
 class SelectType extends React.Component {
   constructor(props) {
     super(props);
@@ -18,13 +19,13 @@ class SelectType extends React.Component {
     Router.push("/map");
   }
 
-  onClickNext() {
+  async onClickNext() {
     // なんでこれで動くのか，JavaScriptの知識が足りないためわからない・・・
     const selector = new InfoTypeSelector();
     const selectedItem = selector.getSelectedItem();
     console.log("parent", selectedItem);
     if (selectedItem == null) {
-      window.alert("登録する情報の種類が選択されていません!!");
+      await alert("登録する情報の種類が選択されていません!!");
       return;
     }
     // チェックが有る場合
@@ -35,7 +36,7 @@ class SelectType extends React.Component {
       case "trap":
         break;
       default:
-        window.alert("登録する情報の種類が選択されていません!!");
+        await alert("登録する情報の種類が選択されていません!!");
         return;
     }
     Router.push({ pathname: url, query: { type: selectedItem } }, url);

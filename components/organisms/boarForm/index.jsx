@@ -6,6 +6,7 @@ import InfoInput from "../../molecules/infoInput";
 import "../../../utils/validateData";
 import "../../../utils/dict";
 import { getUserData, hasWritePermission } from "../../../utils/gis";
+import { alert } from "../../../utils/modals";
 
 const TRAP = 1;
 const ENV = 2;
@@ -46,10 +47,10 @@ class BoarForm extends React.Component {
     this.validateCatchNum.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // T, U, S, K, R以外は登録不可
     if (!hasWritePermission("boar")) {
-      alert("Permission Denied: この情報にはアクセスできません");
+      await alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }

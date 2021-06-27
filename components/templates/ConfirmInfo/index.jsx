@@ -14,6 +14,8 @@ import RoundButton from "../../atomos/roundButton";
 import FooterAdjustment from "../../organisms/footerAdjustment";
 import { getLayerId, hasWritePermission, SERVER_URI } from "../../../utils/gis";
 
+import { alert, confirm } from "../../../utils/modals";
+
 import "whatwg-fetch";
 
 class ConfirmInfo extends React.Component {
@@ -45,7 +47,7 @@ class ConfirmInfo extends React.Component {
         detail: JSON.parse(Router.query.detail)
       });
     } else {
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      await alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
     }
 
@@ -79,12 +81,12 @@ class ConfirmInfo extends React.Component {
       this.state.type != "vaccine"
     ) {
       // このif文は型定義がちゃんとしたら不要
-      alert("情報の取得に失敗しました。\nもう一度やり直してください。");
+      await alert("情報の取得に失敗しました。\nもう一度やり直してください。");
       Router.push("/map");
       return;
     }
     if (!hasWritePermission(this.state.type)) {
-      alert("Permission Denied: この情報にはアクセスできません");
+      await alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
     }
@@ -102,11 +104,11 @@ class ConfirmInfo extends React.Component {
       this.state.imageURLs.forEach(url => URL.revokeObjectURL(url));
 
       // mapに飛ばす
-      alert("登録が完了しました。\nご協力ありがとうございました。");
+      await alert("登録が完了しました。\nご協力ありがとうございました。");
       Router.push("/map");
     } catch (e) {
       console.error("アップロードエラー", e);
-      alert(`登録に失敗しました。\n${e}`);
+      await alert(`登録に失敗しました。\n${e}`);
       this.setState({ isProcessing: false });
     }
   }
@@ -220,7 +222,7 @@ class ConfirmInfo extends React.Component {
   }
 
   async onClickNext() {
-    const result = window.confirm("この内容でよろしいですか？");
+    const result = await confirm("この内容でよろしいですか？");
     if (result) {
       await this.submitInfo();
     }

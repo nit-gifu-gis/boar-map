@@ -7,6 +7,8 @@ import TextInput from "../../atomos/textInput";
 import DateInput from "../../atomos/dateInput";
 import SelectInput from "../../atomos/selectInput";
 
+import { alert } from "../../../utils/modals";
+
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
