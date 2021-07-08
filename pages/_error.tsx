@@ -37,9 +37,7 @@ const ErrorMessage = (statusCode: number) => {
     // 謎エラー
     return (
       <div className="description">
-        <p>
-          不明なエラーが発生しました。
-        </p>
+        <p>不明なエラーが発生しました。</p>
       </div>
     );
   }
@@ -53,9 +51,7 @@ const Error: NextPage<Props> = ({ statusCode }) => {
         <div className="image">
           <img src="static/images/error.png" alt="エラー発生" />
         </div>
-        <div className="title">
-          エラー {statusCode}
-        </div>
+        <div className="title">エラー {statusCode}</div>
       </div>
       {ErrorMessage(statusCode)}
     </div>
