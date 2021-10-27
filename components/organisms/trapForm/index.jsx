@@ -6,6 +6,7 @@ import InfoInput from "../../molecules/infoInput";
 import "../../../utils/validateData";
 import { getUserData, hasWritePermission } from "../../../utils/gis";
 import { alert } from "../../../utils/modals";
+import { deepClone } from "../../../utils/dict";
 
 class TrapForm extends React.Component {
   constructor(props) {

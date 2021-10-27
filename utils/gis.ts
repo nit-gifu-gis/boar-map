@@ -5,7 +5,7 @@ import { strEnum } from "./utils";
 // ユーザーデータ
 export type UserId = string;
 export type AccessToken = string;
-const UserDepartment = strEnum(['T', 'U', 'S', 'R', 'W', 'K', 'D']);
+const UserDepartment = strEnum(['T', 'U', 'S', 'R', 'W', 'K', 'D', 'J']);
 export type UserDepartment = keyof typeof UserDepartment;
 export type UserData = {
   userId: UserId;
@@ -61,7 +61,7 @@ const getUserDepartment = (userId: string): UserDepartment | undefined => {
 
 
 // レイヤーの種類
-export type LayerType = 'boar' | 'trap' | 'vaccine';
+export type LayerType = 'boar' | 'boar2' | 'trap' | 'vaccine';
 const BOAR_LAYER_ID = 5000008;
 const TRAP_LAYER_ID = 5000009;
 const VACCINE_LAYER_ID = 5000010;
@@ -98,6 +98,7 @@ export const getLayerId = (type: LayerType): LayerId | undefined => {
   if (userData.department === "D") {
     const layers: { [type in LayerType]: LayerId } = {
       boar: BOAR_DEMO_LAYER_ID,
+      boar2: -1,
       trap: TRAP_DEMO_LAYER_ID,
       vaccine: VACCINE_DEMO_LAYER_ID
     };
@@ -107,6 +108,7 @@ export const getLayerId = (type: LayerType): LayerId | undefined => {
   // 通常は
   const layers: { [type in LayerType]: LayerId } = {
     boar: BOAR_LAYER_ID,
+    boar2: -1,
     trap: TRAP_LAYER_ID,
     vaccine: VACCINE_LAYER_ID
   };
@@ -117,8 +119,9 @@ export const getLayerId = (type: LayerType): LayerId | undefined => {
 // 読み取り権限チェック
 const READ_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['T', 'U', 'S', 'R', 'W', 'K', 'D'],
+  boar2: ['T', 'U', 'S', 'R', 'W', 'K', 'J'],
   trap: ['T', 'U', 'S', 'R', 'W', 'K', 'D'],
-  vaccine: ['W', 'K', 'D']
+  vaccine: ['W', 'K', 'D', 'J']
 };
 
 export const hasReadPermission = (type: LayerType) => {
@@ -130,6 +133,7 @@ export const hasReadPermission = (type: LayerType) => {
 // 書き込み権限チェック
 const WRITE_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['T', 'U', 'S', 'R', 'K', 'D'],
+  boar2: ['T', 'U', 'S', 'R', 'K', 'J'],
   trap: ['T', 'U', 'S', 'R', 'K', 'D'],
   vaccine: ['W', 'K', 'D']
 };
@@ -143,6 +147,7 @@ export const hasWritePermission = (type: LayerType) => {
 // 一覧表権限チェック
 const LIST_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   boar: ['S', 'R', 'K', 'D'],
+  boar2: ['S', 'R', 'K', 'J'],
   trap: ['K', 'D'],        // 将来のための予約
   vaccine: ['W', 'K', 'D'] // 将来のための予約
 }

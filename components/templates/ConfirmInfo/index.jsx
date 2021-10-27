@@ -77,6 +77,7 @@ class ConfirmInfo extends React.Component {
 
     if (
       this.state.type != "boar" &&
+      this.state.type != "boar2" &&
       this.state.type != "trap" &&
       this.state.type != "vaccine"
     ) {
@@ -169,7 +170,7 @@ class ConfirmInfo extends React.Component {
         }
       }
       const send_ids = reg_ids.join(",");
-      feature["properties"]["画像ID"] = send_ids;
+      feature["properties"]["写真ID"] = send_ids;
       console.log("登録フィーチャ", feature);
 
       // 登録データ生成
@@ -179,27 +180,57 @@ class ConfirmInfo extends React.Component {
         features: [feature]
       };
 
-      // post
-      try {
-        const res = await fetch(SERVER_URI + "/Feature/AddFeatures", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          mode: "cors",
-          credentials: "include",
-          body: JSON.stringify(data)
+      if(layerId == -1) {
+        // 新規レイヤー
+        data.features.forEach(v => {
+          v["coordinates"] = v["geometry"]["coordinates"]
         });
-        const json = await res.json();
-        console.log(json);
-        if (res.status === 200) {
-          resolve();
-        } else {
-          reject(json["reason"]);
+        // post
+        try {
+          const res = await fetch(SERVER_URI + "/v2/AddFeatures", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          console.log(json);
+          if (res.status === 200) {
+            resolve();
+          } else {
+            reject(json["reason"]);
+          }
+        } catch (e) {
+          reject(e);
         }
-      } catch (e) {
-        reject(e);
+
+      } else {
+        // post
+        try {
+          const res = await fetch(SERVER_URI + "/Feature/AddFeatures", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            mode: "cors",
+            credentials: "include",
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          console.log(json);
+          if (res.status === 200) {
+            resolve();
+          } else {
+            reject(json["reason"]);
+          }
+        } catch (e) {
+          reject(e);
+        }
       }
     });
   }
@@ -232,7 +263,7 @@ class ConfirmInfo extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">捕獲情報登録</Header>;
     switch (this.state.type) {
-      case "boar":
+      case "boar2":
         header = <Header color="boar">捕獲情報登録</Header>;
         detaildiv = (
           <BoarInfo

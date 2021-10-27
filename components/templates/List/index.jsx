@@ -26,7 +26,7 @@ class List extends React.Component {
 
   componentDidMount() {
     // 権限がない人はアクセス不可
-    if (!hasListPermission("boar")) {
+    if (!hasListPermission("boar") && !hasListPermission("boar2")) {
       Router.push("/map");
     }
   }

@@ -51,7 +51,7 @@ class Header extends React.Component {
     );
 
     // K,R,S権限であれば一覧表
-    if (hasListPermission("boar")) {
+    if (hasListPermission("boar") || hasListPermission("boar2")) {
       contents.push(
         <div className="menu_item" key="menu_item_list">
           <Link href="/list">

@@ -87,6 +87,7 @@ class AddInfo extends React.Component {
     // バリデーションをチェック
     if (await this.formRef.current.validateDetail()) {
       const data = this.formRef.current.createDetail();
+      console.log(data);
       if (data != null) {
         this.setState({ isProcessing: true });
         const url = "/add/confirm";
@@ -117,7 +118,7 @@ class AddInfo extends React.Component {
     let header = <Header color="primary">位置情報登録</Header>;
     let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
-      case "boar":
+      case "boar2":
         header = <Header color="boar">捕獲情報登録</Header>;
         form = (
           <BoarForm
