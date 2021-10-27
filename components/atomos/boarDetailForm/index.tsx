@@ -3,6 +3,7 @@ import "./boardetail.scss";
 import "../../../public/static/css/global.scss";
 import InfoInput from "../../molecules/infoInput";
 import {
+  BoarDetail,
   BoarDetailFormError,
   BoarDetailFormHandler,
   BoarDetailProps
@@ -10,12 +11,12 @@ import {
 import { deepClone } from "../../../utils/dict";
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
-  (props, ref) => {
+  ({ detail, key }, ref) => {
     const [isFemale, setFemale] = useState(
-      props != null ? props["性別"] === "メス" : false
+      detail != null ? detail["性別"] === "メス" : false
     );
     const [isAdult, setAdult] = useState(
-      props != null ? props["成獣幼獣別"] === "成獣" : true
+      detail != null ? detail["成獣幼獣別"] === "成獣" : true
     );
     const [disposalValue, setDisposalValue] = useState<string>("埋却");
 
@@ -33,9 +34,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     };
 
     const validateLength = async () => {
-      const form = document.forms[`form-${props.key}`];
+      const form = document.forms[`form-${key}`];
       const length = form.length.value;
-      console.log(length);
       const error = checkNumberError(length);
       if (error != null) {
         await updateError("length", error);
@@ -57,7 +57,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 性別が変更されたときに呼ばれる
     const onChangeSex = () => {
-      const sexSelect = document.forms[`form-${props.key}`].sex;
+      const sexSelect = document.forms[`form-${key}`].sex;
       const sex = sexSelect.options[sexSelect.selectedIndex].value;
       switch (sex) {
         case "メス":
@@ -71,7 +71,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 幼獣・成獣の別が変更された時に呼ばれる
     const onChangeAge = () => {
-      const ageSelect = document.forms[`form-${props.key}`].age;
+      const ageSelect = document.forms[`form-${key}`].age;
       const age = ageSelect.options[ageSelect.selectedIndex].value;
       switch (age) {
         case "成獣":
@@ -96,8 +96,40 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       return valid;
     };
 
+    const fetchData = (): BoarDetail => {
+      // フォーム
+      const form = document.forms[`form-${key}`];
+
+      // 成獣幼獣別
+      const age = form.age.options[form.age.selectedIndex].value;
+
+      // 性別
+      const gender = form.sex.options[form.sex.selectedIndex].value;
+
+      // 妊娠の状況
+      const pregnant =
+        !isFemale || !isAdult
+          ? ""
+          : form.pregnant.options[form.pregnant.selectedIndex].value;
+
+      // 備考
+      const note = form.note.value;
+
+      // 体長
+      const length = form.length.value;
+
+      return {
+        成獣幼獣別: age,
+        性別: gender,
+        体長: parseInt(length),
+        処分方法: "焼却",
+        備考: note,
+        妊娠の状況: pregnant
+      };
+    };
+
     useImperativeHandle(ref, () => {
-      return { validateData };
+      return { validateData, fetchData };
     });
 
     const validatePregnant = async () => {
@@ -113,7 +145,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         return;
       }
       // メスかつ成獣の場合
-      const form = document.forms[`form-${props.key}`].form;
+      const form = document.forms[`form-${key}`].form;
       const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
       // 値が選択肢に引っかかればOK
       const options = ["あり", "なし", "不明"];
@@ -134,7 +166,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 処分方法変更時に呼ばれる。
     const onChangeDispose = () => {
-      const disposeSelect = document.forms[`form-${props.key}`].disposal.value;
+      const disposeSelect = document.forms[`form-${key}`].disposal.value;
       setDisposalValue(disposeSelect);
     };
 
@@ -148,7 +180,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           name="pregnant"
           options={["なし", "あり", "不明"]}
           required={true}
-          defaultValue={props != null ? props.妊娠の状況 : null}
+          defaultValue={detail != null ? detail.妊娠の状況 : null}
           errorMessage={error.pregnant}
           onChange={validatePregnant}
         />
@@ -156,13 +188,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     }
 
     return (
-      <form name={"form-" + props.key}>
+      <form name={"form-" + key}>
         <InfoInput
           title="幼獣・成獣の別"
           type="select"
           name="age"
           options={["幼獣", "成獣"]}
-          defaultValue={props != null ? props.成獣幼獣別 : "幼獣"}
+          defaultValue={detail != null ? detail.成獣幼獣別 : "幼獣"}
           onChange={onChangeAge}
         />
         <InfoInput
@@ -170,7 +202,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           type="select"
           name="sex"
           options={["オス", "メス", "不明"]}
-          defaultValue={props != null ? props.性別 : "不明"}
+          defaultValue={detail != null ? detail.性別 : "不明"}
           onChange={onChangeSex}
         />
         <InfoInput
@@ -178,7 +210,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           type="number"
           name="length"
           min="1"
-          defaultValue={props != null ? props.体長 : null}
+          defaultValue={detail != null ? detail.体長 : null}
           required={true}
           onChange={validateLength}
           errorMessage={error.length}
@@ -197,14 +229,14 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
             "その他（備考に記入）"
           ]}
           onChange={onChangeDispose}
-          defaultValue={props != null ? props.処分方法 : "埋却"}
+          defaultValue={detail != null ? detail.処分方法 : "埋却"}
         />
         <InfoInput
           title="備考（遠沈管番号）（作業時間）"
           type="text-area"
           rows="4"
           name="note"
-          defaultValue={props != null ? props.備考 : null}
+          defaultValue={detail != null ? detail.備考 : null}
         />
       </form>
     );

@@ -79,7 +79,18 @@ class BoarForm extends React.Component {
       this.setState({
         isBox: detail["properties"]["罠・発見場所"] === "箱わな"
       });
-      // いのししの詳細をパース
+      const data = detail["properties"]["捕獲いのしし情報"];
+      const details = [];
+      for (let i = 0; i < data.length; i++) {
+        const r = React.createRef();
+        details.push({
+          ref: r,
+          obj: <BoarDetailForm ref={r} detail={data[i]} key={i} />
+        });
+      }
+      this.setState({
+        details: details
+      });
     } else {
       const r = React.createRef();
       this.setState({
@@ -227,8 +238,16 @@ class BoarForm extends React.Component {
         break;
     }
 
+    const boarList = [];
+    for (let i = 0; i < this.state.details.length; i++) {
+      const v = this.state.details[i].ref.current;
+      const data = v.fetchData();
+      data.枝番 = i + 1;
+      boarList.push(data);
+    }
+
     // 4-0-1 捕獲頭数
-    let catchNum = 0;
+    let catchNum = boarList.length;
     let childrenNum = "";
     let adultsNum = "";
     if (this.state.isBox) {
@@ -238,50 +257,7 @@ class BoarForm extends React.Component {
     }
 
     // 6-2 処分方法
-    const disposal = form.disposal.options[form.disposal.selectedIndex].value;
-
-    const boarList = [];
-    if (trapOrEnv === "箱わな") {
-      // 複数体のデータ準備
-    } else {
-      // 4-1 幼獣・成獣の別
-      const age = form.age.options[form.age.selectedIndex].value;
-      if (!this.state.isBox) {
-        catchNum = 1;
-        childrenNum = age === "幼獣" ? 1 : 0;
-        adultsNum = age === "成獣" ? 1 : 0;
-      }
-      // 5 性別
-      const sex = form.sex.options[form.sex.selectedIndex].value;
-      // 6 体長
-      const length = form.length.value;
-      // 6-1 妊娠の状況
-      let pregnant = "";
-      if (this.state.isFemale && this.state.isAdult) {
-        pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
-      }
-      // 7 体重
-      const weight = this.weigh(Number(length));
-      // 7-1 備考
-      const note = form.note.value;
-      // 8 歯列画像
-      // 9 現地写真
-      boarList.push({
-        枝番: 1,
-        成獣幼獣別: age,
-        体重: weight,
-        体長: length,
-        備考: note,
-        妊娠の状況: pregnant,
-        性別: sex,
-        処分方法: disposal,
-        地域: "",
-        ジビエ業者: "",
-        個体管理番: "",
-        PCR検査日: "",
-        PCR結果: ""
-      });
-    }
+    const disposal = boarList.length == 0 ? "不明" : boarList[0].処分方法;
 
     return {
       type: "Feature",
@@ -374,7 +350,6 @@ class BoarForm extends React.Component {
   }
 
   render() {
-    console.log("isBox", this.state.isBox);
     if (this.state.lat != undefined && this.state.lng != undefined) {
       // わな・発見場所の切り替え
       let trapOrEnvSelector = (
