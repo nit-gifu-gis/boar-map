@@ -11,7 +11,7 @@ import {
 import { deepClone } from "../../../utils/dict";
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
-  ({ detail, key }, ref) => {
+  ({ detail, formKey }, ref) => {
     const [isFemale, setFemale] = useState(
       detail != null ? detail["性別"] === "メス" : false
     );
@@ -34,7 +34,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     };
 
     const validateLength = async () => {
-      const form = document.forms[`form-${key}`];
+      const form = document.forms[`form-${formKey}`];
       const length = form.length.value;
       const error = checkNumberError(length);
       if (error != null) {
@@ -57,7 +57,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 性別が変更されたときに呼ばれる
     const onChangeSex = () => {
-      const sexSelect = document.forms[`form-${key}`].sex;
+      const sexSelect = document.forms[`form-${formKey}`].sex;
       const sex = sexSelect.options[sexSelect.selectedIndex].value;
       switch (sex) {
         case "メス":
@@ -71,7 +71,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 幼獣・成獣の別が変更された時に呼ばれる
     const onChangeAge = () => {
-      const ageSelect = document.forms[`form-${key}`].age;
+      const ageSelect = document.forms[`form-${formKey}`].age;
       const age = ageSelect.options[ageSelect.selectedIndex].value;
       switch (age) {
         case "成獣":
@@ -98,7 +98,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     const fetchData = (): BoarDetail => {
       // フォーム
-      const form = document.forms[`form-${key}`];
+      const form = document.forms[`form-${formKey}`];
 
       // 成獣幼獣別
       const age = form.age.options[form.age.selectedIndex].value;
@@ -145,7 +145,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         return;
       }
       // メスかつ成獣の場合
-      const form = document.forms[`form-${key}`].form;
+      const form = document.forms[`form-${formKey}`].form;
       const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
       // 値が選択肢に引っかかればOK
       const options = ["あり", "なし", "不明"];
@@ -166,7 +166,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     // 処分方法変更時に呼ばれる。
     const onChangeDispose = () => {
-      const disposeSelect = document.forms[`form-${key}`].disposal.value;
+      const disposeSelect = document.forms[`form-${formKey}`].disposal.value;
       setDisposalValue(disposeSelect);
     };
 
@@ -188,7 +188,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     }
 
     return (
-      <form name={"form-" + key}>
+      <form name={"form-" + formKey}>
         <InfoInput
           title="幼獣・成獣の別"
           type="select"

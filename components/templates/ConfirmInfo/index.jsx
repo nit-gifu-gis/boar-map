@@ -180,10 +180,10 @@ class ConfirmInfo extends React.Component {
         features: [feature]
       };
 
-      if(layerId == -1) {
+      if (layerId == -1) {
         // 新規レイヤー
         data.features.forEach(v => {
-          v["coordinates"] = v["geometry"]["coordinates"]
+          v["coordinates"] = v["geometry"]["coordinates"];
         });
         // post
         try {
@@ -207,7 +207,6 @@ class ConfirmInfo extends React.Component {
         } catch (e) {
           reject(e);
         }
-
       } else {
         // post
         try {

@@ -1,5 +1,5 @@
 export interface BoarDetailProps {
-  key?: string;
+  formKey: string;
   detail?: BoarDetail;
 }
 
