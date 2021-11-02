@@ -2,6 +2,7 @@ import "./boarInfo.scss";
 import React from "react";
 import InfoDiv from "../../molecules/infoDiv";
 import Divider from "../../atomos/divider";
+import { getUserData } from "../../../utils/gis";
 
 class BoarInfo extends React.Component {
   render() {
@@ -33,6 +34,8 @@ class BoarInfo extends React.Component {
         catchNum + "（幼獣: " + childrenNum + " 成獣: " + adultsNum + "）";
       catchNumInfo = <InfoDiv title="捕獲頭数" type="text" data={text} />;
     }
+
+    const userDepartment = getUserData().userDepartment;
 
     return (
       <div className="boar-info">
@@ -93,6 +96,29 @@ class BoarInfo extends React.Component {
               />
               {pregnantInfo}
               <InfoDiv title="処分方法" type="text" data={v["処分方法"]} />
+              {v["処分方法"] === "利活用（ジビエ利用）" ? (
+                <>
+                  <InfoDiv title="地域" type="text" data={v["地域"]} />
+                  <InfoDiv
+                    title="ジビエ業者"
+                    type="text"
+                    data={v["ジビエ業者"]}
+                  />
+                  {userDepartment === "J" || userDepartment === "K" ? (
+                    <InfoDiv
+                      title="個体管理番号"
+                      type="text"
+                      data={
+                        v["個体管理番"] == "" ? "(未入力)" : v["個体管理番"]
+                      }
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ) : (
+                <></>
+              )}
               <InfoDiv
                 title="備考（遠沈管番号）（作業時間）"
                 type="longText"

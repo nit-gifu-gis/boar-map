@@ -7,6 +7,7 @@ import SelectInput from "../../atomos/selectInput";
 import TextAreaInput from "../../atomos/textAreaInput";
 import ImagesInput from "../../atomos/imagesInput";
 import MeshNoInput from "../../atomos/meshNoInput";
+import BoarNoInput from "../../atomos/boarNoInput";
 
 class InfoInput extends React.Component {
   render() {
@@ -92,6 +93,16 @@ class InfoInput extends React.Component {
           />
         );
         break;
+      case "boar-num":
+        input = (
+          <BoarNoInput
+            name={this.props.name}
+            id={this.props.name}
+            defaultValue={this.props.defaultValue}
+            onChange={this.props.onChange}
+            error={this.props.errorMessage != null}
+          />
+        );
       default:
         break;
     }
