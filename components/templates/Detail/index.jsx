@@ -1,6 +1,7 @@
 import "./detail.scss";
 import Router from "next/router";
 
+import OldBoarInfo from "../../organisms/oldBoarInfo";
 import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
@@ -18,13 +19,17 @@ import {
 } from "../../../utils/gis";
 
 import { alert, confirm } from "../../../utils/modals";
+import { hasTrader } from "../../../utils/jibie";
 
 class Detail extends React.Component {
   state = {
     detail: undefined,
     retry: 0,
     type: undefined,
-    imageIDs: []
+    imageIDs: [],
+    imageIDkey: "画像ID",
+    editEnabled: false,
+    editEnabledLoaded: false
   };
 
   async getFeatureDetail() {
@@ -32,6 +37,8 @@ class Detail extends React.Component {
       Router.push("/map");
       return;
     }
+
+    if (Router.query.type === "boar2") this.state.imageIDkey = "写真ID";
 
     // W,K以外でワクチン情報を表示しようとするのは禁止
     if (!hasReadPermission("vaccine")) {
@@ -47,8 +54,13 @@ class Detail extends React.Component {
       srid: 3857
     };
 
+    const url =
+      Router.query.type === "boar2"
+        ? SERVER_URI + "/v2/GetFeaturesById"
+        : SERVER_URI + "/Feature/GetFeaturesById";
+
     try {
-      const res = await fetch(SERVER_URI + "/Feature/GetFeaturesById", {
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -61,10 +73,9 @@ class Detail extends React.Component {
       const json = await res.json();
       const feature = json["features"][0];
       const imageIDs =
-        feature["properties"]["画像ID"] !== ""
-          ? feature["properties"]["画像ID"].split(",")
+        feature["properties"][this.state.imageIDkey] !== ""
+          ? feature["properties"][this.state.imageIDkey].split(",")
           : [];
-      console.log(feature);
       this.setState({
         detail: feature,
         imageIDs: imageIDs
@@ -112,9 +123,9 @@ class Detail extends React.Component {
       const id = this.state.detail["properties"]["ID$"];
       const layerId = getLayerId(Router.query.type);
       // 画像を消す
-      const deleteImageIds = this.state.detail["properties"]["画像ID"].split(
-        ","
-      );
+      const deleteImageIds = this.state.detail["properties"][
+        this.state.imageIDkey
+      ].split(",");
       const deleteImage = id => {
         console.log(id);
         return new Promise(async (resolve, reject) => {
@@ -155,7 +166,11 @@ class Detail extends React.Component {
       try {
         // 先に画像を消す
         Promise.all(deleteImageIds.map(id => deleteImage(id)));
-        const res = await fetch(SERVER_URI + "/Feature/DeleteFeatures.php", {
+        const url =
+          Router.query.type === "boar2"
+            ? SERVER_URI + "/v2/DeleteFeatures.php"
+            : SERVER_URI + "/Feature/DeleteFeatures.php";
+        const res = await fetch(url, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -188,16 +203,51 @@ class Detail extends React.Component {
     const userData = getUserData();
 
     if (this.state.detail && userData) {
+      const type = Router.query.type;
       // ユーザーIDが入力者なら編集を有効化
-      const editEnabled =
+      // - ジビエ利用の場合で、その業者が関係する場合も編集を有効
+      // 旧レイヤーは編集を無効に。（削除は可能）
+      const deleteEnabled =
         this.state.detail["properties"]["入力者"] === userData.userId ||
         userData.department === "K";
 
+      if (!this.state.editEnabledLoaded) {
+        const editEnabled =
+          type !== "boar" &&
+          (this.state.detail["properties"]["入力者"] === userData.userId ||
+            userData.department === "K");
+
+        if (userData.department === "J" && type === "boar2" && !editEnabled) {
+          hasTrader(
+            this.state.detail["properties"]["捕獲いのしし情報"],
+            userData.userId
+          ).then(result => {
+            console.log(result);
+            this.setState({
+              editEnabled: result,
+              editEnabledLoaded: true
+            });
+          });
+        } else {
+          this.setState({
+            editEnabled: editEnabled,
+            editEnabledLoaded: true
+          });
+        }
+      }
+
       if (Object.keys(this.state.detail).length != 0) {
-        const type = Router.query.type;
-        if (type == "boar") {
-          this.state.type = "boar";
+        if (type == "boar2") {
+          this.state.type = "boar2";
           header = <Header color="boar">捕獲情報</Header>;
+          // 互換性保持のために一部項目を別キーに複製する.
+          this.state.detail["properties"]["罠・発見場所"] = this.state.detail[
+            "properties"
+          ]["罠発見場所"];
+          this.state.detail["properties"]["メッシュ番号"] = this.state.detail[
+            "properties"
+          ]["メッシュ番"];
+          console.log(this.state.detail);
           detaildiv = <BoarInfo detail={this.state.detail} imageIDs={imgIds} />;
         } else if (type == "trap") {
           this.state.type = "trap";
@@ -209,6 +259,13 @@ class Detail extends React.Component {
           detaildiv = (
             <VaccineInfo detail={this.state.detail} imageIDs={imgIds} />
           );
+        } else if (type == "boar") {
+          this.state.type = "boar";
+          header = <Header color="boar">捕獲情報</Header>;
+          detaildiv = (
+            <OldBoarInfo detail={this.state.detail} imageIDs={imgIds} />
+          );
+          // 旧いのしし情報表示用のやつをここに足す
         }
       }
       return (
@@ -225,14 +282,14 @@ class Detail extends React.Component {
             <RoundButton
               color="primary"
               bind={this.onClickNext.bind(this)}
-              enabled={editEnabled}
+              enabled={this.state.editEnabled}
             >
               編集
             </RoundButton>
             <RoundButton
               color="danger"
               bind={this.onClickDelete.bind(this)}
-              enabled={editEnabled}
+              enabled={deleteEnabled}
             >
               削除
             </RoundButton>

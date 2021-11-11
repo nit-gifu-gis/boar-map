@@ -70,7 +70,7 @@ class ConfirmEditedInfo extends React.Component {
     this.setState({ isProcessing: true });
     // レイヤーIDを選択すると同時に，書き込み権限をチェック
     if (
-      this.state.type != "boar" &&
+      this.state.type != "boar2" &&
       this.state.type != "trap" &&
       this.state.type != "vaccine"
     ) {
@@ -218,7 +218,11 @@ class ConfirmEditedInfo extends React.Component {
 
       // post
       try {
-        const res = await fetch(SERVER_URI + "/Feature/UpdateFeatures", {
+        const url =
+          this.state.type == "boar2"
+            ? SERVER_URI + "/v2/UpdateFeatures"
+            : SERVER_URI + "/Feature/UpdateFeatures";
+        const res = await fetch(url, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -270,7 +274,7 @@ class ConfirmEditedInfo extends React.Component {
     let detaildiv = <h1>情報取得中...</h1>;
     let header = <Header color="primary">捕獲情報編集</Header>;
     switch (this.state.type) {
-      case "boar":
+      case "boar2":
         header = <Header color="boar">捕獲情報編集</Header>;
         detaildiv = (
           <BoarInfo

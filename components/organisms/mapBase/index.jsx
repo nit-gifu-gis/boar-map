@@ -111,7 +111,7 @@ class MapBase extends React.Component {
       lng: defautlLng,
       zoom: defaultZoom,
       isDefault: isDefault,
-      featureIDs: { boar: [], trap: [], vaccine: [] },
+      featureIDs: { boar: [], trap: [], vaccine: [], boar2: [] },
       overlays: {
         捕獲いのしし: L.markerClusterGroup({
           ...clusterGroupOption,
@@ -264,8 +264,18 @@ class MapBase extends React.Component {
 
     // 各フィーチャーを取得
     try {
-      const boars = await this.getFeatures(bounds, getLayerId("boar"));
-      const traps = await this.getFeatures(bounds, getLayerId("trap"));
+      let boars = [];
+      if (hasReadPermission("boar")) {
+        boars = await this.getFeatures(bounds, getLayerId("boar"));
+      }
+      let traps = [];
+      if (hasReadPermission("trap")) {
+        traps = await this.getFeatures(bounds, getLayerId("trap"));
+      }
+      let boars2 = [];
+      if (hasReadPermission("boar2")) {
+        boars2 = await this.getFeatures(bounds, getLayerId("boar2"));
+      }
 
       // まだ描画してないフィーチャーだけ抜き出す
       const newBoars = boars.filter(
@@ -280,6 +290,12 @@ class MapBase extends React.Component {
             id => id === f["properties"]["ID$"]
           )
       );
+      const newBoars2 = boars2.filter(
+        f =>
+          !this.state.featureIDs["boar2"].find(
+            id => id === f["properties"]["ID$"]
+          )
+      );
 
       // 描画予定フィーチャーのidを描画済みidに追加
       this.state.featureIDs["boar"].push(
@@ -288,13 +304,18 @@ class MapBase extends React.Component {
       this.state.featureIDs["trap"].push(
         ...newTraps.map(f => f["properties"]["ID$"])
       );
+      this.state.featureIDs["boar2"].push(
+        ...newBoars2.map(f => f["properties"]["ID$"])
+      );
 
       // 新規描画するマーカーだけ生成
       const newBoarMarkers = newBoars.map(f => this.makeMarker(f, "boar"));
       const newTrapMarkers = newTraps.map(f => this.makeMarker(f, "trap"));
+      const newBoarMarkers2 = newBoars2.map(f => this.makeMarker(f, "boar2"));
 
       // レイヤーグループにマーカー追加
       this.state.overlays["捕獲いのしし"].addLayers(newBoarMarkers);
+      this.state.overlays["捕獲いのしし"].addLayers(newBoarMarkers2);
       this.state.overlays["わな"].addLayers(newTrapMarkers);
     } catch (error) {
       console.error(error);
@@ -355,21 +376,23 @@ class MapBase extends React.Component {
         }
       };
 
+      const url =
+        layerId === -1
+          ? `${SERVER_URI}/v2/GetFeaturesByExtent.php`
+          : `${SERVER_URI}/Feature/GetFeaturesByExtent.php`;
+
       // fetch
       try {
-        const res = await fetch(
-          `${SERVER_URI}/Feature/GetFeaturesByExtent.php`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
-            },
-            mode: "cors",
-            credentials: "include",
-            body: JSON.stringify(req_body)
-          }
-        );
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          mode: "cors",
+          credentials: "include",
+          body: JSON.stringify(req_body)
+        });
         if (res.status === 200) {
           // 通信成功ならfeaturesを返す
           const json = await res.json();
@@ -397,7 +420,7 @@ class MapBase extends React.Component {
     div.appendChild(titleDiv);
     // 日付
     let dateStr = "";
-    const regexp = new RegExp("(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}) .*", "g");
+    const regexp = new RegExp("(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*", "g");
     const result = regexp.exec(date);
     if (result == null) {
       dateStr += "登録されていません。";
@@ -415,7 +438,7 @@ class MapBase extends React.Component {
   makeMarker(feature, type) {
     // 三項演算子，Formattingのせいで見づらい…
     const icon =
-      type === "boar"
+      type === "boar" || type === "boar2"
         ? this.boarIcon
         : type === "trap"
         ? this.trapIcon
@@ -423,7 +446,7 @@ class MapBase extends React.Component {
         ? this.vaccineIcon
         : undefined;
     const dateLabel =
-      type === "boar"
+      type === "boar" || type === "boar2"
         ? "捕獲年月日"
         : type === "trap"
         ? "設置年月日"
@@ -431,7 +454,7 @@ class MapBase extends React.Component {
         ? "散布年月日"
         : undefined;
     const typeNum =
-      type === "boar"
+      type === "boar" || type === "boar2"
         ? 0
         : type === "trap"
         ? 1

@@ -51,3 +51,50 @@ export const fetchDefaultID = async (
   const dateStr = new Date().toISOString().substring(2, 4);
   return value[area][trader] ? value[area][trader] + dateStr : "";
 };
+
+export const hasTrader = async (
+  boars: Record<string, unknown>[],
+  user: string
+): Promise<boolean> => {
+  const traderInfo = await fetchTraderInfo(user);
+  if (traderInfo == null) return false;
+
+  for (let i = 0; i < boars.length; i++) {
+    if (boars[i]["処分方法"] === "利活用（ジビエ利用）") {
+      if (
+        boars[i]["地域"] === traderInfo.area &&
+        boars[i]["ジビエ業者"] === traderInfo.trader
+      )
+        return true;
+    }
+  }
+  return false;
+};
+
+// TODO: どこかからIDと事業所の関連付けを取るように変更する。
+export const fetchTraderInfo = async (user: string): Promise<TraderInfo> => {
+  if (user === "Jibie1") {
+    return {
+      user: user,
+      area: "岐阜",
+      trader: "事業所B",
+      defaultID: "BBB2"
+    };
+  } else if (user === "Jibie2") {
+    return {
+      user: user,
+      area: "飛騨",
+      trader: "事業所3",
+      defaultID: "GHI2"
+    };
+  }
+  // 該当なしの場合はnullを返す。
+  return null;
+};
+
+export interface TraderInfo {
+  user: string;
+  area: string;
+  trader: string;
+  defaultID: string;
+}

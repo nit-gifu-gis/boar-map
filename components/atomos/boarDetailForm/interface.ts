@@ -1,6 +1,9 @@
+import { TraderInfo } from "../../../utils/jibie";
+
 export interface BoarDetailProps {
   formKey: string;
   detail?: BoarDetail;
+  traderInfo?: TraderInfo;
 }
 
 export interface BoarDetail {

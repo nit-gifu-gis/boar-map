@@ -10,6 +10,7 @@ import { alert } from "../../../utils/modals";
 import BoarDetailForm from "../../atomos/boarDetailForm";
 import Divider from "../../atomos/divider";
 import { makeRandStr } from "../../../utils/randStr";
+import { fetchTraderInfo } from "../../../utils/jibie";
 
 const TRAP = 1;
 const ENV = 2;
@@ -35,7 +36,9 @@ class BoarForm extends React.Component {
       isBox: false,
       details: [],
       hiddenDetails: [],
-      ref: null
+      ref: null,
+      isTraderInfoLoaded: false,
+      traderInfo: null
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -55,6 +58,17 @@ class BoarForm extends React.Component {
       await alert("Permission Denied: この情報にはアクセスできません");
       Router.push("/map");
       return;
+    }
+
+    // ジビエ業者の場合、その情報を取得
+    let traderInfo = null;
+    const usr = getUserData();
+    if (usr.department === "J") {
+      traderInfo = await fetchTraderInfo(usr.userId);
+      this.setState({
+        isTraderInfoLoaded: true,
+        traderInfo: traderInfo
+      });
     }
 
     // detailが与えられた場合
@@ -80,7 +94,10 @@ class BoarForm extends React.Component {
           break;
       }
       this.setState({
-        isBox: detail["properties"]["罠・発見場所"] === "箱わな"
+        isBox:
+          detail["properties"]["罠・発見場所"] === "箱わな" ||
+          detail["properties"]["罠・発見場所"] === "囲いわな" ||
+          detail["properties"]["罠・発見場所"] === "銃猟"
       });
       const data = detail["properties"]["捕獲いのしし情報"];
       const details = [];
@@ -90,7 +107,13 @@ class BoarForm extends React.Component {
         details.push({
           ref: r,
           obj: (
-            <BoarDetailForm ref={r} detail={data[i]} key={key} formKey={key} />
+            <BoarDetailForm
+              ref={r}
+              detail={data[i]}
+              key={key}
+              formKey={key}
+              traderInfo={this.state.traderInfo}
+            />
           )
         });
       }
@@ -104,7 +127,14 @@ class BoarForm extends React.Component {
         details: [
           {
             ref: r,
-            obj: <BoarDetailForm ref={r} key={key} formKey={key} />
+            obj: (
+              <BoarDetailForm
+                ref={r}
+                key={key}
+                formKey={key}
+                traderInfo={this.state.traderInfo}
+              />
+            )
           }
         ]
       });
@@ -310,7 +340,14 @@ class BoarForm extends React.Component {
         const key = makeRandStr(10);
         newDetails.push({
           ref: r,
-          obj: <BoarDetailForm ref={r} key={key} formKey={key} />
+          obj: (
+            <BoarDetailForm
+              ref={r}
+              key={key}
+              formKey={key}
+              traderInfo={this.state.traderInfo}
+            />
+          )
         });
       }
     }
@@ -350,6 +387,8 @@ class BoarForm extends React.Component {
     this.setState({ details: boarForm[0], hiddenDetails: boarForm[1] });
     switch (trap) {
       case "箱わな":
+      case "囲いわな":
+      case "銃猟":
         this.setState({ isBox: true });
         break;
       default:
@@ -396,14 +435,18 @@ class BoarForm extends React.Component {
   }
 
   render() {
-    if (this.state.lat != undefined && this.state.lng != undefined) {
+    if (
+      this.state.lat != undefined &&
+      this.state.lng != undefined &&
+      this.state.isTraderInfoLoaded
+    ) {
       // わな・発見場所の切り替え
       let trapOrEnvSelector = (
         <InfoInput
           title="わなの種類"
           type="select"
           name="trap"
-          options={["くくりわな", "箱わな", "その他"]}
+          options={["くくりわな", "箱わな", "囲いわな", "銃猟", "その他"]}
           defaultValue={this.state.trapValue}
           onChange={this.onChangeTrap.bind(this)}
         />

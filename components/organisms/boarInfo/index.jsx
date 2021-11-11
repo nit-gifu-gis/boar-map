@@ -22,7 +22,11 @@ class BoarInfo extends React.Component {
     }
     // 捕獲頭数は箱わなが選択された時のみ表示
     let catchNumInfo = null;
-    if (this.props.detail["properties"]["罠・発見場所"] === "箱わな") {
+    if (
+      this.props.detail["properties"]["罠・発見場所"] === "箱わな" ||
+      this.props.detail["properties"]["罠・発見場所"] === "囲いわな" ||
+      this.props.detail["properties"]["罠・発見場所"] === "銃猟"
+    ) {
       let childrenNum = 0;
       let adultsNum = 0;
       this.props.detail["properties"]["捕獲いのしし情報"].forEach(v => {
@@ -35,7 +39,7 @@ class BoarInfo extends React.Component {
       catchNumInfo = <InfoDiv title="捕獲頭数" type="text" data={text} />;
     }
 
-    const userDepartment = getUserData().userDepartment;
+    const userDepartment = getUserData().department;
 
     return (
       <div className="boar-info">
@@ -119,6 +123,27 @@ class BoarInfo extends React.Component {
               ) : (
                 <></>
               )}
+              {!this.props.confirmMode ? (
+                <>
+                  {v["PCR検査日"] == "" ? (
+                    <InfoDiv title="PCR検査日" type="text" data={"(未入力)"} />
+                  ) : (
+                    <InfoDiv
+                      title="PCR検査日"
+                      type="date"
+                      data={v["PCR検査日"]}
+                    />
+                  )}
+                  <InfoDiv
+                    title="PCR結果"
+                    type="text"
+                    data={v["PCR結果"] == "" ? "(未入力)" : v["PCR結果"]}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+
               <InfoDiv
                 title="備考（遠沈管番号）（作業時間）"
                 type="longText"

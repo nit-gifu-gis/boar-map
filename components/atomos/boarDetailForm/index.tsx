@@ -13,7 +13,7 @@ import { fetchArea, fetchDefaultID, fetchTraders } from "../../../utils/jibie";
 import { getUserData } from "../../../utils/gis";
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
-  ({ detail, formKey }, ref) => {
+  ({ detail, formKey, traderInfo }, ref) => {
     const [isFemale, setFemale] = useState(
       detail != null ? detail["性別"] === "メス" : false
     );
@@ -27,17 +27,29 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     const [areaList, setAreaList] = useState<string[]>([]);
 
     const [area, setArea] = useState<string>(
-      detail != null && detail["地域"] != null ? detail["地域"] : ""
+      detail != null && detail["地域"] != null
+        ? detail["地域"]
+        : traderInfo != null
+        ? traderInfo.area
+        : ""
     );
 
     const [trader, setTrader] = useState<string>(
-      detail != null && detail["ジビエ業者"] != null ? detail["ジビエ業者"] : ""
+      detail != null && detail["ジビエ業者"] != null
+        ? detail["ジビエ業者"]
+        : traderInfo != null
+        ? traderInfo.trader
+        : ""
     );
 
     const [traders, setTraders] = useState<string[]>([]);
 
     const [traderDefault, setTraderDefault] = useState<string>(
-      detail != null && detail["個体管理番"] != null ? detail["個体管理番"] : ""
+      detail != null && detail["個体管理番"] != null
+        ? detail["個体管理番"]
+        : traderInfo != null
+        ? traderInfo.defaultID
+        : ""
     );
 
     const checkNumberError = numString => {
@@ -68,15 +80,22 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
     };
 
     const validateBoarNum = async () => {
+      const form = document.forms[`form-${formKey}`];
+      const disposal = form.disposal.options[form.disposal.selectedIndex].value;
+      // ジビエ利用ではない場合には終了する。
+      if (disposal !== "利活用（ジビエ利用）") {
+        await updateError("boarnum", null);
+        return;
+      }
       // ジビエ業者/市アカウントじゃなかったら終了する
-      const boarNum = document.forms[`form-${formKey}`]["boarNum-" + formKey];
+      const boarNum = form["boarNum-" + formKey];
       const department = getUserData().department;
       if (department !== "J" && department !== "K") {
         await updateError("boarnum", null);
         return;
       }
 
-      if (boarNum.value === "" || boarNum.value === null) {
+      if (boarNum.value === null || boarNum.value === "") {
         updateError("boarnum", "入力されていません。");
         return;
       }
@@ -278,11 +297,17 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       if (boarNum2 !== "") await validateBoarNum();
     };
 
-    if (disposalValue === "")
+    if (disposalValue === "") {
       setDisposalValue(detail != null ? detail.処分方法 : "埋却");
+    }
 
-    if (area === "")
-      setArea(detail != null && detail.地域 != null ? detail.地域 : "岐阜");
+    if (area === "") {
+      setArea(
+        detail != null && detail.地域 != null && detail.地域 !== ""
+          ? detail.地域
+          : "岐阜"
+      );
+    }
 
     useEffect(() => {
       fetchTraders(area).then(list => setTraders(list));
@@ -298,7 +323,9 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       const boarNum = document.forms[`form-${formKey}`]["boarNum-" + formKey];
       if (
         detail == null ||
-        (detail != null && detail.個体管理番 !== boarNum.value)
+        (detail != null &&
+          boarNum != null &&
+          detail.個体管理番 !== boarNum.value)
       ) {
         fetchDefaultID(area, trader).then(def => {
           setTraderDefault(def);
@@ -387,7 +414,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
               type="select"
               name="area"
               options={areaList}
-              defaultValue={detail != null ? detail.地域 : "岐阜"}
+              defaultValue={
+                detail != null
+                  ? detail.地域
+                  : traderInfo != null
+                  ? traderInfo.area
+                  : "岐阜"
+              }
               onChange={onChangeArea}
             />
 
@@ -396,7 +429,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
               type="select"
               name="trader"
               options={traders}
-              defaultValue={detail != null ? detail.ジビエ業者 : traders[0]}
+              defaultValue={
+                detail != null
+                  ? detail.ジビエ業者
+                  : traderInfo != null
+                  ? traderInfo.trader
+                  : traders[0]
+              }
               onChange={onChangeTrader}
             />
 
