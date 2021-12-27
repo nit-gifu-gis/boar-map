@@ -41,54 +41,60 @@ class Header extends React.Component {
     // コンテンツ
     const contents = [];
 
-    // マップ画面
-    contents.push(
-      <div className="menu_item" key="menu_item_map">
-        <Link href="/map">
-          <a>マップ</a>
-        </Link>
-      </div>
-    );
-
-    // K,R,S権限であれば一覧表
-    if (hasListPermission("boar") || hasListPermission("boar2")) {
+    if (!this.props.guest) {
+      // マップ画面
       contents.push(
-        <div className="menu_item" key="menu_item_list">
-          <Link href="/list">
-            <a>一覧表</a>
+        <div className="menu_item" key="menu_item_map">
+          <Link href="/map">
+            <a>マップ</a>
+          </Link>
+        </div>
+      );
+
+      // K,R,S権限であれば一覧表
+      if (hasListPermission("boar") || hasListPermission("boar2")) {
+        contents.push(
+          <div className="menu_item" key="menu_item_list">
+            <Link href="/list">
+              <a>一覧表</a>
+            </Link>
+          </div>
+        );
+      }
+
+      // アンケート
+      contents.push(
+        <div className="menu_item" key="menu_item_questionnaire">
+          <a
+            href={this.state.formUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            アンケート
+          </a>
+        </div>
+      );
+
+      // バージョン情報
+      contents.push(
+        <div className="menu_item" key="menu_item_version">
+          <Link href="/version">
+            <a>バージョン情報</a>
+          </Link>
+        </div>
+      );
+
+      // ログアウト
+      contents.push(
+        <div className="menu_item danger_item" key="menu_item_logout">
+          <Link href="#">
+            <a className="logout_link" onClick={this.onLogout}>
+              ログアウト
+            </a>
           </Link>
         </div>
       );
     }
-
-    // アンケート
-    contents.push(
-      <div className="menu_item" key="menu_item_questionnaire">
-        <a href={this.state.formUrl} target="_blank" rel="noopener noreferrer">
-          アンケート
-        </a>
-      </div>
-    );
-
-    // バージョン情報
-    contents.push(
-      <div className="menu_item" key="menu_item_version">
-        <Link href="/version">
-          <a>バージョン情報</a>
-        </Link>
-      </div>
-    );
-
-    // ログアウト
-    contents.push(
-      <div className="menu_item danger_item" key="menu_item_logout">
-        <Link href="#">
-          <a className="logout_link" onClick={this.onLogout}>
-            ログアウト
-          </a>
-        </Link>
-      </div>
-    );
 
     // ヘッダー高さ決定
     const itemHeight = parseInt(style.menuItemHeight);
@@ -129,16 +135,20 @@ class Header extends React.Component {
           <div className="text" style={{ fontSize: textFontSize }}>
             {this.props.children}
           </div>
-          <div
-            className="hamburger_button"
-            id="ham"
-            style={{ backgroundColor: bgColor }}
-            onClick={this.onClickHam.bind(this)}
-          >
-            <span className="ham_line ham_line1"></span>
-            <span className="ham_line ham_line2"></span>
-            <span className="ham_line ham_line3"></span>
-          </div>
+          {this.props.guest ? (
+            <></>
+          ) : (
+            <div
+              className="hamburger_button"
+              id="ham"
+              style={{ backgroundColor: bgColor }}
+              onClick={this.onClickHam.bind(this)}
+            >
+              <span className="ham_line ham_line1"></span>
+              <span className="ham_line ham_line2"></span>
+              <span className="ham_line ham_line3"></span>
+            </div>
+          )}
         </div>
         <div
           className="menu"
