@@ -132,7 +132,18 @@ const TraceTemplate: React.FunctionComponent = () => {
         {searchResult === null ? (
           <></>
         ) : isError(searchResult) ? (
-          <>Error</>
+          <div className="trace__contents__error">
+            {searchResult.status === 500 ? (
+              <span className="trace__contents__error__text">
+                サーバー側でエラーが発生しました。
+              </span>
+            ) : (
+              <></>
+            )}
+            <span className="trace__contents__error__text">
+              {searchResult.reason}
+            </span>
+          </div>
         ) : (
           <>
             <div className="trace-form__title">検索結果</div>
