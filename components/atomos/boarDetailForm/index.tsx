@@ -239,7 +239,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         return;
       }
       // メスかつ成獣の場合
-      const form = document.forms[`form-${formKey}`].form;
+      const form = document.forms[`form-${formKey}`];
       const pregnant = form.pregnant.options[form.pregnant.selectedIndex].value;
       // 値が選択肢に引っかかればOK
       const options = ["あり", "なし", "不明"];

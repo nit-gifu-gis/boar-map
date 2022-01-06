@@ -1,9 +1,10 @@
 // アンケートフォーム周り
 
-import { getUserData } from './gis';
-import { Device, Browser, getBrowser, getDevice } from './utils';
+import { getUserData } from "./gis";
+import { Device, Browser, getBrowser, getDevice } from "./utils";
 
-const FORM_URL_BASE = "https://docs.google.com/forms/d/e/1FAIpQLSclRLGXGQVWDFh7T1eWQD83R35eeFs9hUKB5-0KxGYSx-qZcA/viewform?usp=pp_url";
+const FORM_URL_BASE =
+  "https://docs.google.com/forms/d/e/1FAIpQLSclRLGXGQVWDFh7T1eWQD83R35eeFs9hUKB5-0KxGYSx-qZcA/viewform?usp=pp_url";
 const USER_ID_PREFIX = "&entry.632601331=";
 const DEVICE_PREFIX = "&entry.345321002=";
 const BROWSER_PREFIX = "&entry.343469124=";
@@ -28,11 +29,21 @@ const BROWSER_ANSWER: { [browser in Browser]: string } = {
   other: ""
 };
 
-export const getFormUrl = () => {
+export const getFormUrl = (guest = false) => {
+  if (guest) return "https://docs.google.com/forms/d/e/";
+
   const userData = getUserData();
-  const userId = (userData) ? userData.userId : "";
+  const userId = userData ? userData.userId : "";
   const device = DEVICE_ANSWER[getDevice()];
   const browser = BROWSER_ANSWER[getBrowser()];
 
-  return FORM_URL_BASE + USER_ID_PREFIX + userId + DEVICE_PREFIX + device + BROWSER_PREFIX + browser;
-}
+  return (
+    FORM_URL_BASE +
+    USER_ID_PREFIX +
+    userId +
+    DEVICE_PREFIX +
+    device +
+    BROWSER_PREFIX +
+    browser
+  );
+};

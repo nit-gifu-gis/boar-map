@@ -117,6 +117,7 @@ class AddInfo extends React.Component {
     // ヘッダーの色を決定
     let header = <Header color="primary">位置情報登録</Header>;
     let form = <h1>情報取得中...</h1>;
+    console.log(`Form Type: ${this.state.type}`);
     switch (this.state.type) {
       case "boar2":
         header = <Header color="boar">捕獲情報登録</Header>;

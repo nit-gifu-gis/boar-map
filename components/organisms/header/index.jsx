@@ -18,7 +18,7 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ formUrl: getFormUrl() });
+    this.setState({ formUrl: getFormUrl(this.props.guest) });
   }
 
   onClickHam() {

@@ -18,7 +18,7 @@ const TraceTemplate: React.FunctionComponent = () => {
   >(null);
 
   const inputChanged = () => {
-    const NUMBER_LENGTH = 8;
+    const NUMBER_LENGTH = 9;
 
     const boarNo = (document.getElementById("boar_no") as HTMLInputElement)
       .value;
@@ -234,7 +234,7 @@ const TraceTemplate: React.FunctionComponent = () => {
             </div>
           </>
         )}
-        <div className="copy_right">
+        <div className="copyright">
           <span>(c) 2019-2021 National Institute of Technology, </span>
           <span>Gifu College GIS Team</span>
         </div>

@@ -165,7 +165,7 @@ body {
 
 // 高さが680px未満
 @media screen and (max-height: 680px) {
-  .copy_right {
+  .copyright {
     margin-bottom: 20px;
     text-align: center;
     width: auto;
@@ -176,7 +176,7 @@ body {
 }
 
 @media screen and (min-height: 680px) {
-  .copy_right {
+  .copyright {
     width: calc(100vw - var(--margin-lr) * 2);
     margin-bottom: 20px;
     text-align: center;
@@ -188,7 +188,7 @@ body {
 
 // IE
 @media all and (-ms-high-contrast: none) {
-  .copy_right {
+  .copyright {
     text-align: center;
     width: 400px;
     margin-bottom: 20px;

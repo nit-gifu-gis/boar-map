@@ -69,6 +69,11 @@ class BoarForm extends React.Component {
         isTraderInfoLoaded: true,
         traderInfo: traderInfo
       });
+    } else {
+      this.setState({
+        isTraderInfoLoaded: true,
+        traderInfo: {}
+      });
     }
 
     // detailが与えられた場合
