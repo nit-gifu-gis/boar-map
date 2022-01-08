@@ -71,6 +71,7 @@ class ListTable extends React.Component {
         // 数値データの時
         if (
           this.state.sortKey == "ID$" ||
+          this.state.sortKey == "枝番" ||
           this.state.sortKey == "捕獲頭数" ||
           this.state.sortKey == "体長" ||
           this.state.sortKey == "体重"
@@ -115,11 +116,19 @@ class ListTable extends React.Component {
         // データが同じ時はIDで比較
         const aId = parseInt(a.properties["ID$"]);
         const bId = parseInt(b.properties["ID$"]);
+        const aBr = parseInt(a.properties["枝番"] ? a.properties["枝番"] : 1);
+        const bBr = parseInt(b.properties["枝番"] ? b.properties["枝番"] : 1);
         if (aId > bId) {
           return 1;
         } else if (aId < bId) {
           return -1;
         } else {
+          // IDが一緒なら枝番で比較
+          if (aBr > bBr) {
+            return 1;
+          } else if (aBr < bBr) {
+            return -1;
+          }
           // 本来ここには来ない
           return 0;
         }
@@ -155,7 +164,10 @@ class ListTable extends React.Component {
     const featuresList = sorted.map(f => {
       const data = f.properties;
       return (
-        <tr className="list-table__table__row" key={data["ID$"]}>
+        <tr
+          className="list-table__table__row"
+          key={`${data["ID$"]}-${data["枝番"]}`}
+        >
           <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
           <td style={{ textAlign: "left" }}>
             {data["枝番"] ? data["枝番"] : 1}
