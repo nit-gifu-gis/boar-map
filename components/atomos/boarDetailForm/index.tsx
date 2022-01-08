@@ -106,6 +106,10 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         await updateError("trader", "選択されていません。");
         return;
       }
+
+      if (trader === null || trader === false || trader === true) {
+        setTrader(filteredList[0]);
+      }
       await updateError("trader", null);
     };
 
