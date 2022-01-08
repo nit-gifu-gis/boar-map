@@ -38,7 +38,7 @@ class BoarForm extends React.Component {
       hiddenDetails: [],
       ref: null,
       isTraderInfoLoaded: false,
-      traderInfo: null
+      myTraderInfo: null
     };
     // データが与えられた場合は保存しておく
     if (props.detail != null) {
@@ -61,18 +61,18 @@ class BoarForm extends React.Component {
     }
 
     // ジビエ業者の場合、その情報を取得
-    let traderInfo = null;
+    let myTraderInfo = null;
     const usr = getUserData();
     if (usr.department === "J") {
-      traderInfo = await fetchTraderInfo(usr.userId);
+      myTraderInfo = await fetchTraderInfo();
       this.setState({
         isTraderInfoLoaded: true,
-        traderInfo: traderInfo
+        myTraderInfo: myTraderInfo
       });
     } else {
       this.setState({
         isTraderInfoLoaded: true,
-        traderInfo: {}
+        myTraderInfo: {}
       });
     }
 
@@ -117,7 +117,7 @@ class BoarForm extends React.Component {
               detail={data[i]}
               key={key}
               formKey={key}
-              traderInfo={this.state.traderInfo}
+              myTraderInfo={this.state.myTraderInfo}
             />
           )
         });
@@ -137,7 +137,7 @@ class BoarForm extends React.Component {
                 ref={r}
                 key={key}
                 formKey={key}
-                traderInfo={this.state.traderInfo}
+                myTraderInfo={this.state.myTraderInfo}
               />
             )
           }
@@ -350,7 +350,7 @@ class BoarForm extends React.Component {
               ref={r}
               key={key}
               formKey={key}
-              traderInfo={this.state.traderInfo}
+              myTraderInfo={this.state.myTraderInfo}
             />
           )
         });

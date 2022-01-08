@@ -218,16 +218,15 @@ class Detail extends React.Component {
             userData.department === "K");
 
         if (userData.department === "J" && type === "boar2" && !editEnabled) {
-          hasTrader(
-            this.state.detail["properties"]["捕獲いのしし情報"],
-            userData.userId
-          ).then(result => {
-            console.log(result);
-            this.setState({
-              editEnabled: result,
-              editEnabledLoaded: true
-            });
-          });
+          hasTrader(this.state.detail["properties"]["捕獲いのしし情報"]).then(
+            result => {
+              console.log(result);
+              this.setState({
+                editEnabled: result,
+                editEnabledLoaded: true
+              });
+            }
+          );
         } else {
           this.setState({
             editEnabled: editEnabled,

@@ -1,69 +1,95 @@
-export const fetchArea = (): string[] => {
-  return [
-    "岐阜",
-    "西濃",
-    "揖斐",
-    "中濃",
-    "郡上",
-    "加茂",
-    "東濃",
-    "恵那",
-    "下呂",
-    "飛騨"
-  ];
+import { SERVER_URI } from "./gis";
+
+export const calcDefaultID = (trader?: TraderInfo): string => {
+  if (!trader) return "";
+
+  const date = new Date();
+  const yy = `${`${date.getFullYear()}`.substring(2, 4)}`;
+  return `${trader.code}1${yy}`;
 };
 
-// TODO: どこかで事業所リストを取得するように変更する。
-export const fetchTraders = async (key: string): Promise<string[]> => {
-  const value = {
-    岐阜: ["事業所A", "事業所B", "事業所C"],
-    西濃: ["事業所D", "事業所E", "事業所F"],
-    揖斐: ["事業所G", "事業所H", "事業所I"],
-    中濃: ["事業所J", "事業所K", "事業所L"],
-    郡上: ["事業所M", "事業所N", "事業所O"],
-    加茂: ["事業所P", "事業所Q", "事業所R"],
-    東濃: ["事業所S", "事業所T", "事業所U"],
-    恵那: ["事業所V", "事業所W", "事業所X"],
-    下呂: ["事業所Y", "事業所Z", "事業所1"],
-    飛騨: ["事業所2", "事業所3", "事業所4"]
-  };
-  return value[key];
+export const filterListByArea = (
+  list?: TraderList,
+  area?: string
+): TraderInfo[] => {
+  if (!list) return [];
+
+  const allList: TraderInfo[] = [];
+  for (let i = 0; i < list.area.length; i++) {
+    const t1 = list.area[i];
+    const t2 = list.trader[t1];
+    for (let j = 0; j < t2.length; j++) {
+      const info = t2[j];
+      info.area = t1;
+      allList.push(info);
+    }
+  }
+
+  // フィルターが指定されていない場合にはそのまま返す
+  if (!area || area === " ") return allList;
+
+  return allList.filter(info => info.area === area);
 };
 
-// TODO: どこかで事業者に対する固有番号を取得するように変更する。
-export const fetchDefaultID = async (
-  area: string,
-  trader: string
-): Promise<string> => {
-  const value = {
-    岐阜: { 事業所A: "AAA1", 事業所B: "BBB2", 事業所C: "CCC3" },
-    西濃: { 事業所D: "DDD1", 事業所E: "EEE2", 事業所F: "FFF3" },
-    揖斐: { 事業所G: "GGG1", 事業所H: "HHH2", 事業所I: "III3" },
-    中濃: { 事業所J: "JJJ1", 事業所K: "KKK2", 事業所L: "LLL3" },
-    郡上: { 事業所M: "MMM1", 事業所N: "NNN2", 事業所O: "OOO3" },
-    加茂: { 事業所P: "PPP1", 事業所Q: "QQQ2", 事業所R: "RRR3" },
-    東濃: { 事業所S: "SSS1", 事業所T: "TTT2", 事業所U: "UUU3" },
-    恵那: { 事業所V: "VVV1", 事業所W: "WWW2", 事業所X: "XXX3" },
-    下呂: { 事業所Y: "YYY1", 事業所Z: "ZZZ2", 事業所1: "ABC3" },
-    飛騨: { 事業所2: "DEF1", 事業所3: "GHI2", 事業所4: "JLK3" }
-  };
+export const fetchTraderList = async (): Promise<TraderList> => {
+  const inf = await fetch(SERVER_URI + "/v2/Jibie/List", {
+    mode: "cors",
+    credentials: "include"
+  });
+  const jsn = await inf.json();
+  return jsn;
+};
 
-  const dateStr = new Date().toISOString().substring(2, 4);
-  return value[area][trader] ? value[area][trader] + dateStr : "";
+export const getTraderByName = async (
+  name: string,
+  area?: string
+): Promise<TraderInfo | null> => {
+  const list = await fetchTraderList();
+  if (
+    area != undefined &&
+    area != null &&
+    !area &&
+    area !== " " &&
+    !list.area.includes(area)
+  )
+    return null;
+
+  if (area == null || area === " " || area === "") {
+    for (let i = 0; i < list.area.length; i++) {
+      const traders = list.trader[list.area[i]];
+      for (let j = 0; j < traders.length; j++) {
+        const trader = traders[j];
+        if (trader.name === name) {
+          trader.area = list.area[i];
+          return trader;
+        }
+      }
+    }
+  } else {
+    const traders = list.trader[area];
+    for (let i = 0; i < traders.length; i++) {
+      const trader = traders[i];
+      if (trader.name === name) {
+        trader.area = area;
+        return trader;
+      }
+    }
+  }
+  return null;
 };
 
 export const hasTrader = async (
-  boars: Record<string, unknown>[],
-  user: string
+  boars: Record<string, unknown>[]
 ): Promise<boolean> => {
-  const traderInfo = await fetchTraderInfo(user);
-  if (traderInfo == null) return false;
+  const myInfo = await fetchTraderInfo();
+  // TODO: アカウントと業者の関連付けが完了したらfalseにする。
+  if (!myInfo) return true;
 
   for (let i = 0; i < boars.length; i++) {
     if (boars[i]["処分方法"] === "利活用（ジビエ利用）") {
       if (
-        boars[i]["地域"] === traderInfo.area &&
-        boars[i]["ジビエ業者"] === traderInfo.trader
+        boars[i]["地域"] === myInfo.area &&
+        boars[i]["ジビエ業者"] === myInfo.info.name
       )
         return true;
     }
@@ -71,25 +97,31 @@ export const hasTrader = async (
   return false;
 };
 
-// TODO: どこかからIDと事業所の関連付けを取るように変更する。
-export const fetchTraderInfo = async (user: string): Promise<TraderInfo> => {
-  if (user === "Jibie1") {
-    return {
-      user: user,
-      area: "岐阜",
-      trader: "事業所B",
-      defaultID: "BBB2"
-    };
-  } else if (user === "Jibie2") {
-    return {
-      user: user,
-      area: "飛騨",
-      trader: "事業所3",
-      defaultID: "GHI2"
-    };
+export const fetchTraderInfo = async (): Promise<MyTraderInfo> => {
+  const inf = await fetch(SERVER_URI + "/v2/Jibie/Me", {
+    mode: "cors",
+    credentials: "include"
+  });
+
+  const jsn = (await inf.json()) as MyTraderInfo;
+  if (jsn.area && jsn.info) jsn.info.area = jsn.area;
+
+  return jsn;
+};
+
+export const includeTrader = (
+  list: TraderInfo[],
+  value: TraderInfo
+): boolean => {
+  if (value === null || value === undefined) return false;
+
+  for (let i = 0; i < list.length; i++) {
+    const v = list[i];
+    if (v.code == value.code && v.name == v.name) {
+      return true;
+    }
   }
-  // 該当なしの場合はnullを返す。
-  return null;
+  return false;
 };
 
 export const checkLuhn = (value: string): boolean => {
@@ -115,9 +147,18 @@ const calcLuhn = (value: string): number => {
   return (10 - (sum % 10)) % 10;
 };
 
+export interface TraderList {
+  area: string[];
+  trader: Record<string, TraderInfo[]>;
+}
+
+export interface MyTraderInfo {
+  area?: string;
+  info?: TraderInfo;
+}
+
 export interface TraderInfo {
-  user: string;
-  area: string;
-  trader: string;
-  defaultID: string;
+  area?: string;
+  name: string;
+  code: string;
 }

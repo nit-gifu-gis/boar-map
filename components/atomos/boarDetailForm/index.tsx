@@ -9,11 +9,19 @@ import {
   BoarDetailProps
 } from "./interface";
 import { deepClone } from "../../../utils/dict";
-import { fetchArea, fetchDefaultID, fetchTraders } from "../../../utils/jibie";
+import {
+  calcDefaultID,
+  fetchTraderList,
+  filterListByArea,
+  getTraderByName,
+  includeTrader,
+  TraderInfo,
+  TraderList
+} from "../../../utils/jibie";
 import { getUserData } from "../../../utils/gis";
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
-  ({ detail, formKey, traderInfo }, ref) => {
+  ({ detail, formKey, myTraderInfo }, ref) => {
     const [isFemale, setFemale] = useState(
       detail != null ? detail["性別"] === "メス" : false
     );
@@ -24,31 +32,31 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
 
     const [error, setError] = useState<BoarDetailFormError>({});
 
-    const [areaList, setAreaList] = useState<string[]>([]);
+    const [traderList, setTraderList] = useState<TraderList | null | boolean>(
+      null
+    );
 
     const [area, setArea] = useState<string>(
-      detail != null && detail["地域"] != null
+      detail != null && detail["地域"] != null && detail["地域"] != ""
         ? detail["地域"]
-        : traderInfo != null
-        ? traderInfo.area
-        : ""
+        : myTraderInfo != null && myTraderInfo.area
+        ? myTraderInfo.area
+        : " "
     );
 
-    const [trader, setTrader] = useState<string>(
-      detail != null && detail["ジビエ業者"] != null
-        ? detail["ジビエ業者"]
-        : traderInfo != null
-        ? traderInfo.trader
-        : ""
+    const [trader, setTrader] = useState<TraderInfo | null | boolean>(
+      detail != null && detail["ジビエ業者"] != null && detail["地域"] != null
+        ? true
+        : myTraderInfo != null && myTraderInfo.info
+        ? myTraderInfo.info
+        : null
     );
-
-    const [traders, setTraders] = useState<string[]>([]);
 
     const [traderDefault, setTraderDefault] = useState<string>(
       detail != null && detail["個体管理番"] != null
         ? detail["個体管理番"]
-        : traderInfo != null
-        ? traderInfo.defaultID
+        : myTraderInfo != null && myTraderInfo.info
+        ? calcDefaultID(myTraderInfo.info)
         : ""
     );
 
@@ -77,6 +85,28 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         return;
       }
       await updateError("length", null);
+    };
+
+    const validateTrader = async () => {
+      const form = document.forms[`form-${formKey}`];
+      const disposal = form.disposal.options[form.disposal.selectedIndex].value;
+
+      // ジビエ利用ではない場合には終了する。
+      if (disposal !== "利活用（ジビエ利用）") {
+        await updateError("trader", null);
+        return;
+      }
+
+      // リストをエリアでフィルターして、要素が存在しない場合は選択されていない
+      const filteredList = filterListByArea(
+        traderList && traderList !== true ? traderList : null,
+        area
+      );
+      if (!filteredList.length) {
+        await updateError("trader", "選択されていません。");
+        return;
+      }
+      await updateError("trader", null);
     };
 
     const validateBoarNum = async () => {
@@ -153,6 +183,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       await validateLength();
       await validatePregnant();
       await validateBoarNum();
+      await validateTrader();
       let valid = true;
       Object.keys(error).forEach(key => {
         if (error[key] != null) {
@@ -193,10 +224,16 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       // (ジビエ利用の場合はこれがtrueになる。)
       const isJibie = disposal === "利活用（ジビエ利用）";
       // 地域
-      const jibieArea = isJibie ? area : "";
+      let jibieArea = "";
+      if (isJibie && trader && trader !== true) {
+        jibieArea = trader.area;
+      }
 
       // 業者
-      const jibieTrader = isJibie ? trader : "";
+      let jibieTrader = "";
+      if (isJibie && trader && trader !== true) {
+        jibieTrader = trader.name;
+      }
 
       // 個体識別番号
       //   1. ジビエじゃなかったら空で返す
@@ -286,9 +323,9 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       setArea(areaSelect);
     };
 
-    const onChangeTrader = () => {
+    const onChangeTrader = async () => {
       const traderSelect = document.forms[`form-${formKey}`].trader.value;
-      setTrader(traderSelect);
+      setTrader(await getTraderByName(traderSelect));
     };
 
     const onChangeBoarNum = async () => {
@@ -305,21 +342,27 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       setArea(
         detail != null && detail.地域 != null && detail.地域 !== ""
           ? detail.地域
-          : "岐阜"
+          : ""
       );
     }
 
     useEffect(() => {
-      fetchTraders(area).then(list => setTraders(list));
+      if (!traderList || traderList === true) return;
+      if (trader === true || trader === false) return;
+
+      const filtered = filterListByArea(traderList, area);
+      if (!includeTrader(filtered, trader) && filtered.length) {
+        setTrader(filtered[0]);
+      }
     }, [area]);
 
     useEffect(() => {
-      if (!traders.includes(trader) && traders.length) {
-        setTrader(traders[0]);
+      if (trader === true) {
+        getTraderByName(detail["ジビエ業者"], detail["地域"]).then(tr => {
+          setTrader(tr);
+        });
+        return;
       }
-    }, [traders]);
-
-    useEffect(() => {
       const boarNum = document.forms[`form-${formKey}`]["boarNum-" + formKey];
       if (
         detail == null ||
@@ -327,9 +370,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           boarNum != null &&
           detail.個体管理番 !== boarNum.value)
       ) {
-        fetchDefaultID(area, trader).then(def => {
-          setTraderDefault(def);
-        });
+        if (trader === false) return;
+        setTraderDefault(calcDefaultID(trader));
       }
     }, [trader]);
 
@@ -353,15 +395,33 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       }
     }, [traderDefault]);
 
-    if (traderDefault === "" && traders.length != 0) {
-      fetchDefaultID(area, traders[0]).then(def => setTraderDefault(def));
+    if (traderDefault === "" && traderList && traderList !== true) {
+      const list = filterListByArea(traderList, area);
+      if (!list.length) return;
+      setTraderDefault(calcDefaultID(list[0]));
     }
 
-    if (!areaList.length) {
-      setAreaList(fetchArea());
+    if (!traderList) {
+      setTraderList(true);
+      fetchTraderList().then(list => {
+        setTraderList(list);
+      });
     }
 
     const userDepartment = getUserData().department;
+
+    const filteredList = filterListByArea(
+      traderList && traderList !== true ? traderList : null,
+      area
+    );
+
+    const filteredNameList = filteredList.map(v => v.name);
+
+    const areaList2 = (traderList && traderList !== true
+      ? traderList.area
+      : []
+    ).concat();
+    areaList2.unshift(" ");
 
     return (
       <form name={"form-" + formKey}>
@@ -413,13 +473,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
               title="地域（農林事務所単位）"
               type="select"
               name="area"
-              options={areaList}
+              options={areaList2}
               defaultValue={
                 detail != null
                   ? detail.地域
-                  : traderInfo != null
-                  ? traderInfo.area
-                  : "岐阜"
+                  : myTraderInfo != null && myTraderInfo.area
+                  ? myTraderInfo.area
+                  : ""
               }
               onChange={onChangeArea}
             />
@@ -428,14 +488,17 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
               title="ジビエ業者"
               type="select"
               name="trader"
-              options={traders}
+              options={filteredNameList}
               defaultValue={
                 detail != null
                   ? detail.ジビエ業者
-                  : traderInfo != null
-                  ? traderInfo.trader
-                  : traders[0]
+                  : myTraderInfo != null && myTraderInfo.info
+                  ? myTraderInfo.info.name
+                  : filteredNameList.length
+                  ? filteredNameList[0]
+                  : ""
               }
+              errorMessage={error.trader}
               onChange={onChangeTrader}
             />
 
