@@ -31,7 +31,7 @@ class SelectType extends React.Component {
     // チェックが有る場合
     const url = "/add/location";
     switch (selectedItem) {
-      case "boar":
+      case "boar2":
       case "vaccine":
       case "trap":
         break;

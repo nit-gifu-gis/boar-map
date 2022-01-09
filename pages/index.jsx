@@ -6,31 +6,6 @@ import Index from "../components/templates/Index";
 import SessionManager from "../utils/session";
 
 class IndexPage extends React.Component {
-  // componentDidMount() {
-  //   Router.push("/map");
-  // }
-
-  static async getInitialProps(ctx) {
-    if (!SessionManager.isLogin(ctx)) {
-      if (ctx.res) {
-        ctx.res.writeHead(302, {
-          Location: "/login"
-        });
-        ctx.res.end();
-      } else {
-        Router.push("/login");
-      }
-    } else if (ctx.res) {
-      ctx.res.writeHead(302, {
-        Location: "/map"
-      });
-      ctx.res.end();
-    } else {
-      Router.push("/map");
-    }
-    return { isLogin: true };
-  }
-
   render() {
     return (
       <>

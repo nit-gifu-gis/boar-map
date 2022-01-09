@@ -1,4 +1,4 @@
-deepClone = obj => {
+export const deepClone = obj => {
   const r = {};
   for (const name in obj) {
     if (isObject(obj[name])) {
@@ -11,11 +11,11 @@ deepClone = obj => {
 };
 
 // Array
-isArray = item => {
+export const isArray = item => {
   return Object.prototype.toString.call(item) === "[object Array]";
 };
 
 // OBJECT
-isObject = item => {
+export const isObject = item => {
   return typeof item === "object" && item !== null && !isArray(item);
 };
