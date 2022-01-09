@@ -1,9 +1,0 @@
-node_modules/
-.npm
-.eslintcache
-.tgz
-.next
-.env
-.DS_Store
-
-.vscode
