@@ -72,6 +72,16 @@ class Detail extends React.Component {
       });
       const json = await res.json();
       const feature = json["features"][0];
+      // TODO: Replace 処分方法
+      for(let i = 0; i < feature["properties"]["捕獲いのしし情報"].length; i++) {
+        const dt = feature["properties"]["捕獲いのしし情報"][i];
+        console.log(dt);
+        if(dt["処分方法"] === "利活用（ジビエ利用）") {
+          feature["properties"]["捕獲いのしし情報"][i]["処分方法"] = "ジビエ業者渡し"
+        } else if(dt["処分方法"] === "利活用（自家消費）") {
+          feature["properties"]["捕獲いのしし情報"][i]["処分方法"] = "自家消費"
+        }
+      }
       const imageIDs =
         feature["properties"][this.state.imageIDkey] !== ""
           ? feature["properties"][this.state.imageIDkey].split(",")

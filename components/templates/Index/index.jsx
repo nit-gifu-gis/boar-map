@@ -30,7 +30,7 @@ const Index = () => (
       <div className="selector_item color_trace">
         <Link href="/trace">
           <a>
-            <div className="selector_content">トレーサビリティ システム</div>
+            <div className="selector_content">履歴管理システム</div>
           </a>
         </Link>
       </div>

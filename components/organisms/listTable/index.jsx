@@ -356,8 +356,6 @@ class ListTable extends React.Component {
                 備考
                 <br />
                 （遠沈管番号）
-                <br />
-                （作業時間）
               </th>
               <th
                 className={thClassName("ジビエ業者")}

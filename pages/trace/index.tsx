@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import TraceTemplate from "../../components/templates/Trace";
 
-// トレーサビリティシステム用のページ
+// 履歴管理システム用のページ
 const TracePage: NextPage = () => {
   return (
     <>
