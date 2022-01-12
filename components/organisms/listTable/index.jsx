@@ -71,6 +71,7 @@ class ListTable extends React.Component {
         // 数値データの時
         if (
           this.state.sortKey == "ID$" ||
+          this.state.sortKey == "枝番" ||
           this.state.sortKey == "捕獲頭数" ||
           this.state.sortKey == "体長" ||
           this.state.sortKey == "体重"
@@ -83,7 +84,10 @@ class ListTable extends React.Component {
           return parseFloat(p[this.state.sortKey]);
         }
         // 日付データの時
-        if (this.state.sortKey == "捕獲年月日") {
+        if (
+          this.state.sortKey == "捕獲年月日" ||
+          this.state.sortKey == "PCR検査日"
+        ) {
           // 空の時は0
           if (p[this.state.sortKey] == "") {
             return new Date(0);
@@ -112,11 +116,19 @@ class ListTable extends React.Component {
         // データが同じ時はIDで比較
         const aId = parseInt(a.properties["ID$"]);
         const bId = parseInt(b.properties["ID$"]);
+        const aBr = parseInt(a.properties["枝番"] ? a.properties["枝番"] : 1);
+        const bBr = parseInt(b.properties["枝番"] ? b.properties["枝番"] : 1);
         if (aId > bId) {
           return 1;
         } else if (aId < bId) {
           return -1;
         } else {
+          // IDが一緒なら枝番で比較
+          if (aBr > bBr) {
+            return 1;
+          } else if (aBr < bBr) {
+            return -1;
+          }
           // 本来ここには来ない
           return 0;
         }
@@ -152,8 +164,14 @@ class ListTable extends React.Component {
     const featuresList = sorted.map(f => {
       const data = f.properties;
       return (
-        <tr className="list-table__table__row" key={data["ID$"]}>
+        <tr
+          className="list-table__table__row"
+          key={`${data["ID$"]}-${data["枝番"]}`}
+        >
           <td style={{ textAlign: "right" }}>{data["ID$"]}</td>
+          <td style={{ textAlign: "left" }}>
+            {data["枝番"] ? data["枝番"] : 1}
+          </td>
           <td style={{ textAlign: "left" }}>{data["入力者"]}</td>
           <td style={{ textAlign: "left" }}>{data["メッシュ番号"]}</td>
           <td style={{ textAlign: "left" }}>{data["区分"]}</td>
@@ -170,6 +188,19 @@ class ListTable extends React.Component {
           <td style={{ textAlign: "right" }}>{data["体重"]}</td>
           <td style={{ textAlign: "left" }}>{data["処分方法"]}</td>
           <td style={{ textAlign: "left" }}>{data["備考"]}</td>
+          <td style={{ textAlign: "left" }}>{data["ジビエ業者"]}</td>
+          <td style={{ textAlign: "left" }}>
+            {data["個体管理番号"] ? data["個体管理番号"] : "(未入力)"}
+          </td>
+          <td style={{ textAlign: "left" }}>
+            {data["PCR検査日"] ? data["PCR検査日"] : "(未入力)"}
+          </td>
+          <td style={{ textAlign: "left" }}>
+            {data["PCR検査結果"] ? data["PCR検査結果"] : "(未入力)"}
+          </td>
+          <td style={{ textAlign: "right" }}>
+            {data["確認番号"] ? data["確認番号"] : "なし"}
+          </td>
           <td style={{ textAlign: "left" }}>{this.showImages(data["ID$"])}</td>
         </tr>
       );
@@ -208,6 +239,12 @@ class ListTable extends React.Component {
                 onClick={this.onClickHeader.bind(this, "ID$")}
               >
                 ID
+              </th>
+              <th
+                className={thClassName("枝番")}
+                onClick={this.onClickHeader.bind(this, "枝番")}
+              >
+                枝番
               </th>
               <th
                 className={thClassName("入力者")}
@@ -319,8 +356,36 @@ class ListTable extends React.Component {
                 備考
                 <br />
                 （遠沈管番号）
-                <br />
-                （作業時間）
+              </th>
+              <th
+                className={thClassName("ジビエ業者")}
+                onClick={this.onClickHeader.bind(this, "ジビエ業者")}
+              >
+                ジビエ業者
+              </th>
+              <th
+                className={thClassName("個体管理番号")}
+                onClick={this.onClickHeader.bind(this, "個体管理番号")}
+              >
+                個体管理番号
+              </th>
+              <th
+                className={thClassName("PCR検査日")}
+                onClick={this.onClickHeader.bind(this, "PCR検査日")}
+              >
+                PCR検査日
+              </th>
+              <th
+                className={thClassName("PCR検査結果")}
+                onClick={this.onClickHeader.bind(this, "PCR検査結果")}
+              >
+                PCR検査結果
+              </th>
+              <th
+                className={thClassName("確認番号")}
+                onClick={this.onClickHeader.bind(this, "確認番号")}
+              >
+                確認番号
               </th>
               <th>写真</th>
             </tr>

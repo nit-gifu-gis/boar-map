@@ -6,6 +6,7 @@ import FooterAdjustment from "../../organisms/footerAdjustment";
 import RoundButton from "../../atomos/roundButton";
 
 import BoarForm from "../../organisms/boarForm";
+import OldBoarForm from "../../organisms/oldBoarForm";
 import TrapForm from "../../organisms/trapForm";
 import VaccineForm from "../../organisms/vaccineForm";
 import Router from "next/router";
@@ -128,6 +129,21 @@ class EditInfo extends React.Component {
     let form = <h1>情報取得中...</h1>;
     switch (this.state.type) {
       case "boar":
+        header = <Header color="boar">捕獲情報編集</Header>;
+        form = (
+          <OldBoarForm
+            ref={this.formRef}
+            detail={this.state.detail}
+            lat={this.state.lat}
+            lng={this.state.lng}
+            onChangedImages={this.fileChanged.bind(this)}
+            objectURLs={this.state.objectURLs}
+            imageIDs={this.state.imageIDs}
+            onDeleteServerImage={this.onDeletedServerImage.bind(this)}
+          />
+        );
+        break;
+      case "boar2":
         header = <Header color="boar">捕獲情報編集</Header>;
         form = (
           <BoarForm

@@ -3,6 +3,7 @@ import "../../../public/static/css/global.scss";
 
 import Router from "next/router";
 
+import OldBoarInfo from "../../organisms/oldBoarInfo";
 import BoarInfo from "../../organisms/boarInfo";
 import TrapInfo from "../../organisms/trapInfo";
 import VaccineInfo from "../../organisms/vaccineInfo";
@@ -71,6 +72,7 @@ class ConfirmEditedInfo extends React.Component {
     // レイヤーIDを選択すると同時に，書き込み権限をチェック
     if (
       this.state.type != "boar" &&
+      this.state.type != "boar2" &&
       this.state.type != "trap" &&
       this.state.type != "vaccine"
     ) {
@@ -218,7 +220,11 @@ class ConfirmEditedInfo extends React.Component {
 
       // post
       try {
-        const res = await fetch(SERVER_URI + "/Feature/UpdateFeatures", {
+        const url =
+          this.state.type == "boar2"
+            ? SERVER_URI + "/v2/UpdateFeatures"
+            : SERVER_URI + "/Feature/UpdateFeatures";
+        const res = await fetch(url, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -271,6 +277,18 @@ class ConfirmEditedInfo extends React.Component {
     let header = <Header color="primary">捕獲情報編集</Header>;
     switch (this.state.type) {
       case "boar":
+        header = <Header color="boar">捕獲情報編集</Header>;
+        detaildiv = (
+          <OldBoarInfo
+            detail={this.state.detail}
+            // waitingPublish={this.state.picCount}
+            confirmMode={true}
+            objectURLs={this.state.imageURLs}
+            imageIDs={this.state.imageIDs}
+          />
+        );
+        break;
+      case "boar2":
         header = <Header color="boar">捕獲情報編集</Header>;
         detaildiv = (
           <BoarInfo

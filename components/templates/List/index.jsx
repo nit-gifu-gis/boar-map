@@ -7,6 +7,7 @@ import SearchForm from "../../organisms/searchForm";
 import ListTable from "../../organisms/listTable";
 import "../../../utils/statics";
 import { hasListPermission, SERVER_URI } from "../../../utils/gis";
+import RoundButton from "../../atomos/roundButton";
 
 import { alert } from "../../../utils/modals";
 
@@ -18,7 +19,13 @@ class List extends React.Component {
       searching: false,
       searched: false,
       downloading: false,
-      images: []
+      uploading: false,
+      images: [],
+      import: {
+        error: "",
+        message: "",
+        button: "インポート"
+      }
     };
     this.onClickSearch.bind(this);
     this.onClickExport.bind(this);
@@ -26,7 +33,7 @@ class List extends React.Component {
 
   componentDidMount() {
     // 権限がない人はアクセス不可
-    if (!hasListPermission("boar")) {
+    if (!hasListPermission("boar") && !hasListPermission("boar2")) {
       Router.push("/map");
     }
   }
@@ -75,7 +82,7 @@ class List extends React.Component {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await fetch(`${SERVER_URI}/BoarList/GetList.php`, options);
+        const res = await fetch(`${SERVER_URI}/v2/GetList.php`, options);
         const json = await res.json();
         if (res.status === 200) {
           const list = json["features"];
@@ -120,6 +127,7 @@ class List extends React.Component {
             images: []
           };
         }
+        console.log(feature);
         const images = await Promise.all(
           ids.split(",").map(id => fetchImage(id))
         );
@@ -131,6 +139,80 @@ class List extends React.Component {
     );
   }
 
+  async onClickImport() {
+    this.setState({
+      uploading: true,
+      import: {
+        button: "インポート中...",
+        error: "",
+        message: ""
+      }
+    });
+
+    const excel = document.getElementById("importExcel").files;
+    if (!excel.length) {
+      this.setState({
+        uploading: false,
+        import: {
+          button: "インポート",
+          error: "Excelファイルが選択されていません。",
+          message: ""
+        }
+      });
+      return;
+    }
+
+    const data = new FormData();
+    data.append("excel", excel[0]);
+
+    try {
+      const options = {
+        method: "POST",
+        body: data,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data"
+        },
+        mode: "cors",
+        credentials: "include"
+      };
+      delete options.headers["Content-Type"];
+
+      const res = await fetch(`${SERVER_URI}/v2/Import.php`, options);
+
+      if (res.status === 200) {
+        const json = await res.json();
+        this.setState({
+          uploading: false,
+          import: {
+            button: "インポート",
+            error: "",
+            message: `インポートが成功しました。${json["count"]} 件のデータが処理されました。`
+          }
+        });
+      } else {
+        const json = await res.json();
+        this.setState({
+          uploading: false,
+          import: {
+            button: "インポート",
+            error: `${json["reason"]}`,
+            message: ""
+          }
+        });
+      }
+    } catch (error) {
+      this.setState({
+        uploading: false,
+        import: {
+          button: "インポート",
+          error: `${error}`,
+          message: ""
+        }
+      });
+    }
+  }
+
   async onClickExport() {
     this.setState({ downloading: true });
     const req_body = {
@@ -138,7 +220,7 @@ class List extends React.Component {
     };
 
     try {
-      const res = await fetch(`${SERVER_URI}/BoarList/Export.php`, {
+      const res = await fetch(`${SERVER_URI}/v2/Export.php`, {
         method: "POST",
         headers: {
           Accept:
@@ -183,6 +265,49 @@ class List extends React.Component {
       <div className="list">
         <Header color="primary">一覧表</Header>
         <div className="list__contents">
+          <div className="import-form">
+            <div className="import-form__title">PCR結果インポート</div>
+            <div className="import-form__form">
+              <div className="import-form__form__grid">
+                <div className="import-form__form__grid__title import-form__form__grid__excel">
+                  Excelファイル
+                </div>
+                <div className="import-form__form__grid__input import-form__form__grid__excel">
+                  <input
+                    type="file"
+                    name="importExcel"
+                    id="importExcel"
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  />
+                </div>
+                <div className="import-form__form__grid__button-div">
+                  <div className="import-form__form__grid__button-div__button">
+                    <RoundButton
+                      color="excel"
+                      bind={this.onClickImport.bind(this)}
+                      enabled={!this.state.uploading}
+                    >
+                      {this.state.import.button}
+                    </RoundButton>
+                  </div>
+                </div>
+                <div className="import-form__form__grid__message-div">
+                  <span
+                    className={
+                      "import-form__form__grid__message-div__content" +
+                      (this.state.import.error
+                        ? " import-form__form__grid__message-div__error"
+                        : "")
+                    }
+                  >
+                    {this.state.import.error
+                      ? this.state.import.error
+                      : this.state.import.message}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <SearchForm
             onClick={this.onClickSearch.bind(this)}
             searching={this.state.searching | this.state.downloading}

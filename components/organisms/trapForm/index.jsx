@@ -6,6 +6,7 @@ import InfoInput from "../../molecules/infoInput";
 import "../../../utils/validateData";
 import { getUserData, hasWritePermission } from "../../../utils/gis";
 import { alert } from "../../../utils/modals";
+import { deepClone } from "../../../utils/dict";
 
 class TrapForm extends React.Component {
   constructor(props) {
@@ -231,7 +232,7 @@ class TrapForm extends React.Component {
                 title="わなの種類"
                 type="select"
                 name="kind"
-                options={["くくりわな", "箱わな", "その他"]}
+                options={["くくりわな", "箱わな", "囲いわな", "銃猟", "その他"]}
                 defaultValue={
                   this.state.detail != null
                     ? this.state.detail["properties"]["罠の種類"]

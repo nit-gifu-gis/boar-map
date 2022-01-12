@@ -6,7 +6,7 @@ import { hasWritePermission } from "../../../utils/gis";
 
 const BoarDiv = () => (
   <div className="boar-div select-div">
-    <input type="radio" id="radio1" name="infoType" value="boar" />
+    <input type="radio" id="radio1" name="infoType" value="boar2" />
     <label htmlFor="radio1" className="label">
       <InfoTypeItem
         src="../static/images/icons/boar.svg"
@@ -67,7 +67,7 @@ class InfoTypeSelector extends React.Component {
   render() {
     const choices = [];
 
-    if (hasWritePermission("boar")) choices.push(<BoarDiv />);
+    if (hasWritePermission("boar2")) choices.push(<BoarDiv />);
     if (hasWritePermission("trap")) choices.push(<TrapDiv />);
     if (hasWritePermission("vaccine")) choices.push(<VaccineDiv />);
 
