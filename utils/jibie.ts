@@ -3,7 +3,9 @@ import { SERVER_URI } from "./gis";
 export const calcDefaultID = (trader?: TraderInfo): string => {
   if (!trader) return "";
 
+  // TODO: Generate ID with capture date.
   const date = new Date();
+  date.setMonth(date.getMonth() - 3);
   const yy = `${`${date.getFullYear()}`.substring(2, 4)}`;
   return `${trader.code}1${yy}`;
 };
