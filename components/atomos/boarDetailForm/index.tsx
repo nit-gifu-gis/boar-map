@@ -92,7 +92,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       const disposal = form.disposal.options[form.disposal.selectedIndex].value;
 
       // ジビエ利用ではない場合には終了する。
-      if (disposal !== "利活用（ジビエ利用）") {
+      if (disposal !== "利活用（ジビエ利用）" && disposal !== "ジビエ業者渡し") {
         await updateError("trader", null);
         return;
       }
@@ -117,7 +117,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       const form = document.forms[`form-${formKey}`];
       const disposal = form.disposal.options[form.disposal.selectedIndex].value;
       // ジビエ利用ではない場合には終了する。
-      if (disposal !== "利活用（ジビエ利用）") {
+      if (disposal !== "利活用（ジビエ利用）" && disposal !== "ジビエ業者渡し") {
         await updateError("boarnum", null);
         return;
       }
@@ -223,10 +223,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       const length = form.length.value;
 
       // 処分方法
-      const disposal = form.disposal.options[form.disposal.selectedIndex].value;
+      let disposal = form.disposal.options[form.disposal.selectedIndex].value;
+      if(disposal === "利活用（ジビエ利用）") {
+        disposal = "ジビエ業者渡し";
+      }
 
       // (ジビエ利用の場合はこれがtrueになる。)
-      const isJibie = disposal === "利活用（ジビエ利用）";
+      const isJibie = disposal === "利活用（ジビエ利用）" || disposal === "ジビエ業者渡し";
       // 地域
       let jibieArea = "";
       if (isJibie && trader && trader !== true) {
@@ -463,18 +466,17 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           options={[
             "埋却",
             "焼却",
-            "家保",
-            "利活用（自家消費）",
-            "利活用（ジビエ利用）",
+            "自家消費",
+            "ジビエ業者渡し",
             "その他（備考に記入）"
           ]}
           onChange={onChangeDispose}
           defaultValue={detail != null ? detail.処分方法 : "埋却"}
         />
-        {disposalValue === "利活用（ジビエ利用）" ? (
+        {disposalValue === "利活用（ジビエ利用）" || disposalValue === "ジビエ業者渡し" ? (
           <>
             <InfoInput
-              title="地域（農林事務所単位）"
+              title="地域（圏域）"
               type="select"
               name="area"
               options={areaList2}
@@ -524,7 +526,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
           <></>
         )}
         <InfoInput
-          title="備考（遠沈管番号）（作業時間）"
+          title="備考（遠沈管番号）"
           type="text-area"
           rows="4"
           name="note"

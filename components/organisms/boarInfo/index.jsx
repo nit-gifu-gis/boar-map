@@ -100,9 +100,9 @@ class BoarInfo extends React.Component {
               />
               {pregnantInfo}
               <InfoDiv title="処分方法" type="text" data={v["処分方法"]} />
-              {v["処分方法"] === "利活用（ジビエ利用）" ? (
+              {v["処分方法"] === "利活用（ジビエ利用）" || v["処分方法"] === "ジビエ業者渡し"? (
                 <>
-                  <InfoDiv title="地域" type="text" data={v["地域"]} />
+                  <InfoDiv title="地域（圏域）" type="text" data={v["地域"]} />
                   <InfoDiv
                     title="ジビエ業者"
                     type="text"
@@ -113,7 +113,7 @@ class BoarInfo extends React.Component {
                       title="個体管理番号"
                       type="text"
                       data={
-                        v["個体管理番"] == "" ? "(未入力)" : v["個体管理番"]
+                        v["個体管理番"] == "" ? "(未入力)" : v["個体管理番"].replace("-", "")
                       }
                     />
                   ) : (
@@ -145,7 +145,7 @@ class BoarInfo extends React.Component {
               )}
 
               <InfoDiv
-                title="備考（遠沈管番号）（作業時間）"
+                title="備考（遠沈管番号）"
                 type="longText"
                 data={v["備考"]}
               />

@@ -94,7 +94,7 @@ class OldBoarInfo extends React.Component {
           data={this.props.detail["properties"]["処分方法"]}
         />
         <InfoDiv
-          title="備考（遠沈管番号）（作業時間）"
+          title="備考（遠沈管番号）"
           type="longText"
           data={this.props.detail["properties"]["備考"]}
         />

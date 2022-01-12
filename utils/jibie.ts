@@ -3,7 +3,9 @@ import { SERVER_URI } from "./gis";
 export const calcDefaultID = (trader?: TraderInfo): string => {
   if (!trader) return "";
 
+  // TODO: Generate ID with capture date.
   const date = new Date();
+  date.setMonth(date.getMonth() - 3);
   const yy = `${`${date.getFullYear()}`.substring(2, 4)}`;
   return `${trader.code}1${yy}`;
 };
@@ -86,7 +88,7 @@ export const hasTrader = async (
   if (!myInfo) return true;
 
   for (let i = 0; i < boars.length; i++) {
-    if (boars[i]["処分方法"] === "利活用（ジビエ利用）") {
+    if (boars[i]["処分方法"] === "利活用（ジビエ利用）" || boars[i]["処分方法"] === "ジビエ業者渡し") {
       if (
         boars[i]["地域"] === myInfo.area &&
         boars[i]["ジビエ業者"] === myInfo.info.name
