@@ -121,27 +121,25 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
         await updateError("boarnum", null);
         return;
       }
-      // ジビエ業者/市アカウントじゃなかったら終了する
-      const boarNum = form["boarNum-" + formKey];
-      const department = getUserData().department;
-      if (department !== "J" && department !== "K") {
+
+      // 数字入力フォームの右を取得する
+      const boarNum_right = (document.getElementById(`boarNum-${formKey}_sec2`) as HTMLInputElement).value;
+
+      // 右側が入力されていなければ終了する。
+      if(boarNum_right == null || boarNum_right == "") {
         await updateError("boarnum", null);
         return;
       }
 
-      if (boarNum.value === null || boarNum.value === "") {
-        updateError("boarnum", "入力されていません。");
-        return;
-      }
-
-      const valStr = boarNum.value.split("-")[1];
-      const error = checkNumberError(valStr);
+      // 右側が入力されていた場合数字かをチェックする。
+      const error = checkNumberError(boarNum_right);
       if (error != null) {
         await updateError("boarnum", error);
         return;
       }
 
-      if (valStr.length != 3 || parseInt(valStr) < 0) {
+      // 3桁ではないか負の数の場合エラーを出す。
+      if(boarNum_right.length != 3 || parseInt(boarNum_right) < 0) {
         await updateError("boarnum", "形式が正しくありません。");
         return;
       }
@@ -245,13 +243,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
       // 個体識別番号
       //   1. ジビエじゃなかったら空で返す
       //   2. 業者/市アカウントじゃない場合は受け取っていた場合にそのまま残す
-      const jibieBoarNum = isJibie
-        ? userDept === "J" || userDept === "K"
-          ? document.forms[`form-${formKey}`]["boarNum-" + formKey].value
-          : detail != null && detail["個体管理番"] != null
-          ? detail["個体管理番"]
-          : ""
-        : "";
+      const jibieBoarNum = isJibie ? document.forms[`form-${formKey}`][`boarNum-${formKey}`].value : "";
 
       return {
         成獣幼獣別: age,
@@ -508,19 +500,15 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailProps>(
               onChange={onChangeTrader}
             />
 
-            {userDepartment === "J" || userDepartment === "K" ? (
-              <InfoInput
-                title="個体管理番号"
-                type="boar-num"
-                name={"boarNum-" + formKey}
-                defaultValue={traderDefault}
-                onChange={onChangeBoarNum}
-                required={true}
-                errorMessage={error.boarnum}
-              />
-            ) : (
-              <></>
-            )}
+            <InfoInput
+              title="個体管理番号"
+              type="boar-num"
+              name={"boarNum-" + formKey}
+              defaultValue={traderDefault}
+              onChange={onChangeBoarNum}
+              required={false}
+              errorMessage={error.boarnum}
+            />
           </>
         ) : (
           <></>

@@ -108,17 +108,13 @@ class BoarInfo extends React.Component {
                     type="text"
                     data={v["ジビエ業者"]}
                   />
-                  {userDepartment === "J" || userDepartment === "K" ? (
-                    <InfoDiv
+                  <InfoDiv
                       title="個体管理番号"
                       type="text"
                       data={
                         v["個体管理番"] == "" ? "(未入力)" : v["個体管理番"].replace("-", "")
                       }
-                    />
-                  ) : (
-                    <></>
-                  )}
+                  />
                 </>
               ) : (
                 <></>
