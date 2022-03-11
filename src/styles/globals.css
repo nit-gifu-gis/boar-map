@@ -24,4 +24,12 @@
   .shadow-selector {
     box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
   }
+
+  .flex-1-0-100 {
+    flex: 1 0 100px;
+  }
+
+  .flex-0-1-100 {
+    flex: 0 1 100px;
+  }
 }
