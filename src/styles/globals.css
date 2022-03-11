@@ -20,4 +20,8 @@
   .button-shadow-active { 
     filter: brightness(60%) drop-shadow(0 0 5px #212121);
   }
+
+  .shadow-selector {
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  }
 }

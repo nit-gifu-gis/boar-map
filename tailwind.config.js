@@ -7,6 +7,19 @@ module.exports = {
     extend: {
       borderRadius: {
         'rd': '50px'
+      },
+      minWidth: {
+        'sel': '150px'
+      },
+      maxWidth: {
+        'sel': '240px',
+        'window': '400px'
+      },
+      width: {
+        'sel': '45%'
+      },
+      padding: {
+        'full': '100%'
       }
     },
     colors: {
@@ -23,7 +36,9 @@ module.exports = {
       'border': '#bdbdbd',
       'disabled': '#bdbdbd',
       'input-bg': '#ffffff',
-      'input-error-bg': '#ffcccc'
+      'input-error-bg': '#ffcccc',
+      'index-trace': '#ece9c8',
+      'index-map': '#daecc8'
     },
     fontFamily: {
       default: ["Helvetica Neue", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "sans-serif"]

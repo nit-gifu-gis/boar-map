@@ -4,7 +4,7 @@ import { LoginProps } from './interface';
 
 const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginProps) => {
   return (
-    <div className='mx-auto box-border w-screen max-w-sm px-2'>
+    <div className='mx-auto box-border w-screen max-w-window px-2'>
       <div className='mt-1 w-full text-center'>
         <Image src='/login.png' width={400} height={110} alt='Main Logo' />
       </div>
@@ -20,6 +20,9 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
         <span className='inline-block'>{version.latestNumber}</span>
       </div>
       <LoginForm />
+      <div className='pt-8 text-center'>
+        &copy; 2019-2022 National Institute of Technology, Gifu College GIS Team
+      </div>
     </div>
   );
 };
