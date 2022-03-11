@@ -13,7 +13,7 @@
     "node": "16.13.x"
   },
   "dependencies": {
-    "next": "^12.0.8",
+    "next": "^12.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -26,16 +26,9 @@
     "eslint-config-prettier": "^8.3.0",
     "postcss": "^8.4.5",
     "prettier": "^2.5.1",
+    "prettier-plugin-tailwindcss": "^0.1.1",
     "tailwindcss": "^3.0.7",
     "typescript": "4.5.4"
-  },
-  "prettier": {
-    "trailingComma": "all",
-    "tabWidth": 2,
-    "semi": true,
-    "singleQuote": true,
-    "jsxSingleQuote": true,
-    "printWidth": 100
   },
   "volta": {
     "node": "16.13.2",
