@@ -7,19 +7,24 @@
     "start": "next start",
     "lint": "next lint --dir src",
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write --ignore-path .gitignore \"./src/**/*.{ts, tsx}\""
+    "format": "prettier --write --ignore-path .gitignore \"./src/**/*.{ts, tsx}\" \"./src/components/**/*.{ts,tsx}\" \"./src/pages/**/*.{ts,tsx}\""
   },
   "engines": {
     "node": "16.13.x"
   },
   "dependencies": {
     "next": "^12.0.9",
+    "nookies": "^2.5.2",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "recoil": "^0.6.1"
   },
   "devDependencies": {
     "@types/node": "17.0.4",
     "@types/react": "17.0.38",
+    "@types/recoil": "^0.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
     "autoprefixer": "^10.4.0",
     "eslint": "8.7.0",
     "eslint-config-next": "12.0.8",
