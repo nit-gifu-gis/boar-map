@@ -1,4 +1,5 @@
 import { NextPage } from 'next';
+import MapTemplate from '../components/templates/mapTemplate';
 import { useRequireLogin } from '../hooks/useLogin';
 
 const MapPage: NextPage = () => {
@@ -6,7 +7,7 @@ const MapPage: NextPage = () => {
 
   return (
     <>
-      <h1>Map</h1>
+      <MapTemplate />
     </>
   );
 };

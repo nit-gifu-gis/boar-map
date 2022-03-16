@@ -13,12 +13,20 @@
 }
 
 @layer components {
-  .button-shadow {
+  .shadow-5 {
+    filter: drop-shadow(0 0 10px #212121);
+  }
+
+  .shadow-10 {
     filter: drop-shadow(0 0 5px #212121);
   }
 
-  .button-shadow-active { 
+  .shadow-5-active { 
     filter: brightness(60%) drop-shadow(0 0 5px #212121);
+  }
+
+  .active-dark {
+    filter: brightness(60%);
   }
 
   .shadow-selector {
@@ -32,4 +40,26 @@
   .flex-0-1-100 {
     flex: 0 1 100px;
   }
+  
+  .hamburger-line {
+    position: absolute;
+    left: 10px;
+    width: 20px;
+    height: 2px;
+    background-color: #fafafa;
+  }
+
+  .header-anim-open {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .header-anim-close {
+    transition: all 0.2s 0.2s ease-in-out;
+  }
+
+  .modal-bg {
+    background-color: rgba(33, 33, 33, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
 }

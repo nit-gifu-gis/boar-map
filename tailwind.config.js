@@ -18,8 +18,21 @@ module.exports = {
       width: {
         'sel': '45%'
       },
+      height: {
+        'header': '60px',
+        'menu': '40px'
+      },
       padding: {
         'full': '100%'
+      },
+      spacing: {
+        '4.5': '18px',
+        '6.5': '26px',
+        'header:': '60px',
+        '9/10': '90%'
+      },
+      fontSize: {
+        '14pt': '14pt'
       }
     },
     colors: {

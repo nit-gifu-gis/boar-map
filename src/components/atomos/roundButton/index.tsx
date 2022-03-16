@@ -21,7 +21,7 @@ const RoundButton: React.FunctionComponent<RoundButtonProps> = (props) => {
   return (
     <button
       className={
-        'button-shadow active:button-shadow-active box-border w-full rounded-rd py-2 px-5 text-center text-xl font-bold text-background ' +
+        'shadow-5 active:shadow-5-active box-border w-full rounded-rd py-2 px-5 text-center text-xl font-bold text-background ' +
         bgColor
       }
       onClick={props.onClick?.bind(this)}
