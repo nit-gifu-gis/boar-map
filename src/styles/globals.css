@@ -13,6 +13,10 @@
 }
 
 @layer components {
+  .shadow-3 {
+    filter: drop-shadow(0 0 3px #212121);
+  }
+
   .shadow-5 {
     filter: drop-shadow(0 0 10px #212121);
   }
@@ -60,6 +64,11 @@
   .modal-bg {
     background-color: rgba(33, 33, 33, 0.3);
     backdrop-filter: blur(10px);
+  }
+
+  .loading-center {
+    top: calc(50% - 16px);
+    left: calc(50% - 18px);
   }
 
 }

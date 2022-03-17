@@ -13,17 +13,26 @@
     "node": "16.13.x"
   },
   "dependencies": {
+    "leaflet": "^1.7.1",
+    "leaflet-easybutton": "^2.4.0",
+    "leaflet.markercluster": "^1.5.3",
     "next": "^12.0.9",
     "nookies": "^2.5.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "recoil": "^0.6.1"
+    "react-event-listener": "^0.6.6",
+    "recoil": "^0.6.1",
+    "shpjs": "^4.0.2"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.7.9",
+    "@types/leaflet.markercluster": "^1.4.6",
     "@types/node": "17.0.4",
     "@types/react": "17.0.38",
     "@types/react-dom": "^17.0.13",
+    "@types/react-event-listener": "^0.4.12",
     "@types/recoil": "^0.0.9",
+    "@types/shpjs": "^3.4.1",
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
     "autoprefixer": "^10.4.0",

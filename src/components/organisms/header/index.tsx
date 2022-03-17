@@ -181,7 +181,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
             (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
           }
         >
-          {menuItems}
+          <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
         </div>
       </div>
     </div>

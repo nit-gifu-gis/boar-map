@@ -19,8 +19,7 @@ module.exports = {
         'sel': '45%'
       },
       height: {
-        'header': '60px',
-        'menu': '40px'
+        'menu': '40px',
       },
       padding: {
         'full': '100%'
@@ -28,8 +27,11 @@ module.exports = {
       spacing: {
         '4.5': '18px',
         '6.5': '26px',
-        'header:': '60px',
-        '9/10': '90%'
+        'header': '60px',
+        'footer': '70px',
+        '9/10': '90%',
+        '3/4vw': '75vw',
+        '3vw': '3vw'
       },
       fontSize: {
         '14pt': '14pt'
