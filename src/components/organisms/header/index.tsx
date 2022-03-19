@@ -134,6 +134,17 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     menuItems.push(
       <div
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_trace'
+      >
+        <Link href='/trace'>
+          <a className='text-14pt text-background no-underline'>履歴管理システム</a>
+        </Link>
+      </div>,
+    );
+
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_logout'
       >
         <Link href='#'>
@@ -143,6 +154,27 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           >
             ログアウト
           </a>
+        </Link>
+      </div>,
+    );
+  } else if (!isAuthChecking && currentUser == null) {
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_top'
+      >
+        <Link href='/'>
+          <a className='text-14pt text-background no-underline'>トップページ</a>
+        </Link>
+      </div>,
+    );
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_trace'
+      >
+        <Link href='/trace'>
+          <a className='text-14pt text-background no-underline'>履歴管理システム</a>
         </Link>
       </div>,
     );
@@ -156,7 +188,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           <div className={'flex h-full w-full items-center text-center ' + fontSize}>
             <div className='w-full font-bold text-background'>{props.children}</div>
           </div>
-          {!isAuthChecking && currentUser != null ? (
+          {!isAuthChecking ? (
             <div
               className={
                 'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
