@@ -7,7 +7,7 @@ export interface TextInputProps {
   max?: number;
   min?: number;
   step?: number;
-  onChange?(): React.ChangeEvent<HTMLInputElement>;
+  onChange?(e: React.ChangeEvent<HTMLInputElement>): void;
   disabled?: boolean;
   required?: boolean;
   isError?: boolean;

@@ -70,5 +70,20 @@
     top: calc(50% - 16px);
     left: calc(50% - 18px);
   }
+}
 
+.markdown h3 {
+  @apply font-normal leading-double text-xl;
+}
+
+.markdown ul {
+  @apply p-0 ml-6 list-disc;
+}
+
+.markdown ol {
+  @apply p-0 ml-6;
+}
+
+.markdown li {
+  @apply text-small-text text-sm leading-6/5 mb-[5px];
 }

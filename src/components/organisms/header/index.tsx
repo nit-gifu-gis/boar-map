@@ -149,39 +149,46 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   }
 
   return (
-    <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
-      <div className={'flex h-full w-full items-center text-center ' + fontSize}>
-        <div className='w-full font-bold text-background'>{props.children}</div>
-      </div>
-      {!isAuthChecking && currentUser != null ? (
-        <div
-          className={
-            'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
-            bgColor
-          }
-          onClick={() => {
-            setOpen(!isOpen);
-          }}
-        >
-          <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
-          <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
-          <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
-        </div>
-      ) : (
-        <></>
-      )}
-      <div
-        className={
-          bgColor + ' ' + (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
-        }
-      >
-        <div
-          className={
-            'overflow-y-hidden ' +
-            (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
-          }
-        >
-          <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+    <div className='z-50 h-header w-full'>
+      <div className='h-header w-full'></div>
+      <div className='fixed top-0 left-0 z-50 w-full'>
+        <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
+          <div className={'flex h-full w-full items-center text-center ' + fontSize}>
+            <div className='w-full font-bold text-background'>{props.children}</div>
+          </div>
+          {!isAuthChecking && currentUser != null ? (
+            <div
+              className={
+                'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
+                bgColor
+              }
+              onClick={() => {
+                setOpen(!isOpen);
+              }}
+            >
+              <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
+              <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
+              <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
+            </div>
+          ) : (
+            <></>
+          )}
+          <div
+            className={
+              bgColor +
+              ' ' +
+              (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
+            }
+          >
+            <div
+              className={
+                'overflow-y-hidden ' +
+                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
+              }
+            >
+              <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

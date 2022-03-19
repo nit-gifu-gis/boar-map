@@ -1,4 +1,10 @@
-export type layerType = "いのしし捕獲地点" | "わな設置地点" | "ワクチン散布地点" | "作業日報" | "豚熱陽性確認地点" | "養豚場";
+export type layerType =
+  | 'いのしし捕獲地点'
+  | 'わな設置地点'
+  | 'ワクチン散布地点'
+  | '作業日報'
+  | '豚熱陽性確認地点'
+  | '養豚場';
 
 export type FeatureExtentResponse = {
   いのしし捕獲地点: (BoarFeatureV1 | BoarCommonFeatureV2)[] | null;
@@ -27,8 +33,26 @@ export interface BoarFeatureV1 extends FeatureBase {
 }
 
 interface BoarPropsV1 {
-  ID$: number;
+  ID$: string;
   捕獲年月日: string;
+  入力者?: string;
+  区分: string;
+  位置情報: string;
+  '罠・発見場所': string;
+  性別: string;
+  体長: string;
+  体重: string;
+  歯列写真: string;
+  現地写真: string;
+  画像ID: string;
+  メッシュ番号: string;
+  備考: string;
+  '幼獣・成獣': string;
+  妊娠の状況: string;
+  処分方法: string;
+  捕獲頭数: string;
+  成獣の頭数: string;
+  幼獣の頭数: string;
 }
 
 export interface BoarCommonFeatureV2 extends FeatureBase {
@@ -46,7 +70,7 @@ interface BoarCommonPropsV2 {
   地名: string;
   市町村: string;
   捕獲年月日: string;
-  捕獲頭数: number;
+  捕獲頭数: string;
   歯列写真ID: string;
   罠発見場所: string;
 }
@@ -57,6 +81,20 @@ export interface BoarInfoFeatureV2 extends FeatureBase {
 
 interface BoarInfoPropsV2 {
   ID$?: string;
+  情報番号: string;
+  枝番: string;
+  成獣幼獣別: string;
+  体重: string;
+  体長: string;
+  備考: string;
+  妊娠の状況: string;
+  性別: string;
+  処分方法: string;
+  地域: string;
+  ジビエ業者: string;
+  個体管理番: string;
+  PCR検査日: string;
+  PCR結果: string;
 }
 
 export interface TrapFeature extends FeatureBase {
@@ -81,6 +119,18 @@ export interface VaccineFeature extends FeatureBase {
 interface VaccineProps {
   ID$?: string;
   散布年月日: string;
+  入力者?: string;
+  位置情報: string;
+  メッシュ番号: string;
+  散布数: string;
+  回収年月日: string;
+  備考: string;
+  画像ID: string;
+  メッシュNO: string;
+  摂食数: string;
+  その他の破損数: string;
+  破損なし: string;
+  ロスト数: string;
 }
 
 export interface ReportFeature extends FeatureBase {
@@ -89,6 +139,15 @@ export interface ReportFeature extends FeatureBase {
 
 interface ReportProps {
   ID$?: string;
+  作業報告: string;
+  作業終了時: string;
+  作業開始時: string;
+  備考: string;
+  地域: string;
+  所属支部名: string;
+  氏名: string;
+  画像ID: string;
+  入力者?: string;
 }
 
 export interface ButanetsuFeature extends FeatureBase {
@@ -97,6 +156,8 @@ export interface ButanetsuFeature extends FeatureBase {
 
 interface ButanetsuProps {
   ID$?: string;
+  県番号: string;
+  捕獲年月日: string;
 }
 
 export interface YoutonFeature extends FeatureBase {
@@ -105,4 +166,13 @@ export interface YoutonFeature extends FeatureBase {
 
 interface YoutonProps {
   ID$?: string;
+  地名: string;
+  市町村: string;
+  施設名: string;
+  更新日: string;
+  県番号: string;
+  経営者: string;
+  肥育繁殖別: string;
+  農場区分: string;
+  飼養頭数: string;
 }

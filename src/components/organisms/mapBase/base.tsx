@@ -12,8 +12,22 @@ import { getColorCode, SERVER_URI } from '../../../utils/constants';
 import { hasReadPermission } from '../../../utils/gis';
 import { alert } from '../../../utils/modal';
 import { getAccessToken } from '../../../utils/currentUser';
-import { BoarCommonFeatureV2, BoarFeatureV1, BoarInfoFeatureV2, FeatureBase, FeatureExtentResponse, layerType, TrapFeature, VaccineFeature } from '../../../types/features';
+import {
+  BoarCommonFeatureV2,
+  BoarFeatureV1,
+  ButanetsuFeature,
+  FeatureBase,
+  FeatureExtentResponse,
+  layerType,
+  ReportFeature,
+  TrapFeature,
+  VaccineFeature,
+  YoutonFeature,
+} from '../../../types/features';
 import { useRouter } from 'next/router';
+
+// TODO: ハンターメッシュ・ワクチンメッシュ関連の表示
+// 右下の凡例とか検索ボタン
 
 interface LatLngZoomCookie {
   lat: number;
@@ -46,7 +60,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   let myLocMarker: L.Marker | null = null;
 
   // クラスタ設定
-  const clusterIconCreate = (type: 'boar' | 'trap' | 'vaccine') => {
+  const clusterIconCreate = (
+    type: 'boar' | 'trap' | 'vaccine' | 'report' | 'youton' | 'butanetsu',
+  ) => {
     return (cluster: L.MarkerCluster) => {
       const childCount = cluster.getChildCount();
       const c = ' marker-cluster-' + type;
@@ -102,15 +118,33 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     if (hasReadPermission('youton', currentUser)) {
-      console.log('TODO: 養豚レイヤー');
+      overlay['養豚場'] = L.markerClusterGroup({
+        ...clusterGroupOption,
+        iconCreateFunction: clusterIconCreate('youton'),
+        polygonOptions: {
+          color: getColorCode('youton'),
+        },
+      });
     }
 
     if (hasReadPermission('butanetsu', currentUser)) {
-      console.log('TODO: 豚熱レイヤー');
+      overlay['豚熱陽性確認地点'] = L.markerClusterGroup({
+        ...clusterGroupOption,
+        iconCreateFunction: clusterIconCreate('butanetsu'),
+        polygonOptions: {
+          color: getColorCode('butanetsu'),
+        },
+      });
     }
 
     if (hasReadPermission('report', currentUser)) {
-      console.log('TODO: 作業日報レイヤー');
+      overlay['作業日報'] = L.markerClusterGroup({
+        ...clusterGroupOption,
+        iconCreateFunction: clusterIconCreate('report'),
+        polygonOptions: {
+          color: getColorCode('report'),
+        },
+      });
     }
 
     /*if(hasReadPermission("", currentUser)) {
@@ -138,6 +172,24 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const vaccineIcon = L.icon({
     iconUrl: 'static/images/icons/vaccine.svg',
     iconRetinaUrl: 'static/images/icons/vaccine.svg',
+    iconSize: [25, 25],
+    iconAnchor: [13, 13],
+  });
+  const youtonIcon = L.icon({
+    iconUrl: 'static/images/icons/youton.png',
+    iconRetinaUrl: 'static/images/icons/youton.png',
+    iconSize: [25, 25],
+    iconAnchor: [13, 13],
+  });
+  const butanetsuIcon = L.icon({
+    iconUrl: 'static/images/icons/butanetsu.png',
+    iconRetinaUrl: 'static/images/icons/butanetsu.png',
+    iconSize: [25, 25],
+    iconAnchor: [13, 13],
+  });
+  const reportIcon = L.icon({
+    iconUrl: 'static/images/icons/report.png',
+    iconRetinaUrl: 'static/images/icons/report.png',
     iconSize: [25, 25],
     iconAnchor: [13, 13],
   });
@@ -250,34 +302,37 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     if (res.status === 200) {
       const json = (await res.json()) as FeatureExtentResponse;
-      Object.keys(json).forEach(key => {
-        if(featureIDs[key] == null) 
-          featureIDs[key] = [];
+      Object.keys(json).forEach((key) => {
+        if (featureIDs[key] == null) featureIDs[key] = [];
 
-        if(json[key] != null) {
+        if (json[key] != null) {
           // 描画されていない要素だけを取り出す
 
           const v = json[key] as FeatureBase[];
 
-          const newFeatures = v.filter(f => {
+          const newFeatures = v.filter((f) => {
             const id = (f.properties as Record<string, unknown>).ID$;
-            const id_str = key === "いのしし捕獲地点" ? `${id}-v${(f as BoarCommonFeatureV2 | BoarFeatureV1).version}` : `${id}`;
-            return !featureIDs[key].find(id_e => id_e === id_str);
+            const id_str =
+              key === 'いのしし捕獲地点'
+                ? `${id}-v${(f as BoarCommonFeatureV2 | BoarFeatureV1).version}`
+                : `${id}`;
+            return !featureIDs[key].find((id_e) => id_e === id_str);
           });
 
           // 描画予定のものを描画済みリストに追加
           featureIDs[key].push(
-            ...newFeatures.map(f => {
+            ...newFeatures.map((f) => {
               const id = (f.properties as Record<string, unknown>).ID$;
-              const id_str = key === "いのしし捕獲地点" ? `${id}-v${(f as BoarCommonFeatureV2 | BoarFeatureV1).version}` : `${id}`;
+              const id_str =
+                key === 'いのしし捕獲地点'
+                  ? `${id}-v${(f as BoarCommonFeatureV2 | BoarFeatureV1).version}`
+                  : `${id}`;
               return id_str;
-            })
+            }),
           );
 
           // 描画するマーカーの生成
-          const newMarkers = newFeatures.map(f => makeMarker(f, key as layerType));
-
-          console.log(newMarkers);
+          const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
           overlay[key].addLayers(newMarkers);
         }
       });
@@ -285,30 +340,30 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     // くるくるを消す
     setLoading(false);
-  };  
+  };
 
   const makePopup = (title: string, date: string): HTMLDivElement => {
     // 大枠
     const div = document.createElement('div');
-    div.className = "pop-up";
+    div.className = 'pop-up';
 
     // タイトル
     const titleDiv = document.createElement('div');
-    titleDiv.className = "pop-up__title";
+    titleDiv.className = 'pop-up__title';
     titleDiv.appendChild(document.createTextNode(title));
     div.appendChild(titleDiv);
 
     // 日付
-    let dateStr = "";
-    const regex = new RegExp("(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*", "g");
+    let dateStr = '';
+    const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
     const result = regex.exec(date);
     if (result == null) {
-      dateStr += "登録されていません。";
+      dateStr += '登録されていません。';
     } else {
       dateStr += result[1];
     }
-    const dateDiv = document.createElement("div");
-    dateDiv.className = "pop-up__date";
+    const dateDiv = document.createElement('div');
+    dateDiv.className = 'pop-up__date';
     dateDiv.appendChild(document.createTextNode(dateStr));
     div.appendChild(dateDiv);
 
@@ -317,40 +372,40 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
   const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
     let icon = undefined;
-    let dataLabel = "";
-    let dataValue = "";
-    let ver = "";
-    switch(t) {
-      case "いのしし捕獲地点":
+    let dataLabel = '';
+    let dataValue = '';
+    let ver = '';
+    switch (t) {
+      case 'いのしし捕獲地点':
         icon = boarIcon;
         dataValue = (f as BoarFeatureV1 | BoarCommonFeatureV2).properties.捕獲年月日;
         ver = `v${(f as BoarFeatureV1 | BoarCommonFeatureV2).version}`;
-        dataLabel = "捕獲年月日";
+        dataLabel = '捕獲年月日';
         break;
-      case "わな設置地点":
+      case 'わな設置地点':
         icon = trapIcon;
-        dataLabel = "設置年月日";
+        dataLabel = '設置年月日';
         dataValue = (f as TrapFeature).properties.設置年月日;
         break;
-      case "ワクチン散布地点":
+      case 'ワクチン散布地点':
         icon = vaccineIcon;
-        dataLabel = "散布年月日";
+        dataLabel = '散布年月日';
         dataValue = (f as VaccineFeature).properties.散布年月日;
         break;
-      case "作業日報":
-        console.log("Need nippo icon");
-        dataLabel = "key";
-        dataValue = "Report data ?";
+      case '作業日報':
+        icon = reportIcon;
+        dataLabel = '作業年月日';
+        dataValue = (f as ReportFeature).properties.作業開始時;
         break;
-      case "豚熱陽性確認地点":
-        console.log("need butanetsu icon");
-        dataLabel = "key";
-        dataValue = "Butanetsu data ?";
+      case '豚熱陽性確認地点':
+        icon = butanetsuIcon;
+        dataLabel = '捕獲年月日';
+        dataValue = (f as ButanetsuFeature).properties.捕獲年月日;
         break;
-      case "養豚場":
-        console.log("Need youton icon.");
-        dataLabel = "key";
-        dataValue = "Youton data ?";
+      case '養豚場':
+        icon = youtonIcon;
+        dataLabel = '更新年月日';
+        dataValue = (f as YoutonFeature).properties.更新日;
         break;
     }
 
@@ -359,28 +414,26 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     const lng = coordinates[0];
 
     const mapMarker = L.marker([lat, lng], {
-      icon: icon
+      icon: icon,
     });
 
-    mapMarker.bindPopup(
-      makePopup(dataLabel, dataValue)
-    );
+    mapMarker.bindPopup(makePopup(dataLabel, dataValue));
 
-    mapMarker.on("mouseover", () => mapMarker.openPopup());
-    mapMarker.on("mouseout", () => mapMarker.closePopup());
+    mapMarker.on('mouseover', () => mapMarker.openPopup());
+    mapMarker.on('mouseout', () => mapMarker.closePopup());
 
-    if(props.isMainMap) {
+    if (props.isMainMap) {
       mapMarker.on('click', () => {
         router.push(
           {
-            pathname: "/detail",
+            pathname: '/detail',
             query: {
               id: (f.properties as Record<string, unknown>).ID$ as string,
               version: ver,
-              type: t
-            }
+              type: t,
+            },
           },
-          "/detail"
+          '/detail',
         );
       });
     }

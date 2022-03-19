@@ -24,6 +24,10 @@ module.exports = {
       padding: {
         'full': '100%'
       },
+      lineHeight: {
+        '6/5': '120%',
+        'double': '200%'
+      },
       spacing: {
         '4.5': '18px',
         '6.5': '26px',

@@ -814,6 +814,30 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	background-color: rgba(241, 128, 23, 0.6);
 }
 
+.marker-cluster-report {
+	background-color: rgba(155, 136, 128, 0.6);
+}
+
+.marker-cluster-report div {
+	background-color: rgba(155, 136, 128, 0.6);
+}
+
+.marker-cluster-butanetsu {
+	background-color: rgba(255, 0, 0, 0.6);
+}
+
+.marker-cluster-butanetsu div {
+	background-color: rgba(255, 0, 0, 0.6);
+}
+
+.marker-cluster-youton {
+	background-color: rgba(58, 248, 67, 0.6);
+}
+
+.marker-cluster-youton div {
+	background-color: rgba(58, 248, 67, 0.6);
+}
+
 .pop-up__title {
 	color: #212121;
 	font-weight: bold;

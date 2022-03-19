@@ -21,6 +21,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-event-listener": "^0.6.6",
+    "react-markdown": "^8.0.1",
     "recoil": "^0.6.1",
     "shpjs": "^4.0.2"
   },
