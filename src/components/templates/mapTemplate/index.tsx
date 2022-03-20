@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import FooterAdjustment from '../../atomos/footerAdjustment';
 import RoundButton from '../../atomos/roundButton';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
@@ -15,11 +16,14 @@ const MapTemplate: React.FunctionComponent = () => {
     <div className='flex h-screen flex-col'>
       <Header>マップ</Header>
       <MapBase isMainMap={true} />
-      <Footer>
-        <RoundButton color='primary' onClick={onClickAdd.bind(this)}>
+      <FooterAdjustment />
+      <div className='fixed bottom-0 w-full'>
+        <Footer>
+          <RoundButton color='primary' onClick={onClickAdd.bind(this)}>
           新規情報登録
-        </RoundButton>
-      </Footer>
+          </RoundButton>
+        </Footer>
+      </div>
     </div>
   );
 };
