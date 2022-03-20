@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { MapBaseProps } from './interface';
+import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interface';
 import EventListener from 'react-event-listener';
 import L from 'leaflet';
 import { parseCookies, setCookie } from 'nookies';
@@ -28,21 +28,7 @@ import { useRouter } from 'next/router';
 
 // TODO: ハンターメッシュ・ワクチンメッシュ関連の表示
 // 右下の凡例とか検索ボタン
-
-interface LatLngZoomCookie {
-  lat: number;
-  lng: number;
-  zoom: number;
-}
-
-interface LatLngZoom extends LatLngZoomCookie {
-  isDefault: boolean;
-}
-
-interface Location {
-  lat: number;
-  lng: number;
-}
+// 豚熱陽性確認地点の表示方法変更
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
@@ -518,13 +504,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     if (myMap == null) {
       setMyMap(L.map(selfNode, { keyboard: false }));
     }
-
-    return () => {
-      // Unmount時に呼ばれる(?)
-      stopWatchLocation();
-      myMap?.remove();
-      setMyMap(null);
-    };
   }, [selfNode]);
 
   useEffect(() => {
@@ -599,6 +578,13 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     // 位置情報の取得開始
     startWatchLocation();
+
+    return () => {
+      // Unmount時に呼ばれるらしい。
+      stopWatchLocation();
+      myMap?.remove();
+      setMyMap(null);
+    };
   }, [myMap, defaultLoc]);
 
   // ヘッダー(60px), フッター(70px)を引いて、地図部分のヘッダーサイズを計算する。

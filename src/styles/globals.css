@@ -44,6 +44,10 @@
   .flex-0-1-100 {
     flex: 0 1 100px;
   }
+
+  .flex-0-0-auto {
+    flex: 0 0 auto;
+  }
   
   .hamburger-line {
     position: absolute;
@@ -86,4 +90,12 @@
 
 .markdown li {
   @apply text-small-text text-sm leading-6/5 mb-[5px];
+}
+
+.inside-border + .inside-border {
+  border-top: solid 2px #bdbdbd;
+}
+
+.image-between + .image-between {
+  margin-left: 10px;
 }

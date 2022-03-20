@@ -21,8 +21,13 @@ export interface Geometry {
   coordinates: number[] | number[][];
 }
 
+export interface PointGeometry {
+  type: 'Point';
+  coordinates: number[];
+}
+
 export interface FeatureBase {
-  geometry: Geometry;
+  geometry: PointGeometry;
   properties: Record<string, unknown> | unknown;
   type: 'Feature';
 }
@@ -53,6 +58,27 @@ interface BoarPropsV1 {
   捕獲頭数: string;
   成獣の頭数: string;
   幼獣の頭数: string;
+}
+
+export interface BoarFeatureV2 extends FeatureBase {
+  properties: BoarFeaturePropsV2;
+  version?: number;
+}
+
+interface BoarFeaturePropsV2 {
+  ID$?: string;
+  メッシュ番: string;
+  入力者?: string;
+  写真ID: string;
+  処理方法: string;
+  区分: string;
+  地名: string;
+  市町村: string;
+  捕獲年月日: string;
+  捕獲頭数: string;
+  歯列写真ID: string;
+  罠発見場所: string;
+  捕獲いのしし情報: BoarInfoFeatureV2[];
 }
 
 export interface BoarCommonFeatureV2 extends FeatureBase {

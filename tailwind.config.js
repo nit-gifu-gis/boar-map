@@ -13,7 +13,8 @@ module.exports = {
       },
       maxWidth: {
         'sel': '240px',
-        'window': '400px'
+        'window': '400px',
+        '17/20': '85%'
       },
       width: {
         'sel': '45%'
@@ -50,6 +51,9 @@ module.exports = {
       'boar': '#842929',
       'trap': '#fbc02d',
       'vaccine': '#0288d1',
+      'youton': '#30c737',
+      'report': '#757372',
+      'butanetsu': '#ab3838',
       'danger': '#ff0000',
       'background': '#fafafa',
       'border': '#bdbdbd',

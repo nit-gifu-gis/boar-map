@@ -49,6 +49,15 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       case 'bg':
         bgColor = 'bg-background';
         break;
+      case 'youton':
+        bgColor = 'bg-youton';
+        break;
+      case 'report':
+        bgColor = 'bg-report';
+        break;
+      case 'butanetsu':
+        bgColor = 'bg-butanetsu';
+        break;
     }
     return bgColor;
   })(props.color == undefined ? 'primary' : props.color);

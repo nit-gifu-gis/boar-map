@@ -28,7 +28,47 @@ const READ_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
   butanetsu: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y'],
   report: ['T', 'R', 'K'],
 };
+
+const WRITE_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
+  boar: ['T', 'U', 'H', 'J', 'S', 'K'],
+  trap: ['T', 'U', 'H', 'S', 'K'],
+  vaccine: ['W', 'K'],
+  youton: ['K'],
+  butanetsu: ['K'],
+  report: ['T', 'K'],
+};
+
 export const hasReadPermission = (type: LayerType, user: User) => {
   if (user.userDepartment == null) return false;
   return READ_PERMISSION[type].indexOf(user.userDepartment) !== -1;
+};
+
+export const hasWritePermission = (type: LayerType, user: User) => {
+  if (user.userDepartment == null) return false;
+  return WRITE_PERMISSION[type].indexOf(user.userDepartment) !== -1;
+};
+
+// Routerで渡されたデータ型とバージョンから、サーバーにクエリをするときに使用するデータ型に変換する
+export const toServerType = (type: string, version: string): string => {
+  switch (type) {
+    case 'いのしし捕獲地点':
+      if (version == 'v1') {
+        return 'boar-1';
+      } else if (version == 'v2') {
+        return 'boar-2';
+      } else {
+        return '';
+      }
+    case 'わな設置地点':
+      return 'trap';
+    case 'ワクチン散布地点':
+      return 'vaccine';
+    case '作業日報':
+      return 'report';
+    case '豚熱陽性確認地点':
+      return 'butanetsu';
+    case '養豚場':
+      return 'youton';
+  }
+  return '';
 };

@@ -14,8 +14,7 @@ const TraceTemplate: React.FunctionComponent = () => {
       check_no: boarNo,
     };
 
-    //const result = await fetch(SERVER_URI + "/SearchById", {
-    const result = await fetch('https://boar-map.gifugis.jp/v2/SearchById', {
+    const result = await fetch(SERVER_URI + '/Features/SearchById', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

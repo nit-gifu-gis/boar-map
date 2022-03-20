@@ -8,7 +8,7 @@ const MapTemplate: React.FunctionComponent = () => {
   const router = useRouter();
 
   const onClickAdd = () => {
-    router.push('/add/select');
+    router.push('/add');
   };
 
   return (
