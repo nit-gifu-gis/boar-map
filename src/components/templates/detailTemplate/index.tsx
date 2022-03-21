@@ -5,13 +5,13 @@ import { FeatureBase } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasWritePermission, LayerType, toServerType } from '../../../utils/gis';
+import { to_header_color, to_header_title } from '../../../utils/header';
 import { alert, confirm } from '../../../utils/modal';
 import FooterAdjustment from '../../atomos/footerAdjustment';
 import RoundButton from '../../atomos/roundButton';
 import FeatureViewer from '../../organisms/featureViewer';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
-import { HeaderColor } from '../../organisms/header/interface';
 
 const DetailTemplate: React.FunctionComponent = () => {
   const router = useRouter();
@@ -64,48 +64,6 @@ const DetailTemplate: React.FunctionComponent = () => {
     };
     fetchGis();
   }, []);
-
-  const to_header_color = (val: string): HeaderColor => {
-    switch (val) {
-      case 'boar-1':
-        return 'boar';
-      case 'boar-2':
-        return 'boar';
-      case 'trap':
-        return 'trap';
-      case 'vaccine':
-        return 'vaccine';
-      case 'report':
-        return 'report';
-      case 'butanetsu':
-        return 'butanetsu';
-      case 'youton':
-        return 'youton';
-      default:
-        return 'primary';
-    }
-  };
-
-  const to_header_title = (val: string | null): string => {
-    switch (val) {
-      case 'boar-1':
-        return '捕獲情報';
-      case 'boar-2':
-        return '捕獲情報';
-      case 'trap':
-        return 'わな情報';
-      case 'vaccine':
-        return 'ワクチン情報';
-      case 'report':
-        return '作業日報';
-      case 'butanetsu':
-        return '豚熱感染情報';
-      case 'youton':
-        return '養豚場情報';
-      default:
-        return '情報確認';
-    }
-  };
 
   const onClickDelete = async () => {
     if (featureInfo == null) return;

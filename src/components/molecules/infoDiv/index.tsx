@@ -1,7 +1,7 @@
 import ImageListView from '../../atomos/imageListView';
 import InfoText from '../../atomos/infoText';
 import MiniMap from '../../atomos/miniMap';
-import InfoTitle from '../../infoTitle';
+import InfoTitle from '../../atomos/infoTitle';
 import { InfoDivProps } from './interface';
 
 const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, title }) => {

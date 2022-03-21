@@ -20,7 +20,7 @@ const MapTemplate: React.FunctionComponent = () => {
       <div className='fixed bottom-0 w-full'>
         <Footer>
           <RoundButton color='primary' onClick={onClickAdd.bind(this)}>
-          新規情報登録
+            新規情報登録
           </RoundButton>
         </Footer>
       </div>

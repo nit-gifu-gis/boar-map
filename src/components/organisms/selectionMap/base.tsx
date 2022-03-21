@@ -1,17 +1,9 @@
 import Image from 'next/image';
+import router from 'next/router';
+import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
-import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interface';
 import EventListener from 'react-event-listener';
-import L from 'leaflet';
-import { parseCookies, setCookie } from 'nookies';
-import '../../../utils/extwms';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import 'leaflet-easybutton';
-import 'leaflet.markercluster';
-import { getColorCode, SERVER_URI } from '../../../utils/constants';
-import { hasReadPermission } from '../../../utils/gis';
-import { alert } from '../../../utils/modal';
-import { getAccessToken } from '../../../utils/currentUser';
 import {
   BoarCommonFeatureV2,
   BoarFeatureV1,
@@ -24,26 +16,34 @@ import {
   VaccineFeature,
   YoutonFeature,
 } from '../../../types/features';
-import { useRouter } from 'next/router';
+import { getColorCode, SERVER_URI } from '../../../utils/constants';
+import { getAccessToken } from '../../../utils/currentUser';
+import { hasReadPermission } from '../../../utils/gis';
+import { LatLngZoom, LatLngZoomCookie, Location } from '../mapBase/interface';
+import { SelectionMapProps } from './interface';
+import L from 'leaflet';
+import '../../../utils/extwms';
+import 'leaflet-easybutton';
+import 'leaflet.markercluster';
 
-// TODO: ハンターメッシュ・ワクチンメッシュ関連の表示
-// 右下の凡例とか検索ボタン
-// 豚熱陽性確認地点の表示方法変更
-
-const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
-  const router = useRouter();
+const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [loc, setLoc] = useState<Location | null>(null);
-  const [watchPosId, setWatchPosId] = useState<number | null>(null);
+  const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [overlay, setOverlay] = useState<Record<string, L.MarkerClusterGroup>>({});
   const { currentUser } = useCurrentUser();
-  const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
+  const [featureIDs, setFeatureIDs] = useState<Record<string, string[]>>({});
   const [myMap, setMyMap] = useState<L.Map | null>(null);
   const [control, setControl] = useState<L.Control | null>(null);
-  const [featureIDs, setFeatureIDs] = useState<Record<string, string[]>>({});
-  // const [myLocMarker, setMyLocMarker] = useState<L.Marker | null>(null);
+  const [watchPosId, setWatchPosId] = useState<number | null>(null);
   let myLocMarker: L.Marker | null = null;
+
+  // ヘッダー(60px), フッター(70px)を引いて、Div部分のヘッダーサイズを計算する。
+  const calcDivHeight = () => {
+    return window.innerHeight - 60 - 70;
+  };
+  const [divHeight, setDivHeight] = useState(`${calcDivHeight()}px`);
 
   // クラスタ設定
   const clusterIconCreate = (
@@ -63,13 +63,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const clusterGroupOption = {
     maxClusterRadius: 40,
   };
-
-  if (loc == null) {
-    setLoc({
-      lat: 35.39135,
-      lng: 136.722418,
-    });
-  }
 
   if (Object.keys(overlay).length === 0 && currentUser != null) {
     // レイヤーの追加
@@ -132,14 +125,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         },
       });
     }
-
-    /*if(hasReadPermission("", currentUser)) {
-        // ワクチン散布地点メッシュ
-    }  
-
-    if(hasReadPermission("", currentUser)) {
-        // ハンターメッシュ
-    } */
   }
 
   const boarIcon = L.icon({
@@ -205,49 +190,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       },
     ],
   });
-
-  const onClickSetLocation = () => {
-    setCurrentLocation(true);
-  };
-
-  // 初回時に現在地を単発で取得する
-  const getFirstCurrentLocation = () => {
-    if (navigator.geolocation == null) {
-      alert('位置情報を取得することができません。');
-      return;
-    }
-
-    const success = (pos: GeolocationPosition) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
-      setCurrentLocation(true);
-    };
-
-    const error = (e: GeolocationPositionError) => {
-      console.error('位置情報取得失敗', e);
-    };
-
-    navigator.geolocation.getCurrentPosition(success, error);
-  };
-
-  // 現在の表示状態（中心座標，ズームレベル）を記録する
-  const saveMapState = () => {
-    const center = myMap?.getCenter();
-    const zoom = myMap?.getZoom();
-    if (center == null || zoom == null) return;
-
-    const data: LatLngZoomCookie = {
-      lat: center.lat,
-      lng: center.lng,
-      zoom: zoom,
-    };
-
-    setCookie(null, 'last_geo', JSON.stringify(data));
-  };
 
   const updateMarkers = async () => {
     if (myMap == null) return;
@@ -328,32 +270,69 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     setLoading(false);
   };
 
-  const makePopup = (title: string, date: string): HTMLDivElement => {
-    // 大枠
-    const div = document.createElement('div');
-    div.className = 'pop-up';
-
-    // タイトル
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'pop-up__title';
-    titleDiv.appendChild(document.createTextNode(title));
-    div.appendChild(titleDiv);
-
-    // 日付
-    let dateStr = '';
-    const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
-    const result = regex.exec(date);
-    if (result == null) {
-      dateStr += '登録されていません。';
-    } else {
-      dateStr += result[1];
+  const onCenterChanged = () => {
+    if (myMap == null) {
+      return;
     }
-    const dateDiv = document.createElement('div');
-    dateDiv.className = 'pop-up__date';
-    dateDiv.appendChild(document.createTextNode(dateStr));
-    div.appendChild(dateDiv);
+    const center = myMap.getCenter();
+    const zoom = myMap.getZoom();
+    const newLoc: LatLngZoom = {
+      isDefault: false,
+      zoom: zoom,
+      lat: center.lat,
+      lng: center.lng,
+    };
+    props.onCenterChanged(newLoc);
+  };
 
-    return div;
+  const onClickSetLocation = () => {
+    setCurrentLocation(true);
+  };
+
+  // 初回時に現在地を単発で取得する
+  const getFirstCurrentLocation = () => {
+    if (navigator.geolocation == null) {
+      alert('位置情報を取得することができません。');
+      return;
+    }
+
+    const success = (pos: GeolocationPosition) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      if (loc == null) return;
+      loc.lat = lat;
+      loc.lng = lng;
+      setCurrentLocation(true);
+    };
+
+    const error = (e: GeolocationPositionError) => {
+      console.error('位置情報取得失敗', e);
+    };
+
+    navigator.geolocation.getCurrentPosition(success, error);
+  };
+
+  const setCurrentLocation = (moveMarker: boolean) => {
+    if (myMap == null) return;
+    if (!loc?.lat || !loc.lng) {
+      if (moveMarker) {
+        alert('位置情報の取得ができません。');
+      }
+      return;
+    }
+
+    if (myLocMarker == null) {
+      myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
+      if (myLocMarker == null) return;
+      myLocMarker.addTo(myMap);
+    }
+
+    myLocMarker.setLatLng([loc.lat, loc.lng]);
+    if (moveMarker) {
+      myMap.setView([loc.lat, loc.lng], 17);
+      onCenterChanged();
+    }
   };
 
   const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
@@ -408,44 +387,35 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     mapMarker.on('mouseover', () => mapMarker.openPopup());
     mapMarker.on('mouseout', () => mapMarker.closePopup());
 
-    if (props.isMainMap) {
-      mapMarker.on('click', () => {
-        router.push(
-          {
-            pathname: '/detail',
-            query: {
-              id: (f.properties as Record<string, unknown>).ID$ as string,
-              version: ver,
-              type: t,
-            },
-          },
-          '/detail',
-        );
-      });
-    }
-
     return mapMarker;
   };
 
-  const setCurrentLocation = (moveMarker: boolean) => {
-    if (myMap == null) return;
-    if (!loc?.lat || !loc.lng) {
-      if (moveMarker) {
-        alert('位置情報の取得ができません。');
-      }
-      return;
-    }
+  const makePopup = (title: string, date: string): HTMLDivElement => {
+    // 大枠
+    const div = document.createElement('div');
+    div.className = 'pop-up';
 
-    if (myLocMarker == null) {
-      myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
-      if (myLocMarker == null) return;
-      myLocMarker.addTo(myMap);
-    }
+    // タイトル
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'pop-up__title';
+    titleDiv.appendChild(document.createTextNode(title));
+    div.appendChild(titleDiv);
 
-    myLocMarker.setLatLng([loc.lat, loc.lng]);
-    if (moveMarker) {
-      myMap.setView([loc.lat, loc.lng], 17);
+    // 日付
+    let dateStr = '';
+    const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
+    const result = regex.exec(date);
+    if (result == null) {
+      dateStr += '登録されていません。';
+    } else {
+      dateStr += result[1];
     }
+    const dateDiv = document.createElement('div');
+    dateDiv.className = 'pop-up__date';
+    dateDiv.appendChild(document.createTextNode(dateStr));
+    div.appendChild(dateDiv);
+
+    return div;
   };
 
   const startWatchLocation = () => {
@@ -483,23 +453,18 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
   };
 
+  if (loc == null) {
+    setLoc({
+      lat: 35.39135,
+      lng: 136.722418,
+    });
+  }
+
   useEffect(() => {
     if (selfNode == null) return;
 
     if (defaultLoc == null) {
-      const cookies = parseCookies(null);
-      const last_geo = cookies['last_geo'];
-      if (last_geo == null) {
-        setDefaultLoc({
-          lat: 35.39135,
-          lng: 136.722418,
-          zoom: 17,
-          isDefault: true,
-        });
-      } else {
-        const last_geo_obj = JSON.parse(last_geo) as LatLngZoomCookie;
-        setDefaultLoc({ ...last_geo_obj, isDefault: false });
-      }
+      setDefaultLoc(props.location);
     }
 
     if (myMap == null) {
@@ -511,6 +476,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     if (myMap == null || defaultLoc == null) return;
 
     myMap.setView([defaultLoc.lat, defaultLoc.lng], defaultLoc.zoom);
+    onCenterChanged();
 
     // デフォルトの場合は位置情報取得
     if (defaultLoc.isDefault) {
@@ -540,8 +506,17 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     myMap.on('moveend', () => {
       // マップが動いたとき
       //   従来はここでzoomとresizeもとっていたが、両方とも終了後にmoveendが呼ばれているためmoveendのみにする。
-      saveMapState();
+      centerPin.setLatLng(myMap.getCenter());
+      onCenterChanged();
       updateMarkers();
+    });
+
+    myMap.on('move', () => {
+      const point = myMap.latLngToLayerPoint(myMap.getCenter()); // 中心を直交座標系に変換
+      const upperCenter = myMap.layerPointToLatLng([point.x, point.y - 20]); // 中心の少し上を直交座標系で求めて緯度経度に戻す
+
+      centerPin.setLatLng(upperCenter);
+      centerCross.setLatLng(myMap.getCenter());
     });
 
     updateMarkers();
@@ -577,6 +552,29 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     reloadButton.remove();
     reloadButton.addTo(myMap);
 
+    // 十字
+    const centerCrossIcon = L.icon({
+      iconUrl: '/static/images/map/centerCross.svg',
+      iconRetinaUrl: '/static/images/map/centerCross.svg',
+      iconSize: [40, 20],
+      iconAnchor: [21, 11],
+    });
+    const centerCross = L.marker(myMap.getCenter(), {
+      icon: centerCrossIcon,
+      zIndexOffset: 400,
+    }).addTo(myMap);
+    // ピン
+    const centerPinIcon = L.icon({
+      iconUrl: '/static/images/map/centerPin.svg',
+      iconRetinaUrl: '/static/images/map/centerPin.svg',
+      iconSize: [31, 45],
+      iconAnchor: [17, 45],
+    });
+    const centerPin = L.marker(myMap.getCenter(), {
+      icon: centerPinIcon,
+      zIndexOffset: 400,
+    }).addTo(myMap);
+
     // 位置情報の取得開始
     startWatchLocation();
 
@@ -588,38 +586,43 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     };
   }, [myMap, defaultLoc]);
 
-  // ヘッダー(60px), フッター(70px)を引いて、地図部分のヘッダーサイズを計算する。
-  const calcMapHeight = () => {
-    return window.innerHeight - 60 - 70;
-  };
-  const [mapHeight, setMapHeight] = useState(`${calcMapHeight()}px`);
-
   const onResized = () => {
     setTimeout(() => {
-      setMapHeight(`${calcMapHeight()}px`);
+      setDivHeight(`${calcDivHeight()}px`);
       if (myMap != null) myMap.invalidateSize();
     }, 200);
   };
 
   return (
-    <div>
-      <div
-        className='z-0 w-full overflow-hidden'
-        id='map'
-        style={{ height: mapHeight }}
-        ref={(node) => setSelfNode(node)}
-      >
-        <EventListener target='window' onResize={onResized.bind(this)} />
+    <div style={{ height: divHeight }} className='z-0 flex w-full flex-col overflow-hidden'>
+      <div className='mx-[15px] mb-[5px] mt-[15px] h-auto text-justify'>
+        登録したい地点にピンが立つようにしてください。
       </div>
-      <div
-        className={
-          'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
-        }
-      >
-        <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+      {props.isLoaded ? (
+        <div className='mx-[15px] mb-[5px] h-auto text-justify font-bold'>
+          ※ 歯列画像の撮影場所がロードされました。
+        </div>
+      ) : (
+        <></>
+      )}
+      <div className='mx-[15px] mb-[15px] mt-[5px] flex flex-grow'>
+        <div
+          className='z-0 box-border w-full flex-grow overflow-hidden rounded-md border-2 border-solid border-border'
+          id='map'
+          ref={(node) => setSelfNode(node)}
+        >
+          <EventListener target='window' onResize={onResized.bind(this)} />
+        </div>
+        <div
+          className={
+            'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
+          }
+        >
+          <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+        </div>
       </div>
     </div>
   );
 };
 
-export default MapBase_;
+export default SelectionMap_;

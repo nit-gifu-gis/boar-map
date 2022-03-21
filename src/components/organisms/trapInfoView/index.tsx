@@ -7,10 +7,6 @@ const TrapInfoView: React.FunctionComponent<TrapInfoViewProps> = ({
   imageIDs,
   confirmMode,
 }) => {
-  let removedDiv: JSX.Element | null = null;
-  if (detail.properties.撤去年月日 != '') {
-    removedDiv = <InfoDiv title='撤去年月日' type='date' data={detail.properties.撤去年月日} />;
-  }
   return (
     <div className='box-border w-full'>
       <InfoDiv
@@ -31,8 +27,12 @@ const TrapInfoView: React.FunctionComponent<TrapInfoViewProps> = ({
       />
       <InfoDiv title='設置年月日' type='date' data={detail.properties.設置年月日} />
       <InfoDiv title='わなの種類' type='text' data={detail.properties.罠の種類} />
-      <InfoDiv title='捕獲の有無' type='text' data={detail.properties.捕獲の有無} />
-      {removedDiv}
+      {detail.properties.撤去年月日 == '' ? (
+        <InfoDiv title='撤去年月日' type='text' data='（未入力）' />
+      ) : (
+        <InfoDiv title='撤去年月日' type='date' data={detail.properties.撤去年月日} />
+      )}
+      <InfoDiv title='備考' type='text' data={detail.properties.備考} />
     </div>
   );
 };

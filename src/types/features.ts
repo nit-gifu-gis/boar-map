@@ -37,7 +37,7 @@ export interface BoarFeatureV1 extends FeatureBase {
   version?: number;
 }
 
-interface BoarPropsV1 {
+export interface BoarPropsV1 {
   ID$: string;
   捕獲年月日: string;
   入力者?: string;
@@ -65,7 +65,7 @@ export interface BoarFeatureV2 extends FeatureBase {
   version?: number;
 }
 
-interface BoarFeaturePropsV2 {
+export interface BoarFeaturePropsV2 {
   ID$?: string;
   メッシュ番: string;
   入力者?: string;
@@ -78,6 +78,7 @@ interface BoarFeaturePropsV2 {
   捕獲頭数: string;
   歯列写真ID: string;
   罠発見場所: string;
+  遠沈管番号?: string;
   捕獲いのしし情報: BoarInfoFeatureV2[];
 }
 
@@ -86,7 +87,7 @@ export interface BoarCommonFeatureV2 extends FeatureBase {
   version?: number;
 }
 
-interface BoarCommonPropsV2 {
+export interface BoarCommonPropsV2 {
   ID$?: string;
   メッシュ番: string;
   入力者?: string;
@@ -105,7 +106,7 @@ export interface BoarInfoFeatureV2 extends FeatureBase {
   properties: BoarInfoPropsV2;
 }
 
-interface BoarInfoPropsV2 {
+export interface BoarInfoPropsV2 {
   ID$?: string;
   情報番号: string;
   枝番: string;
@@ -127,22 +128,22 @@ export interface TrapFeature extends FeatureBase {
   properties: TrapProps;
 }
 
-interface TrapProps {
+export interface TrapProps {
   ID$?: string;
   位置情報: string;
   入力者?: string;
-  捕獲の有無: string;
   撤去年月日: string;
   画像ID: string;
   罠の種類: string;
   設置年月日: string;
+  備考?: string;
 }
 
 export interface VaccineFeature extends FeatureBase {
   properties: VaccineProps;
 }
 
-interface VaccineProps {
+export interface VaccineProps {
   ID$?: string;
   散布年月日: string;
   入力者?: string;
@@ -163,7 +164,7 @@ export interface ReportFeature extends FeatureBase {
   properties: ReportProps;
 }
 
-interface ReportProps {
+export interface ReportProps {
   ID$?: string;
   作業報告: string;
   作業終了時: string;
@@ -180,7 +181,7 @@ export interface ButanetsuFeature extends FeatureBase {
   properties: ButanetsuProps;
 }
 
-interface ButanetsuProps {
+export interface ButanetsuProps {
   ID$?: string;
   県番号: string;
   捕獲年月日: string;
@@ -190,7 +191,7 @@ export interface YoutonFeature extends FeatureBase {
   properties: YoutonProps;
 }
 
-interface YoutonProps {
+export interface YoutonProps {
   ID$?: string;
   地名: string;
   市町村: string;

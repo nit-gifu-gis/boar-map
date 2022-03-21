@@ -1,5 +1,6 @@
-import { LayerType } from "../../../utils/gis";
+import { LayerType } from '../../../utils/gis';
 
 export interface InfoTypeSelectorProps {
-    onChanged(type: LayerType): void;
+  onChanged(type: LayerType): void;
+  defaultValue: LayerType | null;
 }

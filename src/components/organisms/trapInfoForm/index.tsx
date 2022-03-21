@@ -1,0 +1,175 @@
+import React, { useImperativeHandle, useState } from 'react';
+import InfoInput from '../../molecules/infoInput';
+import { FeatureEditorHandler } from '../featureEditor/interface';
+import { TrapInfoFormProps } from './interface';
+import { PointGeometry, TrapFeature, TrapProps } from '../../../types/features';
+import InfoDiv from '../../molecules/infoDiv';
+import { checkDateError, compareDate } from '../../../utils/validateData';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
+
+const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(function InfoForm(
+  props,
+  ref,
+) {
+  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
+  const { currentUser } = useCurrentUser();
+
+  const fetchData = () => {
+    if (currentUser == null) return null;
+
+    const form = document.getElementById('form-trap') as HTMLFormElement;
+
+    // 入力者
+    const user = currentUser.userId;
+    // 設置年月日
+    const place_date = form['place_date'].value as string;
+    // 撤去年月日
+    const remove_date = form['remove_date'].value as string;
+    // わなの種類
+    const trap_kind = form['kind'].options[form['kind'].selectedIndex].value as string;
+    // 備考
+    const note = form['note'].value as string;
+    // 位置情報
+    const geo: PointGeometry = {
+      type: 'Point',
+      coordinates: [props.location.lng, props.location.lat],
+    };
+
+    // データ (画像IDはあとから代入するから空白)
+    const data: TrapFeature = {
+      type: 'Feature',
+      geometry: geo,
+      properties: {
+        入力者: user,
+        設置年月日: place_date,
+        撤去年月日: remove_date,
+        罠の種類: trap_kind,
+        備考: note,
+        位置情報: `(${props.location.lat},${props.location.lng})`,
+        画像ID: '',
+      },
+    };
+
+    return data;
+  };
+
+  const validateData = () => {
+    let valid = validateDates();
+    Object.keys(errors).forEach((key) => {
+      if (errors[key] != null) {
+        console.error(errors[key]);
+        valid = false;
+      }
+    });
+    return new Promise<boolean>((resolve) => resolve(valid));
+  };
+
+  const validateDate = (id: string, required: boolean) => {
+    const form = document.getElementById('form-trap') as HTMLFormElement;
+    const dateStr = form[id].value;
+    const error = checkDateError(dateStr);
+    if (error != null && !(!required && error == '日付が入力されていません。')) {
+      updateError(id, error);
+      return false;
+    }
+    updateError(id, undefined);
+    return true;
+  };
+
+  const validateDates = () => {
+    // 設置年月日
+    if (!validateDate('place_date', true)) {
+      return false;
+    }
+
+    // 撤去年月日
+    if (!validateDate('remove_date', false)) {
+      return false;
+    }
+
+    // 設置・撤去の前後関係チェック
+    const form = document.getElementById('form-trap') as HTMLFormElement;
+    const dateStr1 = form['place_date'].value;
+    const dateStr2 = form['remove_date'].value;
+
+    // 設置年月日 > 撤去年月日ならエラー
+    if (compareDate(dateStr1, dateStr2) > 0) {
+      updateError('place_date', '撤去年月日よりも後の日付が入力されています。');
+
+      updateError('remove_date', '設置年月日よりも前の日付が入力されています。');
+      return false;
+    }
+
+    updateError('place_date', undefined);
+    updateError('remove_date', undefined);
+    return true;
+  };
+
+  const updateError = (id: string, value: string | undefined) => {
+    const e = { ...errors };
+    e[id] = value;
+    setErrors(e);
+  };
+
+  useImperativeHandle(ref, () => {
+    return { validateData, fetchData };
+  });
+
+  const featureValueOrUndefined = (key: keyof TrapProps): string | undefined => {
+    if (props.featureInfo == null) return undefined;
+
+    if (props.featureInfo.properties[key as keyof TrapProps] != null) {
+      return props.featureInfo.properties[key];
+    }
+    return undefined;
+  };
+
+  return (
+    <div className='w-full'>
+      <form name='form-trap' id='form-trap' onSubmit={(e) => e.preventDefault()}>
+        <InfoDiv
+          title='画像'
+          type='images'
+          data={{
+            objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
+            imageIDs: props.imageIds == null ? [] : props.imageIds,
+            confirmMode: true,
+          }}
+        />
+        <InfoInput
+          title='設置年月日'
+          type='date'
+          id='place_date'
+          defaultValue={featureValueOrUndefined('設置年月日')}
+          required={true}
+          onChange={() => validateDate('place_date', true)}
+          error={errors.place_date}
+        />
+        <InfoInput
+          title='わなの種類'
+          type='select'
+          id='kind'
+          options={['くくりわな', '箱わな', '囲いわな', '銃猟', 'その他']}
+          defaultValue={featureValueOrUndefined('罠の種類')}
+        />
+        <InfoInput
+          title='撤去年月日'
+          type='date'
+          id='remove_date'
+          defaultValue={featureValueOrUndefined('撤去年月日')}
+          onChange={() => validateDate('remove_date', false)}
+          error={errors.remove_date}
+        />
+        <InfoInput
+          title='備考'
+          type='textarea'
+          rows={4}
+          id='note'
+          defaultValue={featureValueOrUndefined('備考')}
+        />
+      </form>
+    </div>
+  );
+});
+
+export default TrapInfoForm;

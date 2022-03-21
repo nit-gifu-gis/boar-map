@@ -13,6 +13,7 @@
     "node": "16.13.x"
   },
   "dependencies": {
+    "exif-js": "^2.3.0",
     "leaflet": "^1.7.1",
     "leaflet-easybutton": "^2.4.0",
     "leaflet.markercluster": "^1.5.3",

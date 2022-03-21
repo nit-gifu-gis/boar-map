@@ -1,3 +1,3 @@
 export interface RoundedCheckProps {
-    checked: boolean;
+  checked: boolean;
 }
