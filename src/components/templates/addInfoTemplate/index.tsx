@@ -92,7 +92,7 @@ const AddInfoTemplate: React.FunctionComponent = () => {
           ? []
           : (images.otherImages as ImagewithLocation[]);
       if (images.teethImage != null) {
-        baseArr.push(images.teethImage as ImagewithLocation);
+        baseArr.unshift(images.teethImage as ImagewithLocation);
       }
       setImageArray(baseArr);
     }

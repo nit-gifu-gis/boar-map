@@ -7,6 +7,7 @@ import FooterAdjustment from '../../atomos/footerAdjustment';
 import { ImagewithLocation } from '../../atomos/imageInput/interface';
 import RoundButton from '../../atomos/roundButton';
 import FeatureEditor from '../../organisms/featureEditor';
+import FeatureViewer from '../../organisms/featureViewer';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
 import { LatLngZoom } from '../../organisms/mapBase/interface';
@@ -47,7 +48,7 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
           ? []
           : (images.otherImages as ImagewithLocation[]);
       if (images.teethImage != null) {
-        baseArr.push(images.teethImage as ImagewithLocation);
+        baseArr.unshift(images.teethImage as ImagewithLocation);
       }
       setImageArray(baseArr);
     }
@@ -79,7 +80,10 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
       <Header color={to_header_color(type == null ? '' : type)}>
         {to_header_title(type == null ? '' : type)}登録
       </Header>
-      <>{JSON.stringify(feature)}</>
+      <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
+        <div className='mx-[15px] mt-2 text-justify'>情報に不備がないかご確認ください。</div>
+      </div>
+      <FeatureViewer featureInfo={feature} type={type} objectURLs={imageArray?.map(f=>f.objectURL)} confirm={true} />
       <FooterAdjustment />
       <div className='fixed bottom-0 w-full'>
         <Footer>

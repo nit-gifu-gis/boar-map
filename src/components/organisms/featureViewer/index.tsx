@@ -16,7 +16,7 @@ import VaccineInfoView from '../vaccineInfoView';
 import YoutonInfoView from '../youtonView';
 import { FeatureViewerProps } from './interface';
 
-const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({ featureInfo, type }) => {
+const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({ featureInfo, type, imageIDs, objectURLs, confirm }) => {
   const isLoading = () => {
     return featureInfo == null || type == null;
   };
@@ -24,17 +24,17 @@ const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({ featureInf
   let infoDiv: JSX.Element | null = null;
   if (featureInfo != null) {
     if (type === 'boar-1') {
-      infoDiv = <BoarInfov1View detail={featureInfo as BoarFeatureV1} />;
+      infoDiv = <BoarInfov1View detail={featureInfo as BoarFeatureV1} imageIDs={imageIDs} objectURLs={objectURLs} confirmMode={confirm} />;
     } else if (type === 'boar-2') {
-      infoDiv = <BoarInfov2View detail={featureInfo as BoarFeatureV2} />;
+      infoDiv = <BoarInfov2View detail={featureInfo as BoarFeatureV2} imageIDs={imageIDs} objectURLs={objectURLs} confirmMode={confirm}  />;
     } else if (type === 'trap') {
-      infoDiv = <TrapInfoView detail={featureInfo as TrapFeature} />;
+      infoDiv = <TrapInfoView detail={featureInfo as TrapFeature} imageIDs={imageIDs} objectURLs={objectURLs} confirmMode={confirm}  />;
     } else if (type === 'vaccine') {
-      infoDiv = <VaccineInfoView detail={featureInfo as VaccineFeature} />;
+      infoDiv = <VaccineInfoView detail={featureInfo as VaccineFeature} imageIDs={imageIDs} objectURLs={objectURLs} confirmMode={confirm}  />;
     } else if (type === 'youton') {
       infoDiv = <YoutonInfoView detail={featureInfo as YoutonFeature} />;
     } else if (type === 'report') {
-      infoDiv = <ReportInfoView detail={featureInfo as ReportFeature} />;
+      infoDiv = <ReportInfoView detail={featureInfo as ReportFeature} imageIDs={imageIDs} objectURLs={objectURLs} confirmMode={confirm}  />;
     } else if (type === 'butanetsu') {
       infoDiv = <ButanetsuInfoView detail={featureInfo as ButanetsuFeature} />;
     } else {
