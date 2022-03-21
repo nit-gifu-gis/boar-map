@@ -149,3 +149,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   z-index: 1;
   margin: 0;
 }
+
+input {
+  text-align: left;
+}
+/* Chrome、Safariの上下ボタン非表示 */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox、IEの上下ボタン非表示 */
+input[type="number"] {
+  -moz-appearance:textfield;
+}

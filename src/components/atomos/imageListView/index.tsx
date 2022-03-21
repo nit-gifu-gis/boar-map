@@ -18,7 +18,7 @@ const ImageListView: React.FunctionComponent<ImageListViewProps> = ({
       : 'w-full overflow-x-scroll whitespace-nowrap box-border flex items-center';
   const imgbox_class =
     imageCount === 1
-      ? 'max-h-[400px] max-w-full border-solid border-2 border-border rounded-md box-border'
+      ? 'max-h-[400px] max-w-full border-solid border-2 border-border rounded-md box-border mx-auto'
       : 'flex-0-0-auto max-h-[400px] max-w-17/20 inline-block border-solid border-2 border-border rounded-md box-border image-between';
   const token = getAccessToken();
   let description: JSX.Element | null = null;

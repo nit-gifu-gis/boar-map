@@ -21,7 +21,7 @@ const SelectInput: React.FunctionComponent<SelectInputProps> = (props) => {
         }
       >
         <select
-          className='relative box-border w-full appearance-none rounded-none border-none text-lg'
+          className='relative box-border w-full appearance-none rounded-none border-none bg-[transparent] text-lg'
           id={props.id}
           name={props.id}
           onChange={props.onChange}

@@ -1,6 +1,7 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { FeatureBase } from '../../../types/features';
+import { FeatureBase, TrapFeature, VaccineFeature } from '../../../types/features';
 import TrapInfoForm from '../trapInfoForm';
+import VaccineInfoForm from '../vaccineInfoForm';
 import { FeatureEditorHandler, FeatureEditorProps } from './interface';
 
 const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>(
@@ -45,11 +46,19 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
             objectURLs={objectURLs}
             imageIds={imageIds}
             location={location}
-            featureInfo={featureInfo}
+            featureInfo={featureInfo as TrapFeature}
           />
         );
       } else if (type === 'vaccine') {
-        infoDiv = <>vaccine</>;
+        infoDiv = (
+          <VaccineInfoForm
+            ref={formRef}
+            objectURLs={objectURLs}
+            imageIds={imageIds}
+            location={location}
+            featureInfo={featureInfo as VaccineFeature}
+          />
+        );
       } else if (type === 'youton') {
         infoDiv = <>youton</>;
       } else if (type === 'report') {

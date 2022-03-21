@@ -325,7 +325,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     if (myLocMarker == null) {
       myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
       if (myLocMarker == null) return;
-      myLocMarker.addTo(myMap);
+      try {
+        myLocMarker.addTo(myMap);
+      } catch {
+        /** */
+      }
     }
 
     myLocMarker.setLatLng([loc.lat, loc.lng]);

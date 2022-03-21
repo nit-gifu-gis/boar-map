@@ -1,10 +1,15 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useImperativeHandle, useState } from 'react';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import InfoDiv from '../../molecules/infoDiv';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 
 const InfoForm = React.forwardRef<FeatureEditorHandler, InfoFormProps>(function InfoForm(
   props,
   ref,
 ) {
+  const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
+  const { currentUser } = useCurrentUser();
+
   const fetchData = () => {
     console.log('fetch data required');
     return null;
@@ -13,6 +18,12 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, InfoFormProps>(function 
   const validateData = () => {
     console.log('validate data');
     return new Promise<boolean>((resolve) => resolve(false));
+  };
+
+  const updateError = (id: string, value: string | undefined) => {
+    const e = { ...errors };
+    e[id] = value;
+    setErrors(e);
   };
 
   useImperativeHandle(ref, () => {
@@ -30,7 +41,16 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, InfoFormProps>(function 
 
   return (
     <div className='w-full'>
-      <form name='form' onSubmit={(e) => e.preventDefault()}>
+      <form id='form' onSubmit={(e) => e.preventDefault()}>
+        <InfoDiv
+          title='画像'
+          type='images'
+          data={{
+            objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
+            imageIDs: props.imageIds == null ? [] : props.imageIds,
+            confirmMode: true,
+          }}
+        />
         base
       </form>
     </div>

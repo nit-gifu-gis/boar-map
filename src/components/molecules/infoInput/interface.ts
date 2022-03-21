@@ -16,4 +16,6 @@ export interface InfoInputProps {
   rows?: number;
   maxLength?: number;
   required?: boolean;
+  lat?: number;
+  lng?: number;
 }

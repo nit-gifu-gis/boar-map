@@ -1,4 +1,5 @@
 import DateInput from '../../atomos/dateInput';
+import MeshNoInput from '../../atomos/meshNoInput';
 import SelectInput from '../../atomos/selectInput';
 import TextAreaInput from '../../atomos/textAreaInput';
 import TextInput from '../../atomos/TextInput';
@@ -60,7 +61,16 @@ const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
       );
       break;
     case 'mesh-num':
-      input_div = <>mesh-num</>;
+      input_div = (
+        <MeshNoInput
+          id={props.id}
+          defaultValue={props.defaultValue}
+          onChange={props.onChange}
+          error={props.error != null && props.error != ''}
+          lat={props.lat}
+          lng={props.lng}
+        />
+      );
       break;
     default:
   }
