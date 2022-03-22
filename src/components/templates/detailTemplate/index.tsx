@@ -98,12 +98,12 @@ const DetailTemplate: React.FunctionComponent = () => {
                   body: data,
                   headers: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Access-Token': getAccessToken()
                   },
                 };
                 fetch(`${SERVER_URI}/Image/DeleteImage.php`, options)
                   .then((res) => {
-                    if (res.status === 200) {
+                    if (res.status === 200 || res.status === 404) {
                       resolve();
                     } else {
                       return res.json();

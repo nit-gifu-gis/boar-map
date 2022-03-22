@@ -20,12 +20,22 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
 
     catchNumInfo = (
       <InfoDiv
-        title=''
+        title='捕獲頭数'
         type='text'
         data={`${detail.properties.捕獲頭数}（幼獣: ${childrenNum} 成獣: ${adultsNum}）`}
       />
     );
   }
+
+  const getImgIDs = () => {
+    if(imageIDs != null) {
+      return imageIDs;
+    } else {
+      const d = detail.properties.写真ID.split(',');
+      d.unshift(detail.properties.歯列写真ID);
+      return d.filter((e) => e);
+    }
+  };
 
   return (
     <div className='box-border w-full pb-2'>
@@ -42,7 +52,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
           objectURLs: objectURLs,
           confirmMode: confirmMode,
           imageIDs:
-            imageIDs != null ? imageIDs : detail.properties.写真ID.split(',').filter((e) => e),
+            getImgIDs(),
         }}
       />
       <InfoDiv title='メッシュ番号' type='text' data={detail.properties.メッシュ番} />
@@ -82,22 +92,22 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
               <InfoDiv title='処分方法' type='text' data={v.properties.処分方法} />
               {v.properties.処分方法 === '利活用（ジビエ利用）' ||
               v.properties.処分方法 === 'ジビエ業者渡し' ? (
-                <>
-                  <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
-                  <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
-                  <InfoDiv
-                    title='個体管理番号'
-                    type='text'
-                    data={
-                      v.properties.個体管理番 == ''
-                        ? '（未入力）'
-                        : v.properties.個体管理番.replace('-', '')
-                    }
-                  />
-                </>
-              ) : (
-                <></>
-              )}
+                  <>
+                    <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
+                    <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
+                    <InfoDiv
+                      title='個体管理番号'
+                      type='text'
+                      data={
+                        v.properties.個体管理番 == ''
+                          ? (confirmMode ? "（登録時に確定します）" : '（未入力）')
+                          : v.properties.個体管理番.replace('-', '')
+                      }
+                    />
+                  </>
+                ) : (
+                  <></>
+                )}
               {v.properties.PCR検査日 == '' ? (
                 <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
               ) : (

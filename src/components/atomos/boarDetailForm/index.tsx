@@ -48,8 +48,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != ''
         ? props.detail.properties['地域']
         : props.myTraderInfo != null && props.myTraderInfo.area
-        ? props.myTraderInfo.area
-        : ' ',
+          ? props.myTraderInfo.area
+          : ' ',
     );
 
     const [trader, setTrader] = useState<TraderInfo | null | boolean>(
@@ -58,8 +58,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != null
         ? true
         : props.myTraderInfo != null && props.myTraderInfo.info
-        ? props.myTraderInfo.info
-        : null,
+          ? props.myTraderInfo.info
+          : null,
     );
 
     const getForm = (): HTMLFormElement => {
@@ -433,8 +433,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.地域
                   : props.myTraderInfo != null && props.myTraderInfo.area
-                  ? props.myTraderInfo.area
-                  : ''
+                    ? props.myTraderInfo.area
+                    : ''
               }
               onChange={onChangeArea}
             />
@@ -448,10 +448,10 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.ジビエ業者
                   : props.myTraderInfo != null && props.myTraderInfo.info
-                  ? props.myTraderInfo.info.name
-                  : filteredNameList.length
-                  ? filteredNameList[0]
-                  : ''
+                    ? props.myTraderInfo.info.name
+                    : filteredNameList.length
+                      ? filteredNameList[0]
+                      : ''
               }
               error={errors.trader}
               onChange={onChangeTrader}
