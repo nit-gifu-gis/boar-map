@@ -21,7 +21,10 @@ const SelectInput: React.FunctionComponent<SelectInputProps> = (props) => {
         }
       >
         <select
-          className='relative box-border w-full appearance-none rounded-none border-none bg-[transparent] text-lg'
+          className={
+            'relative box-border w-full appearance-none rounded-none border-none bg-[transparent] text-lg ' +
+            (props.is_number ? 'pr-[15px] text-right' : '')
+          }
           id={props.id}
           name={props.id}
           onChange={props.onChange}

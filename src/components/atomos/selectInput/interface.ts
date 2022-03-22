@@ -4,4 +4,5 @@ export interface SelectInputProps {
   id: string;
   onChange?(): void;
   error: boolean;
+  is_number?: boolean;
 }

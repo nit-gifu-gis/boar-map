@@ -13,7 +13,7 @@ export const checkDateError = (dateString: string) => {
   return null;
 };
 
-export const compareDate = (date1: Date, date2: Date) => {
+export const compareDate = (date1: Date | string, date2: Date | string) => {
   const d1 = new Date(date1);
   const d2 = new Date(date2);
 

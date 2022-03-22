@@ -1,7 +1,17 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { FeatureBase, TrapFeature, VaccineFeature } from '../../../types/features';
+import {
+  ButanetsuFeature,
+  FeatureBase,
+  ReportFeature,
+  TrapFeature,
+  VaccineFeature,
+  YoutonFeature,
+} from '../../../types/features';
+import ButanetsuInfoForm from '../butanetsuInfoForm';
+import ReportInfoForm from '../reportInfoForm';
 import TrapInfoForm from '../trapInfoForm';
 import VaccineInfoForm from '../vaccineInfoForm';
+import YoutonInfoForm from '../youtonInfoForm';
 import { FeatureEditorHandler, FeatureEditorProps } from './interface';
 
 const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>(
@@ -60,11 +70,31 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
           />
         );
       } else if (type === 'youton') {
-        infoDiv = <>youton</>;
+        infoDiv = (
+          <YoutonInfoForm
+            ref={formRef}
+            location={location}
+            featureInfo={featureInfo as YoutonFeature}
+          />
+        );
       } else if (type === 'report') {
-        infoDiv = <>report</>;
+        infoDiv = (
+          <ReportInfoForm
+            ref={formRef}
+            objectURLs={objectURLs}
+            imageIds={imageIds}
+            location={location}
+            featureInfo={featureInfo as ReportFeature}
+          />
+        );
       } else if (type === 'butanetsu') {
-        infoDiv = <>butanetsu</>;
+        infoDiv = (
+          <ButanetsuInfoForm
+            ref={formRef}
+            location={location}
+            featureInfo={featureInfo as ButanetsuFeature}
+          />
+        );
       } else {
         infoDiv = <>不明なデータです。</>;
       }

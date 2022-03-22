@@ -1,3 +1,4 @@
+import CityInput from '../../atomos/cityInput';
 import DateInput from '../../atomos/dateInput';
 import MeshNoInput from '../../atomos/meshNoInput';
 import SelectInput from '../../atomos/selectInput';
@@ -72,7 +73,30 @@ const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
         />
       );
       break;
-    default:
+    case 'text':
+      input_div = (
+        <TextInput
+          type='text'
+          id={props.id}
+          name={props.id}
+          onChange={props.onChange}
+          isError={props.error != null && props.error != ''}
+          defaultValue={props.defaultValue}
+        />
+      );
+      break;
+    case 'city':
+      input_div = (
+        <CityInput
+          id={props.id}
+          onChange={props.onChange}
+          error={props.error != null && props.error != ''}
+          lat={props.lat}
+          lng={props.lng}
+          defaultValue={props.defaultValue}
+        />
+      );
+      break;
   }
 
   return (

@@ -6,7 +6,6 @@ import { alert, confirm } from '../../../utils/modal';
 import FooterAdjustment from '../../atomos/footerAdjustment';
 import { ImagewithLocation } from '../../atomos/imageInput/interface';
 import RoundButton from '../../atomos/roundButton';
-import FeatureEditor from '../../organisms/featureEditor';
 import FeatureViewer from '../../organisms/featureViewer';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
@@ -83,7 +82,12 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div className='mx-[15px] mt-2 text-justify'>情報に不備がないかご確認ください。</div>
       </div>
-      <FeatureViewer featureInfo={feature} type={type} objectURLs={imageArray?.map(f=>f.objectURL)} confirm={true} />
+      <FeatureViewer
+        featureInfo={feature}
+        type={type}
+        objectURLs={imageArray?.map((f) => f.objectURL)}
+        confirm={true}
+      />
       <FooterAdjustment />
       <div className='fixed bottom-0 w-full'>
         <Footer>
