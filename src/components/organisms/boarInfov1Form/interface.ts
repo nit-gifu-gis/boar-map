@@ -1,9 +1,10 @@
+import { BoarFeatureV1 } from '../../../types/features';
 import { ImagewithLocation } from '../../atomos/imageInput/interface';
 import { LatLngZoom } from '../mapBase/interface';
 
-export interface InfoFormProps {
+export interface BoarInfov1FormProps {
   location: LatLngZoom;
-  featureInfo?: Feature;
+  featureInfo?: BoarFeatureV1;
   imageIds?: string[];
   objectURLs?: ImagewithLocation[];
   isEditMode?: boolean;

@@ -122,6 +122,7 @@ export interface BoarInfoPropsV2 {
   個体管理番: string;
   PCR検査日: string;
   PCR結果: string;
+  遠沈管番号?: string;
 }
 
 export interface TrapFeature extends FeatureBase {

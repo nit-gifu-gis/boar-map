@@ -24,6 +24,7 @@ const AddInfoTemplate: React.FunctionComponent = () => {
   const [feature, setFeature] = useState<FeatureBase | null>(null);
   const [editorRef, setEditorRef] = useState<React.RefObject<FeatureEditorHandler> | null>(null);
   const [imageArray, setImageArray] = useState<ImagewithLocation[] | null>(null);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (router.query.images == null || router.query.type == null || router.query.location == null) {
@@ -50,13 +51,16 @@ const AddInfoTemplate: React.FunctionComponent = () => {
       alert('内部エラーが発生しました。');
       return;
     }
+    setLoading(false);
 
     if (!(await editorRef.current?.validateData())) {
       alert('入力内容にエラーがあります。ご確認ください。');
+      setLoading(false);
       return;
     }
 
-    const featureInfo = editorRef.current?.fetchData();
+    const featureInfo = await editorRef.current?.fetchData();
+    setLoading(false);
     router.push(
       {
         pathname: '/add/confirm',
@@ -120,8 +124,8 @@ const AddInfoTemplate: React.FunctionComponent = () => {
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
             &lt; 戻る
           </RoundButton>
-          <RoundButton color='primary' onClick={onClickNext.bind(this)}>
-            進む &gt;
+          <RoundButton color='primary' onClick={onClickNext.bind(this)} disabled={isLoading}>
+            {isLoading ? '読み込み中...' : '進む >'}
           </RoundButton>
         </Footer>
       </div>

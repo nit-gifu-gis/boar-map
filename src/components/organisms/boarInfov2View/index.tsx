@@ -78,7 +78,8 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
               ) : (
                 <></>
               )}
-              <InfoDiv title='処分方法' type='text' data={v.properties.地域} />
+              <InfoDiv title='遠沈管番号' type='text' data={v.properties.遠沈管番号} />
+              <InfoDiv title='処分方法' type='text' data={v.properties.処分方法} />
               {v.properties.処分方法 === '利活用（ジビエ利用）' ||
               v.properties.処分方法 === 'ジビエ業者渡し' ? (
                 <>
@@ -107,7 +108,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
                 type='text'
                 data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
               />
-              <InfoDiv title='備考（遠沈管番号）' type='text' data={v.properties.備考} />
+              <InfoDiv title='備考' type='text' data={v.properties.備考} />
             </>
           );
         })

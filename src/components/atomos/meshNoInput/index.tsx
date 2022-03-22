@@ -122,7 +122,6 @@ const MeshNoInput: React.FunctionComponent<MeshNoInputProps> = (props) => {
         : result[3]
         ? result[3].slice(0, 1).toUpperCase() + ('0000' + result[3].slice(1)).slice(-4)
         : null;
-      console.log(numValue);
       setValue(cityValue, numValue);
     } else {
       setValue(null, null);

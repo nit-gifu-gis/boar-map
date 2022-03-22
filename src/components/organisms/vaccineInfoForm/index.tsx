@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { VaccineFeature, VaccineProps } from '../../../types/features';
+import { FeatureBase, VaccineFeature, VaccineProps } from '../../../types/features';
 import { checkDateError, checkNumberError, compareDate } from '../../../utils/validateData';
 import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
@@ -73,15 +73,14 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
       },
     };
 
-    return data;
+    return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
   };
 
   const validateData = () => {
-    validateDates();
-    validateMeshNo();
-    validateNumbers();
+    let valid = validateDates();
+    valid = valid && validateMeshNo();
+    valid = valid && validateNumbers();
 
-    let valid = true;
     Object.keys(errors).forEach((key) => {
       if (errors[key] != null) {
         console.error(errors[key]);
@@ -92,9 +91,11 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
   };
 
   const updateError = (id: string, value: string | undefined) => {
-    const e = { ...errors };
-    e[id] = value;
-    setErrors(e);
+    setErrors((err) => {
+      const e = { ...err };
+      e[id] = value;
+      return e;
+    });
   };
 
   useImperativeHandle(ref, () => {
@@ -174,16 +175,20 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
       updateError('damageNumber', '散布数と回収に係る数の合計が合っていません。');
       updateError('noDamageNumber', '散布数と回収に係る数の合計が合っていません。');
       updateError('lostNumber', '散布数と回収に係る数の合計が合っていません。');
+      return false;
     }
+    return true;
   };
 
-  const validateMeshNo = (): void => {
+  const validateMeshNo = (): boolean => {
     const form = document.getElementById('form-vaccine') as HTMLFormElement;
     const meshNo = form.meshNo.value as string;
     if (meshNo === '') {
       updateError('meshNo', '入力されていません。');
+      return false;
     } else {
       updateError('meshNo', undefined);
+      return true;
     }
   };
 

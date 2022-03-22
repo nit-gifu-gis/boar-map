@@ -1,5 +1,7 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
 import {
+  BoarFeatureV1,
+  BoarFeatureV2,
   ButanetsuFeature,
   FeatureBase,
   ReportFeature,
@@ -7,6 +9,8 @@ import {
   VaccineFeature,
   YoutonFeature,
 } from '../../../types/features';
+import BoarInfov1Form from '../boarInfov1Form';
+import BoarInfov2Form from '../boarInfov2Form';
 import ButanetsuInfoForm from '../butanetsuInfoForm';
 import ReportInfoForm from '../reportInfoForm';
 import TrapInfoForm from '../trapInfoForm';
@@ -28,9 +32,9 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
       return type == null;
     };
 
-    const fetchData = (): FeatureBase | null => {
+    const fetchData = async (): Promise<FeatureBase | null> => {
       if (formRef == null || formRef.current == null) return null;
-      return formRef.current.fetchData();
+      return await formRef.current.fetchData();
     };
 
     const validateData = (): Promise<boolean> => {
@@ -46,9 +50,25 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
     let infoDiv: JSX.Element | null = null;
     if (type != null) {
       if (type === 'boar') {
-        infoDiv = <>boar</>;
+        infoDiv = (
+          <BoarInfov2Form
+            ref={formRef}
+            objectURLs={objectURLs}
+            imageIds={imageIds}
+            location={location}
+            featureInfo={featureInfo as BoarFeatureV2}
+          />
+        );
       } else if (type === 'boar-old') {
-        infoDiv = <>boar-old (for editing purpose only.)</>;
+        infoDiv = (
+          <BoarInfov1Form
+            ref={formRef}
+            objectURLs={objectURLs}
+            imageIds={imageIds}
+            location={location}
+            featureInfo={featureInfo as BoarFeatureV1}
+          />
+        );
       } else if (type === 'trap') {
         infoDiv = (
           <TrapInfoForm

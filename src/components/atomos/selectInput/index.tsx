@@ -6,7 +6,11 @@ const SelectInput: React.FunctionComponent<SelectInputProps> = (props) => {
   const options = [];
   for (let i = 0; i < props.options.length; i++) {
     options.push(
-      <option value={props.options[i]} key={props.options[i]}>
+      <option
+        value={props.options[i]}
+        key={props.options[i]}
+        selected={props.options[i] == props.defaultValue}
+      >
         {props.options[i]}
       </option>,
     );
@@ -28,7 +32,6 @@ const SelectInput: React.FunctionComponent<SelectInputProps> = (props) => {
           id={props.id}
           name={props.id}
           onChange={props.onChange}
-          defaultValue={props.defaultValue}
         >
           {options}
         </select>

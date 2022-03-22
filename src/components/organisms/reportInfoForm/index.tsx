@@ -1,7 +1,7 @@
 import { notEqual } from 'assert';
 import React, { useEffect, useImperativeHandle, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { ReportFeature, ReportProps } from '../../../types/features';
+import { FeatureBase, ReportFeature, ReportProps } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { checkDateError, compareDate } from '../../../utils/validateData';
@@ -49,7 +49,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
         },
         type: 'Feature',
       };
-      return data;
+      return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
     };
 
     const validateData = () => {
@@ -100,15 +100,12 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
         updateError('worktime', endError);
       }
 
-      console.log(startTime.getHours() >= endTime.getHours());
-      console.log(startTime.getMinutes() > endTime.getMinutes());
       if (
         startTime.getHours() > endTime.getHours() ||
         (startTime.getHours() >= endTime.getHours() &&
           startTime.getMinutes() > endTime.getMinutes())
       ) {
         valid = false;
-        console.log('no');
         updateError('worktime', '開始時刻よりも早い終了時刻が入力されています。');
       }
 
@@ -131,9 +128,11 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
     };
 
     const updateError = (id: string, value: string | undefined) => {
-      const e = { ...errors };
-      e[id] = value;
-      setErrors(e);
+      setErrors((err) => {
+        const e = { ...err };
+        e[id] = value;
+        return e;
+      });
     };
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useImperativeHandle, useState } from 'react';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { TrapInfoFormProps } from './interface';
-import { PointGeometry, TrapFeature, TrapProps } from '../../../types/features';
+import { FeatureBase, PointGeometry, TrapFeature, TrapProps } from '../../../types/features';
 import InfoDiv from '../../molecules/infoDiv';
 import { checkDateError, compareDate } from '../../../utils/validateData';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
@@ -15,7 +15,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
   const { currentUser } = useCurrentUser();
 
   const fetchData = () => {
-    if (currentUser == null) return null;
+    if (currentUser == null) return new Promise<null>((resolve) => resolve(null));
 
     const form = document.getElementById('form-trap') as HTMLFormElement;
 
@@ -50,7 +50,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
       },
     };
 
-    return data;
+    return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
   };
 
   const validateData = () => {
@@ -106,9 +106,11 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
   };
 
   const updateError = (id: string, value: string | undefined) => {
-    const e = { ...errors };
-    e[id] = value;
-    setErrors(e);
+    setErrors((err) => {
+      const e = { ...err };
+      e[id] = value;
+      return e;
+    });
   };
 
   useImperativeHandle(ref, () => {

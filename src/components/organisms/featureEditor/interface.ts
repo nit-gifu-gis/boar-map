@@ -12,5 +12,5 @@ export interface FeatureEditorProps {
 
 export interface FeatureEditorHandler {
   validateData(): Promise<boolean>;
-  fetchData(): FeatureBase | null;
+  fetchData(): Promise<FeatureBase | null>;
 }

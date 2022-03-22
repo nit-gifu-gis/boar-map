@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { ButanetsuFeature, ButanetsuProps } from '../../../types/features';
+import { ButanetsuFeature, ButanetsuProps, FeatureBase } from '../../../types/features';
 import { checkDateError, checkNumberError } from '../../../utils/validateData';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
@@ -30,7 +30,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
         },
         type: 'Feature',
       };
-      return data;
+      return new Promise<FeatureBase>((resolve) => resolve(data));
     };
 
     const validateData = () => {
@@ -70,9 +70,11 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
     };
 
     const updateError = (id: string, value: string | undefined) => {
-      const e = { ...errors };
-      e[id] = value;
-      setErrors(e);
+      setErrors((err) => {
+        const e = { ...err };
+        e[id] = value;
+        return e;
+      });
     };
 
     useImperativeHandle(ref, () => {

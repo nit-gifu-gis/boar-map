@@ -38,7 +38,7 @@ const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({
           confirmMode={confirm}
         />
       );
-    } else if (type === 'boar-2') {
+    } else if (type === 'boar-2' || type === 'boar') {
       infoDiv = (
         <BoarInfov2View
           detail={featureInfo as BoarFeatureV2}

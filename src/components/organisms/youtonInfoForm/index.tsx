@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { YoutonFeature, YoutonProps } from '../../../types/features';
+import { FeatureBase, YoutonFeature, YoutonProps } from '../../../types/features';
 import { checkDateError, checkNumberError } from '../../../utils/validateData';
 import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
@@ -48,7 +48,7 @@ const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProp
         },
         type: 'Feature',
       };
-      return data;
+      return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
     };
 
     const validateData = async () => {
@@ -90,12 +90,11 @@ const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProp
       return true;
     };
 
-    const updateError = async (id: string, value: string | undefined): Promise<void> => {
-      const e = { ...errors };
-      e[id] = value;
-      setErrors(e);
-      return new Promise<void>((resolve) => {
-        setTimeout(resolve, 20);
+    const updateError = (id: string, value: string | undefined) => {
+      setErrors((err) => {
+        const e = { ...err };
+        e[id] = value;
+        return e;
       });
     };
 
