@@ -127,11 +127,12 @@ const DetailTemplate: React.FunctionComponent = () => {
       try {
         // 先に画像を削除する.
         await Promise.all(imageIds.map((id) => deleteImage(id)));
-        const res = await fetch(SERVER_URI + '/Features/DeleteFeatures', {
+        const res = await fetch(SERVER_URI + '/Features/DeleteFeature', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
+            'X-Access-Token': getAccessToken()
           },
           body: JSON.stringify(body),
         });
