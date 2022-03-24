@@ -171,8 +171,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           地域: jibieArea,
           ジビエ業者: jibieTrader,
           遠沈管番号: enchinkan,
-          個体管理番: '',
-          情報番号: '',
+          個体管理番: props.detail?.properties.個体管理番 != null ? props.detail.properties.個体管理番 : "",
+          情報番号: props.detail?.properties.情報番号 != null ? props.detail.properties.情報番号 : "",
           枝番: '',
           PCR検査日: pcr_date,
           PCR結果: pcr_res,
@@ -183,6 +183,11 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         },
         type: 'Feature',
       };
+
+      // 既存の更新の場合はID$を設定する
+      if(props.detail?.properties.ID$ != null) {
+        data.properties.ID$ = props.detail?.properties.ID$;
+      }
 
       return data;
     };
@@ -456,6 +461,14 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
               error={errors.trader}
               onChange={onChangeTrader}
             />
+
+            {props.detail?.properties.個体管理番 != null && props.detail?.properties.個体管理番 != "" ? (
+              <InfoDiv
+                title="個体管理番号"
+                type="text"
+                data={props.detail?.properties.個体管理番}
+              />
+            ) : <></>}
           </div>
           <div>
             <InfoInput

@@ -65,7 +65,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
       ) : (
         detail.properties.捕獲いのしし情報.map((v, index, arr) => {
           return (
-            <>
+            <div key={v.properties.ID$}>
               {index > 0 ? <Divider /> : <></>}
               {arr.length > 1 ? (
                 <div className='align-justify w-full p-[15px] text-2xl font-bold text-text'>
@@ -119,7 +119,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
                 data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
               />
               <InfoDiv title='備考' type='text' data={v.properties.備考} />
-            </>
+            </div>
           );
         })
       )}

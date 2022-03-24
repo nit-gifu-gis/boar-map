@@ -51,7 +51,7 @@ const AddInfoTemplate: React.FunctionComponent = () => {
       alert('内部エラーが発生しました。');
       return;
     }
-    setLoading(false);
+    setLoading(true);
 
     if (!(await editorRef.current?.validateData())) {
       alert('入力内容にエラーがあります。ご確認ください。');

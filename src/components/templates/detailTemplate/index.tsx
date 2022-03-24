@@ -6,7 +6,7 @@ import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasWritePermission, LayerType, toServerType } from '../../../utils/gis';
 import { to_header_color, to_header_title } from '../../../utils/header';
-import { alert, confirm } from '../../../utils/modal';
+import { alert, confirm, yesNo } from '../../../utils/modal';
 import FooterAdjustment from '../../atomos/footerAdjustment';
 import RoundButton from '../../atomos/roundButton';
 import FeatureViewer from '../../organisms/featureViewer';
@@ -151,20 +151,39 @@ const DetailTemplate: React.FunctionComponent = () => {
     setEditable(true);
   };
 
-  const onClickEdit = () => {
+  const onClickEdit = async () => {
     if (featureInfo == null) return;
 
-    router.push(
-      {
-        pathname: '/edit',
-        query: {
-          id: router.query.id as string,
-          type: featureType,
-          detail: JSON.stringify(featureInfo),
+    const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
+    if(yesNoCheck) {
+      router.push(
+        {
+          pathname: '/edit/location',
+          query: {
+            id: router.query.id as string,
+            type: router.query.type,
+            type_srv: featureType,
+            version: router.query.version,
+            detail: JSON.stringify(featureInfo),
+          },
         },
-      },
-      '/edit',
-    );
+        '/edit/location',
+      );
+    } else {
+      router.push(
+        {
+          pathname: '/edit/image',
+          query: {
+            id: router.query.id as string,
+            type: router.query.type,
+            type_srv: featureType,
+            version: router.query.version,
+            detail: JSON.stringify(featureInfo),
+          },
+        },
+        '/edit/image',
+      );
+    }
   };
 
   return (

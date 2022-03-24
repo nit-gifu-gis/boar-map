@@ -2,8 +2,10 @@ import { HeaderColor } from '../components/organisms/header/interface';
 
 export const to_header_color = (val: string): HeaderColor => {
   switch (val) {
+    case 'いのしし捕獲地点':
     case 'boar-1':
     case 'boar-2':
+    case 'boar-old':
     case 'boar':
       return 'boar';
     case 'trap':
@@ -25,6 +27,7 @@ export const to_header_title = (val: string | null): string => {
   switch (val) {
     case 'boar-1':
     case 'boar-2':
+    case 'boar-old':
     case 'boar':
       return '捕獲情報';
     case 'trap':

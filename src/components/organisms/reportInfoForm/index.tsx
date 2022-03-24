@@ -41,7 +41,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
           作業終了時: time_end,
           作業報告: report,
           備考: note,
-          画像ID: '',
+          画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
         },
         geometry: {
           type: 'Point',
@@ -49,6 +49,11 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
         },
         type: 'Feature',
       };
+
+      // 既存の更新の場合はID$を設定する
+      if(props.featureInfo?.properties.ID$ != null) {
+        data.properties.ID$ = props.featureInfo?.properties.ID$;
+      }
       return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
     };
 

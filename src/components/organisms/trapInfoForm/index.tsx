@@ -46,10 +46,15 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
         罠の種類: trap_kind,
         備考: note,
         位置情報: `(${props.location.lat},${props.location.lng})`,
-        画像ID: '',
+        画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
       },
     };
 
+    // 既存の更新の場合はID$を設定する
+    if(props.featureInfo?.properties.ID$ != null) {
+      data.properties.ID$ = props.featureInfo?.properties.ID$;
+    }
+    
     return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
   };
 

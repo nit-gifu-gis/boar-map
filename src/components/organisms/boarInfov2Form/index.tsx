@@ -172,8 +172,8 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           罠発見場所: trapOrEnv,
           地名: '',
           処理方法: '',
-          写真ID: '',
-          歯列写真ID: '',
+          写真ID: props.featureInfo?.properties.写真ID != null ? props.featureInfo?.properties.写真ID : "",
+          歯列写真ID: props.featureInfo?.properties.歯列写真ID != null ? props.featureInfo?.properties.歯列写真ID : "",
           捕獲いのしし情報: boarListData,
         },
         geometry: {
@@ -183,6 +183,11 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
         type: 'Feature',
       };
 
+      // 既存の更新の場合はID$を設定する
+      if(props.featureInfo?.properties.ID$ != null) {
+        data.properties.ID$ = props.featureInfo?.properties.ID$;
+      }
+            
       return data;
     };
 

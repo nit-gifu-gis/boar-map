@@ -38,7 +38,7 @@ export interface BoarFeatureV1 extends FeatureBase {
 }
 
 export interface BoarPropsV1 {
-  ID$: string;
+  ID$?: string;
   捕獲年月日: string;
   入力者?: string;
   区分: string;

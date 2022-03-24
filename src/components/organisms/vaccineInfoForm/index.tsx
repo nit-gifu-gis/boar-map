@@ -69,9 +69,14 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
         ロスト数: lostNumber,
         備考: note as string,
         メッシュ番号: '',
-        画像ID: '',
+        画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
       },
     };
+
+    // 既存の更新の場合はID$を設定する
+    if(props.featureInfo?.properties.ID$ != null) {
+      data.properties.ID$ = props.featureInfo?.properties.ID$;
+    }
 
     return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
   };

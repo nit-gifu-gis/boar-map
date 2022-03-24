@@ -30,6 +30,12 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
         },
         type: 'Feature',
       };
+
+      // 既存の更新の場合はID$を設定する
+      if(props.featureInfo?.properties.ID$ != null) {
+        data.properties.ID$ = props.featureInfo?.properties.ID$;
+      }
+
       return new Promise<FeatureBase>((resolve) => resolve(data));
     };
 

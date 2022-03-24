@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import AlertModal from "../components/molecules/alertModal";
 import ConfirmModal from "../components/molecules/confirmModal";
+import YesNoModal from "../components/molecules/yesNoModal";
 
 export const alert = async (message: string) => {
   return await showModal("alert", message);
@@ -10,8 +11,13 @@ export const confirm = async (message: string) => {
   return await showModal("confirm", message);
 };
 
+export const yesNo = async (message: string) => {
+  return await showModal("yes-no", message);
+};
+
+
 // confirmとalertはほぼ同じ動作するので動作をまとめる
-const showModal = (type: "confirm" | "alert", message: string) => {
+const showModal = (type: "confirm" | "alert" | "yes-no", message: string) => {
   // nextのアプリケーションが描画される要素を取得
   const nextDiv = document.getElementById("__next");
   if(nextDiv == null) return;
@@ -43,6 +49,8 @@ const showModal = (type: "confirm" | "alert", message: string) => {
       const modal =
         type === "confirm" ? (
           <ConfirmModal message={message} resolve={resolve} cleanup={cleanup} />
+        ) : type === "yes-no" ? (
+          <YesNoModal message={message} resolve={resolve} cleanup={cleanup} />
         ) : (
           <AlertModal message={message} resolve={resolve} cleanup={cleanup} />
         );
