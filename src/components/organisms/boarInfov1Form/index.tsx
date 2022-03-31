@@ -16,7 +16,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
       const form = getForm();
       // 送信に必要な情報を集めておく
       // 0 入力者
-      const user = currentUser?.userId;
+      const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
       // 0-1 メッシュ番号
       const meshNo = form.meshNo.value;
       // 1 区分

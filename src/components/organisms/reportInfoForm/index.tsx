@@ -31,9 +31,10 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       const report = form.report.value as string;
       const note = form.note.value as string;
 
+      const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
       const data: ReportFeature = {
         properties: {
-          入力者: currentUser?.userId,
+          入力者: user,
           地域: area,
           所属支部名: branch,
           氏名: name,

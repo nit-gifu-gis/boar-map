@@ -142,7 +142,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
 
       const form = getForm();
       // 入力者
-      const user = currentUser?.userId;
+      const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
       // メッシュ番号
       const meshNo = form.meshNo.value as string;
       // 区分

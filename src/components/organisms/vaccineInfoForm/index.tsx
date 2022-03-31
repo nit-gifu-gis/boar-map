@@ -18,7 +18,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
     const form = document.getElementById('form-vaccine') as HTMLFormElement;
     // 送信に必要な情報を集めておく
     // 0 入力者
-    const user = currentUser?.userId;
+    const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
     // 1 位置情報
     const lat = props.location.lat;
     const lng = props.location.lng;

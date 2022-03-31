@@ -20,7 +20,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
     const form = document.getElementById('form-trap') as HTMLFormElement;
 
     // 入力者
-    const user = currentUser.userId;
+    const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
     // 設置年月日
     const place_date = form['place_date'].value as string;
     // 撤去年月日

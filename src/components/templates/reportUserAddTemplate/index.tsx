@@ -25,6 +25,7 @@ const ReportUserAddTemplate: React.FunctionComponent = () => {
   const [branches, setBranches] = useState<Response[]>([]);
   const [area, setArea] = useState("");
   const [currentList, setCurrentList] = useState<Response[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const fetchData = async () => {
     const res = await fetch(SERVER_URI + "/Report/GetBranches", {
@@ -59,11 +60,27 @@ const ReportUserAddTemplate: React.FunctionComponent = () => {
     setArea(area);
   };
 
+  const onBranchChanged = () => {
+    const form = document.getElementById("registerform") as HTMLFormElement;
+    setSelectedIndex(form.branch_name.selectedIndex);
+  };
+
   const createData = async () => {
     if (await confirm("この内容で登録してよろしいですか？")) {
       setLoading(true);
       const form = document.getElementById("registerform") as HTMLFormElement;
-      const branch = currentList[form.branch_area.selectedIndex];
+
+      const branches = await new Promise<Response[]>((resolve) => setCurrentList(list => {
+        resolve(list);
+        return list;
+      }));
+      const branchIndex = await new Promise<number>(resolve => setSelectedIndex(index => {
+        resolve(index);
+        return index;
+      }));
+
+      const branch = branches[branchIndex];
+
       const user = form.report_user.value;
       if(!user || !branch) {
         alert("未入力の項目があります。ご確認ください。");
@@ -109,7 +126,7 @@ const ReportUserAddTemplate: React.FunctionComponent = () => {
       <div className='mx-[15px] mt-2 text-justify'>内容を入力してください。</div>
       <form id="registerform" onSubmit={e => e.preventDefault()}>
         <InfoInput type="select" title="地域" options={["", '岐阜', '西濃', '揖斐', '中濃', '郡上', '可茂', '東濃', '恵那', '下呂', '飛騨']} id="branch_area" onChange={onSelectionChanged}/>
-        <InfoInput type="select" title="支部名" options={currentList.map(v => `${v.name} (${v.area})`)} id="branch_name"/>
+        <InfoInput type="select" title="支部名" options={currentList.map(v => `${v.name} (${v.area})`)} id="branch_name" onChange={onBranchChanged}/>
         <InfoInput type="text" title="氏名" id="report_user" required={true} />
       </form>
     </div>

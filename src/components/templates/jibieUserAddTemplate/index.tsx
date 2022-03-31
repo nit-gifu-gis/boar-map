@@ -31,6 +31,7 @@ const JibieUserAddTemplate: React.FunctionComponent = () => {
   const [traders, setTraders] = useState<Response>({ area: [], trader: {} });
   const [area, setArea] = useState("");
   const [currentList, setCurrentList] = useState<ResponseObj[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const fetchData = async () => {
     const res = await fetch(SERVER_URI + "/Jibie/List", {
@@ -70,6 +71,7 @@ const JibieUserAddTemplate: React.FunctionComponent = () => {
     });
 
     setCurrentList(ResponseObjs);
+    setSelectedIndex(0);
   }, [traders, area]);
 
   const onSelectionChanged = () => {
@@ -78,11 +80,24 @@ const JibieUserAddTemplate: React.FunctionComponent = () => {
     setArea(area);
   };
 
+  const onTraderChanged = () => {
+    const form = document.getElementById("registerform") as HTMLFormElement;
+    setSelectedIndex(form.trader_name.selectedIndex);
+  };
+
   const createData = async () => {
     if (await confirm("この内容で登録してよろしいですか？")) {
       setLoading(true);
       const form = document.getElementById("registerform") as HTMLFormElement;
-      const trader = currentList[form.trader_area.selectedIndex];
+      const traders = await new Promise<ResponseObj[]>((resolve) => setCurrentList(list => {
+        resolve(list);
+        return list;
+      }));
+      const traderIndex = await new Promise<number>(resolve => setSelectedIndex(index => {
+        resolve(index);
+        return index;
+      }));
+      const trader = traders[traderIndex];
       const user = form.trader_user.value;
       if(!user || !trader) {
         alert("未入力の項目があります。ご確認ください。");
@@ -128,7 +143,7 @@ const JibieUserAddTemplate: React.FunctionComponent = () => {
       <div className='mx-[15px] mt-2 text-justify'>内容を入力してください。</div>
       <form id="registerform" onSubmit={e => e.preventDefault()}>
         <InfoInput type="select" title="地域（圏域）" options={["", "岐阜", "西濃", "中濃", "東濃", "飛騨"]} id="trader_area" onChange={onSelectionChanged}/>
-        <InfoInput type="select" title="ジビエ事業者名" options={currentList.map(v => `${v.name} (${v.area})`)} id="trader_name"/>
+        <InfoInput type="select" title="ジビエ事業者名" options={currentList.map(v => `${v.name} (${v.area})`)} id="trader_name" onChange={onTraderChanged}/>
         <InfoInput type="text" title="アカウント名" id="trader_user" required={true} />
       </form>
     </div>
