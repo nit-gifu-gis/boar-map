@@ -6,6 +6,8 @@ import { FeatureBase, PointGeometry, TrapFeature, TrapProps } from '../../../typ
 import InfoDiv from '../../molecules/infoDiv';
 import { checkDateError, compareDate } from '../../../utils/validateData';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import { SERVER_URI } from '../../../utils/constants';
+import { getAccessToken } from '../../../utils/currentUser';
 
 const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(function InfoForm(
   props,
@@ -14,7 +16,36 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
   const { currentUser } = useCurrentUser();
 
-  const fetchData = () => {
+  const getCityName = async () => {
+    const body = {
+      geometry: {
+        type: 'Point',
+        coordinates: [[props.location.lng, props.location.lat]],
+      },
+    };
+
+    const res = await fetch(SERVER_URI + '/Features/GetCity', {
+      method: 'POST',
+      headers: {
+        'X-Access-Token': getAccessToken(),
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (res.status === 200) {
+      const json = await res.json();
+      const features = json['features'];
+      if (features != null && features.length !== 0) {
+        return features[0]['properties']['NAME'];
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  };
+
+  const fetchData = async () => {
     if (currentUser == null) return new Promise<null>((resolve) => resolve(null));
 
     const form = document.getElementById('form-trap') as HTMLFormElement;
@@ -29,6 +60,8 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
     const trap_kind = form['kind'].options[form['kind'].selectedIndex].value as string;
     // 備考
     const note = form['note'].value as string;
+    // 市町村
+    const city = await getCityName();
     // 位置情報
     const geo: PointGeometry = {
       type: 'Point',
@@ -44,6 +77,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
         設置年月日: place_date,
         撤去年月日: remove_date,
         罠の種類: trap_kind,
+        市町村: city,
         備考: note,
         位置情報: `(${props.location.lat},${props.location.lng})`,
         画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
@@ -55,7 +89,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
       data.properties.ID$ = props.featureInfo?.properties.ID$;
     }
     
-    return new Promise<FeatureBase>((resolve) => resolve(data as FeatureBase));
+    return data;
   };
 
   const validateData = () => {

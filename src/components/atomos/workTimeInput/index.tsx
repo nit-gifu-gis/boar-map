@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import InfoInput from '../../molecules/infoInput';
 import SelectInput from '../selectInput';
 import { WorkTimeInputProps } from './interface';
 

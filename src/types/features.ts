@@ -123,6 +123,7 @@ export interface BoarInfoPropsV2 {
   PCR検査日: string;
   PCR結果: string;
   遠沈管番号?: string;
+  確認番号?: string;
 }
 
 export interface TrapFeature extends FeatureBase {
@@ -135,6 +136,7 @@ export interface TrapProps {
   入力者?: string;
   撤去年月日: string;
   画像ID: string;
+  市町村: string;
   罠の種類: string;
   設置年月日: string;
   備考?: string;

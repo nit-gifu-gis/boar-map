@@ -163,3 +163,42 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance:textfield;
 }
+
+/* 並び変え用 */
+th.sortable {
+  font-weight: bold;
+  position: relative;
+  padding-right: 30px;
+}
+
+th.sortable::before, th.sortable::after {
+  content: "";
+  height: 0;
+  width: 0;
+  position: absolute;
+  border: 5px solid transparent;
+  right: 10px;
+  top: 50%;
+}
+
+th.sortable::before {
+  @apply border-b-border;
+  @apply mt-[-10px];
+}
+
+th.sortable::after {
+  @apply border-t-border;
+  @apply mt-[2px];
+}
+
+th.asc::before {
+  @apply border-b-text;
+}
+
+th.desc::after {
+  @apply border-t-text;
+}
+
+.flip {
+  transform: scale(1, -1); 
+}
