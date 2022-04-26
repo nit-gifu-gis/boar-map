@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { alert } from "../../../utils/modal";
+import { SERVER_URI } from "../../../utils/constants";
+import { getAccessToken } from "../../../utils/currentUser";
 import RoundButton from "../../atomos/roundButton";
 
 const PCRForm: React.FunctionComponent = () => {
@@ -9,7 +10,39 @@ const PCRForm: React.FunctionComponent = () => {
   const [message, setMessage] = useState("");
 
   const onClickImport = async () => {
-    alert('Import');
+    const fileForm = (document.getElementById("importExcel") as HTMLInputElement);
+    if(fileForm.files == null || fileForm.files?.length === 0) {
+      setError("ファイルが選択されていません。");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("excel", fileForm.files[0]);
+
+    setError("");
+    setMessage("");
+    setButtonLabel("アップロード中...");
+    setUploading(true);
+
+    const res = await fetch(SERVER_URI + "/List/Import", {
+      method: 'POST',
+      body: data,
+      headers: {
+        'X-Access-Token': getAccessToken()
+      }
+    });
+
+    const resp = await res.json();
+    if(res.status !== 200) {
+      setError(resp.error);
+      setUploading(false);
+      setButtonLabel("アップロード");
+      return;
+    }
+
+    setMessage("データをインポートしました。");
+    setUploading(false);
+    setButtonLabel("アップロード");
   };
 
   return (

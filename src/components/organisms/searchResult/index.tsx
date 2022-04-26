@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { FeatureBase } from "../../../types/features";
+import { SERVER_URI } from "../../../utils/constants";
+import { getAccessToken } from "../../../utils/currentUser";
 import { alert } from "../../../utils/modal";
 import RoundButton from "../../atomos/roundButton";
 import BoarTable from "../boarTable";
@@ -13,7 +15,42 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
   const [isDownloading, setDownloading] = useState(false);
 
   const onClickDownload = async () => {
-    await alert("Downlaod clicked.");
+    const res = await fetch(SERVER_URI + "/List/Export", {
+      method: 'POST',
+      body: searchInfo,
+      headers: {
+        Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'X-Access-Token': getAccessToken()
+      }
+    });
+
+    if (res.status === 200) {
+      const blob = await res.blob();
+      const anchor = document.createElement('a');
+      const now = new Date();
+      const yyyy = ("0000" + now.getFullYear()).slice(-4);
+      const mm = ("00" + (now.getMonth() + 1)).slice(-2);
+      const dd = ("00" + now.getDate()).slice(-2);
+
+      const name = searchInfo.get("type") + "一覧表(" + yyyy + "-" + mm + "-" + dd + ").xlsx";
+      // IE対応
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (window.navigator.msSaveBlob) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.navigator.msSaveBlob(blob, name);
+        setDownloading(false);
+        return;
+      }
+      anchor.download = name;
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.click();
+      setDownloading(false);
+    } else {
+      const json = await res.json();
+      await alert(json.error);
+    }
   };
 
   return (

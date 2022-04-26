@@ -101,7 +101,7 @@ const DetailTemplate: React.FunctionComponent = () => {
                     'X-Access-Token': getAccessToken()
                   },
                 };
-                fetch(`${SERVER_URI}/Image/DeleteImage.php`, options)
+                fetch(`${SERVER_URI}/Image/DeleteImage`, options)
                   .then((res) => {
                     if (res.status === 200 || res.status === 404) {
                       resolve();

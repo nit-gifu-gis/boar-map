@@ -333,7 +333,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                     <td className="border-solid border p-1 border-border" rowSpan={arr.length}>
                       <div className="flex flex-wrap w-[650px]">
                         {imageList.length == 0 ? <div>画像なし</div> : imageList.filter(e=>e).map((v, img_i) => {
-                          const url = `${SERVER_URI}/Image/GetImage.php?id=${v}&token=${getAccessToken()}`;
+                          const url = `${SERVER_URI}/Image/GetImage?id=${v}&token=${getAccessToken()}`;
                         
                           // 200px x 200pxでエリアを確保しておき、ロード後に長辺200pxになるようにリサイズする
                           const onLoaded = (e: SyntheticEvent<HTMLImageElement>) => {
