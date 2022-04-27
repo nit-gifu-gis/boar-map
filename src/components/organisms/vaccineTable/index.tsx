@@ -175,7 +175,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
           </tr>
           {features.map((f, i) => {
             const props = f.properties as VaccineProps;
-            const imageList = props.画像ID.split(',');
+            const imageList = props.画像ID.split(',').filter(e=>e);
             return (
               <tr key={"data-" + (i + 1) + "-trap"}>
                 <td className="border-solid border p-1 border-border text-right">

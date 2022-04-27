@@ -40,7 +40,7 @@ const PCRForm: React.FunctionComponent = () => {
       return;
     }
 
-    setMessage("データをインポートしました。");
+    setMessage(resp.message);
     setUploading(false);
     setButtonLabel("アップロード");
   };

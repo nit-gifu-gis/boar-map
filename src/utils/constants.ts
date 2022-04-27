@@ -1,6 +1,26 @@
 // 定数
 
-export const SERVER_URI = 'https://localhost';
+// 中間サーバー選択用
+const getServerURI = (): string => {
+  if (process.browser) {
+    // ブラウザで処理が行われている時はアクセスされているドメインを見る
+    const domain = document.domain.toLowerCase();
+    if (
+      domain.endsWith(".junki-t.net") ||
+      domain.endsWith(".vercel.app") ||
+      domain.endsWith(".now.sh")
+    ) {
+      // 開発用サーバー (develop)
+      return "https://gis-dev.junki-t.net/v1";
+    } else if (domain.endsWith("localhost")) {
+      // 開発用ローカル
+      return "https://localhost";
+    }
+  }
+  return "https://boar-map.gifugis.jp/v1"; // デフォルト
+};
+
+export const SERVER_URI = getServerURI();
 
 export const MAX_UPLOAD_SIZE = 20 * (1024 * 1024);
 

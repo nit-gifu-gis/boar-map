@@ -154,7 +154,7 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
           </tr>
           {features.map((f, i) => {
             const props = f.properties as ReportProps;
-            const imageList = props.画像ID.split(',');
+            const imageList = props.画像ID.split(',').filter(e=>e);
             return (
               <tr key={"data-" + (i + 1) + "-trap"}>
                 <td className="border-solid border p-1 border-border text-right">
@@ -168,6 +168,9 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                 </td>
                 <td className="border-solid border p-1 border-border">
                   {props.地域}
+                </td>
+                <td className="border-solid border p-1 border-border">
+                  {props.所属支部名}
                 </td>
                 <td className="border-solid border p-1 border-border">
                   {props.氏名}

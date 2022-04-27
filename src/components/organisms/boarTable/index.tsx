@@ -232,7 +232,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
           </tr>
           {features.map((f, i) => {
             const props = f.properties as BoarFeaturePropsV2;
-            const imageList = [props.歯列写真ID, ...props.写真ID.split(',')];
+            const imageList = [props.歯列写真ID, ...props.写真ID.split(',')].filter(e=>e);
             return props.捕獲いのしし情報.map((_, index, arr) => {
               const d = arr[index].properties;
               return (
