@@ -15,6 +15,7 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
   const [isDownloading, setDownloading] = useState(false);
 
   const onClickDownload = async () => {
+    setDownloading(true);
     const res = await fetch(SERVER_URI + "/List/Export", {
       method: 'POST',
       body: searchInfo,
@@ -63,7 +64,7 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
             onClick={onClickDownload}
             disabled={isDownloading}
           >
-            ダウンロード
+            {isDownloading ? "ダウンロード中..." : "ダウンロード"}
           </RoundButton>
         </div>
       </div>

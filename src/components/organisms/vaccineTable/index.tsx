@@ -197,7 +197,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
                   {props.散布数}
                 </td>
                 <td className="border-solid border p-1 border-border">
-                  {props.散布年月日 === "" ? "未回収" : "回収済"}
+                  {props.回収年月日 === "" ? "未回収" : "回収済"}
                 </td>
                 <td className="border-solid border p-1 border-border text-right">
                   {props.回収年月日}
