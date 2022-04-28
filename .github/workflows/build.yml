@@ -5,7 +5,7 @@ on:
     branches: [ master, develop ]
 
 env:
-  DOCKER_REGISTRY: boar-dpr.db0.jp
+  DOCKER_REGISTRY: dev1.tajimalab.prsvr.net:5000
   DOCKER_REPOSITORY: boar-map
     
 jobs:
