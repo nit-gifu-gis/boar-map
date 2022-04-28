@@ -6,12 +6,13 @@ const getServerURI = (): string => {
     // ブラウザで処理が行われている時はアクセスされているドメインを見る
     const domain = document.domain.toLowerCase();
     if (
+      domain.endsWith(".tajimalab.prsvr.net") ||
       domain.endsWith(".junki-t.net") ||
       domain.endsWith(".vercel.app") ||
       domain.endsWith(".now.sh")
     ) {
       // 開発用サーバー (develop)
-      return "https://gis-dev.junki-t.net/v1";
+      return "https://dev1.tajimalab.prsvr.net/api";
     } else if (domain.endsWith("localhost")) {
       // 開発用ローカル
       return "https://localhost";
