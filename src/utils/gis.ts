@@ -15,27 +15,27 @@ export const getUserDepartment = (userId: string): UserDepartment | undefined =>
 // 一覧表を閲覧する権限を所持しているかを確認する。
 // (どの項目にアクセスできるかは関係なく、ページ自体のアクセス制御用)
 export const hasListPermission = (user: User): boolean => {
-  return ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K'].indexOf(user.userDepartment as string) !== -1;
+  return ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'D'].indexOf(user.userDepartment as string) !== -1;
 };
 
 export type LayerType = 'boar' | 'trap' | 'vaccine' | 'youton' | 'butanetsu' | 'report';
 
 const READ_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
-  boar: ['T', 'U', 'H', 'J', 'R', 'S', 'K'],
-  trap: ['T', 'U', 'H', 'R', 'S', 'K'],
-  vaccine: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y'],
-  youton: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y'],
-  butanetsu: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y'],
-  report: ['T', 'R', 'K'],
+  boar: ['T', 'U', 'H', 'J', 'R', 'S', 'K', 'D'],
+  trap: ['T', 'U', 'H', 'R', 'S', 'K', 'D'],
+  vaccine: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y', 'D'],
+  youton: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y', 'D'],
+  butanetsu: ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'Y', 'D'],
+  report: ['T', 'R', 'K', 'D'],
 };
 
 const WRITE_PERMISSION: { [type in LayerType]: Array<UserDepartment> } = {
-  boar: ['T', 'U', 'H', 'J', 'S', 'K'],
-  trap: ['T', 'U', 'H', 'S', 'K'],
-  vaccine: ['W', 'K'],
-  youton: ['K'],
-  butanetsu: ['K'],
-  report: ['T', 'K'],
+  boar: ['T', 'U', 'H', 'J', 'S', 'K', 'D'],
+  trap: ['T', 'U', 'H', 'S', 'K', 'D'],
+  vaccine: ['W', 'K', 'D'],
+  youton: ['K', 'D'],
+  butanetsu: ['K', 'D'],
+  report: ['T', 'K', 'D'],
 };
 
 export const hasReadPermission = (type: LayerType, user: User) => {

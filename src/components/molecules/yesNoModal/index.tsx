@@ -12,7 +12,7 @@ type Props = {
 };
 
 const YesNoModal: React.FunctionComponent<Props> = (props) => {
-  const [_, setShow] = useState(true);
+  const [, setShow] = useState(true);
   const onYesClicked = () => {
     const { resolve, cleanup } = props;
     setShow(false);

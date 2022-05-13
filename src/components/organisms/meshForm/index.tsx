@@ -3,13 +3,15 @@ import { SERVER_URI } from "../../../utils/constants";
 import { getAccessToken } from "../../../utils/currentUser";
 import RoundButton from "../../atomos/roundButton";
 import SelectInput from "../../atomos/selectInput";
-import InfoInput from "../../molecules/infoInput";
+import Image from 'next/image';
 
 const MeshForm: React.FunctionComponent = () => {
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState("インポート");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [exts, setExts] = useState<string[]>([]);
+  const [name, setName] = useState("");
 
   const onClickImport = async () => {
     const fileForm = (document.getElementById("importMesh") as HTMLInputElement);
@@ -40,6 +42,10 @@ const MeshForm: React.FunctionComponent = () => {
     const resp = await res.json();
     if(res.status !== 200) {
       setError(resp.error);
+      if(resp.exts != undefined) {
+        setExts(resp.exts);
+        setName(resp.name);
+      }
       setUploading(false);
       setButtonLabel("アップロード");
       return;
@@ -48,6 +54,13 @@ const MeshForm: React.FunctionComponent = () => {
     setMessage(resp.message);
     setUploading(false);
     setButtonLabel("アップロード");
+  };
+
+  const requiredFiles: { [key: string]: string } = {
+    ".SHP": "図形の情報を格納する主ファイルです。",
+    ".SHX": "図形のインデックス情報を格納するファイルです。",
+    ".DBF": "図形の属性情報を格納するファイルです。",
+    ".PRJ": "図形の座標系の定義情報を格納するファイルです。",
   };
 
   return (
@@ -78,7 +91,7 @@ const MeshForm: React.FunctionComponent = () => {
             />
           </div>
           <div className="col-[2/3] row-[5] text-sm">
-            .SHX, .SHP, .DBFの3つのファイルのみを圧縮したzipファイルを選択して下さい。
+            .SHP, .SHX, .DBF, .PRJの拡張子を持つファイルを含んだzipファイルを選択して下さい。
           </div>
           <div className="col-[1/3] row-[6]">
             <div className="mx-auto my-5 max-w-[400px]">
@@ -92,18 +105,87 @@ const MeshForm: React.FunctionComponent = () => {
             </div>
           </div>
           <div className="col-[1/3] mt-3 row-[7] text-center">
-            <span
-              className={
-                "font-bold" +
-                  (error != ""
-                    ? " text-danger"
-                    : "")
-              }
-            >
-              {error != ""
-                ? error
-                : message}
-            </span>
+            {error === "file_missing" ? (
+              <div>
+                <span
+                  className="font-bold text-danger"
+                >
+                  必要なファイルが不足しています。<br />
+                  下の表を確認し、再度アップロードしてください。
+                </span>
+                <div className="flex justify-center my-2">
+                  <table className="border-collapse whitespace-pre">
+                    <tbody className="table">
+                      <tr>
+                        <th 
+                          className={"border-solid border p-1 border-border border-b-2"}
+                        >
+                          #
+                        </th>
+                        <th 
+                          className={"border-solid border p-1 border-border border-b-2"}
+                        >
+                          状態
+                        </th>
+                        <th 
+                          className={"border-solid border p-1 border-border border-b-2"}
+                        >
+                          ファイル名
+                        </th>
+                        <th 
+                          className={"border-solid border p-1 border-border border-b-2"}
+                        >
+                          説明
+                        </th>
+                      </tr>
+                      {exts.map((ext, i) => (
+                        <tr key={"Missing " + (i + 1)}>
+                          <td className="border-solid border p-1 border-border text-center">{i + 1}</td>
+                          <td className="border-solid border p-1 border-border text-center">
+                            <div className="flex items-center"> 
+                              <Image src="/static/images/ng_icon.png" width={16} height={16} alt="NG icon"/>
+                              <span className="ml-1">
+                                NG
+                              </span>
+                            </div>
+                          </td>
+                          <td className="border-solid border p-1 border-border text-left">{name}{ext}</td>
+                          <td className="border-solid border p-1 border-border text-left">{requiredFiles[ext]}</td>
+                        </tr>
+                      ))}
+                      {Object.keys(requiredFiles).filter(e=>!exts.includes(e)).map((ext, i) => (
+                        <tr key={"Found" + (i + 1)}>
+                          <td className="border-solid border p-1 border-border text-center">{(i + exts.length) + 1}</td>
+                          <td className="border-solid border p-1 border-border text-center">
+                            <div className="flex items-center">
+                              <Image src="/static/images/ok_icon.png" width={16} height={16} alt="OK icon"/>
+                              <span className="ml-1">
+                                OK
+                              </span>
+                            </div>
+                          </td>
+                          <td className="border-solid border p-1 border-border text-left">{name}{ext}</td>
+                          <td className="border-solid border p-1 border-border text-left">{requiredFiles[ext]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <span
+                className={
+                  "font-bold" +
+                    (error != ""
+                      ? " text-danger"
+                      : "")
+                }
+              >
+                {error != ""
+                  ? error
+                  : message}
+              </span>  
+            )}
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ const EditLocationTemplate: React.FunctionComponent = () => {
   const [type, setType] = useState<string | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [mapDiv, setMapDiv] = useState<JSX.Element | null>(null);
-  const [currentLoc, setCurrentLoc] = useState<LatLngZoom | null>(null);
+  const [, setCurrentLoc] = useState<LatLngZoom | null>(null);
 
   useEffect(() => {
     if(router.query.type == null || router.query.detail == null || router.query.id == null || router.query.version == null) {

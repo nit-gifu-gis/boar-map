@@ -1,4 +1,3 @@
-import React from 'react';
 import { BoarInfoFeatureV2, FeatureBase } from '../../../types/features';
 import { BoarFormRef } from '../../organisms/boarInfov2Form/interface';
 import { Location } from '../../organisms/mapBase/interface';

@@ -17,7 +17,7 @@ import { BoarFormRef, BoarInfov2FormProps } from './interface';
 const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProps>(
   function InfoForm(props, ref) {
     const [boarFormList, setBoarFormList] = useState<BoarFormRef[] | null>(null);
-    const [hiddenBoarFormList, setHiddenBoarFormList] = useState<BoarFormRef[]>([]);
+    const [, setHiddenBoarFormList] = useState<BoarFormRef[]>([]);
     const [myTraderInfo, setMyTraderInfo] = useState<MyTraderInfo | undefined | null>(undefined);
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
     const { currentUser } = useCurrentUser();

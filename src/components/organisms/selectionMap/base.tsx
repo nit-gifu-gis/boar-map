@@ -1,6 +1,4 @@
 import Image from 'next/image';
-import router from 'next/router';
-import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
 import EventListener from 'react-event-listener';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
@@ -19,23 +17,24 @@ import {
 import { getColorCode, SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasReadPermission } from '../../../utils/gis';
-import { LatLngZoom, LatLngZoomCookie, Location } from '../mapBase/interface';
+import { LatLngZoom, Location } from '../mapBase/interface';
 import { SelectionMapProps } from './interface';
-import L from 'leaflet';
+import L, { LatLngExpression } from 'leaflet';
 import '../../../utils/extwms';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
+import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [loc, setLoc] = useState<Location | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
-  const [overlay, setOverlay] = useState<Record<string, L.MarkerClusterGroup>>({});
+  const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
   const { currentUser } = useCurrentUser();
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
-  const [featureIDs, setFeatureIDs] = useState<Record<string, string[]>>({});
+  const [featureIDs, ] = useState<Record<string, string[]>>({});
   const [myMap, setMyMap] = useState<L.Map | null>(null);
-  const [control, setControl] = useState<L.Control | null>(null);
+  const [, setControl] = useState<L.Control | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
   let myLocMarker: L.Marker | null = null;
 
@@ -64,68 +63,175 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  if (Object.keys(overlay).length === 0 && currentUser != null) {
-    // レイヤーの追加
-    if (hasReadPermission('boar', currentUser)) {
-      overlay['いのしし捕獲地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('boar'),
-        polygonOptions: {
-          color: getColorCode('boar'),
-        },
+  const setupMap = async () => {
+    if (loc == null) {
+      setLoc({
+        lat: 35.39135,
+        lng: 136.722418,
       });
     }
+  
+    const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
+    if (Object.keys(overlay).length === 0 && currentUser != null) {
+      // レイヤーの追加
+      if (hasReadPermission('boar', currentUser)) {
+        overlay['いのしし捕獲地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('boar'),
+          polygonOptions: {
+            color: getColorCode('boar'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('trap', currentUser)) {
+        overlay['わな設置地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('trap'),
+          polygonOptions: {
+            color: getColorCode('trap'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('vaccine', currentUser)) {
+        overlay['ワクチン散布地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('vaccine'),
+          polygonOptions: {
+            color: getColorCode('vaccine'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('youton', currentUser)) {
+        overlay['養豚場'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('youton'),
+          polygonOptions: {
+            color: getColorCode('youton'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('butanetsu', currentUser)) {
+        overlay['豚熱陽性確認地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('butanetsu'),
+          polygonOptions: {
+            color: getColorCode('butanetsu'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('report', currentUser)) {
+        overlay['作業日報'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('report'),
+          polygonOptions: {
+            color: getColorCode('report'),
+          },
+        });
+      }
+  
+      // ワクチンメッシュの読み込み
+      //   例外発生時に簡単に外に出られるように処理を関数で囲う
+      await (async () => {
+        const response = await fetch(SERVER_URI + "/Mesh/Get?type=vaccine", {
+          headers: {
+            "X-Access-Token": getAccessToken()
+          }
+        });
 
-    if (hasReadPermission('trap', currentUser)) {
-      overlay['わな設置地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('trap'),
-        polygonOptions: {
-          color: getColorCode('trap'),
-        },
-      });
-    }
+        if(!response.ok) {
+          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
+          return;
+        }
 
-    if (hasReadPermission('vaccine', currentUser)) {
-      overlay['ワクチン散布地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('vaccine'),
-        polygonOptions: {
-          color: getColorCode('vaccine'),
-        },
-      });
-    }
+        const data = await response.blob();
+        const buffer = await data.arrayBuffer();
 
-    if (hasReadPermission('youton', currentUser)) {
-      overlay['養豚場'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('youton'),
-        polygonOptions: {
-          color: getColorCode('youton'),
-        },
-      });
-    }
+        const shp_r = await shapefile(buffer);
 
-    if (hasReadPermission('butanetsu', currentUser)) {
-      overlay['豚熱陽性確認地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('butanetsu'),
-        polygonOptions: {
-          color: getColorCode('butanetsu'),
-        },
-      });
-    }
+        const polygons: L.Polygon[] = [];
 
-    if (hasReadPermission('report', currentUser)) {
-      overlay['作業日報'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('report'),
-        polygonOptions: {
-          color: getColorCode('report'),
-        },
-      });
+        let featurecollection: FeatureCollectionWithFilename[];
+        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
+          featurecollection = shp_r as FeatureCollectionWithFilename[];
+        } else {
+          featurecollection = [shp_r as FeatureCollectionWithFilename];
+        }
+        featurecollection.forEach(fc => {
+          fc.features.forEach(feature => {
+            if(feature.geometry.type !== "Polygon") {
+              return;
+            }
+            const coordinates: LatLngExpression[] = [];
+            feature.geometry.coordinates[0].forEach(l => {
+              coordinates.push([l[1], l[0]]);
+            });
+            polygons.push(L.polygon(coordinates, {
+              color: '#0288d1',
+              weight: 2,
+              fill: true,
+              fillColor: '#0288d1',
+              opacity: 0.6 
+            }));
+          });
+        });    
+        overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
+      })();
+  
+      // ハンターメッシュの読み込み
+      //   例外発生時に簡単に外に出られるように処理を関数で囲う
+      await (async () => {
+        const response = await fetch(SERVER_URI + "/Mesh/Get?type=hunter", {
+          headers: {
+            "X-Access-Token": getAccessToken()
+          }
+        });
+
+        if(!response.ok) {
+          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
+          return;
+        }
+
+        const data = await response.blob();
+        const buffer = await data.arrayBuffer();
+
+        const shp_r = await shapefile(buffer);
+
+        const polygons: L.Polygon[] = [];
+
+        let featurecollection: FeatureCollectionWithFilename[];
+        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
+          featurecollection = shp_r as FeatureCollectionWithFilename[];
+        } else {
+          featurecollection = [shp_r as FeatureCollectionWithFilename];
+        }
+        featurecollection.forEach(fc => {
+          fc.features.forEach(feature => {
+            if(feature.geometry.type !== "Polygon") {
+              return;
+            }
+            const coordinates: LatLngExpression[] = [];
+            feature.geometry.coordinates[0].forEach(l => {
+              coordinates.push([l[1], l[0]]);
+            });
+            polygons.push(L.polygon(coordinates, {
+              color: '#cc56db',
+              weight: 2,
+              fill: true,
+              fillColor: '#cc56db',
+              opacity: 0.6 
+            }));
+          });
+        });    
+        overlay['ハンターメッシュ'] = L.layerGroup(polygons);
+      })();
     }
-  }
+    setOverlayList(overlay);
+  };
 
   const boarIcon = L.icon({
     iconUrl: '/static/images/icons/boar.svg',
@@ -261,7 +367,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
           // 描画するマーカーの生成
           const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
-          overlay[key].addLayers(newMarkers);
+          (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
         }
       });
     }
@@ -343,12 +449,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     let icon = undefined;
     let dataLabel = '';
     let dataValue = '';
-    let ver = '';
+    // let ver = '';
     switch (t) {
       case 'いのしし捕獲地点':
         icon = boarIcon;
         dataValue = (f as BoarFeatureV1 | BoarCommonFeatureV2).properties.捕獲年月日;
-        ver = `v${(f as BoarFeatureV1 | BoarCommonFeatureV2).version}`;
+        // ver = `v${(f as BoarFeatureV1 | BoarCommonFeatureV2).version}`;
         dataLabel = '捕獲年月日';
         break;
       case 'わな設置地点':
@@ -457,13 +563,6 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
   };
 
-  if (loc == null) {
-    setLoc({
-      lat: 35.39135,
-      lng: 136.722418,
-    });
-  }
-
   useEffect(() => {
     if (selfNode == null) return;
 
@@ -472,12 +571,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
 
     if (myMap == null) {
+      setupMap();
       setMyMap(L.map(selfNode, { keyboard: false }));
     }
   }, [selfNode]);
 
   useEffect(() => {
-    if (myMap == null || defaultLoc == null) return;
+    if (myMap == null || defaultLoc == null || Object.keys(overlayList).length == 0) return;
 
     myMap.setView([defaultLoc.lat, defaultLoc.lng], defaultLoc.zoom);
     onCenterChanged();
@@ -544,9 +644,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.values(overlay).forEach((o) => o.addTo(myMap));
+    Object.values(overlayList).forEach((o) => o.addTo(myMap));
     // コントロール追加
-    const contrl = L.control.layers(undefined, overlay, {
+    const contrl = L.control.layers(undefined, overlayList, {
       collapsed: false,
     });
     setControl(contrl);
@@ -588,7 +688,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       myMap?.remove();
       setMyMap(null);
     };
-  }, [myMap, defaultLoc]);
+  }, [myMap, defaultLoc, overlayList]);
 
   const onResized = () => {
     setTimeout(() => {

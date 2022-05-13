@@ -6,12 +6,10 @@ import Header from "../../organisms/header";
 import SearchForm from "../../organisms/searchForm";
 import { FeatureBase } from '../../../types/features';
 import SearchResult from "../../organisms/searchResult";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import RoundButton from "../../atomos/roundButton";
 import { useRouter } from "next/router";
 
 const ListTemplate: React.FunctionComponent = () => {
-  const { currentUser } = useCurrentUser();
   const router = useRouter();
   const [searchInfo, setSearchInfo] = useState<FormData | null>(null);
   const [searchResult, setSearchResult] = useState<FeatureBase[] | null>(null);

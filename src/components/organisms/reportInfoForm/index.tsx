@@ -1,10 +1,9 @@
-import { notEqual } from 'assert';
 import React, { useEffect, useImperativeHandle, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { FeatureBase, ReportFeature, ReportProps } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
-import { checkDateError, compareDate } from '../../../utils/validateData';
+import { checkDateError } from '../../../utils/validateData';
 import WorkTimeInput from '../../atomos/workTimeInput';
 import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';

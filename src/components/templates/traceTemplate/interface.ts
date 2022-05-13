@@ -18,6 +18,7 @@ export interface QueryResult {
   weight: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isError = (arg: any): arg is QueryError => {
   return (
     arg !== null &&

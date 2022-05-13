@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { FeatureBase } from "../../../types/features";
+import { useState } from "react";
 import { SERVER_URI } from "../../../utils/constants";
 import { getAccessToken } from "../../../utils/currentUser";
 import { alert } from "../../../utils/modal";

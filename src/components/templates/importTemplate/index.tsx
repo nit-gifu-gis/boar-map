@@ -6,11 +6,6 @@ import PCRForm from "../../organisms/pcrForm";
 import Header from "../../organisms/header";
 import MeshForm from "../../organisms/meshForm";
 
-interface Content {
-  key: string;
-  content: JSX.Element
-}
-
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
