@@ -18,7 +18,7 @@ const getServerURI = (): string => {
       return "https://localhost";
     }
   }
-  return "https://boar-map.gifugis.jp/v1"; // デフォルト
+  return "https://boar-map.gifugis.jp/api"; // デフォルト
 };
 
 export const SERVER_URI = getServerURI();

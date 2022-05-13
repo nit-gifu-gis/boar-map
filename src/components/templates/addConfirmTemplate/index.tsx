@@ -20,7 +20,7 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
     string,
     ImagewithLocation | ImagewithLocation[] | null
   > | null>(null);
-  const [location, setLocation] = useState<LatLngZoom | null>(null);
+  const [, setLocation] = useState<LatLngZoom | null>(null);
   const [feature, setFeature] = useState<FeatureBase | null>(null);
   const [imageArray, setImageArray] = useState<ImagewithLocation[] | null>(null);
   const [isLoading, setLoading] = useState(false);

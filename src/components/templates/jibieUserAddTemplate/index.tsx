@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { json } from "stream/consumers";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { SERVER_URI } from "../../../utils/constants";
 import { getAccessToken } from "../../../utils/currentUser";
@@ -31,7 +30,7 @@ const JibieUserAddTemplate: React.FunctionComponent = () => {
   const [traders, setTraders] = useState<Response>({ area: [], trader: {} });
   const [area, setArea] = useState("");
   const [currentList, setCurrentList] = useState<ResponseObj[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [, setSelectedIndex] = useState(0);
 
   const fetchData = async () => {
     const res = await fetch(SERVER_URI + "/Jibie/List", {

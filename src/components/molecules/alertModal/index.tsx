@@ -12,7 +12,7 @@ type Props = {
 };
 
 const AlertModal: React.FunctionComponent<Props> = (props) => {
-  const [_, setShow] = useState(true);
+  const [, setShow] = useState(true);
   const onOkClicked = () => {
     const { resolve, cleanup } = props;
     setShow(false);

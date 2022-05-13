@@ -31,7 +31,7 @@ const EditImageTemplate: React.FunctionComponent = () => {
 
   const [teethImage, setTeethImage] = useState<ImagewithLocation | null>(prev_teeth);
   const [otherImages, setOtherImages] = useState<ImagewithLocation[] | null>(prev_other);
-  const [serverImages, setServerImages] = useState<Record<string, boolean | string[]> | null>(prev_srv);
+  const [serverImages, ] = useState<Record<string, boolean | string[]> | null>(prev_srv);
 
   const [isDeleteTeethImage, setIsDeleteTeethImage] = useState(prev_srv != null ? prev_srv.isDeleteTeethImage : false);
   const [newImageIds, setNewImageIds] = useState<string[]>([]);

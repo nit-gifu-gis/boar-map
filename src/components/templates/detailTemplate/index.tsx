@@ -70,6 +70,7 @@ const DetailTemplate: React.FunctionComponent = () => {
     setEditable(false);
     if (await confirm('この情報を削除します。\n本当によろしいですか？')) {
       // 画像の削除用関数の準備
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
       let imageIds: string[] = [];
       if (featureType !== 'butanetsu' && featureType !== 'youton') {
