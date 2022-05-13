@@ -24,6 +24,7 @@ import '../../../utils/extwms';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
 import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
+import { parseCookies } from 'nookies';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [loc, setLoc] = useState<Location | null>(null);
@@ -36,6 +37,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [myMap, setMyMap] = useState<L.Map | null>(null);
   const [, setControl] = useState<L.Control | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
+  const [, setButanetsuLayerID] = useState(-1);
   let myLocMarker: L.Marker | null = null;
 
   // ヘッダー(60px), フッター(70px)を引いて、Div部分のヘッダーサイズを計算する。
@@ -115,13 +117,18 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       }
   
       if (hasReadPermission('butanetsu', currentUser)) {
-        overlay['豚熱陽性確認地点'] = L.markerClusterGroup({
+        const mcg = L.markerClusterGroup({
           ...clusterGroupOption,
           iconCreateFunction: clusterIconCreate('butanetsu'),
           polygonOptions: {
             color: getColorCode('butanetsu'),
           },
         });
+
+        const lg =  L.layerGroup([mcg]);
+        setButanetsuLayerID(lg.getLayerId(mcg));
+
+        overlay['豚熱陽性確認地点'] = lg;
       }
   
       if (hasReadPermission('report', currentUser)) {
@@ -367,13 +374,55 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
           // 描画するマーカーの生成
           const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
-          (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
+          if(key === "豚熱陽性確認地点") {
+            setButanetsuLayerID(id => {
+              const l = overlayList[key] as L.LayerGroup;
+              const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
+              lg.addLayers(newMarkers);
+              makeCircleMarkers(newFeatures as ButanetsuFeature[]).forEach(m => {
+                l.addLayer(m);
+              });
+              return id;
+            });
+          }
         }
       });
     }
 
     // くるくるを消す
     setLoading(false);
+  };
+
+  const makeCircleMarkers = (features: ButanetsuFeature[]): L.Circle[] => {
+    const cookies = parseCookies();
+    const settings = cookies['butanetsu'] != null ? JSON.parse(cookies['butanetsu']) : {
+      area: 10,
+      month: 5,
+    };
+
+    const show_date = new Date();
+    show_date.setHours(0);
+    show_date.setMinutes(0);
+    show_date.setSeconds(0);
+    show_date.setMonth(show_date.getMonth() - settings.month);
+
+    const l: L.Circle[] = [];
+    features.forEach(feature => {
+      const date = new Date(feature.properties.捕獲年月日);
+      if(show_date <= date) {
+        const loc = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] as LatLngExpression;
+        const markers = L.circle(loc, {
+          radius: settings.area * 1000,
+          color: "#e33b3b",
+          weight: 2,
+          fill: true,
+          fillColor: "#e33b3b",
+          opacity: 0.5
+        });
+        l.push(markers);
+      }
+    });
+    return l;
   };
 
   const onCenterChanged = () => {
