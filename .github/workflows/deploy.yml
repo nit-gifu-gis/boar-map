@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: Extract branch name
+        shell: bash
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+        id: extract_branch
+        
+      - name: Notify update to production server
+        if: ${{ steps.extract_branch.outputs.branch == 'main' }}
+        shell: bash
+        run: |
+          curl -X POST -d '{ "secret": "${{ secrets.SECRET_PRODUCTION }}" }' https://boar-map.gifugis.jp/cd-scripts/update.php
+          
+      - name: Notify update to development server
+        if: ${{ steps.extract_branch.outputs.branch == 'develop' }}
+        shell: bash
+        run: |
+          curl -X POST -d '{ "secret": "${{ secrets.SECRET_DEVELOPMENT }}" }' https://dev1.tajimalab.prsvr.net/cd-scripts/update.php
