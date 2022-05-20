@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { currentUserState } from '../../../states/currentUser';
 import { fetchCurrentUser } from '../../../utils/currentUser';
@@ -7,12 +7,26 @@ import { SERVER_URI } from '../../../utils/constants';
 import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
+import { confirm } from '../../../utils/modal';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const asyncTask = async () => {
+      // 開発用サーバーだった場合には通知を表示する
+      if (document.domain.toLowerCase().endsWith(".prsvr.net") ||
+          document.domain.toLocaleLowerCase().endsWith(".gifu-nct.ac.jp")) {
+        if(await confirm("このサイトは開発版です。\n安定動作版のサイトへ移動しますか？")) {
+          location.href = "https://boar-map.gifugis.jp/login";
+        }
+      }
+    }
+    asyncTask();
+  }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

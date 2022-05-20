@@ -28,7 +28,6 @@ import { useRouter } from 'next/router';
 import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 
 // TODO: 右下の凡例とか検索ボタン
-// 豚熱陽性確認地点の表示方法変更
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
