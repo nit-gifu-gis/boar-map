@@ -240,43 +240,30 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     setOverlayList(overlay);
   };
 
-  const boarIcon = L.icon({
-    iconUrl: '/static/images/icons/boar.svg',
-    iconRetinaUrl: '/static/images/icons/boar.svg',
-    // 縦横比＝285:193 ＝ 1:0.67719 〜 37:25
-    iconSize: [37, 25],
-    iconAnchor: [16, 13],
-  });
-  const trapIcon = L.icon({
-    iconUrl: '/static/images/icons/trap.svg',
-    iconRetinaUrl: '/static/images/icons/trap.svg',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const vaccineIcon = L.icon({
-    iconUrl: '/static/images/icons/vaccine.svg',
-    iconRetinaUrl: '/static/images/icons/vaccine.svg',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const youtonIcon = L.icon({
-    iconUrl: '/static/images/icons/youton.png',
-    iconRetinaUrl: '/static/images/icons/youton.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const butanetsuIcon = L.icon({
-    iconUrl: '/static/images/icons/butanetsu.png',
-    iconRetinaUrl: '/static/images/icons/butanetsu.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const reportIcon = L.icon({
-    iconUrl: '/static/images/icons/report.png',
-    iconRetinaUrl: '/static/images/icons/report.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
+  const formatDate = (date: string) => {
+    const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
+    const result = regex.exec(date);
+    if(result == null)
+      return "日付登録なし";
+    else 
+      return result[1];
+  }
+
+  const markerIcon = (iconUrl: string, label: string) => {
+    return L.divIcon({
+      iconSize: [0, 0],
+      html: '<div class="markerDiv">' +
+              `<img src="${iconUrl}" class="markerDiv__img" style="${!iconUrl.toLowerCase().endsWith(".svg") ? "width: 25px;" : ""}" />` +
+              `<div class="markerDiv__title">${label}</div>` +
+            '</div>'
+    })
+  }
+  const boarIconLink = '/static/images/icons/boar.svg';
+  const trapIconLink = '/static/images/icons/trap.svg'
+  const vaccineIconLink = '/static/images/icons/vaccine.svg'
+  const youtonIconLink = '/static/images/icons/youton.png'
+  const butanetsuIconLink = '/static/images/icons/butanetsu.png';
+  const reportIconLink = "/static/images/icons/report.png";
 
   const myLocIcon = L.icon({
     iconUrl: '/static/images/map/location_marker.svg',
@@ -498,38 +485,42 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     let icon = undefined;
     let dataLabel = '';
     let dataValue = '';
-    // let ver = '';
     switch (t) {
       case 'いのしし捕獲地点':
-        icon = boarIcon;
-        dataValue = (f as BoarFeatureV1 | BoarCommonFeatureV2).properties.捕獲年月日;
-        // ver = `v${(f as BoarFeatureV1 | BoarCommonFeatureV2).version}`;
+        const f1 = f as BoarFeatureV1 | BoarCommonFeatureV2;
+        icon = markerIcon(boarIconLink, formatDate(f1.properties.捕獲年月日));
+        dataValue = f1.properties.捕獲年月日;
         dataLabel = '捕獲年月日';
         break;
       case 'わな設置地点':
-        icon = trapIcon;
+        const f2 = f as TrapFeature;
+        icon = markerIcon(trapIconLink, formatDate(f2.properties.設置年月日));
         dataLabel = '設置年月日';
-        dataValue = (f as TrapFeature).properties.設置年月日;
+        dataValue = f2.properties.設置年月日;
         break;
       case 'ワクチン散布地点':
-        icon = vaccineIcon;
+        const f3 = f as VaccineFeature;
+        icon = markerIcon(vaccineIconLink, f3.properties.メッシュNO);
         dataLabel = '散布年月日';
-        dataValue = (f as VaccineFeature).properties.散布年月日;
+        dataValue = f3.properties.散布年月日;
         break;
       case '作業日報':
-        icon = reportIcon;
+        const f4 = f as ReportFeature;
+        icon = markerIcon(reportIconLink, formatDate(f4.properties.作業開始時));
         dataLabel = '作業年月日';
-        dataValue = (f as ReportFeature).properties.作業開始時;
+        dataValue = f4.properties.作業開始時;
         break;
       case '豚熱陽性確認地点':
-        icon = butanetsuIcon;
+        const f5 = f as ButanetsuFeature;
+        icon = markerIcon(butanetsuIconLink, formatDate(f5.properties.捕獲年月日));
         dataLabel = '捕獲年月日';
-        dataValue = (f as ButanetsuFeature).properties.捕獲年月日;
+        dataValue = f5.properties.捕獲年月日;
         break;
       case '養豚場':
-        icon = youtonIcon;
+        const f6 = f as YoutonFeature;
+        icon = markerIcon(youtonIconLink, f6.properties.施設名);
         dataLabel = '更新年月日';
-        dataValue = (f as YoutonFeature).properties.更新日;
+        dataValue = f6.properties.更新日;
         break;
     }
 

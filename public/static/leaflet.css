@@ -679,6 +679,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .leaflet-div-icon {
 	background: #fff;
 	border: 1px solid #666;
+	display: flex;
+	justify-content: center;
 }
 
 
@@ -933,4 +935,22 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
 	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
 	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+
+.markerDiv {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	width: max-content;
+	align-items: center;
+}
+
+.markerDiv__img {
+	height: 25px;
+}
+
+.markerDiv__title {
+	width: max-content;
+	font-weight: bold;
+	font-size: 13px;
 }
