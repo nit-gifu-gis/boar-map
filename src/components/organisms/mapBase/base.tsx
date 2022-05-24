@@ -247,7 +247,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       return "日付登録なし";
     else 
       return result[1];
-  }
+  };
 
   const markerIcon = (iconUrl: string, label: string) => {
     return L.divIcon({
@@ -256,12 +256,12 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
               `<img src="${iconUrl}" class="markerDiv__img" style="${!iconUrl.toLowerCase().endsWith(".svg") ? "width: 25px;" : ""}" />` +
               `<div class="markerDiv__title">${label}</div>` +
             '</div>'
-    })
-  }
+    });
+  };
   const boarIconLink = '/static/images/icons/boar.svg';
-  const trapIconLink = '/static/images/icons/trap.svg'
-  const vaccineIconLink = '/static/images/icons/vaccine.svg'
-  const youtonIconLink = '/static/images/icons/youton.png'
+  const trapIconLink = '/static/images/icons/trap.svg';
+  const vaccineIconLink = '/static/images/icons/vaccine.svg';
+  const youtonIconLink = '/static/images/icons/youton.png';
   const butanetsuIconLink = '/static/images/icons/butanetsu.png';
   const reportIconLink = "/static/images/icons/report.png";
 
@@ -491,45 +491,51 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     let dataValue = '';
     let ver = '';
     switch (t) {
-      case 'いのしし捕獲地点':
+      case 'いのしし捕獲地点': {
         const f1 = f as BoarFeatureV1 | BoarCommonFeatureV2;
         icon = markerIcon(boarIconLink, formatDate(f1.properties.捕獲年月日));
         dataValue = f1.properties.捕獲年月日;
         ver = `v${f1.version}`;
         dataLabel = '捕獲年月日';
         break;
-      case 'わな設置地点':
+      }
+      case 'わな設置地点': {
         const f2 = f as TrapFeature;
         icon = markerIcon(trapIconLink, formatDate(f2.properties.設置年月日));
         dataLabel = '設置年月日';
         dataValue = f2.properties.設置年月日;
         break;
-      case 'ワクチン散布地点':
+      }
+      case 'ワクチン散布地点': {
         const f3 = f as VaccineFeature;
         icon = markerIcon(vaccineIconLink, f3.properties.メッシュNO);
         dataLabel = '散布年月日';
         dataValue = f3.properties.散布年月日;
         break;
-      case '作業日報':
+      }
+      case '作業日報': {
         const f4 = f as ReportFeature;
         icon = markerIcon(reportIconLink, formatDate(f4.properties.作業開始時));
         dataLabel = '作業年月日';
         dataValue = f4.properties.作業開始時;
         break;
-      case '豚熱陽性確認地点':
+      }
+      case '豚熱陽性確認地点': {
         const f5 = f as ButanetsuFeature;
         icon = markerIcon(butanetsuIconLink, formatDate(f5.properties.捕獲年月日));
         dataLabel = '捕獲年月日';
         dataValue = f5.properties.捕獲年月日;
         break;
-      case '養豚場':
+      }
+      case '養豚場': {
         const f6 = f as YoutonFeature;
         icon = markerIcon(youtonIconLink, f6.properties.施設名);
         dataLabel = '更新年月日';
         dataValue = f6.properties.更新日;
         break;
+      }
     }
-
+    
     const coordinates = f.geometry.coordinates as number[];
     const lat = coordinates[1];
     const lng = coordinates[0];

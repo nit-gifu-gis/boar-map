@@ -24,7 +24,7 @@ const LoginForm: React.FunctionComponent = () => {
           location.href = "https://boar-map.gifugis.jp/login";
         }
       }
-    }
+    };
     asyncTask();
   }, []);
 
