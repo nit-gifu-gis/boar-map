@@ -629,7 +629,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   useEffect(() => {
-    if (selfNode == null) return;
+    if (selfNode == null || currentUser == null) return;
 
     if (defaultLoc == null) {
       const cookies = parseCookies(null);
@@ -652,7 +652,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       setupMap();
       setMyMap(map);
     }
-  }, [selfNode]);
+  }, [currentUser, selfNode, defaultLoc, myMap]);
 
   useEffect(() => {
     if (myMap == null || defaultLoc == null || Object.keys(overlayList).length == 0) return;

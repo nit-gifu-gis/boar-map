@@ -610,7 +610,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
 
   useEffect(() => {
-    if (selfNode == null) return;
+    if (selfNode == null || currentUser == null) return;
 
     if (defaultLoc == null) {
       setDefaultLoc(props.location);
@@ -620,7 +620,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       setupMap();
       setMyMap(L.map(selfNode, { keyboard: false }));
     }
-  }, [selfNode]);
+  }, [selfNode, currentUser, defaultLoc, myMap]);
 
   useEffect(() => {
     if (myMap == null || defaultLoc == null || Object.keys(overlayList).length == 0) return;
