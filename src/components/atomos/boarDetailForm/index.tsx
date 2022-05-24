@@ -220,7 +220,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       const form = getForm();
       const dateStr = form['pcr_date'].value;
       const error = checkDateError(dateStr);
-      console.log(error);
+      console.error(error);
       if (error != null && error != '日付が入力されていません。') {
         updateError('pcr_date', error);
         return false;

@@ -25,7 +25,7 @@ const SettingsTemplate: React.FunctionComponent = () => {
     if(currentUser?.userDepartment == "J" || currentUser?.userDepartment == "K" || currentUser?.userDepartment == "D")
       c.push(<PCRForm key={"PCR Settings"} />);
 
-    if(currentUser?.userDepartment == "K") 
+    if(currentUser?.userDepartment == "K" || currentUser?.userDepartment == "D") 
       c.push(<MeshForm key={"Mesh Settings"} />);
 
     setContents(c);

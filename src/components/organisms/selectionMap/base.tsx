@@ -6,6 +6,7 @@ import {
   BoarCommonFeatureV2,
   BoarFeatureV1,
   ButanetsuFeature,
+  CityInfo,
   FeatureBase,
   FeatureExtentResponse,
   layerType,
@@ -14,7 +15,7 @@ import {
   VaccineFeature,
   YoutonFeature,
 } from '../../../types/features';
-import { getColorCode, SERVER_URI } from '../../../utils/constants';
+import { getColorCode, layerLabels, SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasReadPermission } from '../../../utils/gis';
 import { LatLngZoom, Location } from '../mapBase/interface';
@@ -25,6 +26,8 @@ import 'leaflet-easybutton';
 import 'leaflet.markercluster';
 import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 import { parseCookies } from 'nookies';
+import RoundButton from '../../atomos/roundButton';
+import { cityList } from '../../../utils/modal';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [loc, setLoc] = useState<Location | null>(null);
@@ -38,6 +41,10 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [, setControl] = useState<L.Control | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
   const [, setButanetsuLayerID] = useState(-1);
+  const [locSearchVisible, setLocSearchVisible] = useState(false);
+  const [labelVisible, setLabelVisible] = useState(false);
+  const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
+
   let myLocMarker: L.Marker | null = null;
 
   // ヘッダー(60px), フッター(70px)を引いて、Div部分のヘッダーサイズを計算する。
@@ -45,6 +52,43 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     return window.innerHeight - 60 - 70;
   };
   const [divHeight, setDivHeight] = useState(`${calcDivHeight()}px`);
+
+  // 上から重ねる用、左右2pxずつのマージンを足した幅を計算する
+  const calcOverlayWidth = () => {
+    const d = document.getElementById('map');
+    if(d == null)
+      return window.innerWidth - 15 * 2;
+    return d.clientWidth + 2 * 2;
+  };
+  const [overlayWidth, setOverlayWidth] = useState(`${calcOverlayWidth()}px`);
+  const calcOverlayHeight = () => {
+    const d = document.getElementById('map');
+    if(d == null)
+      return 0;
+    return d.clientHeight + 2 * 2;
+  };
+  const [overlayHeight, setOverlayHeight] = useState(`${calcOverlayHeight()}px`);
+
+  useEffect(() => {
+    // 初回ロード時は遅延して高さを取得する
+    const asyncTask = async () => {
+      if(overlayHeight === "0px") {
+        const h = await new Promise<string>((resolve) => {
+          const fetchFunc = () => {
+            const c = `${calcOverlayHeight()}px`;
+            if(c == "0px") {
+              setTimeout(fetchFunc, 10);
+            } else {
+              resolve(c);
+            }
+          };
+          fetchFunc();
+        });
+        setOverlayHeight(h);
+      }
+    };
+    asyncTask();
+  }, [overlayHeight]);
 
   // クラスタ設定
   const clusterIconCreate = (
@@ -290,6 +334,14 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       },
     ],
   });
+
+  const labelButton = L.easyButton('<div class="leaflet-button">凡例</div>', () => {
+    setLabelVisible(l=>!l);
+  }).setPosition('bottomright');
+
+  const locSearchButton = L.easyButton('<div class="leaflet-button">地点検索</div>', () => {
+    setLocSearchVisible(l=>!l);
+  }).setPosition('bottomright');
 
   const updateMarkers = async () => {
     if (myMap == null) return;
@@ -597,7 +649,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const options = {
       enableHighAccuracy: false, // 高精度の位置情報は利用しない
       timeout: Infinity, // 取得できるまで待つ
-      maximumAge: 0, // キャッシュは使わな設置地点い
+      maximumAge: 0, // キャッシュは使わない
     };
 
     setWatchPosId(navigator.geolocation.watchPosition(success, error, options));
@@ -702,6 +754,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     reloadButton.remove();
     reloadButton.addTo(myMap);
 
+    locSearchButton.remove();
+    locSearchButton.addTo(myMap);
+
+    labelButton.remove();
+    labelButton.addTo(myMap);
+
     // 十字
     const centerCrossIcon = L.icon({
       iconUrl: '/static/images/map/centerCross.svg',
@@ -739,8 +797,70 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const onResized = () => {
     setTimeout(() => {
       setDivHeight(`${calcDivHeight()}px`);
+      
+      setOverlayHeight(`${calcOverlayHeight()}px`);
+      setOverlayWidth(`${calcOverlayWidth()}px`);
+
       if (myMap != null) myMap.invalidateSize();
     }, 200);
+  };
+
+  const onPointSearchClicked = async () => {
+    const type_input = document.getElementById("point_search_type") as HTMLSelectElement | null;
+    const text_input = document.getElementById("point_search_text") as HTMLInputElement | null;
+    if(type_input == null || text_input == null) {
+      alert("内部エラーが発生しました。");
+      return;
+    }
+
+    const type = type_input.options[type_input.selectedIndex].value;
+    const text = text_input.value;
+    if(type == "市町村名") {
+      setSearchButtonLabel("検索中...");
+      const res = await fetch(SERVER_URI + "/City/Search", {
+        method: 'POST',
+        headers: {
+          'X-Access-Token': getAccessToken()
+        },
+        body: JSON.stringify({
+          name: text
+        })
+      });
+      const json = await res.json();
+      setSearchButtonLabel("検索");
+      if(!res.ok) {
+        alert(json["error"]);
+        return;
+      }
+
+      const list = json as CityInfo[];
+      if(list.length === 0) {
+        // 0件の時はエラー
+        alert("該当の情報が見つかりませんでした。");
+      } else if(list.length === 1) {
+        // 1件の時はそのまま場所を変える
+        setMyMap(myMap => {
+          if(myMap != null)
+            myMap.setView([list[0].point.lat, list[0].point.lng], myMap.getZoom());
+          return myMap;
+        });
+        setLocSearchVisible(false);
+      } else {
+        // 2件以上の時は確認ダイアログを出す
+        const city = await cityList(list);
+        if(city == null)
+          return;
+        setMyMap(myMap => {
+          if(myMap != null)
+            myMap.setView([city.point.lat, city.point.lng], myMap.getZoom());
+          return myMap;
+        });
+        setLocSearchVisible(false);
+      }
+    } else {
+      alert("内部エラーが発生しました。");
+      return;
+    }
   };
 
   return (
@@ -762,6 +882,66 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           ref={(node) => setSelfNode(node)}
         >
           <EventListener target='window' onResize={onResized.bind(this)} />
+        </div>
+        <div 
+          className='z-10 box-border flex-grow overflow-hidden rounded-md border-2 border-solid border-border absolute h-[100px] pointer-events-none'
+          style={{
+            width: overlayWidth,
+            height: overlayHeight
+          }}>
+          <div className='w-[220px] mx-auto h-full flex flex-col-reverse'>
+            {locSearchVisible ? (
+              <div className='w-full h-[236px] box-border p-1 mb-3'>
+                <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
+                  <div className="flex justify-end items-center pb-1 mr-1">
+                    <div className="flex-1 text-center font-bold">
+                      地点検索（試験中）
+                    </div>
+                    <div className="text-center text-lg">
+                      <button type="button" onClick={() => setLocSearchVisible(false)}>×</button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold py-1">検索対象</span>
+                    <select id="point_search_type" className="w-full pb-1">
+                      <option>市町村名</option>
+                    </select>
+                    <span className="font-bold py-1">検索ワード</span>
+                    <input id="point_search_text" type="text" className="w-full" />
+                    <div className="w-full p-4">
+                      <RoundButton color="primary" disabled={searchButtonLabel !== "検索"} onClick={onPointSearchClicked}>
+                        {searchButtonLabel}
+                      </RoundButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : <></>}
+            {labelVisible ? (
+              <div className='w-full h-[226px] box-border p-1 mb-3'>
+                <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
+                  <div className="flex justify-end items-center pb-1 mr-1">
+                    <div className="flex-1 text-center font-bold">
+                      凡例
+                    </div>
+                    <div className="text-center text-lg">
+                      <button type="button" onClick={() => setLabelVisible(false)}>×</button>
+                    </div>
+                  </div>
+                  <div>
+                    {layerLabels.map(k => (
+                      <div className="py-[2px] flex items-center" key={k.name}>
+                        <img src={k.icon} width="24" alt={"Icon of " + k.name} />
+                        <div className="ml-1">
+                          {k.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : <></>}
+          </div>
         </div>
         <div
           className={

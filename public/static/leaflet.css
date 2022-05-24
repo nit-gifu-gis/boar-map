@@ -954,3 +954,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	font-weight: bold;
 	font-size: 13px;
 }
+
+.leaflet-button {
+	width: 65px;
+	padding: 3px 10px;
+	box-sizing: content-box;
+	background-color: whitesmoke;
+	font-weight: bold;
+	font-size: 16px;
+}
