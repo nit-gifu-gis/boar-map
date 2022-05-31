@@ -12,7 +12,7 @@ const getServerURI = (): string => {
       domain.endsWith(".now.sh")
     ) {
       // 開発用サーバー (develop)
-      return "https://dev1.tajimalab.prsvr.net/api";
+      return "https://boarmap-dev.gifu-nct.ac.jp/api";
     } else if (domain.endsWith("localhost")) {
       // 開発用ローカル
       return "https://localhost";

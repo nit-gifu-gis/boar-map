@@ -30,4 +30,4 @@ jobs:
         if: ${{ steps.extract_branch.outputs.branch == 'develop' }}
         shell: bash
         run: |
-          curl -X POST -d '{ "secret": "${{ secrets.SECRET_DEVELOPMENT }}" }' https://dev1.tajimalab.prsvr.net/cd-scripts/update.php
+          curl -X POST -d '{ "secret": "${{ secrets.SECRET_DEVELOPMENT }}" }' https://boarmap-dev.gifu-nct.ac.jp/cd-scripts/update.php
