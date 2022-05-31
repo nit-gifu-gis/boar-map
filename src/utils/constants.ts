@@ -12,7 +12,7 @@ const getServerURI = (): string => {
       domain.endsWith(".now.sh")
     ) {
       // 開発用サーバー (develop)
-      return "https://dev1.tajimalab.prsvr.net/api";
+      return "https://boarmap-dev.gifu-nct.ac.jp/api";
     } else if (domain.endsWith("localhost")) {
       // 開発用ローカル
       return "https://localhost";
@@ -51,3 +51,30 @@ export const getColorCode = (colorText: string) => {
   }
   return colorCode;
 };
+
+export const layerLabels: { name: string, icon: string }[] = [
+  {
+    name: "いのしし捕獲地点",
+    icon: '/static/images/icons/boar.svg'
+  },
+  {
+    name: "わな設置地点",
+    icon: '/static/images/icons/trap.svg'
+  },
+  {
+    name: "ワクチン散布地点",
+    icon: '/static/images/icons/vaccine.svg'
+  },
+  {
+    name: "養豚場",
+    icon: '/static/images/icons/youton.png'
+  },
+  {
+    name: "豚熱陽性確認地点",
+    icon: '/static/images/icons/butanetsu.png'
+  },
+  {
+    name: "作業日報",
+    icon: '/static/images/icons/report.png'
+  }
+];
