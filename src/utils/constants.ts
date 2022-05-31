@@ -6,10 +6,7 @@ const getServerURI = (): string => {
     // ブラウザで処理が行われている時はアクセスされているドメインを見る
     const domain = document.domain.toLowerCase();
     if (
-      domain.endsWith(".tajimalab.prsvr.net") ||
-      domain.endsWith(".junki-t.net") ||
-      domain.endsWith(".vercel.app") ||
-      domain.endsWith(".now.sh")
+      domain.endsWith(".gifu-nct.ac.jp")
     ) {
       // 開発用サーバー (develop)
       return "https://boarmap-dev.gifu-nct.ac.jp/api";
