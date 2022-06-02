@@ -1,4 +1,5 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { BoarInfoFeatureV2, BoarInfoPropsV2 } from '../../../types/features';
 import {
   fetchTraderList,
@@ -13,6 +14,8 @@ import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } fr
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {
+    const {currentUser} = useCurrentUser(); 
+
     const featureValueOrUndefined = (key: keyof BoarInfoPropsV2): string | undefined => {
       if (props.detail == null) return undefined;
 
@@ -472,7 +475,9 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
               />
             ) : <></>}
           </div>
-          <div>
+          <div
+            style={{ display: currentUser?.userDepartment == "K" || currentUser?.userDepartment == "D" ? "block" : "none" }}
+          >
             <InfoInput
               title='PCR検査日'
               type='date'
