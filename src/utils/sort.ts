@@ -66,7 +66,6 @@ export const sortFeatures = (key: string, features: BoarFeatureV2[] | TrapFeatur
         return props["回収年月日"] === "" ? "未回収" : "回収済";
       }
 
-      console.warn("String comparation item: " + key);
       // その他
       return props[key];
     };

@@ -206,3 +206,14 @@ export interface YoutonProps {
   農場区分: string;
   飼養頭数: string;
 }
+
+export interface CityInfo {
+  name: string;
+  ID$: number;
+  point: CityInfoPoint;
+}
+
+export interface CityInfoPoint {
+  lat: number;
+  lng: number;
+}

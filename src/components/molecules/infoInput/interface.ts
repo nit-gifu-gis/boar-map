@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface InfoInputProps {
   type: string;
   id: string;

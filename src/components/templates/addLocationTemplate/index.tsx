@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { parseCookies } from 'nookies';
 import { useEffect, useState } from 'react';
-import { LayerType } from '../../../utils/gis';
 import { to_header_color } from '../../../utils/header';
 import { alert } from '../../../utils/modal';
 import FooterAdjustment from '../../atomos/footerAdjustment';

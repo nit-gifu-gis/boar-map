@@ -11,7 +11,7 @@
 ## コマンド
 ```bash
 # 依存関係インストール
-$ yarn
+$ yarn install
 
 # パッケージの追加 (本番環境に必要なもの)
 $ yarn add <パッケージ名>
@@ -32,8 +32,7 @@ $ yarn start
 
 ## デプロイ先 
 1. https://boar-map.gifugis.jp/ (masterブランチ)
-1. https://gis-dev.junki-t.net/ (developブランチ)
-1. https://boar-map.nit-gifu-gis.vercel.app/ (その他ブランチ)
+1. https://boarmap-dev.gifu-nct.ac.jp/ (developブランチ)
 
 ## 著作権表記
 Copyright (c) 2019-2022 National Institute of Technology, Gifu College GIS Team

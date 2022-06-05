@@ -1,8 +1,6 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { FeatureBase, YoutonFeature, YoutonProps } from '../../../types/features';
 import { checkDateError, checkNumberError } from '../../../utils/validateData';
-import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { YoutonInfoFormProps } from './interface';

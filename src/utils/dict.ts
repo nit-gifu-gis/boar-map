@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const deepClone = (obj: { [x: string]: any; }) => {
   const r = {};

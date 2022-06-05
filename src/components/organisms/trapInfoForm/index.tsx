@@ -2,7 +2,7 @@ import React, { useImperativeHandle, useState } from 'react';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { TrapInfoFormProps } from './interface';
-import { FeatureBase, PointGeometry, TrapFeature, TrapProps } from '../../../types/features';
+import { PointGeometry, TrapFeature, TrapProps } from '../../../types/features';
 import InfoDiv from '../../molecules/infoDiv';
 import { checkDateError, compareDate } from '../../../utils/validateData';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';

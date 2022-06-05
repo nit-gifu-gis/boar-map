@@ -6,11 +6,11 @@ import Header from "../../organisms/header";
 import SearchForm from "../../organisms/searchForm";
 import { FeatureBase } from '../../../types/features';
 import SearchResult from "../../organisms/searchResult";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import PCRForm from "../../organisms/pcrForm";
+import RoundButton from "../../atomos/roundButton";
+import { useRouter } from "next/router";
 
 const ListTemplate: React.FunctionComponent = () => {
-  const { currentUser } = useCurrentUser();
+  const router = useRouter();
   const [searchInfo, setSearchInfo] = useState<FormData | null>(null);
   const [searchResult, setSearchResult] = useState<FeatureBase[] | null>(null);
 
@@ -44,10 +44,9 @@ const ListTemplate: React.FunctionComponent = () => {
         一覧表
       </Header>
       <div className="my-3 mx-3">
-        { currentUser?.userDepartment == "J" 
-          || currentUser?.userDepartment == "K"
-          || currentUser?.userDepartment == "D" ? <PCRForm /> : <></>
-        }
+        <div className="max-w-[400px] mx-auto py-5">
+          <RoundButton color="excel" onClick={() => router.push('/import')}>PCR結果のインポート</RoundButton>
+        </div>
         <SearchForm onClick={onClickSearch} />
         {searchInfo != null && searchResult != null ? <SearchResult searchInfo={searchInfo} searchResult={searchResult} /> : <>検索条件に条件を入力して検索してください。</>}
       </div>

@@ -2,20 +2,21 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interface';
 import EventListener from 'react-event-listener';
-import L from 'leaflet';
+import L, { LatLngExpression } from 'leaflet';
 import { parseCookies, setCookie } from 'nookies';
 import '../../../utils/extwms';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
-import { getColorCode, SERVER_URI } from '../../../utils/constants';
+import { getColorCode, layerLabels, SERVER_URI } from '../../../utils/constants';
 import { hasReadPermission } from '../../../utils/gis';
-import { alert } from '../../../utils/modal';
+import { alert, cityList } from '../../../utils/modal';
 import { getAccessToken } from '../../../utils/currentUser';
 import {
   BoarCommonFeatureV2,
   BoarFeatureV1,
   ButanetsuFeature,
+  CityInfo,
   FeatureBase,
   FeatureExtentResponse,
   layerType,
@@ -25,23 +26,26 @@ import {
   YoutonFeature,
 } from '../../../types/features';
 import { useRouter } from 'next/router';
-
-// TODO: ハンターメッシュ・ワクチンメッシュ関連の表示
-// 右下の凡例とか検索ボタン
-// 豚熱陽性確認地点の表示方法変更
+import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
+import RoundButton from '../../atomos/roundButton';
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
   const [loc, setLoc] = useState<Location | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
-  const [overlay, setOverlay] = useState<Record<string, L.MarkerClusterGroup>>({});
+  const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
   const { currentUser } = useCurrentUser();
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
   const [myMap, setMyMap] = useState<L.Map | null>(null);
-  const [control, setControl] = useState<L.Control | null>(null);
-  const [featureIDs, setFeatureIDs] = useState<Record<string, string[]>>({});
+  const [, setControl] = useState<L.Control | null>(null);
+  const [featureIDs, ] = useState<Record<string, string[]>>({});
+  const [, setButanetsuLayerID] = useState(-1);
+  const [locSearchVisible, setLocSearchVisible] = useState(false);
+  const [labelVisible, setLabelVisible] = useState(false);
+  const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
+
   // const [myLocMarker, setMyLocMarker] = useState<L.Marker | null>(null);
   let myLocMarker: L.Marker | null = null;
 
@@ -64,121 +68,206 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  if (loc == null) {
-    setLoc({
-      lat: 35.39135,
-      lng: 136.722418,
+  const setupMap = async () => {
+    if (loc == null) {
+      setLoc({
+        lat: 35.39135,
+        lng: 136.722418,
+      });
+    }
+  
+    const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
+    if (Object.keys(overlay).length === 0 && currentUser != null) {
+      // レイヤーの追加
+      if (hasReadPermission('boar', currentUser)) {
+        overlay['いのしし捕獲地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('boar'),
+          polygonOptions: {
+            color: getColorCode('boar'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('trap', currentUser)) {
+        overlay['わな設置地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('trap'),
+          polygonOptions: {
+            color: getColorCode('trap'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('vaccine', currentUser)) {
+        overlay['ワクチン散布地点'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('vaccine'),
+          polygonOptions: {
+            color: getColorCode('vaccine'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('youton', currentUser)) {
+        overlay['養豚場'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('youton'),
+          polygonOptions: {
+            color: getColorCode('youton'),
+          },
+        });
+      }
+  
+      if (hasReadPermission('butanetsu', currentUser)) {
+        const mcg = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('butanetsu'),
+          polygonOptions: {
+            color: getColorCode('butanetsu'),
+          },
+        });
+
+        const lg =  L.layerGroup([mcg]);
+        setButanetsuLayerID(lg.getLayerId(mcg));
+
+        overlay['豚熱陽性確認地点'] = lg;
+      }
+  
+      if (hasReadPermission('report', currentUser)) {
+        overlay['作業日報'] = L.markerClusterGroup({
+          ...clusterGroupOption,
+          iconCreateFunction: clusterIconCreate('report'),
+          polygonOptions: {
+            color: getColorCode('report'),
+          },
+        });
+      }
+  
+      // ワクチンメッシュの読み込み
+      //   例外発生時に簡単に外に出られるように処理を関数で囲う
+      await (async () => {
+        const response = await fetch(SERVER_URI + "/Mesh/Get?type=vaccine", {
+          headers: {
+            "X-Access-Token": getAccessToken()
+          }
+        });
+
+        if(!response.ok) {
+          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
+          return;
+        }
+
+        const data = await response.blob();
+        const buffer = await data.arrayBuffer();
+
+        const shp_r = await shapefile(buffer);
+
+        const polygons: L.Polygon[] = [];
+
+        let featurecollection: FeatureCollectionWithFilename[];
+        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
+          featurecollection = shp_r as FeatureCollectionWithFilename[];
+        } else {
+          featurecollection = [shp_r as FeatureCollectionWithFilename];
+        }
+        featurecollection.forEach(fc => {
+          fc.features.forEach(feature => {
+            if(feature.geometry.type !== "Polygon") {
+              return;
+            }
+            const coordinates: LatLngExpression[] = [];
+            feature.geometry.coordinates[0].forEach(l => {
+              coordinates.push([l[1], l[0]]);
+            });
+            polygons.push(L.polygon(coordinates, {
+              color: '#0288d1',
+              weight: 2,
+              fill: true,
+              fillColor: '#0288d1',
+              opacity: 0.6 
+            }));
+          });
+        });    
+        overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
+      })();
+  
+      // ハンターメッシュの読み込み
+      //   例外発生時に簡単に外に出られるように処理を関数で囲う
+      await (async () => {
+        const response = await fetch(SERVER_URI + "/Mesh/Get?type=hunter", {
+          headers: {
+            "X-Access-Token": getAccessToken()
+          }
+        });
+
+        if(!response.ok) {
+          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
+          return;
+        }
+
+        const data = await response.blob();
+        const buffer = await data.arrayBuffer();
+
+        const shp_r = await shapefile(buffer);
+
+        const polygons: L.Polygon[] = [];
+
+        let featurecollection: FeatureCollectionWithFilename[];
+        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
+          featurecollection = shp_r as FeatureCollectionWithFilename[];
+        } else {
+          featurecollection = [shp_r as FeatureCollectionWithFilename];
+        }
+        featurecollection.forEach(fc => {
+          fc.features.forEach(feature => {
+            if(feature.geometry.type !== "Polygon") {
+              return;
+            }
+            const coordinates: LatLngExpression[] = [];
+            feature.geometry.coordinates[0].forEach(l => {
+              coordinates.push([l[1], l[0]]);
+            });
+            polygons.push(L.polygon(coordinates, {
+              color: '#cc56db',
+              weight: 2,
+              fill: true,
+              fillColor: '#cc56db',
+              opacity: 0.6 
+            }));
+          });
+        });    
+        overlay['ハンターメッシュ'] = L.layerGroup(polygons);
+      })();
+    }
+    setOverlayList(overlay);
+  };
+
+
+  const formatDate = (date: string) => {
+    const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
+    const result = regex.exec(date);
+    if(result == null)
+      return "日付登録なし";
+    else 
+      return result[1];
+  };
+
+  const markerIcon = (iconUrl: string, label: string) => {
+    return L.divIcon({
+      iconSize: [0, 0],
+      html: '<div class="markerDiv">' +
+              `<img src="${iconUrl}" class="markerDiv__img" style="${!iconUrl.toLowerCase().endsWith(".svg") ? "width: 25px;" : ""}" />` +
+              `<div class="markerDiv__title">${label}</div>` +
+            '</div>'
     });
-  }
-
-  if (Object.keys(overlay).length === 0 && currentUser != null) {
-    // レイヤーの追加
-    if (hasReadPermission('boar', currentUser)) {
-      overlay['いのしし捕獲地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('boar'),
-        polygonOptions: {
-          color: getColorCode('boar'),
-        },
-      });
-    }
-
-    if (hasReadPermission('trap', currentUser)) {
-      overlay['わな設置地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('trap'),
-        polygonOptions: {
-          color: getColorCode('trap'),
-        },
-      });
-    }
-
-    if (hasReadPermission('vaccine', currentUser)) {
-      overlay['ワクチン散布地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('vaccine'),
-        polygonOptions: {
-          color: getColorCode('vaccine'),
-        },
-      });
-    }
-
-    if (hasReadPermission('youton', currentUser)) {
-      overlay['養豚場'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('youton'),
-        polygonOptions: {
-          color: getColorCode('youton'),
-        },
-      });
-    }
-
-    if (hasReadPermission('butanetsu', currentUser)) {
-      overlay['豚熱陽性確認地点'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('butanetsu'),
-        polygonOptions: {
-          color: getColorCode('butanetsu'),
-        },
-      });
-    }
-
-    if (hasReadPermission('report', currentUser)) {
-      overlay['作業日報'] = L.markerClusterGroup({
-        ...clusterGroupOption,
-        iconCreateFunction: clusterIconCreate('report'),
-        polygonOptions: {
-          color: getColorCode('report'),
-        },
-      });
-    }
-
-    /*if(hasReadPermission("", currentUser)) {
-        // ワクチン散布地点メッシュ
-    }  
-
-    if(hasReadPermission("", currentUser)) {
-        // ハンターメッシュ
-    } */
-  }
-
-  const boarIcon = L.icon({
-    iconUrl: '/static/images/icons/boar.svg',
-    iconRetinaUrl: '/static/images/icons/boar.svg',
-    // 縦横比＝285:193 ＝ 1:0.67719 〜 37:25
-    iconSize: [37, 25],
-    iconAnchor: [16, 13],
-  });
-  const trapIcon = L.icon({
-    iconUrl: '/static/images/icons/trap.svg',
-    iconRetinaUrl: '/static/images/icons/trap.svg',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const vaccineIcon = L.icon({
-    iconUrl: '/static/images/icons/vaccine.svg',
-    iconRetinaUrl: '/static/images/icons/vaccine.svg',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const youtonIcon = L.icon({
-    iconUrl: '/static/images/icons/youton.png',
-    iconRetinaUrl: '/static/images/icons/youton.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const butanetsuIcon = L.icon({
-    iconUrl: '/static/images/icons/butanetsu.png',
-    iconRetinaUrl: '/static/images/icons/butanetsu.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
-  const reportIcon = L.icon({
-    iconUrl: '/static/images/icons/report.png',
-    iconRetinaUrl: '/static/images/icons/report.png',
-    iconSize: [25, 25],
-    iconAnchor: [13, 13],
-  });
+  };
+  const boarIconLink = '/static/images/icons/boar.svg';
+  const trapIconLink = '/static/images/icons/trap.svg';
+  const vaccineIconLink = '/static/images/icons/vaccine.svg';
+  const youtonIconLink = '/static/images/icons/youton.png';
+  const butanetsuIconLink = '/static/images/icons/butanetsu.png';
+  const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
     iconUrl: '/static/images/map/location_marker.svg',
@@ -205,6 +294,14 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       },
     ],
   });
+
+  const labelButton = L.easyButton('<div class="leaflet-button">凡例</div>', () => {
+    setLabelVisible(l=>!l);
+  }).setPosition('bottomright');
+
+  const locSearchButton = L.easyButton('<div class="leaflet-button">地点検索</div>', () => {
+    setLocSearchVisible(l=>!l);
+  }).setPosition('bottomright');
 
   const onClickSetLocation = () => {
     setCurrentLocation(true);
@@ -319,13 +416,57 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
           // 描画するマーカーの生成
           const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
-          overlay[key].addLayers(newMarkers);
+          if(key === "豚熱陽性確認地点") {
+            setButanetsuLayerID(id => {
+              const l = overlayList[key] as L.LayerGroup;
+              const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
+              lg.addLayers(newMarkers);
+              makeCircleMarkers(newFeatures as ButanetsuFeature[]).forEach(m => {
+                l.addLayer(m);
+              });
+              return id;
+            });
+          } else {
+            (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
+          }
         }
       });
     }
 
     // くるくるを消す
     setLoading(false);
+  };
+
+  const makeCircleMarkers = (features: ButanetsuFeature[]): L.Circle[] => {
+    const cookies = parseCookies();
+    const settings = cookies['butanetsu'] != null ? JSON.parse(cookies['butanetsu']) : {
+      area: 10,
+      month: 5,
+    };
+
+    const show_date = new Date();
+    show_date.setHours(0);
+    show_date.setMinutes(0);
+    show_date.setSeconds(0);
+    show_date.setMonth(show_date.getMonth() - settings.month);
+
+    const l: L.Circle[] = [];
+    features.forEach(feature => {
+      const date = new Date(feature.properties.捕獲年月日);
+      if(show_date <= date) {
+        const loc = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] as LatLngExpression;
+        const markers = L.circle(loc, {
+          radius: settings.area * 1000,
+          color: "#e33b3b",
+          weight: 2,
+          fill: true,
+          fillColor: "#e33b3b",
+          opacity: 0.5
+        });
+        l.push(markers);
+      }
+    });
+    return l;
   };
 
   const makePopup = (title: string, date: string): HTMLDivElement => {
@@ -357,44 +498,56 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
-    let icon = undefined;
+    let icon: L.DivIcon | undefined = undefined;
     let dataLabel = '';
     let dataValue = '';
     let ver = '';
     switch (t) {
-      case 'いのしし捕獲地点':
-        icon = boarIcon;
-        dataValue = (f as BoarFeatureV1 | BoarCommonFeatureV2).properties.捕獲年月日;
-        ver = `v${(f as BoarFeatureV1 | BoarCommonFeatureV2).version}`;
+      case 'いのしし捕獲地点': {
+        const f1 = f as BoarFeatureV1 | BoarCommonFeatureV2;
+        icon = markerIcon(boarIconLink, formatDate(f1.properties.捕獲年月日));
+        dataValue = f1.properties.捕獲年月日;
+        ver = `v${f1.version}`;
         dataLabel = '捕獲年月日';
         break;
-      case 'わな設置地点':
-        icon = trapIcon;
+      }
+      case 'わな設置地点': {
+        const f2 = f as TrapFeature;
+        icon = markerIcon(trapIconLink, formatDate(f2.properties.設置年月日));
         dataLabel = '設置年月日';
-        dataValue = (f as TrapFeature).properties.設置年月日;
+        dataValue = f2.properties.設置年月日;
         break;
-      case 'ワクチン散布地点':
-        icon = vaccineIcon;
+      }
+      case 'ワクチン散布地点': {
+        const f3 = f as VaccineFeature;
+        icon = markerIcon(vaccineIconLink, f3.properties.メッシュNO);
         dataLabel = '散布年月日';
-        dataValue = (f as VaccineFeature).properties.散布年月日;
+        dataValue = f3.properties.散布年月日;
         break;
-      case '作業日報':
-        icon = reportIcon;
+      }
+      case '作業日報': {
+        const f4 = f as ReportFeature;
+        icon = markerIcon(reportIconLink, formatDate(f4.properties.作業開始時));
         dataLabel = '作業年月日';
-        dataValue = (f as ReportFeature).properties.作業開始時;
+        dataValue = f4.properties.作業開始時;
         break;
-      case '豚熱陽性確認地点':
-        icon = butanetsuIcon;
+      }
+      case '豚熱陽性確認地点': {
+        const f5 = f as ButanetsuFeature;
+        icon = markerIcon(butanetsuIconLink, formatDate(f5.properties.捕獲年月日));
         dataLabel = '捕獲年月日';
-        dataValue = (f as ButanetsuFeature).properties.捕獲年月日;
+        dataValue = f5.properties.捕獲年月日;
         break;
-      case '養豚場':
-        icon = youtonIcon;
+      }
+      case '養豚場': {
+        const f6 = f as YoutonFeature;
+        icon = markerIcon(youtonIconLink, f6.properties.施設名);
         dataLabel = '更新年月日';
-        dataValue = (f as YoutonFeature).properties.更新日;
+        dataValue = f6.properties.更新日;
         break;
+      }
     }
-
+    
     const coordinates = f.geometry.coordinates as number[];
     const lat = coordinates[1];
     const lng = coordinates[0];
@@ -488,7 +641,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   useEffect(() => {
-    if (selfNode == null) return;
+    if (selfNode == null || currentUser == null) return;
 
     if (defaultLoc == null) {
       const cookies = parseCookies(null);
@@ -507,12 +660,14 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     if (myMap == null) {
-      setMyMap(L.map(selfNode, { keyboard: false }));
+      const map = L.map(selfNode, { keyboard: false });
+      setupMap();
+      setMyMap(map);
     }
-  }, [selfNode]);
+  }, [currentUser, selfNode, defaultLoc, myMap]);
 
   useEffect(() => {
-    if (myMap == null || defaultLoc == null) return;
+    if (myMap == null || defaultLoc == null || Object.keys(overlayList).length == 0) return;
 
     myMap.setView([defaultLoc.lat, defaultLoc.lng], defaultLoc.zoom);
 
@@ -569,9 +724,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.values(overlay).forEach((o) => o.addTo(myMap));
+    Object.values(overlayList).forEach((o) => o.addTo(myMap));
     // コントロール追加
-    const contrl = L.control.layers(undefined, overlay, {
+    const contrl = L.control.layers(undefined, overlayList, {
       collapsed: false,
     });
     setControl(contrl);
@@ -580,6 +735,12 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     reloadButton.remove();
     reloadButton.addTo(myMap);
+
+    locSearchButton.remove();
+    locSearchButton.addTo(myMap);
+
+    labelButton.remove();
+    labelButton.addTo(myMap);
 
     // 位置情報の取得開始
     startWatchLocation();
@@ -590,7 +751,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       myMap?.remove();
       setMyMap(null);
     };
-  }, [myMap, defaultLoc]);
+  }, [myMap, defaultLoc, overlayList]);
 
   // ヘッダー(60px), フッター(70px)を引いて、地図部分のヘッダーサイズを計算する。
   const calcMapHeight = () => {
@@ -605,6 +766,64 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }, 200);
   };
 
+  const onPointSearchClicked = async () => {
+    const type_input = document.getElementById("point_search_type") as HTMLSelectElement | null;
+    const text_input = document.getElementById("point_search_text") as HTMLInputElement | null;
+    if(type_input == null || text_input == null) {
+      alert("内部エラーが発生しました。");
+      return;
+    }
+
+    const type = type_input.options[type_input.selectedIndex].value;
+    const text = text_input.value;
+    if(type == "市町村名") {
+      setSearchButtonLabel("検索中...");
+      const res = await fetch(SERVER_URI + "/City/Search", {
+        method: 'POST',
+        headers: {
+          'X-Access-Token': getAccessToken()
+        },
+        body: JSON.stringify({
+          name: text
+        })
+      });
+      const json = await res.json();
+      setSearchButtonLabel("検索");
+      if(!res.ok) {
+        alert(json["error"]);
+        return;
+      }
+
+      const list = json as CityInfo[];
+      if(list.length === 0) {
+        // 0件の時はエラー
+        alert("該当の情報が見つかりませんでした。");
+      } else if(list.length === 1) {
+        // 1件の時はそのまま場所を変える
+        setMyMap(myMap => {
+          if(myMap != null)
+            myMap.setView([list[0].point.lat, list[0].point.lng], myMap.getZoom());
+          return myMap;
+        });
+        setLocSearchVisible(false);
+      } else {
+        // 2件以上の時は確認ダイアログを出す
+        const city = await cityList(list);
+        if(city == null)
+          return;
+        setMyMap(myMap => {
+          if(myMap != null)
+            myMap.setView([city.point.lat, city.point.lng], myMap.getZoom());
+          return myMap;
+        });
+        setLocSearchVisible(false);
+      }
+    } else {
+      alert("内部エラーが発生しました。");
+      return;
+    }
+  };
+
   return (
     <div>
       <div
@@ -614,6 +833,64 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         ref={(node) => setSelfNode(node)}
       >
         <EventListener target='window' onResize={onResized.bind(this)} />
+      </div>
+      <div
+        className='w-full z-10 absolute top-header pointer-events-none'
+        style={{ height: mapHeight }}
+      >
+        <div className='w-[220px] mx-auto h-full flex flex-col-reverse'>
+          {locSearchVisible ? (
+            <div className='w-full h-[236px] box-border p-1 mb-3'>
+              <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
+                <div className="flex justify-end items-center pb-1 mr-1">
+                  <div className="flex-1 text-center font-bold">
+                    地点検索（試験中）
+                  </div>
+                  <div className="text-center text-lg">
+                    <button type="button" onClick={() => setLocSearchVisible(false)}>×</button>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold py-1">検索対象</span>
+                  <select id="point_search_type" className="w-full pb-1">
+                    <option>市町村名</option>
+                  </select>
+                  <span className="font-bold py-1">検索ワード</span>
+                  <input id="point_search_text" type="text" className="w-full" />
+                  <div className="w-full p-4">
+                    <RoundButton color="primary" disabled={searchButtonLabel !== "検索"} onClick={onPointSearchClicked}>
+                      {searchButtonLabel}
+                    </RoundButton>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : <></>}
+          {labelVisible ? (
+            <div className='w-full h-[226px] box-border p-1 mb-3'>
+              <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
+                <div className="flex justify-end items-center pb-1 mr-1">
+                  <div className="flex-1 text-center font-bold">
+                    凡例
+                  </div>
+                  <div className="text-center text-lg">
+                    <button type="button" onClick={() => setLabelVisible(false)}>×</button>
+                  </div>
+                </div>
+                <div>
+                  {layerLabels.map(k => (
+                    <div className="py-[2px] flex items-center" key={k.name}>
+                      <img src={k.icon} width="24" alt={"Icon of " + k.name} />
+                      <div className="ml-1">
+                        {k.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : <></>}
+        </div>
       </div>
       <div
         className={

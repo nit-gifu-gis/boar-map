@@ -1,3 +1,4 @@
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import Divider from '../../atomos/divider';
 import InfoDiv from '../../molecules/infoDiv';
 import { BoarInfov2ViewProps } from './interface';
@@ -9,6 +10,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   confirmMode,
 }) => {
   // 箱わな/囲いわなが選択されたときのみ捕獲頭数を表示
+  const { currentUser } = useCurrentUser();
   let catchNumInfo: JSX.Element | null = null;
   if (detail.properties.罠発見場所 === '箱わな' || detail.properties.罠発見場所 === '囲いわな') {
     let childrenNum = 0;
@@ -108,16 +110,24 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
                 ) : (
                   <></>
                 )}
-              {v.properties.PCR検査日 == '' ? (
-                <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
-              ) : (
-                <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
-              )}
-              <InfoDiv
-                title='PCR検査結果'
-                type='text'
-                data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
-              />
+              {confirmMode
+                && !(
+                  currentUser?.userDepartment == "K"
+                  || currentUser?.userDepartment == "D"
+                ) ? <></> : (
+                  <>
+                    {v.properties.PCR検査日 == '' ? (
+                      <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
+                    ) : (
+                      <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
+                    )}
+                    <InfoDiv
+                      title='PCR検査結果'
+                      type='text'
+                      data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
+                    />
+                  </>
+                )}
               <InfoDiv title='備考' type='text' data={v.properties.備考} />
             </div>
           );
