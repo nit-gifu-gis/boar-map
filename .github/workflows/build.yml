@@ -32,7 +32,7 @@ jobs:
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git add .
           git commit -m ":robot: 更新履歴の追加 (Version ${{ env.LATEST_V }})";
-          git push origin HEAD:${GITHUB_REF};
+          git push origin HEAD:${GITHUB_REF} -f;
 
       - name: Setup Build Cache
         uses: actions/cache@v2
