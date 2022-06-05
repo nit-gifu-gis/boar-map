@@ -59,9 +59,10 @@ jobs:
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         run: |
           TAG=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:$BRANCH_NAME
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          if [ "$BRANCH_NAME" == "main" ]; then
             LATEST=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_REPOSITORY }}:latest
-            echo "TAGS=$TAG,latest" >> $GITHUB_ENV
+            echo "TAGS=$TAG,$LATEST" >> $GITHUB_ENV
+            echo latest
           else
             echo "TAGS=$TAG" >> $GITHUB_ENV
           fi
