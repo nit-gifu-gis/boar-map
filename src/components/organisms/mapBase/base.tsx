@@ -417,15 +417,19 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           // 描画するマーカーの生成
           const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
           if(key === "豚熱陽性確認地点") {
-            setButanetsuLayerID(id => {
-              const l = overlayList[key] as L.LayerGroup;
-              const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
-              lg.addLayers(newMarkers);
-              makeCircleMarkers(newFeatures as ButanetsuFeature[]).forEach(m => {
-                l.addLayer(m);
+            const asyncTask = async () => {
+              const circleMarkers = await makeCircleMarkers(newFeatures as ButanetsuFeature[]);
+              setButanetsuLayerID(id => {
+                const l = overlayList[key] as L.LayerGroup;
+                const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
+                lg.addLayers(newMarkers);
+                circleMarkers.forEach(m => {
+                  l.addLayer(m);
+                });
+                return id;
               });
-              return id;
-            });
+            };
+            asyncTask();
           } else {
             (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
           }
@@ -437,12 +441,13 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     setLoading(false);
   };
 
-  const makeCircleMarkers = (features: ButanetsuFeature[]): L.Circle[] => {
-    const cookies = parseCookies();
-    const settings = cookies['butanetsu'] != null ? JSON.parse(cookies['butanetsu']) : {
-      area: 10,
-      month: 5,
-    };
+  const makeCircleMarkers = async (features: ButanetsuFeature[]): Promise<L.Circle[]> => {
+    const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+      headers: {
+        'X-Access-Token': getAccessToken()
+      }
+    });
+    const settings = await res.json();
 
     const show_date = new Date();
     show_date.setHours(0);
@@ -456,7 +461,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       if(show_date <= date) {
         const loc = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] as LatLngExpression;
         const markers = L.circle(loc, {
-          radius: settings.area * 1000,
+          radius: settings.radius * 1000,
           color: "#e33b3b",
           weight: 2,
           fill: true,
