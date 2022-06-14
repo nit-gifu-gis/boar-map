@@ -131,7 +131,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const lg =  L.layerGroup([mcg]);
         setButanetsuLayerID(lg.getLayerId(mcg));
 
-        overlay['豚熱陽性確認地点'] = lg;
+        overlay['豚熱陽性高率エリア'] = lg;
       }
   
       if (hasReadPermission('report', currentUser)) {
@@ -416,7 +416,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
           // 描画するマーカーの生成
           const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
-          if(key === "豚熱陽性確認地点") {
+          if(key === "豚熱陽性高率エリア") {
             const asyncTask = async () => {
               const circleMarkers = await makeCircleMarkers(newFeatures as ButanetsuFeature[]);
               setButanetsuLayerID(id => {
@@ -537,7 +537,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         dataValue = f4.properties.作業開始時;
         break;
       }
-      case '豚熱陽性確認地点': {
+      case '豚熱陽性高率エリア': {
         const f5 = f as ButanetsuFeature;
         icon = markerIcon(butanetsuIconLink, formatDate(f5.properties.捕獲年月日));
         dataLabel = '捕獲年月日';

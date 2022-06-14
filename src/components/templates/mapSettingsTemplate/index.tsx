@@ -121,7 +121,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         マップ表示設定
       </Header>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
-        <div className="text-2xl font-bold">豚熱陽性確認地点表示設定</div>
+        <div className="text-2xl font-bold">豚熱陽性高率エリア表示設定</div>
         <div className="box-border border-solid border-2 border-border rounded-xl py-[10px] px-2 w-full">
           <InfoInput type="number" id="map_radius" title="円の表示半径(km)" error={radiusError} />
           <InfoInput type="number" id="map_time" title="円の表示期間(月)" error={timeError} />
