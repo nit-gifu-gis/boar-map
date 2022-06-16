@@ -415,10 +415,17 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           );
 
           // 描画するマーカーの生成
-          const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
           if(key === "豚熱陽性高率エリア") {
             const asyncTask = async () => {
-              const circleMarkers = await makeCircleMarkers(newFeatures as ButanetsuFeature[]);
+              const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+                headers: {
+                  'X-Access-Token': getAccessToken()
+                }
+              });
+              const settings = await res.json();
+
+              const circleMarkers = await makeCircleMarkers(settings, newFeatures as ButanetsuFeature[]);
+              const newMarkers = (await filterButanetsu(settings, newFeatures as ButanetsuFeature[])).map(f => makeMarker(f, key as layerType));
               setButanetsuLayerID(id => {
                 const l = overlayList[key] as L.LayerGroup;
                 const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
@@ -431,6 +438,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
             };
             asyncTask();
           } else {
+            const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
             (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
           }
         }
@@ -441,14 +449,16 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     setLoading(false);
   };
 
-  const makeCircleMarkers = async (features: ButanetsuFeature[]): Promise<L.Circle[]> => {
-    const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
-      headers: {
-        'X-Access-Token': getAccessToken()
-      }
-    });
-    const settings = await res.json();
+  const filterButanetsu = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<ButanetsuFeature[]> => {
+    const show_date = new Date();
+    show_date.setHours(0);
+    show_date.setMinutes(0);
+    show_date.setSeconds(0);
+    show_date.setMonth(show_date.getMonth() - settings.month);
+    return features.filter(f=>show_date <= new Date(f.properties.捕獲年月日));
+  };
 
+  const makeCircleMarkers = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<L.Circle[]> => {
     const show_date = new Date();
     show_date.setHours(0);
     show_date.setMinutes(0);
