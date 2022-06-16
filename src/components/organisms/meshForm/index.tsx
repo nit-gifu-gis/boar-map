@@ -106,7 +106,8 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
             />
           </div>
           <div className="col-[2/3] row-[5] text-sm">
-            .SHP, .SHX, .DBF, .PRJの拡張子を持つファイルを含んだzipファイルを選択して下さい。
+            .SHP, .SHX, .DBF, .PRJの拡張子を持つファイルを含んだzipファイルを選択して下さい。<br />
+            (zipファイル内に.CPGファイルがない場合、正常に読み込めない場合があるため追加することを推奨します。)
           </div>
           <div className="col-[2/3] flex flex-wrap justify-start items-center text-left m-[5px] row-[6]">
             <span className="text-sm">

@@ -31,7 +31,7 @@ import RoundButton from '../../atomos/roundButton';
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
-  const [loc, setLoc] = useState<Location | null>(null);
+  const [, setLoc] = useState<Location | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
   const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
   const { currentUser } = useCurrentUser();
@@ -46,8 +46,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
 
-  // const [myLocMarker, setMyLocMarker] = useState<L.Marker | null>(null);
-  let myLocMarker: L.Marker | null = null;
+  const [, setMyLocMarker] = useState<L.Marker | null>(null);
+  // let myLocMarker: L.Marker | null = null;
 
   // クラスタ設定
   const clusterIconCreate = (
@@ -69,13 +69,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   const setupMap = async () => {
-    if (loc == null) {
-      setLoc({
-        lat: 35.39135,
-        lng: 136.722418,
-      });
-    }
-  
     const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
     if (Object.keys(overlay).length === 0 && currentUser != null) {
       // レイヤーの追加
@@ -180,13 +173,13 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
             feature.geometry.coordinates[0].forEach(l => {
               coordinates.push([l[1], l[0]]);
             });
-            polygons.push(L.polygon(coordinates, {
+            const p = L.polygon(coordinates, {
               color: '#0288d1',
               weight: 2,
-              fill: true,
-              fillColor: '#0288d1',
-              opacity: 0.6 
-            }));
+              fill: false 
+            });
+
+            polygons.push(p);
           });
         });    
         overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
@@ -318,9 +311,19 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(true);
     };
 
@@ -597,27 +600,34 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
   const setCurrentLocation = (moveMarker: boolean) => {
     if (myMap == null) return;
-    if (!loc?.lat || !loc.lng) {
+    setLoc(loc => {
+      if (!loc?.lat || !loc.lng) {
+        if (moveMarker) {
+          alert('位置情報の取得ができません。');
+        }
+        return loc;
+      }
+  
+      setMyLocMarker(myLocMarker => {
+        if (myLocMarker == null) {
+          myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
+          try {
+            myLocMarker.addTo(myMap);
+          } catch {
+            /** */
+          }
+        }
+    
+        myLocMarker.setLatLng([loc.lat, loc.lng]);
+  
+        return myLocMarker;
+      });
       if (moveMarker) {
-        alert('位置情報の取得ができません。');
+        myMap.setView([loc.lat, loc.lng], 17);
       }
-      return;
-    }
 
-    if (myLocMarker == null) {
-      myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
-      if (myLocMarker == null) return;
-      try {
-        myLocMarker.addTo(myMap);
-      } catch {
-        /** */
-      }
-    }
-
-    myLocMarker.setLatLng([loc.lat, loc.lng]);
-    if (moveMarker) {
-      myMap.setView([loc.lat, loc.lng], 17);
-    }
+      return loc;
+    });
   };
 
   const startWatchLocation = () => {
@@ -630,9 +640,19 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       // 表示は行わず，マーカーの移動のみ処理する
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(false);
     };
 

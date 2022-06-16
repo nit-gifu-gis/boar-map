@@ -49,7 +49,6 @@ const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {
 
   const fileFormChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const form = e.target as HTMLInputElement;
-    console.log(!form.files || !form.files.length || !maxSize);
     if(!form.files || !form.files.length || !maxSize) {
       return;
     }

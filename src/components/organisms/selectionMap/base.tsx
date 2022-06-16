@@ -29,7 +29,7 @@ import RoundButton from '../../atomos/roundButton';
 import { cityList } from '../../../utils/modal';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
-  const [loc, setLoc] = useState<Location | null>(null);
+  const [, setLoc] = useState<Location | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
   const { currentUser } = useCurrentUser();
@@ -43,8 +43,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
+  const [, setMyLocMarker] = useState<L.Marker | null>(null);
 
-  let myLocMarker: L.Marker | null = null;
+  //let myLocMarker: L.Marker | null = null;
 
   // ヘッダー(60px), フッター(70px)を引いて、Div部分のヘッダーサイズを計算する。
   const calcDivHeight = () => {
@@ -108,14 +109,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  const setupMap = async () => {
-    if (loc == null) {
-      setLoc({
-        lat: 35.39135,
-        lng: 136.722418,
-      });
-    }
-  
+  const setupMap = async () => { 
     const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
     if (Object.keys(overlay).length === 0 && currentUser != null) {
       // レイヤーの追加
@@ -444,7 +438,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     // くるくるを消す
     setLoading(false);
   };
-  
+
   const filterButanetsu = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<ButanetsuFeature[]> => {
     const show_date = new Date();
     show_date.setHours(0);
@@ -510,9 +504,19 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(true);
     };
 
@@ -525,28 +529,34 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
   const setCurrentLocation = (moveMarker: boolean) => {
     if (myMap == null) return;
-    if (!loc?.lat || !loc.lng) {
+    setLoc(loc => {
+      if (!loc?.lat || !loc.lng) {
+        if (moveMarker) {
+          alert('位置情報の取得ができません。');
+        }
+        return loc;
+      }
+  
+      setMyLocMarker(myLocMarker => {
+        if (myLocMarker == null) {
+          myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
+          try {
+            myLocMarker.addTo(myMap);
+          } catch {
+            /** */
+          }
+        }
+    
+        myLocMarker.setLatLng([loc.lat, loc.lng]);
+  
+        return myLocMarker;
+      });
       if (moveMarker) {
-        alert('位置情報の取得ができません。');
+        myMap.setView([loc.lat, loc.lng], 17);
       }
-      return;
-    }
 
-    if (myLocMarker == null) {
-      myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
-      if (myLocMarker == null) return;
-      try {
-        myLocMarker.addTo(myMap);
-      } catch {
-        /** */
-      }
-    }
-
-    myLocMarker.setLatLng([loc.lat, loc.lng]);
-    if (moveMarker) {
-      myMap.setView([loc.lat, loc.lng], 17);
-      onCenterChanged();
-    }
+      return loc;
+    });
   };
 
   const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
@@ -652,9 +662,19 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       // 表示は行わず，マーカーの移動のみ処理する
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(false);
     };
 
@@ -665,7 +685,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const options = {
       enableHighAccuracy: false, // 高精度の位置情報は利用しない
       timeout: Infinity, // 取得できるまで待つ
-      maximumAge: 0, // キャッシュは使わない
+      maximumAge: 0, // キャッシュは使わな設置地点い
     };
 
     setWatchPosId(navigator.geolocation.watchPosition(success, error, options));
