@@ -13,12 +13,6 @@ const SettingsTemplate: React.FunctionComponent = () => {
     if(currentUser == null) 
       return;
 
-    if(currentUser.userDepartment !== "K" && currentUser.userDepartment !== "D") {
-      alert("権限エラー\nこのページにアクセスする権限がありません。");
-      router.push("/map");
-      return;
-    }
-
     if(settings.length === 0) {
       const s = [];
       s.push({

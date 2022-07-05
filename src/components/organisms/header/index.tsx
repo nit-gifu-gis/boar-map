@@ -112,18 +112,16 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       );
     }
 
-    if(currentUser.userDepartment === "K" || currentUser.userDepartment === "D") {
-      menuItems.push(
-        <div
-          className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
-          key='menu_settings'
-        >
-          <Link href='/settings'>
-            <a className='text-14pt text-background no-underline'>サイト設定</a>
-          </Link>
-        </div>,
-      );
-    }
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_settings'
+      >
+        <Link href='/settings'>
+          <a className='text-14pt text-background no-underline'>サイト設定</a>
+        </Link>
+      </div>,
+    );
 
     if(currentUser.userDepartment === "K" || currentUser.userDepartment === "J" || currentUser.userDepartment === "D") {
       menuItems.push(
