@@ -65,7 +65,7 @@ export const toServerType = (type: string, version: string): string => {
       return 'vaccine';
     case '作業日報':
       return 'report';
-    case '豚熱陽性確認地点':
+    case '豚熱陽性高率エリア':
       return 'butanetsu';
     case '養豚場':
       return 'youton';

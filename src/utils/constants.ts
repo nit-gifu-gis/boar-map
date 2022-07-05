@@ -67,7 +67,7 @@ export const layerLabels: { name: string, icon: string }[] = [
     icon: '/static/images/icons/youton.png'
   },
   {
-    name: "豚熱陽性確認地点",
+    name: "豚熱陽性高率エリア",
     icon: '/static/images/icons/butanetsu.png'
   },
   {
