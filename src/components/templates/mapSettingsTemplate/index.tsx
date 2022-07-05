@@ -1,8 +1,6 @@
 import { useRouter } from "next/router";
+import { parseCookies, setCookie } from "nookies";
 import { useEffect, useState } from "react";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
-import { SERVER_URI } from "../../../utils/constants";
-import { getAccessToken } from "../../../utils/currentUser";
 import FooterAdjustment from "../../atomos/footerAdjustment";
 import RoundButton from "../../atomos/roundButton";
 import InfoInput from "../../molecules/infoInput";
@@ -11,38 +9,23 @@ import Header from "../../organisms/header";
 
 const MapSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
-  const { currentUser } = useCurrentUser();
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [radiusError, setRadiusError] = useState("");
   const [timeError, setTimeError] = useState("");
   const [message, setMessage] = useState("");
   const [, setMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if(currentUser == null) 
-      return;
-          
-    if(currentUser.userDepartment !== "K" && currentUser.userDepartment !== "D") {
-      alert("権限エラー\nこのページにアクセスする権限がありません。");
-      router.push("/map");
-      return;
-    }
-
-    const fetchSettings = async () => {
-      const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
-        headers: {
-          'X-Access-Token': getAccessToken()
-        }
-      });
-      const settings = await res.json();
-      const radius_input = document.getElementById('map_radius') as HTMLInputElement;
-      const time_input = document.getElementById('map_time') as HTMLInputElement;
-  
-      radius_input.value = settings.radius;
-      time_input.value = settings.month;
+    const cookies = parseCookies();
+    const settings = cookies['butanetsu'] != null ? JSON.parse(cookies['butanetsu']) : {
+      area: 10,
+      month: 5,
     };
-    fetchSettings();
+    const radius_input = document.getElementById('map_radius') as HTMLInputElement;
+    const time_input = document.getElementById('map_time') as HTMLInputElement;
+
+    radius_input.value = settings.area;
+    time_input.value = settings.month;
 
     return (() => {
       setMessageDeleteTimerId(id => {
@@ -84,35 +67,22 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       return;
     }
 
-    setButtonDisabled(true);
     const settings_new = {
-      radius: radius_val,
+      area: radius_val,
       month: time_val,
     };
+    setCookie(null, "butanetsu", JSON.stringify(settings_new));
+    
+    setMessageDeleteTimerId(id => {
+      setMessage("設定を更新しました。");
 
-    const updateTask = async () => {
-      const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
-        method: 'POST',
-        headers: {
-          'X-Access-Token': getAccessToken()
-        },
-        body: JSON.stringify(settings_new)
-      });
-      const message = res.ok ? "設定を更新しました。" : `エラーが発生しました。(${res.status})`;
-      setMessageDeleteTimerId(id => {
-        setMessage(message);
-  
-        if(id != null)
-          clearTimeout(id);
-  
-        return setTimeout(() => {
-          setMessage("");
-        }, 4000);
-      });
+      if(id != null)
+        clearTimeout(id);
 
-      setButtonDisabled(false);
-    };
-    updateTask();
+      return setTimeout(() => {
+        setMessage("");
+      }, 3000);
+    });
   };
     
   return (
@@ -121,11 +91,11 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         マップ表示設定
       </Header>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
-        <div className="text-2xl font-bold">豚熱陽性高率エリア表示設定</div>
+        <div className="text-2xl font-bold">豚熱陽性確認地点表示設定</div>
         <div className="box-border border-solid border-2 border-border rounded-xl py-[10px] px-2 w-full">
           <InfoInput type="number" id="map_radius" title="円の表示半径(km)" error={radiusError} />
           <InfoInput type="number" id="map_time" title="円の表示期間(月)" error={timeError} />
-          <RoundButton color="primary" onClick={onButanetsuUpdateClicked} disabled={buttonDisabled}>
+          <RoundButton color="primary" onClick={onButanetsuUpdateClicked}>
             保存
           </RoundButton>
           <div className="text-center pt-3">
