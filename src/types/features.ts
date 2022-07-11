@@ -3,7 +3,7 @@ export type layerType =
   | 'わな設置地点'
   | 'ワクチン散布地点'
   | '作業日報'
-  | '豚熱陽性確認地点'
+  | '豚熱陽性高率エリア'
   | '養豚場';
 
 export type FeatureExtentResponse = {
@@ -11,7 +11,7 @@ export type FeatureExtentResponse = {
   わな設置地点: TrapFeature[] | null;
   ワクチン散布地点: VaccineFeature[] | null;
   作業日報: ReportFeature[] | null;
-  豚熱陽性確認地点: ButanetsuFeature[] | null;
+  豚熱陽性高率エリア: ButanetsuFeature[] | null;
   養豚場: YoutonFeature[] | null;
   [key: string]: unknown[] | null;
 };

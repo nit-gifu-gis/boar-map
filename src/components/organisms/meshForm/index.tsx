@@ -1,11 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { SERVER_URI } from "../../../utils/constants";
 import { getAccessToken } from "../../../utils/currentUser";
 import RoundButton from "../../atomos/roundButton";
 import SelectInput from "../../atomos/selectInput";
 import Image from 'next/image';
+import { MeshFormInterface } from "./interface";
+import { alert } from "../../../utils/modal";
 
-const MeshForm: React.FunctionComponent = () => {
+const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState("インポート");
   const [error, setError] = useState("");
@@ -63,6 +65,18 @@ const MeshForm: React.FunctionComponent = () => {
     ".PRJ": "図形の座標系の定義情報を格納するファイルです。",
   };
 
+  const fileFormChanged = (e: React.FormEvent<HTMLInputElement>) => {
+    const form = e.target as HTMLInputElement;
+    if(!form.files || !form.files.length || !maxSize) {
+      return;
+    }
+    const file = form.files[0];
+    if(maxSize.max_size_raw <= file.size) {
+      alert(`ファイルサイズが${maxSize.max_size} ${maxSize.unit}を超過しています。`);
+      form.value = '';
+    }
+  };
+
   return (
     <div className="w-full mb-[30px]">
       <div className="text-2xl font-bold">メッシュデータインポート</div>
@@ -88,12 +102,19 @@ const MeshForm: React.FunctionComponent = () => {
               name="importMesh"
               id="importMesh"
               accept="application/zip"
+              onChange={fileFormChanged}
             />
           </div>
           <div className="col-[2/3] row-[5] text-sm">
-            .SHP, .SHX, .DBF, .PRJの拡張子を持つファイルを含んだzipファイルを選択して下さい。
+            .SHP, .SHX, .DBF, .PRJの拡張子を持つファイルを含んだzipファイルを選択して下さい。<br />
+            (zipファイル内に.CPGファイルがない場合、正常に読み込めない場合があるため追加することを推奨します。)
           </div>
-          <div className="col-[1/3] row-[6]">
+          <div className="col-[2/3] flex flex-wrap justify-start items-center text-left m-[5px] row-[6]">
+            <span className="text-sm">
+              {maxSize == null ? "" : `最大ファイルサイズ: ${maxSize.max_size} ${maxSize.unit}`}
+            </span>
+          </div>
+          <div className="col-[1/3] row-[7]">
             <div className="mx-auto my-5 max-w-[400px]">
               <RoundButton
                 color="accent"
@@ -104,7 +125,7 @@ const MeshForm: React.FunctionComponent = () => {
               </RoundButton>
             </div>
           </div>
-          <div className="col-[1/3] mt-3 row-[7] text-center">
+          <div className="col-[1/3] mt-3 row-[8] text-center">
             {error === "file_missing" ? (
               <div>
                 <span

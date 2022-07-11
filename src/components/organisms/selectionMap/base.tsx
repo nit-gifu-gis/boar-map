@@ -25,12 +25,11 @@ import '../../../utils/extwms';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
 import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
-import { parseCookies } from 'nookies';
 import RoundButton from '../../atomos/roundButton';
 import { cityList } from '../../../utils/modal';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
-  const [loc, setLoc] = useState<Location | null>(null);
+  const [, setLoc] = useState<Location | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
   const { currentUser } = useCurrentUser();
@@ -44,8 +43,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
+  const [, setMyLocMarker] = useState<L.Marker | null>(null);
 
-  let myLocMarker: L.Marker | null = null;
+  //let myLocMarker: L.Marker | null = null;
 
   // ヘッダー(60px), フッター(70px)を引いて、Div部分のヘッダーサイズを計算する。
   const calcDivHeight = () => {
@@ -109,14 +109,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  const setupMap = async () => {
-    if (loc == null) {
-      setLoc({
-        lat: 35.39135,
-        lng: 136.722418,
-      });
-    }
-  
+  const setupMap = async () => { 
     const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
     if (Object.keys(overlay).length === 0 && currentUser != null) {
       // レイヤーの追加
@@ -172,7 +165,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         const lg =  L.layerGroup([mcg]);
         setButanetsuLayerID(lg.getLayerId(mcg));
 
-        overlay['豚熱陽性確認地点'] = lg;
+        overlay['豚熱陽性高率エリア'] = lg;
       }
   
       if (hasReadPermission('report', currentUser)) {
@@ -412,17 +405,31 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           );
 
           // 描画するマーカーの生成
-          const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
-          if(key === "豚熱陽性確認地点") {
-            setButanetsuLayerID(id => {
-              const l = overlayList[key] as L.LayerGroup;
-              const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
-              lg.addLayers(newMarkers);
-              makeCircleMarkers(newFeatures as ButanetsuFeature[]).forEach(m => {
-                l.addLayer(m);
+          if(key === "豚熱陽性高率エリア") {
+            const asyncTask = async () => {
+              const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+                headers: {
+                  'X-Access-Token': getAccessToken()
+                }
               });
-              return id;
-            });
+              const settings = await res.json();
+
+              const circleMarkers = await makeCircleMarkers(settings, newFeatures as ButanetsuFeature[]);
+              const newMarkers = (await filterButanetsu(settings, newFeatures as ButanetsuFeature[])).map(f => makeMarker(f, key as layerType));
+              setButanetsuLayerID(id => {
+                const l = overlayList[key] as L.LayerGroup;
+                const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
+                lg.addLayers(newMarkers);
+                circleMarkers.forEach(m => {
+                  l.addLayer(m);
+                });
+                return id;
+              });
+            };
+            asyncTask();
+          } else {
+            const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
+            (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
           }
         }
       });
@@ -432,13 +439,16 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     setLoading(false);
   };
 
-  const makeCircleMarkers = (features: ButanetsuFeature[]): L.Circle[] => {
-    const cookies = parseCookies();
-    const settings = cookies['butanetsu'] != null ? JSON.parse(cookies['butanetsu']) : {
-      area: 10,
-      month: 5,
-    };
+  const filterButanetsu = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<ButanetsuFeature[]> => {
+    const show_date = new Date();
+    show_date.setHours(0);
+    show_date.setMinutes(0);
+    show_date.setSeconds(0);
+    show_date.setMonth(show_date.getMonth() - settings.month);
+    return features.filter(f=>show_date <= new Date(f.properties.捕獲年月日));
+  };
 
+  const makeCircleMarkers = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<L.Circle[]> => {
     const show_date = new Date();
     show_date.setHours(0);
     show_date.setMinutes(0);
@@ -494,9 +504,19 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(true);
     };
 
@@ -509,28 +529,34 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
   const setCurrentLocation = (moveMarker: boolean) => {
     if (myMap == null) return;
-    if (!loc?.lat || !loc.lng) {
+    setLoc(loc => {
+      if (!loc?.lat || !loc.lng) {
+        if (moveMarker) {
+          alert('位置情報の取得ができません。');
+        }
+        return loc;
+      }
+  
+      setMyLocMarker(myLocMarker => {
+        if (myLocMarker == null) {
+          myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
+          try {
+            myLocMarker.addTo(myMap);
+          } catch {
+            /** */
+          }
+        }
+    
+        myLocMarker.setLatLng([loc.lat, loc.lng]);
+  
+        return myLocMarker;
+      });
       if (moveMarker) {
-        alert('位置情報の取得ができません。');
+        myMap.setView([loc.lat, loc.lng], 17);
       }
-      return;
-    }
 
-    if (myLocMarker == null) {
-      myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
-      if (myLocMarker == null) return;
-      try {
-        myLocMarker.addTo(myMap);
-      } catch {
-        /** */
-      }
-    }
-
-    myLocMarker.setLatLng([loc.lat, loc.lng]);
-    if (moveMarker) {
-      myMap.setView([loc.lat, loc.lng], 17);
-      onCenterChanged();
-    }
+      return loc;
+    });
   };
 
   const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
@@ -566,7 +592,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         dataValue = f4.properties.作業開始時;
         break;
       }
-      case '豚熱陽性確認地点': {
+      case '豚熱陽性高率エリア': {
         const f5 = f as ButanetsuFeature;
         icon = markerIcon(butanetsuIconLink, formatDate(f5.properties.捕獲年月日));
         dataLabel = '捕獲年月日';
@@ -636,9 +662,19 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       // 表示は行わず，マーカーの移動のみ処理する
-      if (loc == null) return;
-      loc.lat = lat;
-      loc.lng = lng;
+      setLoc(loc => {
+        if(loc == null) {
+          return {
+            lat: lat,
+            lng: lng
+          };
+        }
+
+        loc.lat = lat;
+        loc.lng = lng;
+
+        return loc;
+      });
       setCurrentLocation(false);
     };
 
@@ -649,7 +685,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const options = {
       enableHighAccuracy: false, // 高精度の位置情報は利用しない
       timeout: Infinity, // 取得できるまで待つ
-      maximumAge: 0, // キャッシュは使わない
+      maximumAge: 0, // キャッシュは使わな設置地点い
     };
 
     setWatchPosId(navigator.geolocation.watchPosition(success, error, options));
