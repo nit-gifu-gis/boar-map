@@ -54,7 +54,6 @@ const EditImageTemplate: React.FunctionComponent = () => {
     }
 
     // 養豚場情報/豚熱陽性確認情報の場合は画像の登録がないのでスキップする。
-    console.log(router.query.type);
     if (router.query.type === '養豚場' || router.query.type === '豚熱陽性高率エリア') {
       let location = router.query.location;
       if (location == null) {

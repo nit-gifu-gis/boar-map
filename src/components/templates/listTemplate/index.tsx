@@ -41,6 +41,44 @@ const ListTemplate: React.FunctionComponent = () => {
     setSearchResult(list);
   };
 
+  const [downloading, setDownloading] = useState(false);
+
+  const downloadYouton = async () => {
+    setDownloading(true);
+    const res = await fetch(SERVER_URI + '/List/Youton', {
+      headers: {
+        'X-Access-Token': getAccessToken()
+      }
+    });
+
+    setDownloading(false);
+    if (res.status === 200) {
+      const blob = await res.blob();
+      const anchor = document.createElement('a');
+      const now = new Date();
+      const yyyy = ('0000' + now.getFullYear()).slice(-4);
+      const mm = ('00' + (now.getMonth() + 1)).slice(-2);
+      const dd = ('00' + now.getDate()).slice(-2);
+
+      const name = '養豚場一覧表(' + yyyy + '-' + mm + '-' + dd + ').xlsx';
+      // IE対応
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (window.navigator.msSaveBlob) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.navigator.msSaveBlob(blob, name);
+        return;
+      }
+      anchor.download = name;
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.click();
+    } else {
+      const json = await res.json();
+      await alert(json.error);
+    }
+  }
+
   return (
     <div className='min-w-[500px] bg-background'>
       <Header color='primary'>一覧表</Header>
@@ -48,11 +86,18 @@ const ListTemplate: React.FunctionComponent = () => {
         {currentUser?.userDepartment === 'K' ||
         currentUser?.userDepartment === 'J' ||
         currentUser?.userDepartment === 'D' ? (
+          <>
           <div className='mx-auto max-w-[400px] py-5'>
             <RoundButton color='excel' onClick={() => router.push('/import')}>
-              PCR結果のインポート
+              データのインポート
             </RoundButton>
           </div>
+          <div className='mx-auto max-w-[400px] py-5'>
+            <RoundButton color="accent" onClick={() => downloadYouton()} disabled={downloading}>
+              {downloading ? "ダウンロード中..." : "養豚場リストのダウンロード"}
+            </RoundButton>
+          </div>
+          </>
         ) : (
           <></>
         )}

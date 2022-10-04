@@ -7,6 +7,7 @@ import Header from '../../organisms/header';
 import MeshForm from '../../organisms/meshForm';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
+import ButanetsuForm from '../../organisms/butanetsuForm';
 
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
@@ -44,6 +45,9 @@ const SettingsTemplate: React.FunctionComponent = () => {
 
       if (currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D')
         c.push(<MeshForm key={'Mesh Settings'} maxSize={ms} />);
+
+      if (currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D')
+        c.push(<ButanetsuForm key={'Butanetsu Settings'} maxSize={ms} />);
 
       setContents(c);
     };
