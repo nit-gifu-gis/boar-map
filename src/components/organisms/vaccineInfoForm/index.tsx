@@ -18,7 +18,10 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
     const form = document.getElementById('form-vaccine') as HTMLFormElement;
     // 送信に必要な情報を集めておく
     // 0 入力者
-    const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
+    const user =
+      props.featureInfo?.properties.入力者 != null
+        ? props.featureInfo.properties.入力者
+        : currentUser?.userId;
     // 1 位置情報
     const lat = props.location.lat;
     const lng = props.location.lng;
@@ -69,12 +72,13 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
         ロスト数: lostNumber,
         備考: note as string,
         メッシュ番号: '',
-        画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
+        画像ID:
+          props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : '',
       },
     };
 
     // 既存の更新の場合はID$を設定する
-    if(props.featureInfo?.properties.ID$ != null) {
+    if (props.featureInfo?.properties.ID$ != null) {
       data.properties.ID$ = props.featureInfo?.properties.ID$;
     }
 

@@ -15,7 +15,9 @@ export const getUserDepartment = (userId: string): UserDepartment | undefined =>
 // 一覧表を閲覧する権限を所持しているかを確認する。
 // (どの項目にアクセスできるかは関係なく、ページ自体のアクセス制御用)
 export const hasListPermission = (user: User): boolean => {
-  return ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'D'].indexOf(user.userDepartment as string) !== -1;
+  return (
+    ['T', 'U', 'H', 'J', 'R', 'S', 'W', 'K', 'D'].indexOf(user.userDepartment as string) !== -1
+  );
 };
 
 export type LayerType = 'boar' | 'trap' | 'vaccine' | 'youton' | 'butanetsu' | 'report';

@@ -1,15 +1,15 @@
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import { useEffect, useState } from "react";
-import { FeatureBase } from "../../../types/features";
-import { to_header_color } from "../../../utils/header";
-import { alert } from "../../../utils/modal";
-import FooterAdjustment from "../../atomos/footerAdjustment";
-import RoundButton from "../../atomos/roundButton";
-import Footer from "../../organisms/footer";
-import Header from "../../organisms/header";
-import { LatLngZoom, LatLngZoomCookie } from "../../organisms/mapBase/interface";
-import SelectionMap from "../../organisms/selectionMap";
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useEffect, useState } from 'react';
+import { FeatureBase } from '../../../types/features';
+import { to_header_color } from '../../../utils/header';
+import { alert } from '../../../utils/modal';
+import FooterAdjustment from '../../atomos/footerAdjustment';
+import RoundButton from '../../atomos/roundButton';
+import Footer from '../../organisms/footer';
+import Header from '../../organisms/header';
+import { LatLngZoom, LatLngZoomCookie } from '../../organisms/mapBase/interface';
+import SelectionMap from '../../organisms/selectionMap';
 
 const EditLocationTemplate: React.FunctionComponent = () => {
   const router = useRouter();
@@ -19,8 +19,13 @@ const EditLocationTemplate: React.FunctionComponent = () => {
   const [, setCurrentLoc] = useState<LatLngZoom | null>(null);
 
   useEffect(() => {
-    if(router.query.type == null || router.query.detail == null || router.query.id == null || router.query.version == null) {
-      alert("情報の取得に失敗しました。");
+    if (
+      router.query.type == null ||
+      router.query.detail == null ||
+      router.query.id == null ||
+      router.query.version == null
+    ) {
+      alert('情報の取得に失敗しました。');
       router.push('/map');
       return;
     }
@@ -33,7 +38,7 @@ const EditLocationTemplate: React.FunctionComponent = () => {
     if (router.query.prev_location != null) {
       const prevLocation = JSON.parse(router.query.prev_location as string) as LatLngZoom;
       setDefaultLoc(prevLocation);
-    } else {  
+    } else {
       // ズーム率はCookieから引っ張ってくる
       let defaultZoom = 17;
       const cookies = parseCookies(null);
@@ -67,7 +72,7 @@ const EditLocationTemplate: React.FunctionComponent = () => {
       />,
     );
   }, [defaultLoc]);
-  
+
   const onClickNext = () => {
     setCurrentLoc((loc) => {
       router.push(
@@ -79,7 +84,7 @@ const EditLocationTemplate: React.FunctionComponent = () => {
             type_srv: router.query.type_srv,
             version: router.query.version,
             detail: router.query.detail,
-            location: JSON.stringify(loc)
+            location: JSON.stringify(loc),
           },
         },
         '/edit/image',
@@ -96,10 +101,10 @@ const EditLocationTemplate: React.FunctionComponent = () => {
           type: router.query.type,
           type_srv: router.query.type_srv,
           id: router.query.id,
-          version: router.query.version
-        }
+          version: router.query.version,
+        },
       },
-      "/detail"
+      '/detail',
     );
   };
 
@@ -111,10 +116,10 @@ const EditLocationTemplate: React.FunctionComponent = () => {
       <div className='fixed bottom-0 w-full'>
         <Footer>
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
-          &lt; 戻る
+            &lt; 戻る
           </RoundButton>
           <RoundButton color='primary' onClick={onClickNext.bind(this)}>
-          進む &gt;
+            進む &gt;
           </RoundButton>
         </Footer>
       </div>

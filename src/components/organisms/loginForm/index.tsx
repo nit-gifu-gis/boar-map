@@ -18,10 +18,12 @@ const LoginForm: React.FunctionComponent = () => {
   useEffect(() => {
     const asyncTask = async () => {
       // 開発用サーバーだった場合には通知を表示する
-      if (document.domain.toLowerCase().endsWith(".prsvr.net") ||
-          document.domain.toLocaleLowerCase().endsWith(".gifu-nct.ac.jp")) {
-        if(await confirm("このサイトは開発版です。\n安定動作版のサイトへ移動しますか？")) {
-          location.href = "https://boar-map.gifugis.jp/login";
+      if (
+        document.domain.toLowerCase().endsWith('.prsvr.net') ||
+        document.domain.toLocaleLowerCase().endsWith('.gifu-nct.ac.jp')
+      ) {
+        if (await confirm('このサイトは開発版です。\n安定動作版のサイトへ移動しますか？')) {
+          location.href = 'https://boar-map.gifugis.jp/login';
         }
       }
     };

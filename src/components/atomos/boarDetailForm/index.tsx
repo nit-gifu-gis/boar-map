@@ -14,7 +14,7 @@ import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } fr
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {
-    const {currentUser} = useCurrentUser(); 
+    const { currentUser } = useCurrentUser();
 
     const featureValueOrUndefined = (key: keyof BoarInfoPropsV2): string | undefined => {
       if (props.detail == null) return undefined;
@@ -51,8 +51,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != ''
         ? props.detail.properties['地域']
         : props.myTraderInfo != null && props.myTraderInfo.area
-          ? props.myTraderInfo.area
-          : ' ',
+        ? props.myTraderInfo.area
+        : ' ',
     );
 
     const [trader, setTrader] = useState<TraderInfo | null | boolean>(
@@ -61,8 +61,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != null
         ? true
         : props.myTraderInfo != null && props.myTraderInfo.info
-          ? props.myTraderInfo.info
-          : null,
+        ? props.myTraderInfo.info
+        : null,
     );
 
     const getForm = (): HTMLFormElement => {
@@ -174,8 +174,10 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           地域: jibieArea,
           ジビエ業者: jibieTrader,
           遠沈管番号: enchinkan,
-          個体管理番: props.detail?.properties.個体管理番 != null ? props.detail.properties.個体管理番 : "",
-          情報番号: props.detail?.properties.情報番号 != null ? props.detail.properties.情報番号 : "",
+          個体管理番:
+            props.detail?.properties.個体管理番 != null ? props.detail.properties.個体管理番 : '',
+          情報番号:
+            props.detail?.properties.情報番号 != null ? props.detail.properties.情報番号 : '',
           枝番: '',
           PCR検査日: pcr_date,
           PCR結果: pcr_res,
@@ -188,7 +190,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       };
 
       // 既存の更新の場合はID$を設定する
-      if(props.detail?.properties.ID$ != null) {
+      if (props.detail?.properties.ID$ != null) {
         data.properties.ID$ = props.detail?.properties.ID$;
       }
 
@@ -443,8 +445,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.地域
                   : props.myTraderInfo != null && props.myTraderInfo.area
-                    ? props.myTraderInfo.area
-                    : ''
+                  ? props.myTraderInfo.area
+                  : ''
               }
               onChange={onChangeArea}
             />
@@ -458,25 +460,33 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.ジビエ業者
                   : props.myTraderInfo != null && props.myTraderInfo.info
-                    ? props.myTraderInfo.info.name
-                    : filteredNameList.length
-                      ? filteredNameList[0]
-                      : ''
+                  ? props.myTraderInfo.info.name
+                  : filteredNameList.length
+                  ? filteredNameList[0]
+                  : ''
               }
               error={errors.trader}
               onChange={onChangeTrader}
             />
 
-            {props.detail?.properties.個体管理番 != null && props.detail?.properties.個体管理番 != "" ? (
+            {props.detail?.properties.個体管理番 != null &&
+            props.detail?.properties.個体管理番 != '' ? (
               <InfoDiv
-                title="個体管理番号"
-                type="text"
+                title='個体管理番号'
+                type='text'
                 data={props.detail?.properties.個体管理番}
               />
-            ) : <></>}
+            ) : (
+              <></>
+            )}
           </div>
           <div
-            style={{ display: currentUser?.userDepartment == "K" || currentUser?.userDepartment == "D" ? "block" : "none" }}
+            style={{
+              display:
+                currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D'
+                  ? 'block'
+                  : 'none',
+            }}
           >
             <InfoInput
               title='PCR検査日'

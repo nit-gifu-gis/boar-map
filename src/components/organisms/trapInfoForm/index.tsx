@@ -51,7 +51,10 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
     const form = document.getElementById('form-trap') as HTMLFormElement;
 
     // 入力者
-    const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
+    const user =
+      props.featureInfo?.properties.入力者 != null
+        ? props.featureInfo.properties.入力者
+        : currentUser?.userId;
     // 設置年月日
     const place_date = form['place_date'].value as string;
     // 撤去年月日
@@ -80,15 +83,16 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
         市町村: city,
         備考: note,
         位置情報: `(${props.location.lat},${props.location.lng})`,
-        画像ID: props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : "",
+        画像ID:
+          props.featureInfo?.properties.画像ID != null ? props.featureInfo?.properties.画像ID : '',
       },
     };
 
     // 既存の更新の場合はID$を設定する
-    if(props.featureInfo?.properties.ID$ != null) {
+    if (props.featureInfo?.properties.ID$ != null) {
       data.properties.ID$ = props.featureInfo?.properties.ID$;
     }
-    
+
     return data;
   };
 

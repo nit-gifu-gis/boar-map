@@ -19,7 +19,7 @@ const CitySelectModal: React.FunctionComponent<Props> = (props) => {
     const { resolve, cleanup } = props;
     setShow(false);
     const city_select = document.getElementById('city-select') as HTMLSelectElement;
-    if(city_select == null) {
+    if (city_select == null) {
       resolve(null);
       cleanup();
       return;
@@ -39,10 +39,20 @@ const CitySelectModal: React.FunctionComponent<Props> = (props) => {
     <ModalBg>
       <ModalWindw>
         <div className='whitespace-pre-wrap'>
-          複数の情報が見つかりました。<br />
+          複数の情報が見つかりました。
+          <br />
           移動したい地点を選択してください。
         </div>
-        <SelectInput options={props.list.map(v=>`${v.name} (${Math.floor(v.point.lat * 100000) / 100000},${Math.floor(v.point.lng * 100000) / 100000})`)} id="city-select" error={false} />
+        <SelectInput
+          options={props.list.map(
+            (v) =>
+              `${v.name} (${Math.floor(v.point.lat * 100000) / 100000},${
+                Math.floor(v.point.lng * 100000) / 100000
+              })`,
+          )}
+          id='city-select'
+          error={false}
+        />
         <div className='mt-4 flex justify-around'>
           <div className='w-2/5'>
             <RoundButton color='accent' onClick={onCancelClicked.bind(this)}>
