@@ -99,7 +99,7 @@ const DetailTemplate: React.FunctionComponent = () => {
                   body: data,
                   headers: {
                     Accept: 'application/json',
-                    'X-Access-Token': getAccessToken()
+                    'X-Access-Token': getAccessToken(),
                   },
                 };
                 fetch(`${SERVER_URI}/Image/DeleteImage`, options)
@@ -133,7 +133,7 @@ const DetailTemplate: React.FunctionComponent = () => {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            'X-Access-Token': getAccessToken()
+            'X-Access-Token': getAccessToken(),
           },
           body: JSON.stringify(body),
         });
@@ -156,7 +156,7 @@ const DetailTemplate: React.FunctionComponent = () => {
     if (featureInfo == null) return;
 
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
-    if(yesNoCheck) {
+    if (yesNoCheck) {
       router.push(
         {
           pathname: '/edit/location',

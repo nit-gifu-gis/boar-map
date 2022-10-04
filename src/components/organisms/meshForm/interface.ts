@@ -1,4 +1,4 @@
-import { ServerMaxSize } from "../../templates/importTemplate/interface";
+import { ServerMaxSize } from '../../templates/importTemplate/interface';
 
 export interface MeshFormInterface {
   maxSize: ServerMaxSize;

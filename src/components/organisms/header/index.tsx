@@ -112,7 +112,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       );
     }
 
-    if(currentUser.userDepartment === "K" || currentUser.userDepartment === "D") {
+    if (currentUser.userDepartment === 'K' || currentUser.userDepartment === 'D') {
       menuItems.push(
         <div
           className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
@@ -125,7 +125,11 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       );
     }
 
-    if(currentUser.userDepartment === "K" || currentUser.userDepartment === "J" || currentUser.userDepartment === "D") {
+    if (
+      currentUser.userDepartment === 'K' ||
+      currentUser.userDepartment === 'J' ||
+      currentUser.userDepartment === 'D'
+    ) {
       menuItems.push(
         <div
           className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'

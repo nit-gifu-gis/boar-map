@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const deepClone = (obj: { [x: string]: any; }) => {
+export const deepClone = (obj: { [x: string]: any }) => {
   const r = {};
   for (const name in obj) {
     if (isObject(obj[name])) {
