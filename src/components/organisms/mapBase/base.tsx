@@ -20,6 +20,8 @@ import {
   FeatureBase,
   FeatureExtentResponse,
   layerType,
+  MeshData,
+  MeshDataResponse,
   ReportFeature,
   TrapFeature,
   VaccineFeature,
@@ -43,6 +45,10 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [myMap, setMyMap] = useState<L.Map | null>(null);
   const [, setControl] = useState<L.Control | null>(null);
   const [featureIDs] = useState<Record<string, string[]>>({});
+  const [meshLayers] = useState<Record<string, Record<string, L.Polygon>>>({
+    vaccine: {},
+    hunter: {}
+  });
   const [, setButanetsuLayerID] = useState(-1);
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
@@ -139,103 +145,11 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         });
       }
 
-      // ワクチンメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + '/Mesh/Get?type=vaccine', {
-          headers: {
-            'X-Access-Token': getAccessToken(),
-          },
-        });
+      // ワクチンメッシュ
+      overlay['ワクチンメッシュ'] = L.layerGroup();
 
-        if (!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if ((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach((fc) => {
-          fc.features.forEach((feature) => {
-            if (feature.geometry.type !== 'Polygon') {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach((l) => {
-              coordinates.push([l[1], l[0]]);
-            });
-            const p = L.polygon(coordinates, {
-              color: '#0288d1',
-              weight: 2,
-              fill: false,
-            });
-
-            polygons.push(p);
-          });
-        });
-        overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
-      })();
-
-      // ハンターメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + '/Mesh/Get?type=hunter', {
-          headers: {
-            'X-Access-Token': getAccessToken(),
-          },
-        });
-
-        if (!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if ((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach((fc) => {
-          fc.features.forEach((feature) => {
-            if (feature.geometry.type !== 'Polygon') {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach((l) => {
-              coordinates.push([l[1], l[0]]);
-            });
-            polygons.push(
-              L.polygon(coordinates, {
-                color: '#cc56db',
-                weight: 2,
-                fill: true,
-                fillColor: '#cc56db',
-                opacity: 0.6,
-              }),
-            );
-          });
-        });
-        overlay['ハンターメッシュ'] = L.layerGroup(polygons);
-      })();
+      // ハンターメッシュ
+      overlay['ハンターメッシュ'] = L.layerGroup();
     }
     setOverlayList(overlay);
   };
@@ -454,6 +368,94 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
             (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
           }
         }
+      });
+    }
+
+    // メッシュデータを取得する
+    const resMesh = await fetch(SERVER_URI + "/Mesh/Search", {
+      method: "POST",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Access-Token': getAccessToken(),
+      },
+      body: JSON.stringify({
+        lat: [topLat, bottomLat],
+        lng: [leftLng, rightLng]
+      }),
+    });
+
+    if(resMesh.status === 200) {
+      const data = await resMesh.json() as MeshDataResponse;
+
+      // ワクチンメッシュデータの処理
+      if (featureIDs['vaccineMesh'] == null) featureIDs['vaccineMesh'] = [];
+
+      // 各条件に合致する要素を取得する
+      const newVaccineMeshData = data.vaccine.filter(v=>!featureIDs['vaccineMesh'].includes(v.id));
+      const vaccineIDs = data.vaccine.map(v=>v.id);
+      const deleteVaccineMeshIds = featureIDs['vaccineMesh'].filter(id=>!vaccineIDs.includes(id));
+
+      // 新しいメッシュを描画する
+      newVaccineMeshData.forEach(v => {
+        const po = L.polygon(v.coordinates, {
+          color: '#0288d1',
+          weight: 2,
+          fill: false 
+        });
+
+        // TODO: ここでメッシュ番号を入れる
+
+        overlayList["ワクチンメッシュ"].addLayer(po);
+        meshLayers['vaccine'][v.id] = po;
+        featureIDs['vaccineMesh'].push(v.id);
+      });
+
+      // 検索に引っかからなかったメッシュを削除する
+      deleteVaccineMeshIds.forEach(id => {
+        const po = meshLayers['vaccine'][id];
+        if(po != null)
+          overlayList["ワクチンメッシュ"].removeLayer(po);
+
+        meshLayers['vaccine'][id].remove();
+        delete meshLayers['vaccine'][id];
+
+        featureIDs['vaccineMesh'].splice(featureIDs['vaccineMesh'].indexOf(id), 1);
+      });
+
+      // ハンターメッシュデータの処理
+      if (featureIDs['hunterMesh'] == null) featureIDs['hunterMesh'] = [];
+
+      // 各条件に合致する要素を取得する
+      const newHunterMeshData = data.hunter.filter(v=>!featureIDs['hunterMesh'].includes(v.id));
+      const hunterIDs = data.hunter.map(v=>v.id);
+      const deleteHunterMeshIds = featureIDs['hunterMesh'].filter(id=>!hunterIDs.includes(id));
+
+      // 新しいメッシュを描画する
+      newHunterMeshData.forEach(v => {
+        const po = L.polygon(v.coordinates, {
+          color: '#cc56db',
+          weight: 2,
+          fill: false,
+        });
+
+        // TODO: ここでメッシュ番号を入れる
+        
+        overlayList["ハンターメッシュ"].addLayer(po);
+        meshLayers['hunter'][v.id] = po;
+        featureIDs['hunterMesh'].push(v.id);
+      });
+
+      // 検索に引っかからなかったメッシュを削除する
+      deleteHunterMeshIds.forEach(id => {
+        const po = meshLayers['hunter'][id];
+        if(po != null)
+          overlayList["ハンターメッシュ"].removeLayer(po);
+
+        meshLayers['hunter'][id].remove();
+        delete meshLayers['hunter'][id];
+
+        featureIDs['hunterMesh'].splice(featureIDs['hunterMesh'].indexOf(id), 1);
       });
     }
 
@@ -777,7 +779,13 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.values(overlayList).forEach((o) => o.addTo(myMap));
+    Object.keys(overlayList).forEach(k => {
+      if(k != "ハンターメッシュ" 
+        && k != "ワクチンメッシュ" 
+        && k != "捕獲いのしし分布")
+        overlayList[k].addTo(myMap);
+    });
+
     // コントロール追加
     const contrl = L.control.layers(undefined, overlayList, {
       collapsed: false,
