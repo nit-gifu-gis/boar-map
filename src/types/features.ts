@@ -4,11 +4,13 @@ export interface MeshData {
   id: string;
   name: string;
   coordinates: LatLngExpression[];
+  fillOpacity?: number;
 }
 
 export interface MeshDataResponse {
   hunter: MeshData[];
   vaccine: MeshData[];
+  boar: MeshData[];
 }
 
 export type layerType =

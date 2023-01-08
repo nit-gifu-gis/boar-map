@@ -8,7 +8,7 @@ import '../../../utils/extwms';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
-import { getColorCode, layerLabels, SERVER_URI } from '../../../utils/constants';
+import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '../../../utils/constants';
 import { hasReadPermission } from '../../../utils/gis';
 import { alert, cityList } from '../../../utils/modal';
 import { getAccessToken } from '../../../utils/currentUser';
@@ -20,7 +20,6 @@ import {
   FeatureBase,
   FeatureExtentResponse,
   layerType,
-  MeshData,
   MeshDataResponse,
   ReportFeature,
   TrapFeature,
@@ -28,7 +27,6 @@ import {
   YoutonFeature,
 } from '../../../types/features';
 import { useRouter } from 'next/router';
-import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 import RoundButton from '../../atomos/roundButton';
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
@@ -45,7 +43,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [myMap, setMyMap] = useState<L.Map | null>(null);
   const [, setControl] = useState<L.Control | null>(null);
   const [featureIDs] = useState<Record<string, string[]>>({});
-  const [meshLayers] = useState<Record<string, Record<string, L.Polygon>>>({
+  const [meshLayers] = useState<Record<string, Record<string, L.LayerGroup>>>({
     vaccine: {},
     hunter: {}
   });
@@ -145,11 +143,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         });
       }
 
-      // ワクチンメッシュ
       overlay['ワクチンメッシュ'] = L.layerGroup();
-
-      // ハンターメッシュ
       overlay['ハンターメッシュ'] = L.layerGroup();
+      overlay['捕獲いのしし分布'] = L.layerGroup();
     }
     setOverlayList(overlay);
   };
@@ -388,74 +384,67 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     if(resMesh.status === 200) {
       const data = await resMesh.json() as MeshDataResponse;
 
-      // ワクチンメッシュデータの処理
-      if (featureIDs['vaccineMesh'] == null) featureIDs['vaccineMesh'] = [];
+      const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
 
-      // 各条件に合致する要素を取得する
-      const newVaccineMeshData = data.vaccine.filter(v=>!featureIDs['vaccineMesh'].includes(v.id));
-      const vaccineIDs = data.vaccine.map(v=>v.id);
-      const deleteVaccineMeshIds = featureIDs['vaccineMesh'].filter(id=>!vaccineIDs.includes(id));
+      const polygonParam = (key: "vaccine" | "hunter" | "boar") => {
+        if(key != "boar") {
+          return {
+            color: key == "vaccine" ? '#0288d1' : '#cc56db',
+            weight: 2,
+            fill: false 
+          };
+        } else {
+          return {
+            color: '#0288d1',
+            weight: 2,
+            fill: true
+          };
+        }
+      };
 
-      // 新しいメッシュを描画する
-      newVaccineMeshData.forEach(v => {
-        const po = L.polygon(v.coordinates, {
-          color: '#0288d1',
-          weight: 2,
-          fill: false 
+      // メッシュデータの処理
+      Object.keys(data).forEach(_k => {
+        const k = _k as "vaccine" | "hunter" | "boar";
+        const k0 = keys[k][0];
+        const k1 = keys[k][1];
+
+        // メッシュが一定数を超えていたら表示しない
+        console.log(data[k].length);
+        if(data[k].length > MAX_MESH_COUNT)
+          data[k] = [];
+
+        if (featureIDs[k0] == null) featureIDs[k0] = [];
+
+        // 各条件に合致する要素を取得する
+        const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
+        const IDs = data[k].map(v=>v.id);
+        const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
+        // 新しいメッシュを描画する
+        newMeshData.forEach(v => {
+          const po = L.polygon(v.coordinates, polygonParam(k));
+          const ma = L.marker(po.getBounds().getCenter(), {
+            icon: L.divIcon({
+              html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+            })
+          });
+          const lg = L.layerGroup([po, ma]);
+
+          overlayList[k1].addLayer(lg);
+          meshLayers[k][v.id] = lg;
+          featureIDs[k0].push(v.id);
         });
 
-        // TODO: ここでメッシュ番号を入れる
+        // 検索に引っかからなかったメッシュを削除する
+        deleteMeshIDs.forEach(id => {
+          const po = meshLayers[k][id];
+          if(po != null)
+            overlayList[k1].removeLayer(po);
 
-        overlayList["ワクチンメッシュ"].addLayer(po);
-        meshLayers['vaccine'][v.id] = po;
-        featureIDs['vaccineMesh'].push(v.id);
-      });
+          meshLayers[k][id].remove();
+          delete meshLayers[k][id];
 
-      // 検索に引っかからなかったメッシュを削除する
-      deleteVaccineMeshIds.forEach(id => {
-        const po = meshLayers['vaccine'][id];
-        if(po != null)
-          overlayList["ワクチンメッシュ"].removeLayer(po);
-
-        meshLayers['vaccine'][id].remove();
-        delete meshLayers['vaccine'][id];
-
-        featureIDs['vaccineMesh'].splice(featureIDs['vaccineMesh'].indexOf(id), 1);
-      });
-
-      // ハンターメッシュデータの処理
-      if (featureIDs['hunterMesh'] == null) featureIDs['hunterMesh'] = [];
-
-      // 各条件に合致する要素を取得する
-      const newHunterMeshData = data.hunter.filter(v=>!featureIDs['hunterMesh'].includes(v.id));
-      const hunterIDs = data.hunter.map(v=>v.id);
-      const deleteHunterMeshIds = featureIDs['hunterMesh'].filter(id=>!hunterIDs.includes(id));
-
-      // 新しいメッシュを描画する
-      newHunterMeshData.forEach(v => {
-        const po = L.polygon(v.coordinates, {
-          color: '#cc56db',
-          weight: 2,
-          fill: false,
+          featureIDs[k0].splice(featureIDs[k0].indexOf(id), 1);
         });
-
-        // TODO: ここでメッシュ番号を入れる
-        
-        overlayList["ハンターメッシュ"].addLayer(po);
-        meshLayers['hunter'][v.id] = po;
-        featureIDs['hunterMesh'].push(v.id);
-      });
-
-      // 検索に引っかからなかったメッシュを削除する
-      deleteHunterMeshIds.forEach(id => {
-        const po = meshLayers['hunter'][id];
-        if(po != null)
-          overlayList["ハンターメッシュ"].removeLayer(po);
-
-        meshLayers['hunter'][id].remove();
-        delete meshLayers['hunter'][id];
-
-        featureIDs['hunterMesh'].splice(featureIDs['hunterMesh'].indexOf(id), 1);
       });
     }
 
