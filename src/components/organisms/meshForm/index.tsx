@@ -6,6 +6,7 @@ import SelectInput from '../../atomos/selectInput';
 import Image from 'next/image';
 import { MeshFormInterface } from './interface';
 import { alert } from '../../../utils/modal';
+import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 
 const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);
@@ -33,7 +34,8 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
     setButtonLabel('アップロード中...');
     setUploading(true);
 
-    const res = await fetch(SERVER_URI + '/Mesh/Import', {
+    // 一度サーバーにアップロードしてファイルをチェック
+    const res = await fetch(SERVER_URI + '/Mesh/Upload', {
       method: 'POST',
       body: data,
       headers: {
@@ -53,7 +55,58 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
       return;
     }
 
-    setMessage(resp.message);
+    const t = fileType.options[fileType.selectedIndex].value == "ワクチンメッシュ" ? "vaccine" : "hunter";
+
+    // ファイルの内容に問題がなければ取得してパースする
+    const zipres = await fetch(SERVER_URI + "/Mesh/Get?type=" + t, {
+      headers: {
+        'X-Access-Token': getAccessToken(),
+      },
+    });
+
+    if (!zipres.ok) {
+      setError("ZIPファイルを取得できません。(" + zipres.status + ")");
+      setUploading(false);
+      setButtonLabel('アップロード');
+      return;
+    }
+
+    const zip = await zipres.blob();
+    const buffer = await zip.arrayBuffer();
+
+    const shp_r = await shapefile(buffer);
+
+    let featurecollection: FeatureCollectionWithFilename[];
+    if ((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
+      featurecollection = shp_r as FeatureCollectionWithFilename[];
+    } else {
+      featurecollection = [shp_r as FeatureCollectionWithFilename];
+    }
+
+    // パースした内容をサーバーに投げて保存
+    const d = {
+      type: t,
+      data: featurecollection
+    };
+
+    const res2 = await fetch(SERVER_URI + "/Mesh/Import", {
+      method: 'POST',
+      headers: {
+        'X-Access-Token': getAccessToken()
+      },
+      body: JSON.stringify(d)
+    });
+
+    const resp2 = await res2.text();
+    console.log(resp2);
+    if (res2.status !== 200) {
+      setError(resp.error);
+      setUploading(false);
+      setButtonLabel('アップロード');
+      return;
+    }
+    
+    setMessage("データを更新しました。");
     setUploading(false);
     setButtonLabel('アップロード');
   };
