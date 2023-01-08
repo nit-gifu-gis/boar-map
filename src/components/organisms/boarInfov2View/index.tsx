@@ -30,7 +30,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   }
 
   const getImgIDs = () => {
-    if(imageIDs != null) {
+    if (imageIDs != null) {
       return imageIDs;
     } else {
       const d = detail.properties.写真ID.split(',');
@@ -53,8 +53,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
           type: 'boar',
           objectURLs: objectURLs,
           confirmMode: confirmMode,
-          imageIDs:
-            getImgIDs(),
+          imageIDs: getImgIDs(),
         }}
       />
       <InfoDiv title='メッシュ番号' type='text' data={detail.properties.メッシュ番} />
@@ -94,40 +93,41 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
               <InfoDiv title='処分方法' type='text' data={v.properties.処分方法} />
               {v.properties.処分方法 === '利活用（ジビエ利用）' ||
               v.properties.処分方法 === 'ジビエ業者渡し' ? (
-                  <>
-                    <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
-                    <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
-                    <InfoDiv
-                      title='個体管理番号'
-                      type='text'
-                      data={
-                        v.properties.個体管理番 == ''
-                          ? (confirmMode ? "（登録時に確定します）" : '（未入力）')
-                          : v.properties.個体管理番.replace('-', '')
-                      }
-                    />
-                  </>
-                ) : (
-                  <></>
-                )}
-              {confirmMode
-                && !(
-                  currentUser?.userDepartment == "K"
-                  || currentUser?.userDepartment == "D"
-                ) ? <></> : (
-                  <>
-                    {v.properties.PCR検査日 == '' ? (
-                      <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
-                    ) : (
-                      <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
-                    )}
-                    <InfoDiv
-                      title='PCR検査結果'
-                      type='text'
-                      data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
-                    />
-                  </>
-                )}
+                <>
+                  <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
+                  <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
+                  <InfoDiv
+                    title='個体管理番号'
+                    type='text'
+                    data={
+                      v.properties.個体管理番 == ''
+                        ? confirmMode
+                          ? '（登録時に確定します）'
+                          : '（未入力）'
+                        : v.properties.個体管理番.replace('-', '')
+                    }
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+              {confirmMode &&
+              !(currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D') ? (
+                <></>
+              ) : (
+                <>
+                  {v.properties.PCR検査日 == '' ? (
+                    <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
+                  ) : (
+                    <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
+                  )}
+                  <InfoDiv
+                    title='PCR検査結果'
+                    type='text'
+                    data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
+                  />
+                </>
+              )}
               <InfoDiv title='備考' type='text' data={v.properties.備考} />
             </div>
           );

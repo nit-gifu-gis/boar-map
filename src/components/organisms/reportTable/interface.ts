@@ -1,5 +1,5 @@
-import { FeatureBase } from "../../../types/features";
+import { FeatureBase } from '../../../types/features';
 
 export interface ReportTableProps {
-    features: FeatureBase[]
+  features: FeatureBase[];
 }

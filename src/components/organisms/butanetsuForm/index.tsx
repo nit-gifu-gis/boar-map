@@ -1,51 +1,27 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import RoundButton from '../../atomos/roundButton';
+import SelectInput from '../../atomos/selectInput';
+import Image from 'next/image';
+import { MeshFormInterface } from './interface';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
-import { alert } from '../../../utils/modal';
-import RoundButton from '../../atomos/roundButton';
-import { PCRFormInterface } from './interface';
 
-const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {
+const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('インポート');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const onClickImport = async () => {
-    const fileForm = document.getElementById('importExcel') as HTMLInputElement;
-    if (fileForm.files == null || fileForm.files?.length === 0) {
-      setError('ファイルが選択されていません。');
-      return;
-    }
-
-    const data = new FormData();
-    data.append('excel', fileForm.files[0]);
-
-    setError('');
-    setMessage('');
-    setButtonLabel('アップロード中...');
+  const onClickImport = () => {
     setUploading(true);
+    setButtonLabel("インポート中...")
 
-    const res = await fetch(SERVER_URI + '/List/Import', {
-      method: 'POST',
-      body: data,
-      headers: {
-        'X-Access-Token': getAccessToken(),
-      },
-    });
+    /** インポート処理をここに書く */
+    setError("アップロード処理を実装してください。")
 
-    const resp = await res.json();
-    if (res.status !== 200) {
-      setError(resp.error);
-      setUploading(false);
-      setButtonLabel('アップロード');
-      return;
-    }
-
-    setMessage(resp.message);
+    setButtonLabel("インポート")
     setUploading(false);
-    setButtonLabel('アップロード');
-  };
+  }
 
   const fileFormChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const form = e.target as HTMLInputElement;
@@ -61,9 +37,43 @@ const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {
     }
   };
 
+  const onClickDownload = async () => {
+    const res = await fetch(SERVER_URI + '/List/ButanetsuDownload', {
+      headers: {
+        'X-Access-Token': getAccessToken()
+      }
+    });
+
+    if (res.status === 200) {
+      const blob = await res.blob();
+      const anchor = document.createElement('a');
+      const now = new Date();
+      const yyyy = ('0000' + now.getFullYear()).slice(-4);
+      const mm = ('00' + (now.getMonth() + 1)).slice(-2);
+      const dd = ('00' + now.getDate()).slice(-2);
+
+      const name = '豚熱陽性確認情報テンプレート.xlsx';
+      // IE対応
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (window.navigator.msSaveBlob) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.navigator.msSaveBlob(blob, name);
+        return;
+      }
+      anchor.download = name;
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.click();
+    } else {
+      const json = await res.json();
+      await alert(json.error);
+    }
+  }
+
   return (
     <div className='mb-[30px] w-full'>
-      <div className='text-2xl font-bold'>PCR結果インポート</div>
+      <div className='text-2xl font-bold'>豚熱陽性確認情報インポート</div>
       <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
         <div className='grid grid-cols-[150px_1fr]'>
           <div className='col-[1/2] row-[4] m-[5px] flex items-center justify-center'>
@@ -85,6 +95,11 @@ const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {
           </div>
           <div className='col-[1/3] row-[6]'>
             <div className='mx-auto my-5 max-w-[400px]'>
+              <RoundButton color='accent' onClick={onClickDownload}>
+                テンプレートダウンロード
+              </RoundButton>
+            </div>
+            <div className='mx-auto my-5 max-w-[400px]'>
               <RoundButton color='excel' onClick={onClickImport} disabled={isUploading}>
                 {buttonLabel}
               </RoundButton>
@@ -101,4 +116,4 @@ const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {
   );
 };
 
-export default PCRForm;
+export default ButanetsuForm;

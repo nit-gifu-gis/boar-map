@@ -142,7 +142,10 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
 
       const form = getForm();
       // 入力者
-      const user = props.featureInfo?.properties.入力者 != null ? props.featureInfo.properties.入力者 : currentUser?.userId;
+      const user =
+        props.featureInfo?.properties.入力者 != null
+          ? props.featureInfo.properties.入力者
+          : currentUser?.userId;
       // メッシュ番号
       const meshNo = form.meshNo.value as string;
       // 区分
@@ -172,8 +175,14 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           罠発見場所: trapOrEnv,
           地名: '',
           処理方法: '',
-          写真ID: props.featureInfo?.properties.写真ID != null ? props.featureInfo?.properties.写真ID : "",
-          歯列写真ID: props.featureInfo?.properties.歯列写真ID != null ? props.featureInfo?.properties.歯列写真ID : "",
+          写真ID:
+            props.featureInfo?.properties.写真ID != null
+              ? props.featureInfo?.properties.写真ID
+              : '',
+          歯列写真ID:
+            props.featureInfo?.properties.歯列写真ID != null
+              ? props.featureInfo?.properties.歯列写真ID
+              : '',
           捕獲いのしし情報: boarListData,
         },
         geometry: {
@@ -184,10 +193,10 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       };
 
       // 既存の更新の場合はID$を設定する
-      if(props.featureInfo?.properties.ID$ != null) {
+      if (props.featureInfo?.properties.ID$ != null) {
         data.properties.ID$ = props.featureInfo?.properties.ID$;
       }
-            
+
       return data;
     };
 
