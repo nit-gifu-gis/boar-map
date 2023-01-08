@@ -46,8 +46,8 @@ const SettingsTemplate: React.FunctionComponent = () => {
       if (currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D')
         c.push(<MeshForm key={'Mesh Settings'} maxSize={ms} />);
 
-      if (currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D')
-        c.push(<ButanetsuForm key={'Butanetsu Settings'} maxSize={ms} />);
+      /*if (currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D')
+        c.push(<ButanetsuForm key={'Butanetsu Settings'} maxSize={ms} />);*/
 
       setContents(c);
     };
