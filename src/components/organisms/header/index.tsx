@@ -164,7 +164,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_questionaire'
       >
-        <Link href="/static/manual_20221214.pdf">
+        <Link href="/static/boarmap_manual_20221214.pdf">
           <a
             className='text-14pt text-background no-underline'
             target='_blank'
