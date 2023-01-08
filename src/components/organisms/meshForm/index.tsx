@@ -97,10 +97,9 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
       body: JSON.stringify(d)
     });
 
-    const resp2 = await res2.text();
-    console.log(resp2);
     if (res2.status !== 200) {
-      setError(resp.error);
+      const resp2 = await res2.json();
+      setError(resp2.error);
       setUploading(false);
       setButtonLabel('アップロード');
       return;
