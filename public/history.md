@@ -1,26 +1,7 @@
-### Version 2.1.1[/version]<br>[contents]<br>豚熱陽性高率エリアの表示方法を変更しました。<br>データインポートに関連するバグを修正しました。<br>位置情報の取得方法を変更しました。<br>[/contents]<br>[/meta]<br><br>* :robot: 更新履歴の追加 (Version 2.1.1)<br><br>* V2.2 #217 (#221)<br><br>* 養豚場情報編集時のバグ修正＆フォーマット<br><br>* 豚熱陽性地点情報テンプレート、養豚場一覧インポートの実装 #217<br><br>* V2.2 mesh (#222)<br><br>* メッシュ表示改良<br><br>* メッシュ表示変更<br><br>* マニュアルの追加<br><br>* Update dependencies<br><br>* Fix UI<br><br>* selectionMapも修正<br><br>Co-authored-by: junt1458 <junt1458@users.noreply.github.com><br><br>[meta]<br>[version]Version 2.2α
+### Version 2.2.0α
 
-- 豚熱陽性高率エリアの表示方法を変更しました。
-- データインポートに関連するバグを修正しました。
-- 位置情報の取得方法を変更しました。
-- [/contents]
-- [/meta]
-- * :robot: 更新履歴の追加 (Version 2.1.1)
-- * V2.2 #217 (#221)
-- * 養豚場情報編集時のバグ修正＆フォーマット
-- * 豚熱陽性地点情報テンプレート、養豚場一覧インポートの実装 #217
-- * V2.2 mesh (#222)
-- * メッシュ表示改良
-- * メッシュ表示変更
-- * マニュアルの追加
-- * Update dependencies
-- * Fix UI
-- * selectionMapも修正
-- Co-authored-by: junt1458 <junt1458@users.noreply.github.com>
-- [meta]
-- [version]Version 2.2α[/version]
-- [contents]
 - 養豚場情報の出力機能を追加しました。
+- ヘッダーにマニュアルへのリンクを追加しました。
 - メッシュ表示時にメッシュ番号を表示するように変更しました。
 
 
