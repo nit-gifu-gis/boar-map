@@ -45,7 +45,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [featureIDs] = useState<Record<string, string[]>>({});
   const [meshLayers] = useState<Record<string, Record<string, L.LayerGroup>>>({
     vaccine: {},
-    hunter: {}
+    hunter: {},
+    boar: {}
   });
   const [, setButanetsuLayerID] = useState(-1);
   const [locSearchVisible, setLocSearchVisible] = useState(false);

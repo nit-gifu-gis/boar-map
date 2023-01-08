@@ -7,7 +7,6 @@ import Header from '../../organisms/header';
 import MeshForm from '../../organisms/meshForm';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
-import ButanetsuForm from '../../organisms/butanetsuForm';
 
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

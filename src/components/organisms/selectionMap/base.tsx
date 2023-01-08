@@ -10,12 +10,13 @@ import {
   FeatureBase,
   FeatureExtentResponse,
   layerType,
+  MeshDataResponse,
   ReportFeature,
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
 } from '../../../types/features';
-import { getColorCode, layerLabels, SERVER_URI } from '../../../utils/constants';
+import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasReadPermission } from '../../../utils/gis';
 import { LatLngZoom, Location } from '../mapBase/interface';
@@ -24,7 +25,6 @@ import L, { LatLngExpression } from 'leaflet';
 import '../../../utils/extwms';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
-import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 import RoundButton from '../../atomos/roundButton';
 import { cityList } from '../../../utils/modal';
 
@@ -46,6 +46,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState('検索');
   const [, setMyLocMarker] = useState<L.Marker | null>(null);
+  const [meshLayers] = useState<Record<string, Record<string, L.LayerGroup>>>({
+    vaccine: {},
+    hunter: {},
+    boar: {}
+  });
 
   //let myLocMarker: L.Marker | null = null;
 
@@ -178,105 +183,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         });
       }
 
-      // ワクチンメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + '/Mesh/Get?type=vaccine', {
-          headers: {
-            'X-Access-Token': getAccessToken(),
-          },
-        });
-
-        if (!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if ((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach((fc) => {
-          fc.features.forEach((feature) => {
-            if (feature.geometry.type !== 'Polygon') {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach((l) => {
-              coordinates.push([l[1], l[0]]);
-            });
-            polygons.push(
-              L.polygon(coordinates, {
-                color: '#0288d1',
-                weight: 2,
-                fill: true,
-                fillColor: '#0288d1',
-                opacity: 0.6,
-              }),
-            );
-          });
-        });
-        overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
-      })();
-
-      // ハンターメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + '/Mesh/Get?type=hunter', {
-          headers: {
-            'X-Access-Token': getAccessToken(),
-          },
-        });
-
-        if (!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if ((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach((fc) => {
-          fc.features.forEach((feature) => {
-            if (feature.geometry.type !== 'Polygon') {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach((l) => {
-              coordinates.push([l[1], l[0]]);
-            });
-            polygons.push(
-              L.polygon(coordinates, {
-                color: '#cc56db',
-                weight: 2,
-                fill: true,
-                fillColor: '#cc56db',
-                opacity: 0.6,
-              }),
-            );
-          });
-        });
-        overlay['ハンターメッシュ'] = L.layerGroup(polygons);
-      })();
+      overlay['ワクチンメッシュ'] = L.layerGroup();
+      overlay['ハンターメッシュ'] = L.layerGroup();
+      overlay['捕獲いのしし分布'] = L.layerGroup();
     }
     setOverlayList(overlay);
   };
@@ -442,6 +351,86 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
           }
         }
+      });
+    }
+
+    // メッシュデータを取得する
+    const resMesh = await fetch(SERVER_URI + "/Mesh/Search", {
+      method: "POST",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Access-Token': getAccessToken(),
+      },
+      body: JSON.stringify({
+        lat: [topLat, bottomLat],
+        lng: [leftLng, rightLng]
+      }),
+    });
+
+    if(resMesh.status === 200) {
+      const data = await resMesh.json() as MeshDataResponse;
+
+      const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
+
+      const polygonParam = (key: "vaccine" | "hunter" | "boar") => {
+        if(key != "boar") {
+          return {
+            color: key == "vaccine" ? '#0288d1' : '#cc56db',
+            weight: 2,
+            fill: false 
+          };
+        } else {
+          return {
+            color: '#0288d1',
+            weight: 2,
+            fill: true
+          };
+        }
+      };
+
+      // メッシュデータの処理
+      Object.keys(data).forEach(_k => {
+        const k = _k as "vaccine" | "hunter" | "boar";
+        const k0 = keys[k][0];
+        const k1 = keys[k][1];
+
+        // メッシュが一定数を超えていたら表示しない
+        if(data[k].length > MAX_MESH_COUNT)
+          data[k] = [];
+
+        if (featureIDs[k0] == null) featureIDs[k0] = [];
+
+        // 各条件に合致する要素を取得する
+        const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
+        const IDs = data[k].map(v=>v.id);
+        const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
+        // 新しいメッシュを描画する
+        newMeshData.forEach(v => {
+          const po = L.polygon(v.coordinates, polygonParam(k));
+          const ma = L.marker(po.getBounds().getCenter(), {
+            icon: L.divIcon({
+              html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+            })
+          });
+          const lg = L.layerGroup([po, ma]);
+
+          overlayList[k1].addLayer(lg);
+          meshLayers[k][v.id] = lg;
+          featureIDs[k0].push(v.id);
+        });
+
+        // 検索に引っかからなかったメッシュを削除する
+        deleteMeshIDs.forEach(id => {
+          const po = meshLayers[k][id];
+          if(po != null)
+            overlayList[k1].removeLayer(po);
+
+          meshLayers[k][id].remove();
+          delete meshLayers[k][id];
+
+          featureIDs[k0].splice(featureIDs[k0].indexOf(id), 1);
+        });
       });
     }
 
@@ -797,7 +786,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.values(overlayList).forEach((o) => o.addTo(myMap));
+    Object.keys(overlayList).forEach(k => {
+      if(k != "ハンターメッシュ" 
+        && k != "ワクチンメッシュ" 
+        && k != "捕獲いのしし分布")
+        overlayList[k].addTo(myMap);
+    });
+
     // コントロール追加
     const contrl = L.control.layers(undefined, overlayList, {
       collapsed: false,
