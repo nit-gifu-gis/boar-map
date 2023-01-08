@@ -409,7 +409,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const k1 = keys[k][1];
 
         // メッシュが一定数を超えていたら表示しない
-        console.log(data[k].length);
         if(data[k].length > MAX_MESH_COUNT)
           data[k] = [];
 
