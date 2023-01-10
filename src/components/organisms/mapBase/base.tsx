@@ -387,7 +387,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
       const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
 
-      const polygonParam = (key: "vaccine" | "hunter" | "boar") => {
+      const polygonParam = (key: "vaccine" | "hunter" | "boar", opacity?: number) => {
         if(key != "boar") {
           return {
             color: key == "vaccine" ? '#0288d1' : '#cc56db',
@@ -396,9 +396,11 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           };
         } else {
           return {
-            color: '#0288d1',
+            color: undefined,
             weight: 2,
-            fill: true
+            fill: true,
+            fillColor: '#ff1f0f',
+            fillOpacity: opacity ? opacity * 0.9 : 0
           };
         }
       };
@@ -409,8 +411,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const k0 = keys[k][0];
         const k1 = keys[k][1];
 
-        // メッシュが一定数を超えていたら表示しない
-        if(data[k].length > MAX_MESH_COUNT)
+        // 分布表示以外の場合、メッシュが一定数を超えていたら表示しない
+        if(data[k].length > MAX_MESH_COUNT && k != "boar")
           data[k] = [];
 
         if (featureIDs[k0] == null) featureIDs[k0] = [];
@@ -421,13 +423,17 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
         // 新しいメッシュを描画する
         newMeshData.forEach(v => {
-          const po = L.polygon(v.coordinates, polygonParam(k));
-          const ma = L.marker(po.getBounds().getCenter(), {
-            icon: L.divIcon({
-              html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
-            })
-          });
-          const lg = L.layerGroup([po, ma]);
+          const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
+          const gr: (L.Marker<any> | L.Polygon)[] = [po];
+          if (v.fillOpacity === undefined) {
+            const ma = L.marker(po.getBounds().getCenter(), {
+              icon: L.divIcon({
+                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+              })
+            });
+            gr.push(ma);
+          }
+          const lg = L.layerGroup(gr);
 
           overlayList[k1].addLayer(lg);
           meshLayers[k][v.id] = lg;

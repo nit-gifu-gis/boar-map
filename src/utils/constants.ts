@@ -20,7 +20,7 @@ export const SERVER_URI = getServerURI();
 
 export const MAX_UPLOAD_SIZE = 20 * (1024 * 1024);
 
-export const MAX_MESH_COUNT = 170;
+export const MAX_MESH_COUNT = 500;
 
 export const getColorCode = (colorText: string) => {
   let colorCode = '#ff9800';
