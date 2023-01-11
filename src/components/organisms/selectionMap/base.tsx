@@ -410,7 +410,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         // 新しいメッシュを描画する
         newMeshData.forEach(v => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
-          const gr: (L.Marker<any> | L.Polygon)[] = [po];
+          const gr: (L.Marker | L.Polygon)[] = [po];
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({
@@ -737,8 +737,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     // メイン地図レイヤー
     L.TileLayer.wmsHeader(
-      'https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S',
+      SERVER_URI + "/Map/GetImage",
       {
+        TENANTID: '21000S',
         version: '1.3.0',
         layers: '999999194',
         format: 'image/png',
@@ -749,8 +750,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       },
       [
         {
-          header: 'X-Map-Api-Access-Token',
-          value: currentUser?.accessToken,
+          header: 'X-Access-Token',
+          value: getAccessToken(),
         },
       ],
     ).addTo(myMap);
