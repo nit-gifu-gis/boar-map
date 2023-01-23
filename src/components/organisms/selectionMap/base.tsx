@@ -10,12 +10,13 @@ import {
   FeatureBase,
   FeatureExtentResponse,
   layerType,
+  MeshDataResponse,
   ReportFeature,
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
 } from '../../../types/features';
-import { getColorCode, layerLabels, SERVER_URI } from '../../../utils/constants';
+import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { hasReadPermission } from '../../../utils/gis';
 import { LatLngZoom, Location } from '../mapBase/interface';
@@ -24,26 +25,32 @@ import L, { LatLngExpression } from 'leaflet';
 import '../../../utils/extwms';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
-import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
 import RoundButton from '../../atomos/roundButton';
 import { cityList } from '../../../utils/modal';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [, setLoc] = useState<Location | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
-  const [overlayList, setOverlayList] = useState<Record<string, L.MarkerClusterGroup | L.LayerGroup>>({});
+  const [overlayList, setOverlayList] = useState<
+    Record<string, L.MarkerClusterGroup | L.LayerGroup>
+  >({});
   const { currentUser } = useCurrentUser();
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
-  const [featureIDs, ] = useState<Record<string, string[]>>({});
+  const [featureIDs] = useState<Record<string, string[]>>({});
   const [myMap, setMyMap] = useState<L.Map | null>(null);
   const [, setControl] = useState<L.Control | null>(null);
   const [watchPosId, setWatchPosId] = useState<number | null>(null);
   const [, setButanetsuLayerID] = useState(-1);
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
-  const [searchButtonLabel, setSearchButtonLabel] = useState("検索");
+  const [searchButtonLabel, setSearchButtonLabel] = useState('検索');
   const [, setMyLocMarker] = useState<L.Marker | null>(null);
+  const [meshLayers] = useState<Record<string, Record<string, L.LayerGroup>>>({
+    vaccine: {},
+    hunter: {},
+    boar: {}
+  });
 
   //let myLocMarker: L.Marker | null = null;
 
@@ -56,15 +63,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   // 上から重ねる用、左右2pxずつのマージンを足した幅を計算する
   const calcOverlayWidth = () => {
     const d = document.getElementById('map');
-    if(d == null)
-      return window.innerWidth - 15 * 2;
+    if (d == null) return window.innerWidth - 15 * 2;
     return d.clientWidth + 2 * 2;
   };
   const [overlayWidth, setOverlayWidth] = useState(`${calcOverlayWidth()}px`);
   const calcOverlayHeight = () => {
     const d = document.getElementById('map');
-    if(d == null)
-      return 0;
+    if (d == null) return 0;
     return d.clientHeight + 2 * 2;
   };
   const [overlayHeight, setOverlayHeight] = useState(`${calcOverlayHeight()}px`);
@@ -72,11 +77,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   useEffect(() => {
     // 初回ロード時は遅延して高さを取得する
     const asyncTask = async () => {
-      if(overlayHeight === "0px") {
+      if (overlayHeight === '0px') {
         const h = await new Promise<string>((resolve) => {
           const fetchFunc = () => {
             const c = `${calcOverlayHeight()}px`;
-            if(c == "0px") {
+            if (c == '0px') {
               setTimeout(fetchFunc, 10);
             } else {
               resolve(c);
@@ -109,7 +114,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  const setupMap = async () => { 
+  const setupMap = async () => {
     const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
     if (Object.keys(overlay).length === 0 && currentUser != null) {
       // レイヤーの追加
@@ -122,7 +127,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
       }
-  
+
       if (hasReadPermission('trap', currentUser)) {
         overlay['わな設置地点'] = L.markerClusterGroup({
           ...clusterGroupOption,
@@ -132,7 +137,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
       }
-  
+
       if (hasReadPermission('vaccine', currentUser)) {
         overlay['ワクチン散布地点'] = L.markerClusterGroup({
           ...clusterGroupOption,
@@ -142,7 +147,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
       }
-  
+
       if (hasReadPermission('youton', currentUser)) {
         overlay['養豚場'] = L.markerClusterGroup({
           ...clusterGroupOption,
@@ -152,7 +157,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
       }
-  
+
       if (hasReadPermission('butanetsu', currentUser)) {
         const mcg = L.markerClusterGroup({
           ...clusterGroupOption,
@@ -162,12 +167,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
 
-        const lg =  L.layerGroup([mcg]);
+        const lg = L.layerGroup([mcg]);
         setButanetsuLayerID(lg.getLayerId(mcg));
 
         overlay['豚熱陽性高率エリア'] = lg;
       }
-  
+
       if (hasReadPermission('report', currentUser)) {
         overlay['作業日報'] = L.markerClusterGroup({
           ...clusterGroupOption,
@@ -177,102 +182,10 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           },
         });
       }
-  
-      // ワクチンメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + "/Mesh/Get?type=vaccine", {
-          headers: {
-            "X-Access-Token": getAccessToken()
-          }
-        });
 
-        if(!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach(fc => {
-          fc.features.forEach(feature => {
-            if(feature.geometry.type !== "Polygon") {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach(l => {
-              coordinates.push([l[1], l[0]]);
-            });
-            polygons.push(L.polygon(coordinates, {
-              color: '#0288d1',
-              weight: 2,
-              fill: true,
-              fillColor: '#0288d1',
-              opacity: 0.6 
-            }));
-          });
-        });    
-        overlay['ワクチンメッシュ'] = L.layerGroup(polygons);
-      })();
-  
-      // ハンターメッシュの読み込み
-      //   例外発生時に簡単に外に出られるように処理を関数で囲う
-      await (async () => {
-        const response = await fetch(SERVER_URI + "/Mesh/Get?type=hunter", {
-          headers: {
-            "X-Access-Token": getAccessToken()
-          }
-        });
-
-        if(!response.ok) {
-          console.error(`メッシュ情報取得失敗: HTTP ${response.status}`);
-          return;
-        }
-
-        const data = await response.blob();
-        const buffer = await data.arrayBuffer();
-
-        const shp_r = await shapefile(buffer);
-
-        const polygons: L.Polygon[] = [];
-
-        let featurecollection: FeatureCollectionWithFilename[];
-        if((shp_r as FeatureCollectionWithFilename[]).length !== undefined) {
-          featurecollection = shp_r as FeatureCollectionWithFilename[];
-        } else {
-          featurecollection = [shp_r as FeatureCollectionWithFilename];
-        }
-        featurecollection.forEach(fc => {
-          fc.features.forEach(feature => {
-            if(feature.geometry.type !== "Polygon") {
-              return;
-            }
-            const coordinates: LatLngExpression[] = [];
-            feature.geometry.coordinates[0].forEach(l => {
-              coordinates.push([l[1], l[0]]);
-            });
-            polygons.push(L.polygon(coordinates, {
-              color: '#cc56db',
-              weight: 2,
-              fill: true,
-              fillColor: '#cc56db',
-              opacity: 0.6 
-            }));
-          });
-        });    
-        overlay['ハンターメッシュ'] = L.layerGroup(polygons);
-      })();
+      overlay['ワクチンメッシュ'] = L.layerGroup();
+      overlay['ハンターメッシュ'] = L.layerGroup();
+      overlay['捕獲いのしし分布'] = L.layerGroup();
     }
     setOverlayList(overlay);
   };
@@ -280,19 +193,20 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const formatDate = (date: string) => {
     const regex = new RegExp('(\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}).*', 'g');
     const result = regex.exec(date);
-    if(result == null)
-      return "日付登録なし";
-    else 
-      return result[1];
+    if (result == null) return '日付登録なし';
+    else return result[1];
   };
 
   const markerIcon = (iconUrl: string, label: string) => {
     return L.divIcon({
       iconSize: [0, 0],
-      html: '<div class="markerDiv">' +
-              `<img src="${iconUrl}" class="markerDiv__img" style="${!iconUrl.toLowerCase().endsWith(".svg") ? "width: 25px;" : ""}" />` +
-              `<div class="markerDiv__title">${label}</div>` +
-            '</div>'
+      html:
+        '<div class="markerDiv">' +
+        `<img src="${iconUrl}" class="markerDiv__img" style="${
+          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 25px;' : ''
+        }" />` +
+        `<div class="markerDiv__title">${label}</div>` +
+        '</div>',
     });
   };
   const boarIconLink = '/static/images/icons/boar.svg';
@@ -300,7 +214,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const vaccineIconLink = '/static/images/icons/vaccine.svg';
   const youtonIconLink = '/static/images/icons/youton.png';
   const butanetsuIconLink = '/static/images/icons/butanetsu.png';
-  const reportIconLink = "/static/images/icons/report.png";
+  const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
     iconUrl: '/static/images/map/location_marker.svg',
@@ -329,11 +243,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   });
 
   const labelButton = L.easyButton('<div class="leaflet-button">凡例</div>', () => {
-    setLabelVisible(l=>!l);
+    setLabelVisible((l) => !l);
   }).setPosition('bottomright');
 
   const locSearchButton = L.easyButton('<div class="leaflet-button">地点検索</div>', () => {
-    setLocSearchVisible(l=>!l);
+    setLocSearchVisible((l) => !l);
   }).setPosition('bottomright');
 
   const updateMarkers = async () => {
@@ -405,22 +319,27 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           );
 
           // 描画するマーカーの生成
-          if(key === "豚熱陽性高率エリア") {
+          if (key === '豚熱陽性高率エリア') {
             const asyncTask = async () => {
               const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
                 headers: {
-                  'X-Access-Token': getAccessToken()
-                }
+                  'X-Access-Token': getAccessToken(),
+                },
               });
               const settings = await res.json();
 
-              const circleMarkers = await makeCircleMarkers(settings, newFeatures as ButanetsuFeature[]);
-              const newMarkers = (await filterButanetsu(settings, newFeatures as ButanetsuFeature[])).map(f => makeMarker(f, key as layerType));
-              setButanetsuLayerID(id => {
+              const circleMarkers = await makeCircleMarkers(
+                settings,
+                newFeatures as ButanetsuFeature[],
+              );
+              const newMarkers = (
+                await filterButanetsu(settings, newFeatures as ButanetsuFeature[])
+              ).map((f) => makeMarker(f, key as layerType));
+              setButanetsuLayerID((id) => {
                 const l = overlayList[key] as L.LayerGroup;
                 const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
                 lg.addLayers(newMarkers);
-                circleMarkers.forEach(m => {
+                circleMarkers.forEach((m) => {
                   l.addLayer(m);
                 });
                 return id;
@@ -435,20 +354,112 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       });
     }
 
+    // メッシュデータを取得する
+    const resMesh = await fetch(SERVER_URI + "/Mesh/Search", {
+      method: "POST",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Access-Token': getAccessToken(),
+      },
+      body: JSON.stringify({
+        lat: [topLat, bottomLat],
+        lng: [leftLng, rightLng]
+      }),
+    });
+
+    if(resMesh.status === 200) {
+      const data = await resMesh.json() as MeshDataResponse;
+
+      const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
+
+      const polygonParam = (key: "vaccine" | "hunter" | "boar", opacity?: number) => {
+        if(key != "boar") {
+          return {
+            color: key == "vaccine" ? '#0288d1' : '#cc56db',
+            weight: 2,
+            fill: false 
+          };
+        } else {
+          return {
+            color: undefined,
+            weight: 2,
+            fill: true,
+            fillColor: '#ff1f0f',
+            fillOpacity: opacity ? opacity * 0.9 : 0
+          };
+        }
+      };
+
+      // メッシュデータの処理
+      Object.keys(data).forEach(_k => {
+        const k = _k as "vaccine" | "hunter" | "boar";
+        const k0 = keys[k][0];
+        const k1 = keys[k][1];
+
+        // 分布表示以外の場合、メッシュが一定数を超えていたら表示しない
+        if(data[k].length > MAX_MESH_COUNT && k != "boar")
+          data[k] = [];
+
+        if (featureIDs[k0] == null) featureIDs[k0] = [];
+
+        // 各条件に合致する要素を取得する
+        const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
+        const IDs = data[k].map(v=>v.id);
+        const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
+        // 新しいメッシュを描画する
+        newMeshData.forEach(v => {
+          const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
+          const gr: (L.Marker<any> | L.Polygon)[] = [po];
+          if (v.fillOpacity === undefined) {
+            const ma = L.marker(po.getBounds().getCenter(), {
+              icon: L.divIcon({
+                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+              })
+            });
+            gr.push(ma);
+          }
+          const lg = L.layerGroup(gr);
+
+          overlayList[k1].addLayer(lg);
+          meshLayers[k][v.id] = lg;
+          featureIDs[k0].push(v.id);
+        });
+
+        // 検索に引っかからなかったメッシュを削除する
+        deleteMeshIDs.forEach(id => {
+          const po = meshLayers[k][id];
+          if(po != null)
+            overlayList[k1].removeLayer(po);
+
+          meshLayers[k][id].remove();
+          delete meshLayers[k][id];
+
+          featureIDs[k0].splice(featureIDs[k0].indexOf(id), 1);
+        });
+      });
+    }
+
     // くるくるを消す
     setLoading(false);
   };
 
-  const filterButanetsu = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<ButanetsuFeature[]> => {
+  const filterButanetsu = async (
+    settings: Record<string, number>,
+    features: ButanetsuFeature[],
+  ): Promise<ButanetsuFeature[]> => {
     const show_date = new Date();
     show_date.setHours(0);
     show_date.setMinutes(0);
     show_date.setSeconds(0);
     show_date.setMonth(show_date.getMonth() - settings.month);
-    return features.filter(f=>show_date <= new Date(f.properties.捕獲年月日));
+    return features.filter((f) => show_date <= new Date(f.properties.捕獲年月日));
   };
 
-  const makeCircleMarkers = async (settings: Record<string, number>, features: ButanetsuFeature[]): Promise<L.Circle[]> => {
+  const makeCircleMarkers = async (
+    settings: Record<string, number>,
+    features: ButanetsuFeature[],
+  ): Promise<L.Circle[]> => {
     const show_date = new Date();
     show_date.setHours(0);
     show_date.setMinutes(0);
@@ -456,17 +467,20 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     show_date.setMonth(show_date.getMonth() - settings.month);
 
     const l: L.Circle[] = [];
-    features.forEach(feature => {
+    features.forEach((feature) => {
       const date = new Date(feature.properties.捕獲年月日);
-      if(show_date <= date) {
-        const loc = [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] as LatLngExpression;
+      if (show_date <= date) {
+        const loc = [
+          feature.geometry.coordinates[1],
+          feature.geometry.coordinates[0],
+        ] as LatLngExpression;
         const markers = L.circle(loc, {
           radius: settings.area * 1000,
-          color: "#e33b3b",
+          color: '#e33b3b',
           weight: 2,
           fill: true,
-          fillColor: "#e33b3b",
-          opacity: 0.5
+          fillColor: '#e33b3b',
+          opacity: 0.5,
         });
         l.push(markers);
       }
@@ -504,11 +518,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      setLoc(loc => {
-        if(loc == null) {
+      setLoc((loc) => {
+        if (loc == null) {
           return {
             lat: lat,
-            lng: lng
+            lng: lng,
           };
         }
 
@@ -529,15 +543,15 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
   const setCurrentLocation = (moveMarker: boolean) => {
     if (myMap == null) return;
-    setLoc(loc => {
+    setLoc((loc) => {
       if (!loc?.lat || !loc.lng) {
         if (moveMarker) {
           alert('位置情報の取得ができません。');
         }
         return loc;
       }
-  
-      setMyLocMarker(myLocMarker => {
+
+      setMyLocMarker((myLocMarker) => {
         if (myLocMarker == null) {
           myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
           try {
@@ -546,9 +560,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             /** */
           }
         }
-    
+
         myLocMarker.setLatLng([loc.lat, loc.lng]);
-  
+
         return myLocMarker;
       });
       if (moveMarker) {
@@ -662,11 +676,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       // 表示は行わず，マーカーの移動のみ処理する
-      setLoc(loc => {
-        if(loc == null) {
+      setLoc((loc) => {
+        if (loc == null) {
           return {
             lat: lat,
-            lng: lng
+            lng: lng,
           };
         }
 
@@ -778,7 +792,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.values(overlayList).forEach((o) => o.addTo(myMap));
+    Object.keys(overlayList).forEach(k => {
+      if(k != "ハンターメッシュ" 
+        && k != "ワクチンメッシュ" 
+        && k != "捕獲いのしし分布")
+        overlayList[k].addTo(myMap);
+    });
+
     // コントロール追加
     const contrl = L.control.layers(undefined, overlayList, {
       collapsed: false,
@@ -833,7 +853,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const onResized = () => {
     setTimeout(() => {
       setDivHeight(`${calcDivHeight()}px`);
-      
+
       setOverlayHeight(`${calcOverlayHeight()}px`);
       setOverlayWidth(`${calcOverlayWidth()}px`);
 
@@ -842,59 +862,56 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
 
   const onPointSearchClicked = async () => {
-    const type_input = document.getElementById("point_search_type") as HTMLSelectElement | null;
-    const text_input = document.getElementById("point_search_text") as HTMLInputElement | null;
-    if(type_input == null || text_input == null) {
-      alert("内部エラーが発生しました。");
+    const type_input = document.getElementById('point_search_type') as HTMLSelectElement | null;
+    const text_input = document.getElementById('point_search_text') as HTMLInputElement | null;
+    if (type_input == null || text_input == null) {
+      alert('内部エラーが発生しました。');
       return;
     }
 
     const type = type_input.options[type_input.selectedIndex].value;
     const text = text_input.value;
-    if(type == "市町村名") {
-      setSearchButtonLabel("検索中...");
-      const res = await fetch(SERVER_URI + "/City/Search", {
+    if (type == '市町村名') {
+      setSearchButtonLabel('検索中...');
+      const res = await fetch(SERVER_URI + '/City/Search', {
         method: 'POST',
         headers: {
-          'X-Access-Token': getAccessToken()
+          'X-Access-Token': getAccessToken(),
         },
         body: JSON.stringify({
-          name: text
-        })
+          name: text,
+        }),
       });
       const json = await res.json();
-      setSearchButtonLabel("検索");
-      if(!res.ok) {
-        alert(json["error"]);
+      setSearchButtonLabel('検索');
+      if (!res.ok) {
+        alert(json['error']);
         return;
       }
 
       const list = json as CityInfo[];
-      if(list.length === 0) {
+      if (list.length === 0) {
         // 0件の時はエラー
-        alert("該当の情報が見つかりませんでした。");
-      } else if(list.length === 1) {
+        alert('該当の情報が見つかりませんでした。');
+      } else if (list.length === 1) {
         // 1件の時はそのまま場所を変える
-        setMyMap(myMap => {
-          if(myMap != null)
-            myMap.setView([list[0].point.lat, list[0].point.lng], myMap.getZoom());
+        setMyMap((myMap) => {
+          if (myMap != null) myMap.setView([list[0].point.lat, list[0].point.lng], myMap.getZoom());
           return myMap;
         });
         setLocSearchVisible(false);
       } else {
         // 2件以上の時は確認ダイアログを出す
         const city = await cityList(list);
-        if(city == null)
-          return;
-        setMyMap(myMap => {
-          if(myMap != null)
-            myMap.setView([city.point.lat, city.point.lng], myMap.getZoom());
+        if (city == null) return;
+        setMyMap((myMap) => {
+          if (myMap != null) myMap.setView([city.point.lat, city.point.lng], myMap.getZoom());
           return myMap;
         });
         setLocSearchVisible(false);
       }
     } else {
-      alert("内部エラーが発生しました。");
+      alert('内部エラーが発生しました。');
       return;
     }
   };
@@ -919,64 +936,71 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         >
           <EventListener target='window' onResize={onResized.bind(this)} />
         </div>
-        <div 
-          className='z-10 box-border flex-grow overflow-hidden rounded-md border-2 border-solid border-border absolute h-[100px] pointer-events-none'
+        <div
+          className='pointer-events-none absolute z-10 box-border h-[100px] flex-grow overflow-hidden rounded-md border-2 border-solid border-border'
           style={{
             width: overlayWidth,
-            height: overlayHeight
-          }}>
-          <div className='w-[220px] mx-auto h-full flex flex-col-reverse'>
+            height: overlayHeight,
+          }}
+        >
+          <div className='mx-auto flex h-full w-[220px] flex-col-reverse'>
             {locSearchVisible ? (
-              <div className='w-full h-[236px] box-border p-1 mb-3'>
-                <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
-                  <div className="flex justify-end items-center pb-1 mr-1">
-                    <div className="flex-1 text-center font-bold">
-                      地点検索（試験中）
-                    </div>
-                    <div className="text-center text-lg">
-                      <button type="button" onClick={() => setLocSearchVisible(false)}>×</button>
+              <div className='mb-3 box-border h-[236px] w-full p-1'>
+                <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
+                  <div className='mr-1 flex items-center justify-end pb-1'>
+                    <div className='flex-1 text-center font-bold'>地点検索（試験中）</div>
+                    <div className='text-center text-lg'>
+                      <button type='button' onClick={() => setLocSearchVisible(false)}>
+                        ×
+                      </button>
                     </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold py-1">検索対象</span>
-                    <select id="point_search_type" className="w-full pb-1">
+                  <div className='flex flex-col'>
+                    <span className='py-1 font-bold'>検索対象</span>
+                    <select id='point_search_type' className='w-full pb-1'>
                       <option>市町村名</option>
                     </select>
-                    <span className="font-bold py-1">検索ワード</span>
-                    <input id="point_search_text" type="text" className="w-full" />
-                    <div className="w-full p-4">
-                      <RoundButton color="primary" disabled={searchButtonLabel !== "検索"} onClick={onPointSearchClicked}>
+                    <span className='py-1 font-bold'>検索ワード</span>
+                    <input id='point_search_text' type='text' className='w-full' />
+                    <div className='w-full p-4'>
+                      <RoundButton
+                        color='primary'
+                        disabled={searchButtonLabel !== '検索'}
+                        onClick={onPointSearchClicked}
+                      >
                         {searchButtonLabel}
                       </RoundButton>
                     </div>
                   </div>
                 </div>
               </div>
-            ) : <></>}
+            ) : (
+              <></>
+            )}
             {labelVisible ? (
-              <div className='w-full h-[226px] box-border p-1 mb-3'>
-                <div className="flex flex-col w-full h-full pointer-events-auto bg-[#dddcdc] rounded-xl border-2 border-border p-2">
-                  <div className="flex justify-end items-center pb-1 mr-1">
-                    <div className="flex-1 text-center font-bold">
-                      凡例
-                    </div>
-                    <div className="text-center text-lg">
-                      <button type="button" onClick={() => setLabelVisible(false)}>×</button>
+              <div className='mb-3 box-border h-[226px] w-full p-1'>
+                <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
+                  <div className='mr-1 flex items-center justify-end pb-1'>
+                    <div className='flex-1 text-center font-bold'>凡例</div>
+                    <div className='text-center text-lg'>
+                      <button type='button' onClick={() => setLabelVisible(false)}>
+                        ×
+                      </button>
                     </div>
                   </div>
                   <div>
-                    {layerLabels.map(k => (
-                      <div className="py-[2px] flex items-center" key={k.name}>
-                        <img src={k.icon} width="24" alt={"Icon of " + k.name} />
-                        <div className="ml-1">
-                          {k.name}
-                        </div>
+                    {layerLabels.map((k) => (
+                      <div className='flex items-center py-[2px]' key={k.name}>
+                        <img src={k.icon} width='24' alt={'Icon of ' + k.name} />
+                        <div className='ml-1'>{k.name}</div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            ) : <></>}
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <div
