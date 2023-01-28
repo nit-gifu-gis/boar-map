@@ -3,7 +3,7 @@ import { User } from '../types/user';
 import { Device, Browser, getBrowser, getDevice } from './browser';
 
 const FORM_URL_BASE =
-  'https://docs.google.com/forms/d/e/1FAIpQLSclRLGXGQVWDFh7T1eWQD83R35eeFs9hUKB5-0KxGYSx-qZcA/viewform?usp=pp_url';
+  'https://docs.google.com/forms/d/e/1FAIpQLSfakcKdjbkTD6HMHZ4dnIZhUhjQgSYnuZ9Cwm6S8LeLoX0dMQ/viewform?usp=pp_url';
 const USER_ID_PREFIX = '&entry.632601331=';
 const DEVICE_PREFIX = '&entry.345321002=';
 const BROWSER_PREFIX = '&entry.343469124=';

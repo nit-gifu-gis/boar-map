@@ -162,7 +162,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     menuItems.push(
       <div
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
-        key='menu_questionaire'
+        key='menu_manual'
       >
         <Link href="https://boar-map.gifugis.jp/media/manual_20221214.pdf">
           <a
