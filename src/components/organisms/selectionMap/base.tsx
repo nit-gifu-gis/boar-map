@@ -386,7 +386,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             weight: 2,
             fill: true,
             fillColor: '#ff1f0f',
-            fillOpacity: opacity ? opacity * 0.9 : 0
+            fillOpacity: opacity ? Math.min(opacity, 0.8) : 0
           };
         }
       };
