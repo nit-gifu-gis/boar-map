@@ -8,9 +8,63 @@ import { fetchCurrentUser } from '../utils/currentUser';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import LoadingTemplate from '../components/templates/loadingTemplate';
 import Head from 'next/head';
+import { currentAppLogs } from '../states/appLog';
+import { useAppLogs } from '../hooks/useAppLogs';
 
 const AppInit: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
+  const setCurrentAppLog = useSetRecoilState(currentAppLogs);
+
+  let appLogs: AppLog[] = [];
+
+  let origLog = console.log;
+  let origWarn = console.warn;
+  let origError = console.error;
+  let origTrace = console.trace;
+
+  const logHandler = (message?: unknown, ...optionalParams: unknown[]) => {
+    origLog(message, ...optionalParams);
+    appLogs = appLogs.slice();
+    appLogs.push({
+      type: "log",
+      message: message,
+      optionalParams: optionalParams
+    });
+    setCurrentAppLog(appLogs);
+  };
+
+  const warnHandler = (message?: unknown, ...optionalParams: unknown[]) => {
+    origWarn(message, ...optionalParams);
+    appLogs = appLogs.slice();
+    appLogs.push({
+      type: "warn",
+      message: message,
+      optionalParams: optionalParams
+    });
+    setCurrentAppLog(appLogs);
+  };
+
+  const errorHandler = (message?: unknown, ...optionalParams: unknown[]) => {
+    origError(message, ...optionalParams);
+    appLogs = appLogs.slice();
+    appLogs.push({
+      type: "error",
+      message: message,
+      optionalParams: optionalParams
+    });
+    setCurrentAppLog(appLogs);
+  };
+
+  const traceHandler = (message?: unknown, ...optionalParams: unknown[]) => {
+    origTrace(message, ...optionalParams);
+    appLogs = appLogs.slice();
+    appLogs.push({
+      type: "trace",
+      message: message,
+      optionalParams: optionalParams
+    });
+    setCurrentAppLog(appLogs);
+  };
 
   useEffect(() => {
     (async function () {
@@ -20,6 +74,28 @@ const AppInit: React.FunctionComponent = () => {
       } catch {
         setCurrentUser(null);
       }
+
+      setCurrentAppLog([]);
+      if(console.log != null && console.log != logHandler) {
+        origLog = console.log;
+        console.log = logHandler;
+      }
+      
+      if(console.error != null && console.error != errorHandler) {
+        origError = console.error;
+        console.error = errorHandler;
+      }
+      
+      if(console.warn != null && console.warn != warnHandler) {
+        origWarn = console.warn;
+        console.warn = warnHandler;
+      }
+
+      if(console.trace != null && console.trace != traceHandler) {
+        origTrace = console.trace;
+        console.trace = traceHandler;
+      }
+        
     })();
   }, []);
 

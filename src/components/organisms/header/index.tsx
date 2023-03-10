@@ -12,8 +12,10 @@ import { destroyCookie } from 'nookies';
 import { SERVER_URI } from '../../../utils/constants';
 import { getFormUrl } from '../../../utils/questionaire';
 import PDFViewer from '../../atomos/pdfViewer';
+import { useAppLogs } from '../../../hooks/useAppLogs';
 
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
+  const { appLogs } = useAppLogs();
   const { currentUser, isAuthChecking } = useCurrentUser();
   const [isOpen, setOpen] = useState(false);
   const [formUrl, setFormUrl] = useState('');
@@ -68,6 +70,34 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     if (currentUser === undefined) return;
     setFormUrl(getFormUrl(currentUser));
   }, [currentUser]);
+
+  const onClickBugReport = async () => {
+    let msg =  `・ ユーザーID\n`;
+    msg += `・ ${appLogs.length}件のログデータ\n`;
+    msg += `・ 画面遷移についての情報\n`;
+    msg += `・ 使用中の機種についての情報\n`;
+    msg += `\n`;
+    msg += `を開発チームに送信してもよろしいですか？`;
+
+    if(!await confirm(msg))
+      return;
+
+    const data = {
+      logs: appLogs,
+      router: router,
+      device: {
+        language: navigator.language,
+        cookieEnabled: navigator.cookieEnabled,
+        userAgent: navigator.userAgent,
+        vendor: navigator.vendor,
+        platform: navigator.platform,
+        product: [navigator.product, navigator.productSub]
+      },
+      user: currentUser?.userId
+    };
+
+    console.log(JSON.parse(JSON.stringify(data)));
+  };
 
   const onLogoutClicked = async () => {
     if (await confirm('本当にログアウトしてよろしいですか？')) {
@@ -209,6 +239,17 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       >
         <Link href='/trace'>
           <a className='text-14pt text-background no-underline'>履歴管理システム</a>
+        </Link>
+      </div>,
+    );
+
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_bugreport'
+      >
+        <Link href='#'>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>デバッグ情報の送信</a>
         </Link>
       </div>,
     );
