@@ -332,9 +332,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                 settings,
                 newFeatures as ButanetsuFeature[],
               );
-              const newMarkers = (
-                await filterButanetsu(settings, newFeatures as ButanetsuFeature[])
-              ).map((f) => makeMarker(f, key as layerType));
+              const newMarkers = newFeatures.map(f => makeMarker(f, key as layerType));
               setButanetsuLayerID((id) => {
                 const l = overlayList[key] as L.LayerGroup;
                 const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
@@ -444,18 +442,6 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     setLoading(false);
   };
 
-  const filterButanetsu = async (
-    settings: Record<string, number>,
-    features: ButanetsuFeature[],
-  ): Promise<ButanetsuFeature[]> => {
-    const show_date = new Date();
-    show_date.setHours(0);
-    show_date.setMinutes(0);
-    show_date.setSeconds(0);
-    show_date.setMonth(show_date.getMonth() - settings.month);
-    return features.filter((f) => show_date <= new Date(f.properties.捕獲年月日));
-  };
-
   const makeCircleMarkers = async (
     settings: Record<string, number>,
     features: ButanetsuFeature[],
@@ -480,7 +466,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           weight: 2,
           fill: true,
           fillColor: '#e33b3b',
-          opacity: 0.5,
+          fillOpacity: 0.05,
+          opacity: 0.4,
         });
         l.push(markers);
       }
