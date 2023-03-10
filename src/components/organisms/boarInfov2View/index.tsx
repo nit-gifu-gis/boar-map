@@ -56,7 +56,6 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
           imageIDs: getImgIDs(),
         }}
       />
-      <InfoDiv title='メッシュ番号' type='text' data={detail.properties.メッシュ番} />
       <InfoDiv title='区分' type='text' data={detail.properties.区分} />
       <InfoDiv title='捕獲年月日' type='date' data={detail.properties.捕獲年月日} />
       <InfoDiv title='わな・発見場所' type='text' data={detail.properties.罠発見場所} />
@@ -78,12 +77,6 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
               <InfoDiv title='幼獣・成獣の別' type='text' data={v.properties.成獣幼獣別} />
               <InfoDiv title='性別' type='text' data={v.properties.性別} />
               <InfoDiv title='体長' type='number' data={v.properties.体長} unit='cm' />
-              <InfoDiv
-                title='体重（体長から自動計算）'
-                type='number'
-                data={v.properties.体重}
-                unit='kg'
-              />
               {v.properties.性別 === 'メス' && v.properties.成獣幼獣別 === '成獣' ? (
                 <InfoDiv title='妊娠の状況' type='text' data={v.properties.妊娠の状況} />
               ) : (
@@ -93,41 +86,41 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
               <InfoDiv title='処分方法' type='text' data={v.properties.処分方法} />
               {v.properties.処分方法 === '利活用（ジビエ利用）' ||
               v.properties.処分方法 === 'ジビエ業者渡し' ? (
-                <>
-                  <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
-                  <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
-                  <InfoDiv
-                    title='個体管理番号'
-                    type='text'
-                    data={
-                      v.properties.個体管理番 == ''
-                        ? confirmMode
-                          ? '（登録時に確定します）'
-                          : '（未入力）'
-                        : v.properties.個体管理番.replace('-', '')
-                    }
-                  />
-                </>
-              ) : (
-                <></>
-              )}
+                  <>
+                    <InfoDiv title='地域（圏域）' type='text' data={v.properties.地域} />
+                    <InfoDiv title='ジビエ業者' type='text' data={v.properties.ジビエ業者} />
+                    <InfoDiv
+                      title='個体管理番号'
+                      type='text'
+                      data={
+                        v.properties.個体管理番 == ''
+                          ? confirmMode
+                            ? '（登録時に確定します）'
+                            : '（未入力）'
+                          : v.properties.個体管理番.replace('-', '')
+                      }
+                    />
+                  </>
+                ) : (
+                  <></>
+                )}
               {confirmMode &&
               !(currentUser?.userDepartment == 'K' || currentUser?.userDepartment == 'D') ? (
-                <></>
-              ) : (
-                <>
-                  {v.properties.PCR検査日 == '' ? (
-                    <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
-                  ) : (
-                    <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
-                  )}
-                  <InfoDiv
-                    title='PCR検査結果'
-                    type='text'
-                    data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
-                  />
-                </>
-              )}
+                  <></>
+                ) : (
+                  <>
+                    {v.properties.PCR検査日 == '' ? (
+                      <InfoDiv title='PCR検査日' type='text' data={'（未入力）'} />
+                    ) : (
+                      <InfoDiv title='PCR検査日' type='date' data={v.properties.PCR検査日} />
+                    )}
+                    <InfoDiv
+                      title='PCR検査結果'
+                      type='text'
+                      data={v.properties.PCR結果 == '' ? '（未入力）' : v.properties.PCR結果}
+                    />
+                  </>
+                )}
               <InfoDiv title='備考' type='text' data={v.properties.備考} />
             </div>
           );

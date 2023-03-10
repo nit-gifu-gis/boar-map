@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import RoundButton from '../../atomos/roundButton';
-import SelectInput from '../../atomos/selectInput';
-import Image from 'next/image';
 import { MeshFormInterface } from './interface';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
@@ -10,18 +8,18 @@ const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) 
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('インポート');
   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, ] = useState('');
 
   const onClickImport = () => {
     setUploading(true);
-    setButtonLabel("インポート中...")
+    setButtonLabel("インポート中...");
 
     /** インポート処理をここに書く */
-    setError("アップロード処理を実装してください。")
+    setError("アップロード処理を実装してください。");
 
-    setButtonLabel("インポート")
+    setButtonLabel("インポート");
     setUploading(false);
-  }
+  };
 
   const fileFormChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const form = e.target as HTMLInputElement;
@@ -47,10 +45,6 @@ const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) 
     if (res.status === 200) {
       const blob = await res.blob();
       const anchor = document.createElement('a');
-      const now = new Date();
-      const yyyy = ('0000' + now.getFullYear()).slice(-4);
-      const mm = ('00' + (now.getMonth() + 1)).slice(-2);
-      const dd = ('00' + now.getDate()).slice(-2);
 
       const name = '豚熱陽性確認情報テンプレート.xlsx';
       // IE対応
@@ -69,7 +63,7 @@ const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) 
       const json = await res.json();
       await alert(json.error);
     }
-  }
+  };
 
   return (
     <div className='mb-[30px] w-full'>

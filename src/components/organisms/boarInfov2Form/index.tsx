@@ -146,8 +146,6 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
         props.featureInfo?.properties.入力者 != null
           ? props.featureInfo.properties.入力者
           : currentUser?.userId;
-      // メッシュ番号
-      const meshNo = form.meshNo.value as string;
       // 区分
       const division = form.division.options[form.division.selectedIndex].value as string;
       // 市町村
@@ -167,7 +165,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       const data: BoarFeatureV2 = {
         properties: {
           入力者: user,
-          メッシュ番: meshNo,
+          メッシュ番: "",
           区分: division,
           市町村: city,
           捕獲年月日: dateStr,
@@ -419,17 +417,6 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
               imageIDs: props.imageIds == null ? [] : props.imageIds,
               confirmMode: true,
             }}
-          />
-          <InfoInput
-            title='メッシュ番号'
-            type='mesh-num'
-            id='meshNo'
-            defaultValue={featureValueOrUndefined('メッシュ番')}
-            lat={props.location.lat}
-            lng={props.location.lng}
-            required={true}
-            onChange={validateMeshNo}
-            error={errors.meshNo}
           />
           <InfoInput
             title='区分'

@@ -109,14 +109,6 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
             </th>
             <th
               className={
-                'border border-b-2 border-solid border-border p-1 ' + sortableClass('メッシュ番')
-              }
-              onClick={() => sort('メッシュ番')}
-            >
-              メッシュ番号
-            </th>
-            <th
-              className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('区分')
               }
               onClick={() => sort('区分')}
@@ -184,7 +176,6 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               状況
             </th>
             <th className={'border border-b-2 border-solid border-border p-1'}>体長</th>
-            <th className={'border border-b-2 border-solid border-border p-1'}>体重</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>
               処分
               <br />
@@ -234,16 +225,6 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                   {index == 0 ? (
                     <td className='border border-solid border-border p-1' rowSpan={arr.length}>
                       {props.入力者}
-                    </td>
-                  ) : (
-                    <></>
-                  )}
-                  {index == 0 ? (
-                    <td
-                      className='border border-solid border-border p-1 text-right'
-                      rowSpan={arr.length}
-                    >
-                      {props.メッシュ番}
                     </td>
                   ) : (
                     <></>
@@ -315,7 +296,6 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                   <td className='border border-solid border-border p-1'>{d.性別}</td>
                   <td className='border border-solid border-border p-1'>{d.妊娠の状況}</td>
                   <td className='border border-solid border-border p-1 text-right'>{d.体長} cm</td>
-                  <td className='border border-solid border-border p-1 text-right'>{d.体重} kg</td>
                   <td className='border border-solid border-border p-1'>{d.処分方法}</td>
                   <td className='border border-solid border-border p-1 text-right'>
                     {d.遠沈管番号}

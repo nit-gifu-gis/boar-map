@@ -424,7 +424,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         // 新しいメッシュを描画する
         newMeshData.forEach(v => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
-          const gr: (L.Marker<any> | L.Polygon)[] = [po];
+          const gr: (L.Marker | L.Polygon)[] = [po];
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({

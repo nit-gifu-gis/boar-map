@@ -20,8 +20,6 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
         props.featureInfo?.properties.入力者 != null
           ? props.featureInfo.properties.入力者
           : currentUser?.userId;
-      // 0-1 メッシュ番号
-      const meshNo = form.meshNo.value;
       // 1 区分
       const division = form.division.options[form.division.selectedIndex].value;
       // 2 捕獲年月日
@@ -68,8 +66,6 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
       }
       // 6-2 処分方法
       const disposal = form.disposal.options[form.disposal.selectedIndex].value;
-      // 7 体重
-      const weight = toWeight(Number(length));
       // 7-1 備考
       const note = form.note.value;
       // 8 歯列画像
@@ -83,7 +79,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
         },
         properties: {
           入力者: user,
-          メッシュ番号: meshNo,
+          メッシュ番号: "",
           区分: division,
           捕獲年月日: date,
           位置情報: '(' + lat + ',' + lng + ')',
@@ -94,7 +90,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           '幼獣・成獣': age,
           性別: sex,
           体長: length,
-          体重: `${weight}`,
+          体重: "",
           妊娠の状況: pregnant,
           処分方法: disposal,
           備考: note,
@@ -316,30 +312,6 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
       setBox(trap === '箱わな');
     };
 
-    const toWeight = (length: number) => {
-      if (length < 35) {
-        return 5;
-      } else if (length < 55) {
-        return 10;
-      } else if (length < 91) {
-        return 20; // 幼獣
-      } else if (length < 95) {
-        return 20; // 成獣
-      } else if (length < 105) {
-        return 30;
-      } else if (length < 115) {
-        return 45;
-      } else if (length < 125) {
-        return 60;
-      } else if (length < 135) {
-        return 80;
-      } else if (length < 145) {
-        return 100;
-      } else {
-        return 130;
-      }
-    };
-
     return (
       <div className='w-full'>
         <form id='form-boar-old' onSubmit={(e) => e.preventDefault()}>
@@ -351,17 +323,6 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
               imageIDs: props.imageIds == null ? [] : props.imageIds,
               confirmMode: true,
             }}
-          />
-          <InfoInput
-            title='メッシュ番号'
-            type='mesh-num'
-            id='meshNo'
-            defaultValue={featureValueOrUndefined('メッシュ番号')}
-            lat={props.location.lat}
-            lng={props.location.lng}
-            required={true}
-            onChange={validateMeshNo}
-            error={errors.meshNo}
           />
           <InfoInput
             title='区分'

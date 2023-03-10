@@ -3,7 +3,6 @@ import { MiniMapProps } from './interface';
 import L from 'leaflet';
 import { LatLngZoom, LatLngZoomCookie } from '../../organisms/mapBase/interface';
 import EventListener from 'react-event-listener';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { parseCookies } from 'nookies';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
@@ -12,7 +11,6 @@ const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [myMap, setMyMap] = useState<L.Map | null>(null);
-  const { currentUser } = useCurrentUser();
 
   useEffect(() => {
     return () => {
