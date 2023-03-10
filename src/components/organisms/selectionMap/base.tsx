@@ -105,7 +105,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       return new L.DivIcon({
         html: '<div><span>' + childCount + '</span></div>',
         className: 'marker-cluster' + c,
-        iconSize: new L.Point(40, 40),
+        iconSize: new L.Point(30, 30),
       });
     };
   };
@@ -203,7 +203,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       html:
         '<div class="markerDiv">' +
         `<img src="${iconUrl}" class="markerDiv__img" style="${
-          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 25px;' : ''
+          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 20px;' : ''
         }" />` +
         `<div class="markerDiv__title">${label}</div>` +
         '</div>',
