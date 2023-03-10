@@ -851,15 +851,20 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
   const onPointSearchClicked = async () => {
     const type_input = document.getElementById('point_search_type') as HTMLSelectElement | null;
-    const text_input = document.getElementById('point_search_text') as HTMLInputElement | null;
-    if (type_input == null || text_input == null) {
+    if (type_input == null) {
       alert('内部エラーが発生しました。');
       return;
     }
 
     const type = type_input.options[type_input.selectedIndex].value;
-    const text = text_input.value;
     if (type == '市町村名') {
+      const text_input = document.getElementById('point_search_text') as HTMLInputElement | null;
+      if (text_input == null) {
+        alert('内部エラーが発生しました。');
+        return;
+      }
+      
+      const text = text_input.value;
       setSearchButtonLabel('検索中...');
       const res = await fetch(SERVER_URI + '/City/Search', {
         method: 'POST',
@@ -898,11 +903,64 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         });
         setLocSearchVisible(false);
       }
+    } else if(type === "緯度・経度（度分秒）" || type === "緯度・経度（度）") {
+      // モードごとに緯度経度の計算・チェックを行う
+      let lat = 0.0;
+      let lng = 0.0;
+      if (type === "緯度・経度（度）") {
+        // 入力されているかのチェック
+        const lat_input = document.getElementById('point_search_lat') as HTMLInputElement | null;
+        const lng_input = document.getElementById('point_search_lng') as HTMLInputElement | null;
+        if (lat_input == null || lng_input == null) {
+          alert('内部エラーが発生しました。');
+          return;
+        }
+
+        lat = parseFloat(lat_input.value);
+        lng = parseFloat(lng_input.value);
+
+        if(Number.isNaN(lat) || Number.isNaN(lng)) {
+          alert('不正な形式のデータが入力されました。');
+          return;
+        }
+      } else {
+        // 最低限度が入力されているかのチェック＋度分秒から度に変換
+        const lat_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement).filter(v=> v != null);
+        const lng_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement).filter(v=> v != null);
+        if (lat_input_divs.length != 3 || lng_input_divs.length != 3) {
+          alert('内部エラーが発生しました。');
+          return;
+        }
+
+        const lat_inputs = lat_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
+        const lng_inputs = lng_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
+
+        if(Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
+          alert('不正な形式のデータが入力されました。');
+          return;
+        }
+
+        lat = lat_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
+        lng = lng_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
+      }
+
+      const map = await new Promise<L.Map | null>(resolve=> setMyMap(m => {
+        resolve(m);
+        return m;
+      }));
+      if(map == null) {
+        alert("内部エラーが発生しました。");
+        return;
+      }
+
+      map.panTo(new L.LatLng(lat, lng));
     } else {
       alert('内部エラーが発生しました。');
       return;
     }
   };
+
+  const [searchMode, setSearchMode] = useState<string>("市町村名");
 
   return (
     <div style={{ height: divHeight }} className='z-0 flex w-full flex-col overflow-hidden'>
@@ -933,10 +991,10 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         >
           <div className='mx-auto flex h-full w-[220px] flex-col-reverse'>
             {locSearchVisible ? (
-              <div className='mb-3 box-border h-[236px] w-full p-1'>
+              <div className={'mb-3 box-border w-full p-1 ' + (searchMode === "市町村名" ? "h-[236px]" : "h-[310px] ")}>
                 <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
-                    <div className='flex-1 text-center font-bold'>地点検索（試験中）</div>
+                    <div className='flex-1 text-center font-bold'>地点検索</div>
                     <div className='text-center text-lg'>
                       <button type='button' onClick={() => setLocSearchVisible(false)}>
                         ×
@@ -945,11 +1003,49 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                   </div>
                   <div className='flex flex-col'>
                     <span className='py-1 font-bold'>検索対象</span>
-                    <select id='point_search_type' className='w-full pb-1'>
+                    <select id='point_search_type' className='w-full pb-1' defaultValue={"市町村名"} onChange={(e) => setSearchMode(e.target.value)}>
                       <option>市町村名</option>
+                      <option>緯度・経度（度分秒）</option>
+                      <option>緯度・経度（度）</option>
                     </select>
-                    <span className='py-1 font-bold'>検索ワード</span>
-                    <input id='point_search_text' type='text' className='w-full' />
+                    {searchMode === "市町村名" ? (
+                      <>
+                        <span className='py-1 font-bold'>検索ワード</span>
+                        <input id='point_search_text' type='text' className='w-full' />
+                      </>
+                    ) : (searchMode === "緯度・経度（度分秒）" ? (
+                      <>
+                        <span className='py-1 font-bold'>緯度</span>
+                        <div className='flex justify-center'>
+                          <input id='point_search_lat_1' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                          <input id='point_search_lat_2' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                          <input id='point_search_lat_3' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                        </div>
+                        <span className='py-1 font-bold'>経度</span>
+                        <div className='flex justify-center'>
+                          <input id='point_search_lng_1' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                          <input id='point_search_lng_2' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                          <input id='point_search_lng_3' type='number' className='w-[36px] pl-1' />
+                          <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                        </div>
+                      </>
+                    ) : (searchMode === "緯度・経度（度）" ? (
+                      <>
+                        <span className='py-1 font-bold'>緯度</span>
+                        <input id='point_search_lat' type='number' className='w-full h-8 pl-1' />
+                        <span className='py-1 font-bold'>経度</span>
+                        <input id='point_search_lng' type='number' className='w-full h-8 pl-1' />
+                      </>
+                    ) : (
+                      <>
+                      エラー: 不明な選択肢
+                      </>
+                    )))}
                     <div className='w-full p-4'>
                       <RoundButton
                         color='primary'
