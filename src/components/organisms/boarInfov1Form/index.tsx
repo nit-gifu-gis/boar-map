@@ -110,8 +110,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
     };
 
     const validateData = () => {
-      let valid = validateMeshNo();
-      valid = valid && validateDate();
+      let valid = validateDate();
       valid = valid && validateLength();
       valid = valid && validatePregnant();
       valid = valid && validateEachCatchNum('childrenNum');
@@ -148,19 +147,6 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
 
     const getForm = () => {
       return document.getElementById('form-boar-old') as HTMLFormElement;
-    };
-
-    const validateMeshNo = (): boolean => {
-      const form = getForm();
-      const meshNo = form.meshNo.value;
-      // データが無いならエラー
-      if (meshNo === '') {
-        updateError('meshNo', '入力されていません。');
-        return false;
-      } else {
-        updateError('meshNo', undefined);
-        return true;
-      }
     };
 
     const onChangeDivision = () => {

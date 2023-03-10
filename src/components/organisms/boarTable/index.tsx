@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import { SyntheticEvent, useEffect, useState } from 'react';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import {
   BoarCommonPropsV2,
   BoarFeaturePropsV2,
@@ -10,16 +11,20 @@ import {
 } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
-import { yesNo } from '../../../utils/modal';
+import { hasWritePermission } from '../../../utils/gis';
+import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { BoarTableProps } from './interface';
 
 const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   const router = useRouter();
+  const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
   const [features, setFeatures] = useState<FeatureBase[]>([]);
+  const [editable, setEditable] = useState(false);
+  const [deletedFeatures, setDeletedFeatures] = useState<string[]>([]);
 
   const sortableClass = (key: string) => {
     if (key == sortKey) {
@@ -32,10 +37,26 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     return 'sortable';
   };
 
-  useEffect(() => {
-    const features = p.features.slice();
+  const updateTable = () => {
+    const features = p.features.filter(v=>{
+      const k = `${(v as BoarFeatureV2).version}-${(v as BoarFeatureV2).properties.ID$}`;
+      return !deletedFeatures.includes(k);
+    });
+
     setFeatures(sortFeatures(sortKey, features as BoarFeatureV2[], isDesc));
+  };
+
+  useEffect(() => {
+    updateTable();
   }, [sortKey, isDesc]);
+
+  useEffect(() => {
+    setDeletedFeatures([]);
+  }, p.features);
+
+  useEffect(() => {
+    setEditable(currentUser != null ? hasWritePermission('boar', currentUser) : false);
+  }, [currentUser]);
 
   const sort = (
     key: keyof BoarInfoPropsV2 | keyof BoarCommonPropsV2 | '幼獣の頭数' | '成獣の頭数',
@@ -85,6 +106,101 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
         '/edit/image',
       );
     }
+  };
+
+  const onClickDelete = async (
+    id: string | undefined,
+    version: number | undefined,
+    feature: FeatureBase,
+  ) => {
+    if(!await confirm(`ID: ${id}の情報を削除しますか？`))
+      return;
+    
+    setEditable(false);
+    const type = `boar-${version}`;
+   
+    // 画像の削除用関数の準備
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
+    let imageIds: string[] = [];
+
+    const idKey = type === 'boar-2' ? '写真ID' : '画像ID'; // 新レイヤーの時のみ写真IDになる。
+    imageIds = ((feature.properties as Record<string, unknown>)[idKey] as string).split(
+      ',',
+    );
+    // 新レイヤーの場合のみ歯列写真IDという名前も確認する。
+    if (type === 'boar-2') {
+      const sid = (feature.properties as Record<string, unknown>)['歯列写真ID'] as string;
+      if (sid != null && sid !== '') {
+        imageIds.push(sid);
+      }
+    }
+
+    // 画像ファイルが存在する場合のみ関数を定義する。
+    if (imageIds.length >= 1 && imageIds[0] != '') {
+      deleteImage = (id: string) => {
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const data = new FormData();
+            data.append('id', id);
+            const options = {
+              method: 'POST',
+              body: data,
+              headers: {
+                Accept: 'application/json',
+                'X-Access-Token': getAccessToken(),
+              },
+            };
+            fetch(`${SERVER_URI}/Image/DeleteImage`, options)
+              .then((res) => {
+                if (res.status === 200 || res.status === 404) {
+                  resolve();
+                } else {
+                  return res.json();
+                }
+              })
+              .then((json) => reject(json['reason']))
+              .catch((e) => reject(e));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      };
+    }
+
+    // GISにクエリを投げる
+
+    const body = {
+      type: type,
+      shapeIds: [id as string],
+    };
+    try {
+      // 先に画像を削除する.
+      await Promise.all(imageIds.map((id) => deleteImage(id)));
+      const res = await fetch(SERVER_URI + '/Features/DeleteFeature', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Access-Token': getAccessToken(),
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (res.status === 200) {
+        await alert('削除しました。');
+
+        deletedFeatures.push(`${version}-${id}`);
+        updateTable();
+      } else {
+        const json = await res.json();
+        await alert(json['reason']);
+      }
+    } catch (e) {
+      await alert(`${e}`);
+    }
+
+    setEditable(currentUser != null ? hasWritePermission('boar', currentUser) : false);
   };
 
   return (
@@ -207,7 +323,16 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                         onClick={() => onClickEdit(props.ID$, (f as BoarFeatureV2).version, f)}
                       >
                         編集
-                      </RoundButton>
+                      </RoundButton><br />
+                      <div className='mt-2'>
+                        <RoundButton
+                          color='danger'
+                          disabled={!editable}
+                          onClick={() => onClickDelete(props.ID$, (f as BoarFeatureV2).version, f)}
+                        >
+                        削除
+                        </RoundButton>
+                      </div>
                     </td>
                   ) : (
                     <></>

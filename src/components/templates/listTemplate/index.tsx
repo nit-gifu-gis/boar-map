@@ -89,7 +89,7 @@ const ListTemplate: React.FunctionComponent = () => {
             <>
               <div className='mx-auto max-w-[400px] py-5'>
                 <RoundButton color='excel' onClick={() => router.push('/import')}>
-              データのインポート
+                  データのインポート
                 </RoundButton>
               </div>
               <div className='mx-auto max-w-[400px] py-5'>

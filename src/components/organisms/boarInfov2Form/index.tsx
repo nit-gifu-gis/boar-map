@@ -232,8 +232,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     };
 
     const validateData = async () => {
-      let valid = validateMeshNo();
-      valid = valid && validateDate();
+      let valid = validateDate();
       valid = valid && validateCatchNum();
       await new Promise<void>((resolve) => {
         setBoarFormList((boarList) => {
@@ -262,17 +261,6 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
         e[id] = value;
         return e;
       });
-    };
-
-    const validateMeshNo = () => {
-      const form = getForm();
-      const meshNo = form.meshNo.value as string;
-      if (meshNo === '') {
-        updateError('meshNo', '入力されていません。');
-        return false;
-      }
-      updateError('meshNo', undefined);
-      return true;
     };
 
     const onChangeDivision = () => {
