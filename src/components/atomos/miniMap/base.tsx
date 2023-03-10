@@ -5,6 +5,8 @@ import { LatLngZoom, LatLngZoomCookie } from '../../organisms/mapBase/interface'
 import EventListener from 'react-event-listener';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { parseCookies } from 'nookies';
+import { SERVER_URI } from '../../../utils/constants';
+import { getAccessToken } from '../../../utils/currentUser';
 
 const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
@@ -82,8 +84,9 @@ const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
 
     // メイン地図レイヤー
     L.TileLayer.wmsHeader(
-      'https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S',
+      SERVER_URI + "/Map/GetImage",
       {
+        TENANTID: '21000S',
         version: '1.3.0',
         layers: '999999194',
         format: 'image/png',
@@ -94,8 +97,8 @@ const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
       },
       [
         {
-          header: 'X-Map-Api-Access-Token',
-          value: currentUser?.accessToken,
+          header: 'X-Access-Token',
+          value: getAccessToken(),
         },
       ],
     ).addTo(myMap);
