@@ -11,11 +11,13 @@ import { getAccessToken } from '../../../utils/currentUser';
 import { destroyCookie } from 'nookies';
 import { SERVER_URI } from '../../../utils/constants';
 import { getFormUrl } from '../../../utils/questionaire';
+import PDFViewer from '../../atomos/pdfViewer';
 
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
   const { currentUser, isAuthChecking } = useCurrentUser();
   const [isOpen, setOpen] = useState(false);
   const [formUrl, setFormUrl] = useState('');
+  const [manualViewer, setManualViewer] = useState<JSX.Element | null>(null);
   const setCurrentUser = useSetRecoilState(currentUserState);
   const router = useRouter();
 
@@ -164,11 +166,24 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_manual'
       >
-        <Link href="https://boar-map.gifugis.jp/media/manual_20221214.pdf">
+        <Link href="#">
           <a
             className='text-14pt text-background no-underline'
-            target='_blank'
-            rel='noopener noreferrer'
+            onClick={() => {
+              setManualViewer(viewer => {
+                setOpen(false);
+                if(viewer == null) {
+                  return (
+                    <PDFViewer 
+                      url="https://boar-map.gifugis.jp/media/manual_20221214.pdf" 
+                      closeHandler={() => setManualViewer(null)} 
+                      title="操作マニュアル"
+                    />
+                  );
+                }
+                return viewer;
+              });
+            }}
           >
             操作マニュアル
           </a>
@@ -237,49 +252,53 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   }
 
   return (
-    <div className='z-50 h-header w-full'>
-      <div className='h-header w-full'></div>
-      <div className='fixed top-0 left-0 z-50 w-full'>
-        <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
-          <div className={'flex h-full w-full items-center text-center ' + fontSize}>
-            <div className='w-full font-bold text-background'>{props.children}</div>
-          </div>
-          {!isAuthChecking ? (
+    <>
+      {manualViewer}
+      <div className='z-50 h-header w-full'>
+        <div className='h-header w-full'></div>
+        <div className='fixed top-0 left-0 z-50 w-full'>
+          <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
+            <div className={'flex h-full w-full items-center text-center ' + fontSize}>
+              <div className='w-full font-bold text-background'>{props.children}</div>
+            </div>
+            {!isAuthChecking ? (
+              <div
+                className={
+                  'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
+                bgColor
+                }
+                onClick={() => {
+                  setOpen(!isOpen);
+                }}
+              >
+                <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
+                <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
+                <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
+              </div>
+            ) : (
+              <></>
+            )}
             <div
               className={
-                'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
-                bgColor
-              }
-              onClick={() => {
-                setOpen(!isOpen);
-              }}
-            >
-              <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
-              <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
-              <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
-            </div>
-          ) : (
-            <></>
-          )}
-          <div
-            className={
-              bgColor +
+                bgColor +
               ' ' +
               (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
-            }
-          >
-            <div
-              className={
-                'overflow-y-hidden ' +
-                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
               }
             >
-              <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+              <div
+                className={
+                  'overflow-y-hidden ' +
+                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
+                }
+              >
+                <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
+    
   );
 };
 
