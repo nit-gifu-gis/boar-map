@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { hasListPermission } from '../../../utils/gis';
 import { HeaderProps } from './interface';
-import { confirm } from '../../../utils/modal';
+import { alert, confirm, inputBox } from '../../../utils/modal';
 import { useSetRecoilState } from 'recoil';
 import { useRouter } from 'next/router';
 import { currentUserState } from '../../../states/currentUser';
@@ -79,7 +79,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     msg += `\n`;
     msg += `を開発チームに送信してもよろしいですか？`;
 
-    if(!await confirm(msg))
+    const additional = await inputBox(msg, "その他に送信したい情報がある場合はご記入ください。");
+    if(additional == null)
       return;
 
     const data = {
@@ -93,10 +94,26 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         platform: navigator.platform,
         product: [navigator.product, navigator.productSub]
       },
-      user: currentUser?.userId
+      user: currentUser?.userId,
+      addtional: additional
     };
 
-    console.log(JSON.parse(JSON.stringify(data)));
+    const req = await fetch(SERVER_URI + "/Debug/Report", {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Access-Token": await getAccessToken()
+      }
+    });
+
+    const res = await req.json();
+    if(!req.ok) {
+      await alert("送信中にエラーが発生しました。\n\n" + res.error);
+      return;
+    }
+
+    await alert("送信ありがとうございました。");
   };
 
   const onLogoutClicked = async () => {
