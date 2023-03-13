@@ -412,7 +412,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({
-                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + (v.name == null ? "" : v.name) + '</div>'
               })
             });
             gr.push(ma);
