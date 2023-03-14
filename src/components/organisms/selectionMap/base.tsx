@@ -992,7 +992,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           <div className='mx-auto flex h-full w-[220px] flex-col-reverse'>
             {locSearchVisible ? (
               <div className={'mb-3 box-border w-full p-1 ' + (searchMode === "市町村名" ? "h-[236px]" : "h-[310px] ")}>
-                <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
+                <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-border p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
                     <div className='flex-1 text-center font-bold'>地点検索</div>
                     <div className='text-center text-lg'>
@@ -1002,8 +1002,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                     </div>
                   </div>
                   <div className='flex flex-col'>
-                    <span className='py-1 font-bold'>検索対象</span>
-                    <select id='point_search_type' className='w-full pb-1' defaultValue={"市町村名"} onChange={(e) => setSearchMode(e.target.value)}>
+                    <span className='py-1 font-bold'>検索項目</span>
+                    <select id='point_search_type' className='w-full pb-1 bg-[#ffffff]' defaultValue={"市町村名"} onChange={(e) => setSearchMode(e.target.value)}>
                       <option>市町村名</option>
                       <option>緯度・経度（度分秒）</option>
                       <option>緯度・経度（度）</option>
