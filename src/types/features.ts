@@ -203,6 +203,10 @@ export interface ButanetsuProps {
   ID$?: string;
   県番号: string;
   捕獲年月日: string;
+  捕獲場所: string;
+  性別: string;
+  体長: string;
+  遠沈管番号: string;
 }
 
 export interface YoutonFeature extends FeatureBase {

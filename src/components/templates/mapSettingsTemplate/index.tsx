@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
+import { confirm } from '../../../utils/modal';
 import FooterAdjustment from '../../atomos/footerAdjustment';
 import RoundButton from '../../atomos/roundButton';
 import InfoInput from '../../molecules/infoInput';
@@ -14,10 +15,13 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
   const { currentUser } = useCurrentUser();
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(false);
   const [radiusError, setRadiusError] = useState('');
   const [timeError, setTimeError] = useState('');
   const [message, setMessage] = useState('');
+  const [deleteMessage, setDeleteMessage] = useState('');
   const [, setMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
+  const [, setDeleteMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (currentUser == null) return;
@@ -113,6 +117,32 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
     updateTask();
   };
 
+  const onDeleteClicked = async () => {
+    if(!await confirm("本当に地図画像のキャッシュを削除しますか？")) 
+      return;
+
+    setDeleteButtonDisabled(true);
+    const res = await fetch(SERVER_URI + '/Map/DeleteImage', {
+      method: 'GET',
+      headers: {
+        'X-Access-Token': getAccessToken(),
+      }
+    });
+
+    const data = await res.json();
+    setDeleteMessageDeleteTimerId((id) => {
+      setDeleteMessage(res.ok ? `${data.deleted}件のキャッシュされたデータを削除しました。` : `エラーが発生しました。(${res.status})`);
+
+      if (id != null) clearTimeout(id);
+
+      return setTimeout(() => {
+        setDeleteMessage('');
+      }, 4000);
+    });
+
+    setDeleteButtonDisabled(false);
+  };
+
   return (
     <div>
       <Header color='primary'>マップ表示設定</Header>
@@ -126,6 +156,24 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
           </RoundButton>
           <div className='pt-3 text-center'>
             <span>{message}</span>
+          </div>
+        </div>
+      </div>
+      <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
+        <div className='text-2xl font-bold'>地図画像キャッシュ設定</div>
+        <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
+          <div className='pb-3 text-left'>
+            <span>
+              <span className="underline font-bold text-danger">注意</span><br />
+              地図画像のキャッシュを削除すると再度地図画像がキャッシュされるまで地図画像の表示速度が遅くなります。<br />
+              GISの地図画像に更新があった場合などのみに実行してください。
+            </span>
+          </div>
+          <RoundButton color='danger' onClick={onDeleteClicked} disabled={deleteButtonDisabled}>
+            地図画像キャッシュの削除
+          </RoundButton>
+          <div className='pt-3 text-center'>
+            <span>{deleteMessage}</span>
           </div>
         </div>
       </div>

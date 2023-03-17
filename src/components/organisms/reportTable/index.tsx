@@ -1,19 +1,24 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import { SyntheticEvent, useEffect, useState } from 'react';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { ReportProps, FeatureBase, ReportFeature } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
-import { yesNo } from '../../../utils/modal';
+import { hasWritePermission } from '../../../utils/gis';
+import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { ReportTableProps } from './interface';
 
 const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   const router = useRouter();
+  const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
   const [features, setFeatures] = useState<FeatureBase[]>([]);
+  const [editable, setEditable] = useState(false);
+  const [deletedFeatures, setDeletedFeatures] = useState<string[]>([]);
 
   const sortableClass = (key: string) => {
     if (key == sortKey) {
@@ -26,10 +31,25 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
     return 'sortable';
   };
 
-  useEffect(() => {
-    const features = p.features.slice();
+  const updateTable = () => {
+    const features = p.features.filter(v=>{
+      return !deletedFeatures.includes((v as ReportFeature).properties.ID$ as string);
+    });
+
     setFeatures(sortFeatures(sortKey, features as ReportFeature[], isDesc));
+  };
+
+  useEffect(() => {
+    setDeletedFeatures([]);
+  }, p.features);
+
+  useEffect(() => {
+    updateTable();
   }, [sortKey, isDesc]);
+
+  useEffect(() => {
+    setEditable(currentUser != null ? hasWritePermission('boar', currentUser) : false);
+  }, [currentUser]);
 
   const sort = (key: keyof ReportProps) => {
     if (key == sortKey) {
@@ -73,6 +93,88 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
         '/edit/image',
       );
     }
+  };
+
+  const onClickDelete = async (id: string | undefined, feature: FeatureBase) => {
+    if(!await confirm(`ID: ${id}の情報を削除しますか？`))
+      return;
+
+    const type = "report";
+
+    setEditable(false);
+    // 画像の削除用関数の準備
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
+    let imageIds: string[] = [];
+
+    imageIds = ((feature.properties as Record<string, unknown>)['画像ID'] as string).split(
+      ',',
+    );
+
+    // 画像ファイルが存在する場合のみ関数を定義する。
+    if (imageIds.length >= 1 && imageIds[0] != '') {
+      deleteImage = (id: string) => {
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const data = new FormData();
+            data.append('id', id);
+            const options = {
+              method: 'POST',
+              body: data,
+              headers: {
+                Accept: 'application/json',
+                'X-Access-Token': getAccessToken(),
+              },
+            };
+            fetch(`${SERVER_URI}/Image/DeleteImage`, options)
+              .then((res) => {
+                if (res.status === 200 || res.status === 404) {
+                  resolve();
+                } else {
+                  return res.json();
+                }
+              })
+              .then((json) => reject(json['reason']))
+              .catch((e) => reject(e));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      };
+    }
+
+    // GISにクエリを投げる
+    const body = {
+      type: type,
+      shapeIds: [id as string],
+    };
+    try {
+      // 先に画像を削除する.
+      await Promise.all(imageIds.map((id) => deleteImage(id)));
+      const res = await fetch(SERVER_URI + '/Features/DeleteFeature', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Access-Token': getAccessToken(),
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (res.status === 200) {
+        await alert('削除しました。');
+
+        deletedFeatures.push(`${id}`);
+        updateTable();
+      } else {
+        const json = await res.json();
+        await alert(json['reason']);
+      }
+    } catch (e) {
+      await alert(`${e}`);
+    }
+
+    setEditable(currentUser != null ? hasWritePermission('boar', currentUser) : false);
   };
 
   return (
@@ -158,6 +260,15 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                   <RoundButton color='accent' onClick={() => onClickEdit(props.ID$, f)}>
                     編集
                   </RoundButton>
+                  <div className='mt-2'>
+                    <RoundButton
+                      color='danger'
+                      disabled={!editable}
+                      onClick={() => onClickDelete(props.ID$, f)}
+                    >
+                        削除
+                    </RoundButton>
+                  </div>
                 </td>
                 <td className='border border-solid border-border p-1 text-right'>{props.ID$}</td>
                 <td className='border border-solid border-border p-1'>{props.入力者}</td>

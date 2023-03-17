@@ -45,7 +45,6 @@ const BoarInfov1View: React.FunctionComponent<BoarInfov1ViewProps> = ({
             imageIDs != null ? imageIDs : detail.properties.画像ID.split(',').filter((e) => e),
         }}
       />
-      <InfoDiv title={'メッシュ番号'} type='text' data={detail.properties.メッシュ番号} />
       <InfoDiv title='区分' type='text' data={detail.properties.区分} />
       <InfoDiv title='捕獲年月日' type='date' data={detail.properties.捕獲年月日} />
       <InfoDiv title='わな・発見場所' type='text' data={detail.properties['罠・発見場所']} />
@@ -53,12 +52,6 @@ const BoarInfov1View: React.FunctionComponent<BoarInfov1ViewProps> = ({
       <InfoDiv title='幼獣・成獣の別' type='text' data={detail.properties['幼獣・成獣']} />
       <InfoDiv title='性別' type='text' data={detail.properties.性別} />
       <InfoDiv title='体長' type='number' data={detail.properties.体長} unit='cm' />
-      <InfoDiv
-        title='体重（体長から自動計算）'
-        type='number'
-        data={detail.properties.体重}
-        unit='kg'
-      />
       {pregnantInfo}
       <InfoDiv title='処分方法' type='text' data={detail.properties.処分方法} />
       <InfoDiv title='備考（遠沈管番号）' type='text' data={detail.properties.備考} />

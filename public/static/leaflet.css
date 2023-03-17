@@ -907,8 +907,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 .marker-cluster div {
-	width: 30px;
-	height: 30px;
+	width: 20px;
+	height: 20px;
 	margin-left: 5px;
 	margin-top: 5px;
 
@@ -918,7 +918,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 .marker-cluster span {
-	line-height: 30px;
+	line-height: 20px;
 }
 
 
@@ -946,13 +946,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 .markerDiv__img {
-	height: 25px;
+	height: 20px;
 }
 
 .markerDiv__title {
 	width: max-content;
 	font-weight: bold;
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .leaflet-button {

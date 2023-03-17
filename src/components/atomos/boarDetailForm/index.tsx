@@ -51,8 +51,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != ''
         ? props.detail.properties['地域']
         : props.myTraderInfo != null && props.myTraderInfo.area
-        ? props.myTraderInfo.area
-        : ' ',
+          ? props.myTraderInfo.area
+          : ' ',
     );
 
     const [trader, setTrader] = useState<TraderInfo | null | boolean>(
@@ -61,8 +61,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
         props.detail.properties['地域'] != null
         ? true
         : props.myTraderInfo != null && props.myTraderInfo.info
-        ? props.myTraderInfo.info
-        : null,
+          ? props.myTraderInfo.info
+          : null,
     );
 
     const getForm = (): HTMLFormElement => {
@@ -167,7 +167,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           成獣幼獣別: age,
           性別: gender,
           体長: `${parseInt(length)}`,
-          体重: `${calcWeight(length)}`,
+          体重: "",
           処分方法: disposal,
           備考: note,
           妊娠の状況: pregnant,
@@ -195,30 +195,6 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       }
 
       return data;
-    };
-
-    const calcWeight = (length: number) => {
-      if (length < 35) {
-        return 5;
-      } else if (length < 55) {
-        return 10;
-      } else if (length < 91) {
-        return 20; // 幼獣
-      } else if (length < 95) {
-        return 20; // 成獣
-      } else if (length < 105) {
-        return 30;
-      } else if (length < 115) {
-        return 45;
-      } else if (length < 125) {
-        return 60;
-      } else if (length < 135) {
-        return 80;
-      } else if (length < 145) {
-        return 100;
-      } else {
-        return 130;
-      }
     };
 
     const validatePCR = (): boolean => {
@@ -445,8 +421,8 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.地域
                   : props.myTraderInfo != null && props.myTraderInfo.area
-                  ? props.myTraderInfo.area
-                  : ''
+                    ? props.myTraderInfo.area
+                    : ''
               }
               onChange={onChangeArea}
             />
@@ -460,10 +436,10 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
                 props.detail != null
                   ? props.detail.properties.ジビエ業者
                   : props.myTraderInfo != null && props.myTraderInfo.info
-                  ? props.myTraderInfo.info.name
-                  : filteredNameList.length
-                  ? filteredNameList[0]
-                  : ''
+                    ? props.myTraderInfo.info.name
+                    : filteredNameList.length
+                      ? filteredNameList[0]
+                      : ''
               }
               error={errors.trader}
               onChange={onChangeTrader}
@@ -471,14 +447,14 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
 
             {props.detail?.properties.個体管理番 != null &&
             props.detail?.properties.個体管理番 != '' ? (
-              <InfoDiv
-                title='個体管理番号'
-                type='text'
-                data={props.detail?.properties.個体管理番}
-              />
-            ) : (
-              <></>
-            )}
+                <InfoDiv
+                  title='個体管理番号'
+                  type='text'
+                  data={props.detail?.properties.個体管理番}
+                />
+              ) : (
+                <></>
+              )}
           </div>
           <div
             style={{

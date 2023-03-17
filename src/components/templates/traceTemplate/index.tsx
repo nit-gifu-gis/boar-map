@@ -65,7 +65,6 @@ const TraceTemplate: React.FunctionComponent = () => {
             <TraceData data_key='性別' value={searchResult.gender} />
             <TraceData data_key='成子の別' value={searchResult.is_child ? '幼獣' : '成獣'} />
             <TraceData data_key='体長' value={`${searchResult.length} cm`} />
-            <TraceData data_key='体重' value={`${searchResult.weight} kg`} isBottom={true} />
           </div>
         )}
         <div className='mb-5 text-center'>

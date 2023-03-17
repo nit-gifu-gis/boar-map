@@ -235,11 +235,11 @@ const EditImageTemplate: React.FunctionComponent = () => {
                 imageIDs={
                   serverImages == null
                     ? ((feature.properties as Record<string, string>)[imageKey] != null
-                        ? (feature.properties as Record<string, string>)[imageKey]
-                        : ''
-                      )
-                        .split(',')
-                        .filter((e) => e)
+                      ? (feature.properties as Record<string, string>)[imageKey]
+                      : ''
+                    )
+                      .split(',')
+                      .filter((e) => e)
                     : (serverImages.newServerImages as string[])
                 }
                 onServerImageDeleted={(list) => setNewImageIds(list)}

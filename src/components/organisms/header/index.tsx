@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { hasListPermission } from '../../../utils/gis';
 import { HeaderProps } from './interface';
-import { confirm } from '../../../utils/modal';
+import { alert, confirm, inputBox } from '../../../utils/modal';
 import { useSetRecoilState } from 'recoil';
 import { useRouter } from 'next/router';
 import { currentUserState } from '../../../states/currentUser';
@@ -11,11 +11,15 @@ import { getAccessToken } from '../../../utils/currentUser';
 import { destroyCookie } from 'nookies';
 import { SERVER_URI } from '../../../utils/constants';
 import { getFormUrl } from '../../../utils/questionaire';
+import PDFViewer from '../../atomos/pdfViewer';
+import { useAppLogs } from '../../../hooks/useAppLogs';
 
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
+  const { appLogs } = useAppLogs();
   const { currentUser, isAuthChecking } = useCurrentUser();
   const [isOpen, setOpen] = useState(false);
   const [formUrl, setFormUrl] = useState('');
+  const [manualViewer, setManualViewer] = useState<JSX.Element | null>(null);
   const setCurrentUser = useSetRecoilState(currentUserState);
   const router = useRouter();
 
@@ -66,6 +70,51 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     if (currentUser === undefined) return;
     setFormUrl(getFormUrl(currentUser));
   }, [currentUser]);
+
+  const onClickBugReport = async () => {
+    let msg =  `・ ユーザーID\n`;
+    msg += `・ ${appLogs.length}件のログデータ\n`;
+    msg += `・ 画面遷移についての情報\n`;
+    msg += `・ 使用中の機種についての情報\n`;
+    msg += `\n`;
+    msg += `を開発チームに送信してもよろしいですか？`;
+
+    const additional = await inputBox(msg, "その他に送信したい情報がある場合はご記入ください。");
+    if(additional == null)
+      return;
+
+    const data = {
+      logs: appLogs,
+      router: router,
+      device: {
+        language: navigator.language,
+        cookieEnabled: navigator.cookieEnabled,
+        userAgent: navigator.userAgent,
+        vendor: navigator.vendor,
+        platform: navigator.platform,
+        product: [navigator.product, navigator.productSub]
+      },
+      user: currentUser?.userId,
+      addtional: additional
+    };
+
+    const req = await fetch(SERVER_URI + "/Debug/Report", {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Access-Token": await getAccessToken()
+      }
+    });
+
+    const res = await req.json();
+    if(!req.ok) {
+      await alert("送信中にエラーが発生しました。\n\n" + res.error);
+      return;
+    }
+
+    await alert("送信ありがとうございました。");
+  };
 
   const onLogoutClicked = async () => {
     if (await confirm('本当にログアウトしてよろしいですか？')) {
@@ -164,11 +213,24 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_manual'
       >
-        <Link href="https://boar-map.gifugis.jp/media/manual_20221214.pdf">
+        <Link href="#">
           <a
             className='text-14pt text-background no-underline'
-            target='_blank'
-            rel='noopener noreferrer'
+            onClick={() => {
+              setManualViewer(viewer => {
+                setOpen(false);
+                if(viewer == null) {
+                  return (
+                    <PDFViewer 
+                      url="https://boar-map.gifugis.jp/media/manual_20221214.pdf" 
+                      closeHandler={() => setManualViewer(null)} 
+                      title="操作マニュアル"
+                    />
+                  );
+                }
+                return viewer;
+              });
+            }}
           >
             操作マニュアル
           </a>
@@ -194,6 +256,17 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       >
         <Link href='/trace'>
           <a className='text-14pt text-background no-underline'>履歴管理システム</a>
+        </Link>
+      </div>,
+    );
+
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_bugreport'
+      >
+        <Link href='#'>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>デバッグ情報の送信</a>
         </Link>
       </div>,
     );
@@ -237,49 +310,53 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   }
 
   return (
-    <div className='z-50 h-header w-full'>
-      <div className='h-header w-full'></div>
-      <div className='fixed top-0 left-0 z-50 w-full'>
-        <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
-          <div className={'flex h-full w-full items-center text-center ' + fontSize}>
-            <div className='w-full font-bold text-background'>{props.children}</div>
-          </div>
-          {!isAuthChecking ? (
+    <>
+      {manualViewer}
+      <div className='z-50 h-header w-full'>
+        <div className='h-header w-full'></div>
+        <div className='fixed top-0 left-0 z-50 w-full'>
+          <div className={'shadow-5 relative z-10 h-header w-full ' + bgColor}>
+            <div className={'flex h-full w-full items-center text-center ' + fontSize}>
+              <div className='w-full font-bold text-background'>{props.children}</div>
+            </div>
+            {!isAuthChecking ? (
+              <div
+                className={
+                  'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
+                bgColor
+                }
+                onClick={() => {
+                  setOpen(!isOpen);
+                }}
+              >
+                <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
+                <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
+                <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
+              </div>
+            ) : (
+              <></>
+            )}
             <div
               className={
-                'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
-                bgColor
-              }
-              onClick={() => {
-                setOpen(!isOpen);
-              }}
-            >
-              <span className={'hamburger-line ' + (isOpen ? 'rotate-45' : 'top-2.5')}></span>
-              <span className={'hamburger-line ' + (isOpen ? 'scale-0' : 'top-4.5')}></span>
-              <span className={'hamburger-line ' + (isOpen ? '-rotate-45' : 'top-6.5')}></span>
-            </div>
-          ) : (
-            <></>
-          )}
-          <div
-            className={
-              bgColor +
+                bgColor +
               ' ' +
               (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
-            }
-          >
-            <div
-              className={
-                'overflow-y-hidden ' +
-                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
               }
             >
-              <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+              <div
+                className={
+                  'overflow-y-hidden ' +
+                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
+                }
+              >
+                <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
+    
   );
 };
 

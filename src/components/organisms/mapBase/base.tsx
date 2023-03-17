@@ -66,7 +66,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       return new L.DivIcon({
         html: '<div><span>' + childCount + '</span></div>',
         className: 'marker-cluster' + c,
-        iconSize: new L.Point(40, 40),
+        iconSize: new L.Point(30, 30),
       });
     };
   };
@@ -164,7 +164,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       html:
         '<div class="markerDiv">' +
         `<img src="${iconUrl}" class="markerDiv__img" style="${
-          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 25px;' : ''
+          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 20px;' : ''
         }" />` +
         `<div class="markerDiv__title">${label}</div>` +
         '</div>',
@@ -346,9 +346,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                 settings,
                 newFeatures as ButanetsuFeature[],
               );
-              const newMarkers = (
-                await filterButanetsu(settings, newFeatures as ButanetsuFeature[])
-              ).map((f) => makeMarker(f, key as layerType));
+              const newMarkers = newFeatures.map(f => makeMarker(f, key as layerType));
               setButanetsuLayerID((id) => {
                 const l = overlayList[key] as L.LayerGroup;
                 const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
@@ -400,7 +398,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
             weight: 2,
             fill: true,
             fillColor: '#ff1f0f',
-            fillOpacity: opacity ? opacity * 0.9 : 0
+            fillOpacity: opacity ? Math.min(opacity, 0.8) : 0
           };
         }
       };
@@ -424,11 +422,11 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         // 新しいメッシュを描画する
         newMeshData.forEach(v => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
-          const gr: (L.Marker<any> | L.Polygon)[] = [po];
+          const gr: (L.Marker | L.Polygon)[] = [po];
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({
-                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + v.name + '</div>'
+                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + (v.name == null ? "" : v.name) + '</div>'
               })
             });
             gr.push(ma);
@@ -458,18 +456,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     setLoading(false);
   };
 
-  const filterButanetsu = async (
-    settings: Record<string, number>,
-    features: ButanetsuFeature[],
-  ): Promise<ButanetsuFeature[]> => {
-    const show_date = new Date();
-    show_date.setHours(0);
-    show_date.setMinutes(0);
-    show_date.setSeconds(0);
-    show_date.setMonth(show_date.getMonth() - settings.month);
-    return features.filter((f) => show_date <= new Date(f.properties.捕獲年月日));
-  };
-
   const makeCircleMarkers = async (
     settings: Record<string, number>,
     features: ButanetsuFeature[],
@@ -494,7 +480,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           weight: 2,
           fill: true,
           fillColor: '#e33b3b',
-          opacity: 0.5,
+          fillOpacity: 0.05,
+          opacity: 0.4,
         });
         l.push(markers);
       }
@@ -728,8 +715,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     // メイン地図レイヤー
     L.TileLayer.wmsHeader(
-      'https://pascali.info-mapping.com/webservices/publicservice/WebmapServiceToken.asmx/WMSService?TENANTID=21000S',
+      SERVER_URI + "/Map/GetImage",
       {
+        TENANTID: '21000S',
         version: '1.3.0',
         layers: '999999194',
         format: 'image/png',
@@ -740,8 +728,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       },
       [
         {
-          header: 'X-Map-Api-Access-Token',
-          value: currentUser?.accessToken,
+          header: 'X-Access-Token',
+          value: getAccessToken(),
         },
       ],
     ).addTo(myMap);
@@ -824,15 +812,20 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
   const onPointSearchClicked = async () => {
     const type_input = document.getElementById('point_search_type') as HTMLSelectElement | null;
-    const text_input = document.getElementById('point_search_text') as HTMLInputElement | null;
-    if (type_input == null || text_input == null) {
+    if (type_input == null) {
       alert('内部エラーが発生しました。');
       return;
     }
 
     const type = type_input.options[type_input.selectedIndex].value;
-    const text = text_input.value;
     if (type == '市町村名') {
+      const text_input = document.getElementById('point_search_text') as HTMLInputElement | null;
+      if (text_input == null) {
+        alert('内部エラーが発生しました。');
+        return;
+      }
+      
+      const text = text_input.value;
       setSearchButtonLabel('検索中...');
       const res = await fetch(SERVER_URI + '/City/Search', {
         method: 'POST',
@@ -871,11 +864,64 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         });
         setLocSearchVisible(false);
       }
+    } else if(type === "緯度・経度（度分秒）" || type === "緯度・経度（度）") {
+      // モードごとに緯度経度の計算・チェックを行う
+      let lat = 0.0;
+      let lng = 0.0;
+      if (type === "緯度・経度（度）") {
+        // 入力されているかのチェック
+        const lat_input = document.getElementById('point_search_lat') as HTMLInputElement | null;
+        const lng_input = document.getElementById('point_search_lng') as HTMLInputElement | null;
+        if (lat_input == null || lng_input == null) {
+          alert('内部エラーが発生しました。');
+          return;
+        }
+
+        lat = parseFloat(lat_input.value);
+        lng = parseFloat(lng_input.value);
+
+        if(Number.isNaN(lat) || Number.isNaN(lng)) {
+          alert('不正な形式のデータが入力されました。');
+          return;
+        }
+      } else {
+        // 最低限度が入力されているかのチェック＋度分秒から度に変換
+        const lat_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement).filter(v=> v != null);
+        const lng_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement).filter(v=> v != null);
+        if (lat_input_divs.length != 3 || lng_input_divs.length != 3) {
+          alert('内部エラーが発生しました。');
+          return;
+        }
+
+        const lat_inputs = lat_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
+        const lng_inputs = lng_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
+
+        if(Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
+          alert('不正な形式のデータが入力されました。');
+          return;
+        }
+
+        lat = lat_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
+        lng = lng_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
+      }
+
+      const map = await new Promise<L.Map | null>(resolve=> setMyMap(m => {
+        resolve(m);
+        return m;
+      }));
+      if(map == null) {
+        alert("内部エラーが発生しました。");
+        return;
+      }
+
+      map.panTo(new L.LatLng(lat, lng));
     } else {
       alert('内部エラーが発生しました。');
       return;
     }
   };
+
+  const [searchMode, setSearchMode] = useState<string>("市町村名");
 
   return (
     <div>
@@ -893,10 +939,10 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       >
         <div className='mx-auto flex h-full w-[220px] flex-col-reverse'>
           {locSearchVisible ? (
-            <div className='mb-3 box-border h-[236px] w-full p-1'>
-              <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
+            <div className={'mb-3 box-border w-full p-1 ' + (searchMode === "市町村名" ? "h-[236px]" : "h-[310px] ")}>
+              <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-border p-2'>
                 <div className='mr-1 flex items-center justify-end pb-1'>
-                  <div className='flex-1 text-center font-bold'>地点検索（試験中）</div>
+                  <div className='flex-1 text-center font-bold'>地点検索</div>
                   <div className='text-center text-lg'>
                     <button type='button' onClick={() => setLocSearchVisible(false)}>
                       ×
@@ -904,12 +950,50 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                   </div>
                 </div>
                 <div className='flex flex-col'>
-                  <span className='py-1 font-bold'>検索対象</span>
-                  <select id='point_search_type' className='w-full pb-1'>
+                  <span className='py-1 font-bold'>検索項目</span>
+                  <select id='point_search_type' className='w-full pb-1 bg-[#ffffff]' defaultValue={"市町村名"} onChange={(e) => setSearchMode(e.target.value)}>
                     <option>市町村名</option>
+                    <option>緯度・経度（度分秒）</option>
+                    <option>緯度・経度（度）</option>
                   </select>
-                  <span className='py-1 font-bold'>検索ワード</span>
-                  <input id='point_search_text' type='text' className='w-full' />
+                  {searchMode === "市町村名" ? (
+                    <>
+                      <span className='py-1 font-bold'>検索ワード</span>
+                      <input id='point_search_text' type='text' className='w-full' />
+                    </>
+                  ) : (searchMode === "緯度・経度（度分秒）" ? (
+                    <>
+                      <span className='py-1 font-bold'>緯度</span>
+                      <div className='flex justify-center'>
+                        <input id='point_search_lat_1' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                        <input id='point_search_lat_2' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                        <input id='point_search_lat_3' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                      </div>
+                      <span className='py-1 font-bold'>経度</span>
+                      <div className='flex justify-center'>
+                        <input id='point_search_lng_1' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                        <input id='point_search_lng_2' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                        <input id='point_search_lng_3' type='number' className='w-[36px] pl-1' />
+                        <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                      </div>
+                    </>
+                  ) : (searchMode === "緯度・経度（度）" ? (
+                    <>
+                      <span className='py-1 font-bold'>緯度</span>
+                      <input id='point_search_lat' type='number' className='w-full h-8 pl-1' />
+                      <span className='py-1 font-bold'>経度</span>
+                      <input id='point_search_lng' type='number' className='w-full h-8 pl-1' />
+                    </>
+                  ) : (
+                    <>
+                      エラー: 不明な選択肢
+                    </>
+                  )))}
                   <div className='w-full p-4'>
                     <RoundButton
                       color='primary'

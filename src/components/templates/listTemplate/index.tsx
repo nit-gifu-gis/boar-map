@@ -77,7 +77,7 @@ const ListTemplate: React.FunctionComponent = () => {
       const json = await res.json();
       await alert(json.error);
     }
-  }
+  };
 
   return (
     <div className='min-w-[500px] bg-background'>
@@ -86,21 +86,21 @@ const ListTemplate: React.FunctionComponent = () => {
         {currentUser?.userDepartment === 'K' ||
         currentUser?.userDepartment === 'J' ||
         currentUser?.userDepartment === 'D' ? (
-          <>
-          <div className='mx-auto max-w-[400px] py-5'>
-            <RoundButton color='excel' onClick={() => router.push('/import')}>
-              データのインポート
-            </RoundButton>
-          </div>
-          <div className='mx-auto max-w-[400px] py-5'>
-            <RoundButton color="accent" onClick={() => downloadYouton()} disabled={downloading}>
-              {downloading ? "ダウンロード中..." : "養豚場リストのダウンロード"}
-            </RoundButton>
-          </div>
-          </>
-        ) : (
-          <></>
-        )}
+            <>
+              <div className='mx-auto max-w-[400px] py-5'>
+                <RoundButton color='excel' onClick={() => router.push('/import')}>
+                  データのインポート
+                </RoundButton>
+              </div>
+              <div className='mx-auto max-w-[400px] py-5'>
+                <RoundButton color="accent" onClick={() => downloadYouton()} disabled={downloading}>
+                  {downloading ? "ダウンロード中..." : "養豚場リストのダウンロード"}
+                </RoundButton>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         <SearchForm onClick={onClickSearch} />
         {searchInfo != null && searchResult != null ? (
           <SearchResult searchInfo={searchInfo} searchResult={searchResult} />

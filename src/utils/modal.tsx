@@ -2,6 +2,7 @@ import ReactDOM from "react-dom";
 import AlertModal from "../components/molecules/alertModal";
 import CitySelectModal from "../components/molecules/citySelectModal";
 import ConfirmModal from "../components/molecules/confirmModal";
+import TextInputModal from "../components/molecules/textInputModal";
 import YesNoModal from "../components/molecules/yesNoModal";
 import { CityInfo } from "../types/features";
 
@@ -19,6 +20,50 @@ export const yesNo = async (message: string) => {
 
 export const cityList = async (list: CityInfo[]) => {
   return await showCityModal(list);
+};
+
+export const inputBox = async (message: string, title: string) => {
+  return await textBoxModal(message, title);
+};
+
+const textBoxModal = (message: string, title: string): Promise<string | null> => {
+// nextのアプリケーションが描画される要素を取得
+  const nextDiv = document.getElementById("__next");
+  if(nextDiv == null) return new Promise<null>(resolve=>resolve(null));
+  // スクロールのきっかけになるイベントを停止
+  const handleScrollEvent = (e: TouchEvent | WheelEvent) => e.preventDefault();
+  nextDiv.addEventListener("wheel", handleScrollEvent, { passive: false });
+  nextDiv.addEventListener("touchmove", handleScrollEvent, { passive: false });
+  // 上記以外の方法でもスクロール禁止（結構無理やり止めてる）
+  const x = window.pageXOffset;
+  const y = window.pageYOffset;
+  const handleScroll = () => window.scrollTo(x, y);
+  window.addEventListener("scroll", handleScroll);
+  // モーダルを表示するdivを作成
+  const wrapper = nextDiv.appendChild(document.createElement("div"));
+  wrapper.style.width = "100vw";
+  wrapper.style.height = "100vh";
+  wrapper.style.position = "fixed";
+  wrapper.style.zIndex = "100";
+  // モーダルを消去する関数
+  const cleanup = () => {
+    ReactDOM.unmountComponentAtNode(wrapper);
+    nextDiv.removeEventListener("wheel", handleScrollEvent);
+    nextDiv.removeEventListener("touchmove", handleScrollEvent);
+    window.removeEventListener("scroll", handleScroll);
+    return setTimeout(() => wrapper.remove());
+  };
+  const promise = new Promise<string | null>((resolve, reject) => {
+    try {
+      const modal = <TextInputModal message={message} input_title={title} resolve={resolve} cleanup={cleanup}/>;
+      ReactDOM.render(modal, wrapper);
+    } catch (e) {
+      cleanup();
+      reject(e);
+      throw e;
+    }
+  });
+  return promise;
 };
 
 const showCityModal = (list: CityInfo[]) => {

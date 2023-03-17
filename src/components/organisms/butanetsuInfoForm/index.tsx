@@ -18,11 +18,23 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
       const catchDate = form.catchDate.value as string;
       // 3 県番号
       const prefNo = form.prefNo.value as string;
+      // 4 捕獲場所
+      const place = form.place.value as string;
+      // 5 性別
+      const gender = form.sex.options[form.sex.selectedIndex].value;
+      // 6 体長
+      const bLength = form.bLength.value as string;
+      // 7 遠沈管番号
+      const enchinkan = form.enchinkan.value as string;
 
       const data: ButanetsuFeature = {
         properties: {
           捕獲年月日: catchDate,
           県番号: prefNo,
+          捕獲場所: place,
+          性別: gender,
+          体長: bLength,
+          遠沈管番号: enchinkan
         },
         geometry: {
           type: 'Point',
@@ -43,6 +55,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
       let valid = true;
       valid = valid && validateDate('catchDate', true);
       valid = valid && validateNumber('prefNo');
+      valid = valid && validateNumber("bLength");
       return new Promise<boolean>((resolve) => resolve(valid));
     };
 
@@ -116,6 +129,35 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
             required={true}
             onChange={() => validateNumber('prefNo')}
             error={errors.prefNo}
+          />
+          <InfoInput
+            title='捕獲場所'
+            type='text'
+            id='place'
+            defaultValue={featureValueOrUndefined('捕獲場所')}
+          />
+          <InfoInput
+            title='体長 (cm)'
+            type='number'
+            id='bLength'
+            min={1}
+            defaultValue={featureValueOrUndefined('体長')}
+            required={true}
+            onChange={() => validateNumber("bLength")}
+            error={errors.bLength}
+          />
+          <InfoInput
+            title='性別'
+            type='select'
+            id='sex'
+            options={['オス', 'メス', '不明']}
+            defaultValue={props.featureInfo != null ? props.featureInfo.properties.性別 : '不明'}
+          />
+          <InfoInput
+            title='遠沈管番号'
+            type='text'
+            id='enchinkan'
+            defaultValue={featureValueOrUndefined('遠沈管番号')}
           />
         </form>
       </div>
