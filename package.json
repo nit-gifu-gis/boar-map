@@ -13,6 +13,7 @@
     "node": "16.x"
   },
   "dependencies": {
+    "@sentry/nextjs": "^7.58.1",
     "exif-js": "^2.3.0",
     "leaflet": "^1.7.1",
     "leaflet-easybutton": "^2.4.0",

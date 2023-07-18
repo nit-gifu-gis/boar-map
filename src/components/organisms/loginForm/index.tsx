@@ -8,6 +8,7 @@ import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
 import { confirm } from '../../../utils/modal';
+import * as Sentry from '@sentry/nextjs';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
@@ -61,6 +62,7 @@ const LoginForm: React.FunctionComponent = () => {
         try {
           const currentUser = await fetchCurrentUser();
           setCurrentUser(currentUser);
+          Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
           router.push('/map');
         } catch {
           setCurrentUser(null);

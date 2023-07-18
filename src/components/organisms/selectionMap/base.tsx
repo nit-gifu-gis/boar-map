@@ -522,7 +522,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     };
 
     const error = (e: GeolocationPositionError) => {
-      console.error('位置情報取得失敗', e);
+      console.warn('位置情報取得失敗', e);
     };
 
     navigator.geolocation.getCurrentPosition(success, error);
@@ -680,7 +680,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     };
 
     const error = (e: GeolocationPositionError) => {
-      console.error('位置情報取得失敗', e);
+      console.warn('位置情報取得失敗', e);
     };
 
     const options = {

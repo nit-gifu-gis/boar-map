@@ -92,7 +92,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
 
     Object.keys(errors).forEach((key) => {
       if (errors[key] != null) {
-        console.error(errors[key]);
+        console.warn(errors[key]);
         valid = false;
       }
     });

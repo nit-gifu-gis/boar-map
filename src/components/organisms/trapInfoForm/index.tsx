@@ -100,7 +100,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
     let valid = validateDates();
     Object.keys(errors).forEach((key) => {
       if (errors[key] != null) {
-        console.error(errors[key]);
+        console.warn(errors[key]);
         valid = false;
       }
     });
