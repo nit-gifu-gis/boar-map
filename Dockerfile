@@ -6,7 +6,9 @@ ENV SENTRY_AUTH_TOKEN ${SENTRY_AUTH_TOKEN}
 ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
 ENV NEXT_PUBLIC_SENTRY_RELEASE ${NEXT_PUBLIC_SENTRY_RELEASE}
 WORKDIR /app
-RUN apt update && apt install ca-certificates
+RUN echo "deb http://archive.debian.org/debian/ stretch main" > /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list \
+    && apt update && apt install ca-certificates
 COPY package.json ./
 COPY yarn.lock ./
 RUN yarn
@@ -28,7 +30,9 @@ ENV SENTRY_AUTH_TOKEN ${SENTRY_AUTH_TOKEN}
 ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
 ENV NEXT_PUBLIC_SENTRY_RELEASE ${NEXT_PUBLIC_SENTRY_RELEASE}
 WORKDIR /app
-RUN apt update && apt install ca-certificates
+RUN echo "deb http://archive.debian.org/debian/ stretch main" > /etc/apt/sources.list \
+    && echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list \
+    && apt update && apt install ca-certificates
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next ./.next
 COPY package.json ./
