@@ -9,7 +9,7 @@ import { useCurrentUser } from '../hooks/useCurrentUser';
 import LoadingTemplate from '../components/templates/loadingTemplate';
 import Head from 'next/head';
 import { currentAppLogs } from '../states/appLog';
-import { useAppLogs } from '../hooks/useAppLogs';
+import * as Sentry from "@sentry/nextjs";
 
 const AppInit: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
@@ -71,6 +71,7 @@ const AppInit: React.FunctionComponent = () => {
       try {
         const currentUser = await fetchCurrentUser();
         setCurrentUser(currentUser);
+        Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
       } catch {
         setCurrentUser(null);
       }
