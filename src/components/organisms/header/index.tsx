@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { currentUserState } from '../../../states/currentUser';
 import { getAccessToken } from '../../../utils/currentUser';
 import { destroyCookie } from 'nookies';
-import { SERVER_URI } from '../../../utils/constants';
+import { MANUAL_URL, SERVER_URI } from '../../../utils/constants';
 import { getFormUrl } from '../../../utils/questionaire';
 import PDFViewer from '../../atomos/pdfViewer';
 import { useAppLogs } from '../../../hooks/useAppLogs';
@@ -222,7 +222,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
                 if(viewer == null) {
                   return (
                     <PDFViewer 
-                      url="https://boar-map.gifugis.jp/media/manual_20221214.pdf" 
+                      url={MANUAL_URL} 
                       closeHandler={() => setManualViewer(null)} 
                       title="操作マニュアル"
                     />

@@ -259,6 +259,14 @@ const EditConfirmTemplate: React.FunctionComponent = () => {
         (feature.properties as Record<string, unknown>)['画像ID'] = img_ids_feature;
       }
 
+      console.debug({
+        router: router,
+        body: {
+          type: router.query.type_srv,
+          feature: feature,
+        }
+      });
+      
       const res = await fetch(SERVER_URI + '/Features/UpdateFeature', {
         method: 'POST',
         headers: {

@@ -10,7 +10,7 @@
     "format": "prettier --write --ignore-path .gitignore \"./src/**/*.{ts, tsx}\" \"./src/components/**/*.{ts,tsx}\" \"./src/pages/**/*.{ts,tsx}\""
   },
   "engines": {
-    "node": "16.x"
+    "node": "16.x || >=18.18"
   },
   "dependencies": {
     "@sentry/nextjs": "^7.58.1",
