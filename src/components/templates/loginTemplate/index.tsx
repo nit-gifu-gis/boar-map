@@ -2,8 +2,14 @@ import Image from 'next/image';
 import Header from '../../organisms/header';
 import LoginForm from '../../organisms/loginForm';
 import { LoginProps } from './interface';
+import RoundButton from '../../atomos/roundButton';
+import { REPORT_FORM_URL } from '../../../utils/constants';
 
 const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginProps) => {
+  const openReportForm = () => {
+    window.open(REPORT_FORM_URL);
+  };
+
   return (
     <div className='w-screen'>
       <Header>ログイン</Header>
@@ -23,6 +29,22 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
           <span className='inline-block'>{version.latestNumber}</span>
         </div>
         <LoginForm />
+        <hr />
+        <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
+          不具合等が発生した場合は、<br />
+          下記にご連絡ください。<br />
+          Tel. <a href="tel:0582728096" className="text-[#0000ff] underline font-bold">058-272-8096</a> (平日8:30～17:15)<br />
+          <br />
+          検体提供のご報告は、<br />
+          電話又はFAXでも受け付けています。<br />
+          Tel. <a href="tel:0582728096" className="text-[#0000ff] underline font-bold">058-272-8096</a> (平日8:30～17:15)<br />
+          Fax. <span className="font-bold">058-278-3533</span><br />
+          <div className='my-3'>
+            <RoundButton color="excel" onClick={openReportForm}>
+              検体提供報告書様式
+            </RoundButton>
+          </div>
+        </div>
         <div className='pt-8 text-center'>
           &copy; 2019-2022 National Institute of Technology, Gifu College GIS Team
         </div>
