@@ -63,15 +63,15 @@ const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
 
   // 十字
   const centerCrossIcon = L.icon({
-    iconUrl: '/static/images/map/centerCross.svg',
-    iconRetinaUrl: '/static/images/map/centerCross.svg',
+    iconUrl: '/images/map/centerCross.svg',
+    iconRetinaUrl: '/images/map/centerCross.svg',
     iconSize: [40, 20],
     iconAnchor: [21, 11],
   });
   // ピン
   const centerPinIcon = L.icon({
-    iconUrl: '/static/images/map/centerPin.svg',
-    iconRetinaUrl: '/static/images/map/centerPin.svg',
+    iconUrl: '/images/map/centerPin.svg',
+    iconRetinaUrl: '/images/map/centerPin.svg',
     iconSize: [31, 45],
     iconAnchor: [17, 45],
   });

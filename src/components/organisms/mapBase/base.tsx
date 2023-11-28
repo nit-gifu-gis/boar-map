@@ -178,8 +178,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
-    iconUrl: '/static/images/map/location_marker.svg',
-    iconRetinaUrl: '/static/images/map/location_marker.svg',
+    iconUrl: '/images/map/location_marker.svg',
+    iconRetinaUrl: '/images/map/location_marker.svg',
     iconSize: [40, 40],
     iconAnchor: [21, 21],
   });
@@ -771,7 +771,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     // コントロール追加
     const contrl = L.control.layers(undefined, overlayList, {
-      collapsed: false,
+      collapsed: true,
     });
     setControl(contrl);
     // チェックボックスを配置
@@ -1040,7 +1040,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
         }
       >
-        <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+        <Image src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
       </div>
     </div>
   );

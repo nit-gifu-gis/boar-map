@@ -217,8 +217,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
-    iconUrl: '/static/images/map/location_marker.svg',
-    iconRetinaUrl: '/static/images/map/location_marker.svg',
+    iconUrl: '/images/map/location_marker.svg',
+    iconRetinaUrl: '/images/map/location_marker.svg',
     iconSize: [40, 40],
     iconAnchor: [21, 21],
   });
@@ -789,7 +789,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     // コントロール追加
     const contrl = L.control.layers(undefined, overlayList, {
-      collapsed: false,
+      collapsed: true,
     });
     setControl(contrl);
     // チェックボックスを配置
@@ -806,8 +806,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     // 十字
     const centerCrossIcon = L.icon({
-      iconUrl: '/static/images/map/centerCross.svg',
-      iconRetinaUrl: '/static/images/map/centerCross.svg',
+      iconUrl: '/images/map/centerCross.svg',
+      iconRetinaUrl: '/images/map/centerCross.svg',
       iconSize: [40, 20],
       iconAnchor: [21, 11],
     });
@@ -817,8 +817,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
     // ピン
     const centerPinIcon = L.icon({
-      iconUrl: '/static/images/map/centerPin.svg',
-      iconRetinaUrl: '/static/images/map/centerPin.svg',
+      iconUrl: '/images/map/centerPin.svg',
+      iconRetinaUrl: '/images/map/centerPin.svg',
       iconSize: [31, 45],
       iconAnchor: [17, 45],
     });
@@ -1092,7 +1092,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
           }
         >
-          <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+          <Image src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
         </div>
       </div>
     </div>
