@@ -698,6 +698,78 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
   };
 
+  // メイン地図レイヤー
+  const [baseMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: 'Map <a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+  
+  // メイン地図レイヤー
+  const [structureMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194,5003069,5003070,15003824,15003830',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: 'Map <a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+  
+  // メイン地図レイヤー
+  const [satelliteMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999600',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: 'Map <a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+    
+  const layers = {
+    "通常マップ": baseMap,
+    "目標物マップ": structureMap,
+    //    "衛星写真": satelliteMap
+  };
+
   useEffect(() => {
     if (selfNode == null || currentUser == null) return;
 
@@ -707,7 +779,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     if (myMap == null) {
       setupMap();
-      setMyMap(L.map(selfNode, { keyboard: false }));
+      setMyMap(L.map(selfNode, { 
+        keyboard: false, 
+        layers: [
+          baseMap
+        ] 
+      }));
     }
   }, [selfNode, currentUser, defaultLoc, myMap]);
 
@@ -721,27 +798,6 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     if (defaultLoc.isDefault) {
       getFirstCurrentLocation();
     }
-
-    // メイン地図レイヤー
-    L.TileLayer.wmsHeader(
-      SERVER_URI + "/Map/GetImage",
-      {
-        TENANTID: '21000S',
-        version: '1.3.0',
-        layers: '999999194',
-        format: 'image/png',
-        maxZoom: 18,
-        tileSize: 256,
-        crs: L.CRS.EPSG3857,
-        uppercase: true,
-      },
-      [
-        {
-          header: 'X-Access-Token',
-          value: getAccessToken(),
-        },
-      ],
-    ).addTo(myMap);
 
     myMap.on('moveend', () => {
       // マップが動いたとき
@@ -788,7 +844,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     });
 
     // コントロール追加
-    const contrl = L.control.layers(undefined, overlayList, {
+    const contrl = L.control.layers(layers, overlayList, {
       collapsed: true,
     });
     setControl(contrl);
