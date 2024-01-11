@@ -16,12 +16,16 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(false);
+  const [inputsButtonDisabled, setInputsButtonDisabled] = useState(false);
   const [radiusError, setRadiusError] = useState('');
   const [timeError, setTimeError] = useState('');
+  const [inputsError, setInputsError] = useState('');
   const [message, setMessage] = useState('');
   const [deleteMessage, setDeleteMessage] = useState('');
+  const [inputsMessage, setInputsMessage] = useState('');
   const [, setMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
   const [, setDeleteMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
+  const [, setInputsMessageDeleteTimerId] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (currentUser == null) return;
@@ -44,6 +48,15 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
 
       radius_input.value = settings.radius;
       time_input.value = settings.month;
+
+      const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+        headers: {
+          'X-Access-Token': getAccessToken(),
+        },
+      });
+      const inputSettings = await inputRes.json();
+      const note_input = document.getElementById('input_note') as HTMLInputElement;
+      note_input.value = inputSettings.note_label;
     };
     fetchSettings();
 
@@ -56,6 +69,45 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       });
     };
   }, []);
+
+  const onInputsUpdateClicked = async () => {
+    setInputsError('');
+    const note_input = document.getElementById('input_note') as HTMLInputElement;
+
+    let valid = true;
+    if (!note_input.value) {
+      setInputsError('値が入力されていません。');
+      valid = false;
+    }
+
+    if(!valid) {
+      return;
+    }
+
+    setInputsButtonDisabled(true);
+
+    const res = await fetch(SERVER_URI + '/Settings/Inputs', {
+      method: 'POST',
+      headers: {
+        'X-Access-Token': getAccessToken(),
+      },
+      body: JSON.stringify({
+        note_label: note_input.value
+      }),
+    });
+    const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
+    setInputsMessageDeleteTimerId((id) => {
+      setInputsMessage(message);
+
+      if (id != null) clearTimeout(id);
+
+      return setTimeout(() => {
+        setInputsMessage('');
+      }, 4000);
+    });
+
+    setInputsButtonDisabled(false);
+  };
 
   const onButanetsuUpdateClicked = () => {
     setRadiusError('');
@@ -156,6 +208,18 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
           </RoundButton>
           <div className='pt-3 text-center'>
             <span>{message}</span>
+          </div>
+        </div>
+      </div>
+      <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
+        <div className='text-2xl font-bold'>入力項目設定</div>
+        <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
+          <InfoInput type='text' id='input_note' title='備考欄の入力項目名' error={inputsError} />
+          <RoundButton color='primary' onClick={onInputsUpdateClicked} disabled={inputsButtonDisabled}>
+            保存
+          </RoundButton>
+          <div className='pt-3 text-center'>
+            <span>{inputsMessage}</span>
           </div>
         </div>
       </div>

@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import Divider from '../../atomos/divider';
 import InfoDiv from '../../molecules/infoDiv';
 import { BoarInfov2ViewProps } from './interface';
+import { getAccessToken } from '../../../utils/currentUser';
+import { SERVER_URI } from '../../../utils/constants';
 
 const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   detail,
@@ -9,6 +12,20 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   imageIDs,
   confirmMode,
 }) => {
+  const [noteLabel, setNoteLabel] = useState("備考");
+  useEffect(() => {
+    const fetchTask = async () => {
+      const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+        headers: {
+          'X-Access-Token': getAccessToken(),
+        },
+      });
+      const inputSettings = await inputRes.json();
+      setNoteLabel(inputSettings.note_label);
+    };
+    fetchTask();
+  }, []);
+
   // 箱わな/囲いわなが選択されたときのみ捕獲頭数を表示
   const { currentUser } = useCurrentUser();
   let catchNumInfo: JSX.Element | null = null;
@@ -128,7 +145,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
                     />
                   </>
                 )}
-              <InfoDiv title='備考' type='text' data={v.properties.備考} />
+              <InfoDiv title={noteLabel} type='text' data={v.properties.備考} />
             </div>
           );
         })
