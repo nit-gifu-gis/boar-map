@@ -90,6 +90,8 @@ export interface BoarFeaturePropsV2 {
   地名: string;
   市町村: string;
   捕獲年月日: string;
+  捕獲者: string;
+  検体到着日: string;
   捕獲頭数: string;
   歯列写真ID: string;
   罠発見場所: string;

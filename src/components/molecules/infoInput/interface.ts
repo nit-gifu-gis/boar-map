@@ -16,4 +16,5 @@ export interface InfoInputProps {
   required?: boolean;
   lat?: number;
   lng?: number;
+  caption?: string;
 }

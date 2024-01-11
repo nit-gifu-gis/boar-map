@@ -689,7 +689,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       tileSize: 256,
       crs: L.CRS.EPSG3857,
       uppercase: true,
-      attribution: 'Map <a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
     },
     [
       {
@@ -711,7 +711,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       tileSize: 256,
       crs: L.CRS.EPSG3857,
       uppercase: true,
-      attribution: 'Map <a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
     },
     [
       {
@@ -733,7 +733,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       tileSize: 256,
       crs: L.CRS.EPSG3857,
       uppercase: true,
-      attribution: 'Map <a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
+      attribution: '<a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
     },
     [
       {

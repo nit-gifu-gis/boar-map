@@ -59,7 +59,14 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
       <InfoDiv title='区分' type='text' data={detail.properties.区分} />
       <InfoDiv title='捕獲年月日' type='date' data={detail.properties.捕獲年月日} />
       <InfoDiv title='わな・発見場所' type='text' data={detail.properties.罠発見場所} />
+      <InfoDiv title="捕獲者" type='text' data={detail.properties.捕獲者} />
+      {detail.properties.検体到着日 ? (
+        <InfoDiv title='検体到着予定日' type='date' data={detail.properties.検体到着日} />
+      ) : (
+        <InfoDiv title='検体到着予定日' type='text' data="（未入力）" />
+      )}
       {catchNumInfo}
+      <Divider />
       {detail.properties.捕獲いのしし情報.length === 0 ? (
         <InfoDiv title='個体情報' type='gray' data={'取得に失敗しました。'} />
       ) : (
