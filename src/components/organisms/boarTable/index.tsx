@@ -298,7 +298,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               方法
             </th>
             <th className={'border border-b-2 border-solid border-border p-1'}>遠沈管番号</th>
-            <th className={'border border-b-2 border-solid border-border p-1'}>備考</th>
+            <th className={'border border-b-2 border-solid border-border p-1'}>{p.noteLabel}</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>ジビエ業者</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>個体管理番号</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>PCR検査日</th>
