@@ -217,8 +217,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
-    iconUrl: '/static/images/map/location_marker.svg',
-    iconRetinaUrl: '/static/images/map/location_marker.svg',
+    iconUrl: '/images/map/location_marker.svg',
+    iconRetinaUrl: '/images/map/location_marker.svg',
     iconSize: [40, 40],
     iconAnchor: [21, 21],
   });
@@ -698,6 +698,78 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
   };
 
+  // メイン地図レイヤー
+  const [baseMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+  
+  // メイン地図レイヤー
+  const [structureMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194,5003069,5003070,15003824,15003830',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+  
+  // メイン地図レイヤー
+  const [satelliteMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999600',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+    
+  const layers = {
+    "通常マップ": baseMap,
+    "目標物マップ": structureMap,
+    //    "衛星写真": satelliteMap
+  };
+
   useEffect(() => {
     if (selfNode == null || currentUser == null) return;
 
@@ -707,7 +779,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     if (myMap == null) {
       setupMap();
-      setMyMap(L.map(selfNode, { keyboard: false }));
+      setMyMap(L.map(selfNode, { 
+        keyboard: false, 
+        layers: [
+          baseMap
+        ] 
+      }));
     }
   }, [selfNode, currentUser, defaultLoc, myMap]);
 
@@ -721,27 +798,6 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     if (defaultLoc.isDefault) {
       getFirstCurrentLocation();
     }
-
-    // メイン地図レイヤー
-    L.TileLayer.wmsHeader(
-      SERVER_URI + "/Map/GetImage",
-      {
-        TENANTID: '21000S',
-        version: '1.3.0',
-        layers: '999999194',
-        format: 'image/png',
-        maxZoom: 18,
-        tileSize: 256,
-        crs: L.CRS.EPSG3857,
-        uppercase: true,
-      },
-      [
-        {
-          header: 'X-Access-Token',
-          value: getAccessToken(),
-        },
-      ],
-    ).addTo(myMap);
 
     myMap.on('moveend', () => {
       // マップが動いたとき
@@ -788,8 +844,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     });
 
     // コントロール追加
-    const contrl = L.control.layers(undefined, overlayList, {
-      collapsed: false,
+    const contrl = L.control.layers(layers, overlayList, {
+      collapsed: true,
     });
     setControl(contrl);
     // チェックボックスを配置
@@ -806,8 +862,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     // 十字
     const centerCrossIcon = L.icon({
-      iconUrl: '/static/images/map/centerCross.svg',
-      iconRetinaUrl: '/static/images/map/centerCross.svg',
+      iconUrl: '/images/map/centerCross.svg',
+      iconRetinaUrl: '/images/map/centerCross.svg',
       iconSize: [40, 20],
       iconAnchor: [21, 11],
     });
@@ -817,8 +873,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
     // ピン
     const centerPinIcon = L.icon({
-      iconUrl: '/static/images/map/centerPin.svg',
-      iconRetinaUrl: '/static/images/map/centerPin.svg',
+      iconUrl: '/images/map/centerPin.svg',
+      iconRetinaUrl: '/images/map/centerPin.svg',
       iconSize: [31, 45],
       iconAnchor: [17, 45],
     });
@@ -1092,7 +1148,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
           }
         >
-          <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+          <Image src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
         </div>
       </div>
     </div>

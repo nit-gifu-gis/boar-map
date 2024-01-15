@@ -154,6 +154,11 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       const dateStr = form.date.value;
       // 捕獲頭数
       const catchNum = !isMultiple || isEnv ? 1 : parseInt(form['catchNum'].value);
+      // 捕獲者
+      const catchUser = form["capture_user"].value;
+      // 検体到着予定日
+      const arrivalDate = form["arrival_date"].value;
+      
       // 罠・発見場所
       let trapOrEnv = '';
       if (isEnv) {
@@ -171,6 +176,8 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           捕獲年月日: dateStr,
           捕獲頭数: `${catchNum}`,
           罠発見場所: trapOrEnv,
+          捕獲者: catchUser,
+          検体到着日: arrivalDate,
           地名: '',
           処理方法: '',
           写真ID:
@@ -442,6 +449,19 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
               onChange={onChangeTrap}
             />
           </div>
+          <InfoInput
+            title="捕獲者"
+            type='text'
+            id='capture_user'
+            defaultValue={featureValueOrUndefined('捕獲者')}
+          />
+          <InfoInput 
+            title="検体到着予定日"
+            type='date'
+            id='arrival_date'
+            defaultValue={featureValueOrUndefined('検体到着日')}
+            caption='平日水曜日以外の午前中指定'
+          />
           <div style={{ display: !isEnv && isMultiple ? 'block' : 'none' }}>
             <InfoInput
               title='捕獲頭数'

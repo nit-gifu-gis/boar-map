@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import Divider from '../../atomos/divider';
 import InfoDiv from '../../molecules/infoDiv';
 import { BoarInfov2ViewProps } from './interface';
+import { getAccessToken } from '../../../utils/currentUser';
+import { SERVER_URI } from '../../../utils/constants';
 
 const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   detail,
@@ -9,6 +12,20 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   imageIDs,
   confirmMode,
 }) => {
+  const [noteLabel, setNoteLabel] = useState("備考");
+  useEffect(() => {
+    const fetchTask = async () => {
+      const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+        headers: {
+          'X-Access-Token': getAccessToken(),
+        },
+      });
+      const inputSettings = await inputRes.json();
+      setNoteLabel(inputSettings.note_label);
+    };
+    fetchTask();
+  }, []);
+
   // 箱わな/囲いわなが選択されたときのみ捕獲頭数を表示
   const { currentUser } = useCurrentUser();
   let catchNumInfo: JSX.Element | null = null;
@@ -59,7 +76,14 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
       <InfoDiv title='区分' type='text' data={detail.properties.区分} />
       <InfoDiv title='捕獲年月日' type='date' data={detail.properties.捕獲年月日} />
       <InfoDiv title='わな・発見場所' type='text' data={detail.properties.罠発見場所} />
+      <InfoDiv title="捕獲者" type='text' data={detail.properties.捕獲者} />
+      {detail.properties.検体到着日 ? (
+        <InfoDiv title='検体到着予定日' type='date' data={detail.properties.検体到着日} />
+      ) : (
+        <InfoDiv title='検体到着予定日' type='text' data="（未入力）" />
+      )}
       {catchNumInfo}
+      <Divider />
       {detail.properties.捕獲いのしし情報.length === 0 ? (
         <InfoDiv title='個体情報' type='gray' data={'取得に失敗しました。'} />
       ) : (
@@ -121,7 +145,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
                     />
                   </>
                 )}
-              <InfoDiv title='備考' type='text' data={v.properties.備考} />
+              <InfoDiv title={noteLabel} type='text' data={v.properties.備考} />
             </div>
           );
         })

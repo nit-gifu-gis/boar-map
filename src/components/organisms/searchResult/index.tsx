@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { alert } from '../../../utils/modal';
@@ -11,6 +11,19 @@ import { SearchResultProps } from './interface';
 
 const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, searchResult }) => {
   const [isDownloading, setDownloading] = useState(false);
+  const [noteLabel, setNoteLabel] = useState("備考");
+  useEffect(() => {
+    const fetchTask = async () => {
+      const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+        headers: {
+          'X-Access-Token': getAccessToken(),
+        },
+      });
+      const inputSettings = await inputRes.json();
+      setNoteLabel(inputSettings.note_label);
+    };
+    fetchTask();
+  }, []);
 
   const onClickDownload = async () => {
     setDownloading(true);
@@ -64,7 +77,7 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
       </div>
       <div>
         {searchInfo.get('type') == 'いのしし捕獲地点' ? (
-          <BoarTable features={searchResult} />
+          <BoarTable features={searchResult} noteLabel={noteLabel} />
         ) : searchInfo.get('type') == 'わな設置地点' ? (
           <TrapTable features={searchResult} />
         ) : searchInfo.get('type') == 'ワクチン散布地点' ? (

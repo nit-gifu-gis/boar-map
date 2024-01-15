@@ -59,7 +59,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   }, [currentUser]);
 
   const sort = (
-    key: keyof BoarInfoPropsV2 | keyof BoarCommonPropsV2 | '幼獣の頭数' | '成獣の頭数',
+    key: keyof BoarInfoPropsV2 | keyof BoarCommonPropsV2 | '幼獣の頭数' | '成獣の頭数' | "検体到着日" | "捕獲者",
   ) => {
     if (key == sortKey) {
       setDesc((b) => !b);
@@ -241,6 +241,14 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               <br />
               年月日
             </th>
+            <th 
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('検体到着日')
+              }
+              onClick={() => sort('検体到着日')}
+            >
+              検体到着<br />予定日
+            </th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('罠発見場所')
@@ -279,6 +287,14 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               <br />
               頭数
             </th>
+            <th
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('捕獲者')
+              }
+              onClick={() => sort('捕獲者')}
+            >
+              捕獲者
+            </th>
             <th className={'border border-b-2 border-solid border-border p-1'}>枝番</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>
               幼獣
@@ -298,7 +314,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               方法
             </th>
             <th className={'border border-b-2 border-solid border-border p-1'}>遠沈管番号</th>
-            <th className={'border border-b-2 border-solid border-border p-1'}>備考</th>
+            <th className={'border border-b-2 border-solid border-border p-1'}>{p.noteLabel}</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>ジビエ業者</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>個体管理番号</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>PCR検査日</th>
@@ -372,6 +388,16 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                     <></>
                   )}
                   {index == 0 ? (
+                    <td
+                      className='border border-solid border-border p-1 text-right'
+                      rowSpan={arr.length}
+                    >
+                      {props.検体到着日}
+                    </td>
+                  ) : (
+                    <></>
+                  )}
+                  {index == 0 ? (
                     <td className='border border-solid border-border p-1' rowSpan={arr.length}>
                       {props.罠発見場所}
                     </td>
@@ -410,6 +436,16 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                         props.捕獲いのしし情報.filter((v) => v.properties.成獣幼獣別 == '成獣')
                           .length
                       }
+                    </td>
+                  ) : (
+                    <></>
+                  )}
+                  {index == 0 ? (
+                    <td
+                      className='border border-solid border-border p-1 text-right'
+                      rowSpan={arr.length}
+                    >
+                      {props.捕獲者}
                     </td>
                   ) : (
                     <></>

@@ -22,7 +22,7 @@ const SettingsTemplate: React.FunctionComponent = () => {
       const s = [];
       s.push({
         path: '/settings/map',
-        title: 'マップ表示設定',
+        title: 'マップ設定',
       });
 
       if (currentUser.userDepartment === 'K') {

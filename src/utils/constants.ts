@@ -2,6 +2,9 @@
 
 // 中間サーバー選択用
 const getServerURI = (): string => {
+  if (process.env.NEXT_PUBLIC_API_OVERRIDE) {
+    return process.env.NEXT_PUBLIC_API_OVERRIDE;
+  }
   if (process.browser) {
     // ブラウザで処理が行われている時はアクセスされているドメインを見る
     const domain = document.domain.toLowerCase();
