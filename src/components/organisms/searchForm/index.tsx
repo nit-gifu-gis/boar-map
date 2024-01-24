@@ -58,7 +58,26 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setDateError(false);
     const date1 = (document.getElementById('date1') as HTMLInputElement).value;
     const date2 = (document.getElementById('date2') as HTMLInputElement).value;
-    if (!validateDate(date1, date2)) {
+    
+    const arrival1Input = (document.getElementById('arrival_date1') as HTMLInputElement);
+    const arrival2Input = (document.getElementById('arrival_date2') as HTMLInputElement);
+    const arrival1 = arrival1Input != undefined ? arrival1Input.value : undefined;
+    const arrival2 = arrival2Input != undefined ? arrival2Input.value : undefined;
+
+    if (!(date1 && date2) && !(arrival1 && arrival2)) {
+      // チェック
+      alert(
+        dataType === "いのしし捕獲地点" ? 
+          "「捕獲年月日」または「検体到着予定日」を入力してください。"
+          : "日付が入力されていません。"
+      );
+      setDateError(true);
+      return;
+    }
+
+    if (
+      (date1 && date2 && !validateDate(date1, date2))
+      || (arrival1 && arrival2 && !validateDate(arrival1, arrival2))) {
       alert('日付の前後が間違っています。');
       setDateError(true);
       return;
@@ -79,6 +98,8 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     const data = new FormData();
     data.append('fromDate', date1);
     data.append('toDate', date2);
+    data.append('fromArrivalDate', arrival1 || "");
+    data.append('toArrivalDate', arrival2 || "");
     data.append('cities', cities);
     data.append('divisions', division);
     data.append('type', dataTypeStr);
@@ -94,7 +115,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     <div className='mb-8 w-full'>
       <div className='text-2xl font-bold'>検索条件</div>
       <div className='box-border w-full rounded-[10px] border-2 border-solid border-border py-[10px] px-3'>
-        <div className='grid grid-cols-[100px_1fr]'>
+        <div className='grid grid-cols-[120px_1fr]'>
           <div className='col-[1/2] row-[1] m-1 flex items-center justify-center'>情報の種類</div>
           <div className='col-[2/3] row-[1] m-1 flex flex-wrap items-center justify-start text-left'>
             <SelectInput
@@ -112,13 +133,28 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
           </div>
           <div className='col-[2/3] row-[2] m-1 flex flex-wrap items-center justify-start text-left'>
             <div className='flex-[0_1_300px]'>
-              <DateInput id='date1' error={dateError} required={true} />
+              <DateInput id='date1' error={dateError} />
             </div>
             <div className='mx-1 flex-[0_0_auto]'>～</div>
             <div className='flex-[0_1_300px]'>
-              <DateInput id='date2' error={dateError} required={true} />
+              <DateInput id='date2' error={dateError} />
             </div>
           </div>
+          {dataType === 'いのしし捕獲地点' ? (
+            <>
+              <div className='col-[1/2] row-[3] m-1 flex items-center justify-center'>
+                検体到着予定日
+              </div>
+              <div className='col-[2/3] row-[3] m-1 flex flex-wrap items-center justify-start text-left'>
+                <div className='flex-[0_1_300px]'>
+                  <DateInput id='arrival_date1' error={dateError} />
+                </div>
+                <div className='mx-1 flex-[0_0_auto]'>～</div>
+                <div className='flex-[0_1_300px]'>
+                  <DateInput id='arrival_date2' error={dateError} />
+                </div>
+              </div></>
+          ) : <></>}
           {dataType === '作業日報' ? (
             <>
               <div className='col-[1/2] row-[3] m-1 flex items-center justify-center'>地域</div>
@@ -145,8 +181,8 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
             </>
           ) : dataType === 'いのしし捕獲地点' ? (
             <>
-              <div className='col-[1/2] row-[3] m-1 flex items-center justify-center'>市町村</div>
-              <div className='col-[2/3] row-[3] m-1 flex flex-wrap items-center justify-start text-left'>
+              <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>市町村</div>
+              <div className='col-[2/3] row-[4] m-1 flex flex-wrap items-center justify-start text-left'>
                 <TextInput id='cities' type='text' />
                 <div className='col-[2/3] m-1 flex flex-wrap items-center justify-start text-left text-sm text-small-text'>
                   「市」「町」「村」まで入力してください。スペース区切りで複数選択もできます。
@@ -158,8 +194,8 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
           )}
           {dataType === 'いのしし捕獲地点' ? (
             <>
-              <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>区分</div>
-              <div className='col-[2/3] row-[4] m-1 flex flex-wrap items-center justify-start text-left'>
+              <div className='col-[1/2] row-[5] m-1 flex items-center justify-center'>区分</div>
+              <div className='col-[2/3] row-[5] m-1 flex flex-wrap items-center justify-start text-left'>
                 <SelectInput
                   id='division'
                   options={['すべて', '調査捕獲', '有害捕獲', '死亡', '狩猟', 'その他']}
@@ -171,8 +207,8 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
           ) : (
             <></>
           )}
-          <div className='col-[1/2] row-[5] m-1 flex items-center justify-center'>名前一覧表</div>
-          <div className='col-[2/3] row-[5] m-1 flex flex-wrap items-center justify-start text-left'>
+          <div className='col-[1/2] row-[6] m-1 flex items-center justify-center'>名前一覧表</div>
+          <div className='col-[2/3] row-[6] m-1 flex flex-wrap items-center justify-start text-left'>
             <input
               type='file'
               name='userList'
@@ -180,7 +216,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
               accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             />
           </div>
-          <div className='col-[1/3] row-[6] mx-auto w-full'>
+          <div className='col-[1/3] row-[7] mx-auto w-full'>
             <div className='mx-auto mt-[20px] mb-1 w-full max-w-[400px]'>
               <RoundButton color='primary' onClick={onClickSearch} disabled={searching}>
                 検索

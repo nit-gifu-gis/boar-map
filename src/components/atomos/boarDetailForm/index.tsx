@@ -11,9 +11,25 @@ import { checkDateError, checkNumberError } from '../../../utils/validateData';
 import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } from './interface';
+import { getAccessToken } from '../../../utils/currentUser';
+import { SERVER_URI } from '../../../utils/constants';
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {
+    const [noteLabel, setNoteLabel] = useState("備考");
+    useEffect(() => {
+      const fetchTask = async () => {
+        const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+          headers: {
+            'X-Access-Token': getAccessToken(),
+          },
+        });
+        const inputSettings = await inputRes.json();
+        setNoteLabel(inputSettings.note_label);
+      };
+      fetchTask();
+    }, []);
+    
     const { currentUser } = useCurrentUser();
 
     const featureValueOrUndefined = (key: keyof BoarInfoPropsV2): string | undefined => {
@@ -481,7 +497,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             />
           </div>
           <InfoInput
-            title='備考'
+            title={noteLabel}
             type='textarea'
             rows={4}
             id='note'

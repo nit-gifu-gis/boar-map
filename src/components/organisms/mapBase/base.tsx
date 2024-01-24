@@ -178,8 +178,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const reportIconLink = '/static/images/icons/report.png';
 
   const myLocIcon = L.icon({
-    iconUrl: '/static/images/map/location_marker.svg',
-    iconRetinaUrl: '/static/images/map/location_marker.svg',
+    iconUrl: '/images/map/location_marker.svg',
+    iconRetinaUrl: '/images/map/location_marker.svg',
     iconSize: [40, 40],
     iconAnchor: [21, 21],
   });
@@ -677,6 +677,78 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
   };
 
+  // メイン地図レイヤー
+  const [baseMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+
+  // メイン地図レイヤー
+  const [structureMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999194,5003069,5003070,15003824,15003830',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+
+  // メイン地図レイヤー
+  const [satelliteMap] = useState(L.TileLayer.wmsHeader(
+    SERVER_URI + "/Map/GetImage",
+    {
+      TENANTID: '21000S',
+      version: '1.3.0',
+      layers: '999999600',
+      format: 'image/png',
+      maxZoom: 18,
+      tileSize: 256,
+      crs: L.CRS.EPSG3857,
+      uppercase: true,
+      attribution: '<a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
+    },
+    [
+      {
+        header: 'X-Access-Token',
+        value: getAccessToken(),
+      },
+    ],
+  ));
+  
+  const layers = {
+    "通常マップ": baseMap,
+    "目標物マップ": structureMap,
+    //    "衛星写真": satelliteMap
+  };
+
   useEffect(() => {
     if (selfNode == null || currentUser == null) return;
 
@@ -697,7 +769,12 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     if (myMap == null) {
-      const map = L.map(selfNode, { keyboard: false });
+      const map = L.map(selfNode, { 
+        keyboard: false, 
+        layers: [
+          baseMap
+        ] 
+      });
       setupMap();
       setMyMap(map);
     }
@@ -712,27 +789,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     if (defaultLoc.isDefault) {
       getFirstCurrentLocation();
     }
-
-    // メイン地図レイヤー
-    L.TileLayer.wmsHeader(
-      SERVER_URI + "/Map/GetImage",
-      {
-        TENANTID: '21000S',
-        version: '1.3.0',
-        layers: '999999194',
-        format: 'image/png',
-        maxZoom: 18,
-        tileSize: 256,
-        crs: L.CRS.EPSG3857,
-        uppercase: true,
-      },
-      [
-        {
-          header: 'X-Access-Token',
-          value: getAccessToken(),
-        },
-      ],
-    ).addTo(myMap);
 
     myMap.on('moveend', () => {
       // マップが動いたとき
@@ -770,8 +826,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     });
 
     // コントロール追加
-    const contrl = L.control.layers(undefined, overlayList, {
-      collapsed: false,
+    const contrl = L.control.layers(layers, overlayList, {
+      collapsed: true,
     });
     setControl(contrl);
     // チェックボックスを配置
@@ -1040,7 +1096,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
           'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
         }
       >
-        <Image src='/static/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+        <Image src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
       </div>
     </div>
   );
