@@ -143,9 +143,22 @@ const AddImageTemplate: React.FunctionComponent = () => {
       <Header color={to_header_color(type == null ? '' : type)}>画像登録</Header>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div className='mx-[15px] mt-2 text-justify'>画像を登録してください。</div>
-        <div className='mx-[15px] mb-2 text-justify'>
+        <div className='mx-[15px] mt-2 text-justify'>
           ※ {type == 'boar' ? 'その他の' : ''}画像は{maxImageCount}枚まで登録できます。
         </div>
+        {type == 'boar' ? (
+          <>
+            <div className='mx-[15px] mt-2 text-justify'>
+              ※ <span className='font-bold'>有害捕獲の場合: </span><br />
+              ・ 検体採取個体の歯列写真
+            </div>
+            <div className='mx-[15px] mb-2 text-justify'>
+              ※ <span className='font-bold'>調査捕獲の場合: </span><br />
+              ・ 検体採取個体の歯列写真 <br />
+              ・ 全捕獲個体のそれぞれ全体の写真
+            </div>
+          </>
+        ) : <></>}
         {type == 'boar' ? (
           <div className='box-border w-full px-[15px] py-2'>
             <div className='text-justify text-lg font-bold text-text'>歯列の画像</div>

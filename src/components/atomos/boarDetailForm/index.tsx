@@ -498,6 +498,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           </div>
           <InfoInput
             title={noteLabel}
+            caption='入力途中の場合は備考欄に記入'
             type='textarea'
             rows={4}
             id='note'

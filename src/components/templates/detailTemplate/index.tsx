@@ -155,7 +155,7 @@ const DetailTemplate: React.FunctionComponent = () => {
   const onClickEdit = async () => {
     if (featureInfo == null) return;
 
-    const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
+    const yesNoCheck = await yesNo('位置情報の編集を行いますか？\n\n(いのしし捕獲情報のみ)\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 \n(平日8:30～12:00、13:00～17:15)');
     if (yesNoCheck) {
       router.push(
         {
