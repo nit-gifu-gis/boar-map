@@ -163,9 +163,10 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
     const previewChild = (
       <div className='img-preview relative w-full' key={'Uploaded-' + (i + 1)}>
         <img
-          className='w-full'
+          className='w-full cursor-pointer'
           src={SERVER_URI + '/Image/GetImage?id=' + imgIDs[i] + '&token=' + token}
           alt={'Uploaded image ' + (i + 1)}
+          onClick={() => window.open('/image?id=' + encodeURIComponent(imgIDs[i]), 'img_' + imgIDs[i], 'width=800,height=600')}
         />
         <button
           type='button'

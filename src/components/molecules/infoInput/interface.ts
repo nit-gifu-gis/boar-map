@@ -17,4 +17,5 @@ export interface InfoInputProps {
   lat?: number;
   lng?: number;
   caption?: string;
+  subtitle?: string;
 }
