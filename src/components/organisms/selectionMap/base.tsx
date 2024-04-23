@@ -267,13 +267,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const req_body = {
       geometry: {
         type: 'Polygon',
-        coordinates: [
+        coordinates: [[
           [leftLng, topLat],
           [rightLng, topLat],
           [rightLng, bottomLat],
           [leftLng, bottomLat],
           [leftLng, topLat],
-        ],
+        ]],
       },
     };
 
