@@ -281,13 +281,13 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     const req_body = {
       geometry: {
         type: 'Polygon',
-        coordinates: [
+        coordinates: [[
           [leftLng, topLat],
           [rightLng, topLat],
           [rightLng, bottomLat],
           [leftLng, bottomLat],
           [leftLng, topLat],
-        ],
+        ]],
       },
     };
 
