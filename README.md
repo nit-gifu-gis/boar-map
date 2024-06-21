@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# いのししマップぎふ v3
 
-## Getting Started
+[![Build](https://github.com/nit-gifu-gis/boar-map/actions/workflows/build.yml/badge.svg)](https://github.com/nit-gifu-gis/boar-map/actions/workflows/build.yml)
 
-First, run the development server:
+## 使用言語/フレームワーク
+
+※ Node.jsのバージョン固定のため、[Volta](https://docs.volta.sh/guide/getting-started)を使用しています。
+
+- TypeScript
+- Node.js v20.15
+- Yarn v4
+- Next.js v14
+- Tailwindcss v3.4.1
+
+## コマンド
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 依存関係インストール
+$ yarn install
+
+# パッケージの追加 (本番環境に必要なもの)
+$ yarn add <パッケージ名>
+
+# パッケージの追加 (開発環境に必要なもの)
+$ yarn add -D <パッケージ名>
+
+# 開発用サーバー起動
+$ yarn dev
+
+# ビルド + サーバー起動
+$ yarn build
+$ yarn start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 開発の流れ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+[CONTRIBUTING.md](CONTRIBUTING.md) を参照
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## デプロイ先
 
-## Learn More
+このブランチは開発中のため、下記URLに自動的にデプロイされるようになっています (準備中)
 
-To learn more about Next.js, take a look at the following resources:
+https://bm-v3-stg.db0.jp/
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+(下記は通常時のデプロイ先)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. https://boar-map.gifugis.jp/ (masterブランチ)
+1. https://boarmap-dev.gifu-nct.ac.jp/ (developブランチ)
 
-## Deploy on Vercel
+## 著作権表記
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Copyright (c) 2019-2024 National Institute of Technology, Gifu College GIS Team
