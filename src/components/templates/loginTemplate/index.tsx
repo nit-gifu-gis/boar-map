@@ -31,19 +31,10 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
         <LoginForm />
         <hr />
         <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
-          <span className="font-bold">お知らせ (2024/4/23追加)</span><br />
-          只今一覧表での検索でエラーが<br />
-          発生する場合があります。<br />
-          復旧に向けて対処中ですが時間がかかっており<br />
-          申し訳ありません。<br />
-          復旧するまでは、検索条件で、捕獲日を1日に<br />
-          限定する等の対応で、検索ができる場合が<br />
-          ありますので、お試しください。<br />
-        </div>
-        <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
-          <span className="font-bold">お知らせ (2024/4/23追加)</span><br />
-          只今、マップ上にアイコン等の表示がされない<br />
-          不具合が発生していますので、<br />
+          <span className="font-bold">お知らせ (2024/7/5追加)</span><br />
+          只今、一覧表での登録情報の検索の際に<br />
+          市町村を指定すると、今年の2～4月の情報が<br />
+          出ないことがあります。<br />
           復旧までしばらくお待ちください。<br />
           ご迷惑をおかけしております。<br />
         </div>
