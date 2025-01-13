@@ -210,7 +210,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     });
   };
   const boarIconLink = '/static/images/icons/boar.svg';
-  const trapIconLink = '/static/images/icons/trap.svg';
+  const trapIconLink = {
+    'box': '/static/images/icons/trap-box.svg',
+    'tie': '/static/images/icons/trap-tie.svg',
+    'gun': '/static/images/icons/trap-gun.svg',
+  };
   const vaccineIconLink = '/static/images/icons/vaccine.svg';
   const youtonIconLink = '/static/images/icons/youton.png';
   const butanetsuIconLink = '/static/images/icons/butanetsu.png';
@@ -574,7 +578,25 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       }
       case 'わな設置地点': {
         const f2 = f as TrapFeature;
-        icon = markerIcon(trapIconLink, formatDate(f2.properties.設置年月日));
+        let trapIconUrl = '';
+        // わなの種類によってアイコンを変える
+        switch (f2.properties.罠の種類) {
+          case '箱わな':
+            trapIconUrl = trapIconLink.box;
+            break;
+          case 'くくりわな':
+          case '囲いわな':
+            // 暫定でくくりわなと囲いわなは同じアイコン
+            trapIconUrl = trapIconLink.tie;
+            break;
+          case '銃猟':
+            trapIconUrl = trapIconLink.gun;
+            break;
+          default:
+            // デフォルトは箱罠のアイコン（現在と同じ）
+            trapIconUrl = trapIconLink.box;
+        }
+        icon = markerIcon(trapIconUrl, formatDate(f2.properties.設置年月日));
         dataLabel = '設置年月日';
         dataValue = f2.properties.設置年月日;
         break;
