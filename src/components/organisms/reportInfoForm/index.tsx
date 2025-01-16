@@ -5,7 +5,6 @@ import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { checkDateError } from '../../../utils/validateData';
 import WorkTimeInput from '../../atomos/workTimeInput';
-import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { ReportInfoFormProps } from './interface';
@@ -44,10 +43,13 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
           作業終了時: time_end,
           作業報告: report,
           備考: note,
-          画像ID:
-            props.featureInfo?.properties.画像ID != null
-              ? props.featureInfo?.properties.画像ID
-              : '',
+          画像ID: '',
+          錯誤捕獲: 'TODO',
+          止刺道具: 'TODO',
+          捕獲補助: 'TODO',
+          作業内容: 'TODO',
+          ワクチンNO: 'TODO',
+          市町村字: 'TODO'
         },
         geometry: {
           type: 'Point',
@@ -276,15 +278,6 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
     return (
       <div className='w-full'>
         <form id='form-report' onSubmit={(e) => e.preventDefault()}>
-          <InfoDiv
-            title='画像'
-            type='images'
-            data={{
-              objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
-              imageIDs: props.imageIds == null ? [] : props.imageIds,
-              confirmMode: true,
-            }}
-          />
           <InfoInput
             title='地域（農林事務所単位）'
             id='area'
@@ -312,6 +305,22 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.person_name}
             onChange={() => updateError('person_name', undefined)}
           />
+          <InfoInput
+            title='わなの場所'
+            subtitle='市町村・字'
+            id='city'
+            type='text'
+            error={errors.city}
+            defaultValue={featureValueOrUndefined('市町村字')}
+          />
+          <InfoInput
+            title=''
+            subtitle='ワクチンメッシュ番号'
+            id='vaccine_no'
+            type='text'
+            error={errors.vaccine}
+            defaultValue={featureValueOrUndefined('ワクチンNO')}
+          />
           <WorkTimeInput
             id='worktime'
             onChange={onChangeWorktime}
@@ -320,9 +329,11 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             required={true}
             error={errors.worktime}
           />
+          <>ここに作業内容Window</>
           <InfoInput
-            title='作業報告・状況報告'
-            rows={2}
+            title='作業結果・状況報告'
+            subtitle='イノシシの痕跡、餌の摂食状況、わな設置場所の検討内容、わなの箇所数・基数、見回り活動で気づいたこと、餌で工夫したこと、改善点などを入力してください。'
+            rows={3}
             type='textarea'
             id='report'
             required={true}
@@ -330,9 +341,11 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.report}
             onChange={() => reportChanged()}
           />
+          <>錯誤捕獲</>
+          <>ここに作業日報Bについて</>
           <InfoInput
             title='備考'
-            rows={5}
+            rows={3}
             type='textarea'
             id='note'
             defaultValue={featureValueOrUndefined('備考')}

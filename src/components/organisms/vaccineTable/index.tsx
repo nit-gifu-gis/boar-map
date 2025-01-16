@@ -67,7 +67,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
     if (yesNoCheck) {
       router.push(
         {
-          pathname: '/edit/location',
+          pathname: '/edit-old/location',
           query: {
             id: id,
             type: 'ワクチン散布地点',
@@ -76,12 +76,12 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
             version: 1,
           },
         },
-        '/edit/location',
+        '/edit-old/location',
       );
     } else {
       router.push(
         {
-          pathname: '/edit/image',
+          pathname: '/edit-old/image',
           query: {
             id: id,
             type: 'ワクチン散布地点',
@@ -90,7 +90,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
             version: 1,
           },
         },
-        '/edit/image',
+        '/edit-old/image',
       );
     }
   };

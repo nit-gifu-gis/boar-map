@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
-import EditLocationTemplate from '../../components/templates/editLocationTemplate';
 import { useRequireLogin } from '../../hooks/useLogin';
+import LocationSelectorTemplate from '../../components/templates/newDataForm/locationSelector';
 
 const EditLocationPage: NextPage = () => {
   useRequireLogin();
   return (
     <>
-      <EditLocationTemplate />
+      <LocationSelectorTemplate isEditing={true} />
     </>
   );
 };

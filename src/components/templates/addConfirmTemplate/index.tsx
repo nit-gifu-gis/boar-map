@@ -189,7 +189,7 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
   const onClickPrev = () => {
     router.push(
       {
-        pathname: '/add/info',
+        pathname: '/add-old/info',
         query: {
           type: router.query.type,
           images: router.query.images,
@@ -197,7 +197,7 @@ const AddConfirmTemplate: React.FunctionComponent = () => {
           feature: router.query.feature,
         },
       },
-      '/add/info',
+      '/add-old/info',
     );
   };
 

@@ -80,7 +80,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     if (yesNoCheck) {
       router.push(
         {
-          pathname: '/edit/location',
+          pathname: '/edit-old/location',
           query: {
             id: id,
             type: 'いのしし捕獲地点',
@@ -89,12 +89,12 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
             detail: JSON.stringify(feature),
           },
         },
-        '/edit/location',
+        '/edit-old/location',
       );
     } else {
       router.push(
         {
-          pathname: '/edit/image',
+          pathname: '/edit-old/image',
           query: {
             id: id,
             type: 'いのしし捕獲地点',
@@ -103,7 +103,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
             detail: JSON.stringify(feature),
           },
         },
-        '/edit/image',
+        '/edit-old/image',
       );
     }
   };

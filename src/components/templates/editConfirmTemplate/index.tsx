@@ -169,7 +169,7 @@ const EditConfirmTemplate: React.FunctionComponent = () => {
   const onClickPrev = () => {
     router.push(
       {
-        pathname: '/edit/info',
+        pathname: '/edit-old/info',
         query: {
           type: router.query.type,
           type_srv: router.query.type_srv,
@@ -181,7 +181,7 @@ const EditConfirmTemplate: React.FunctionComponent = () => {
           serverImages: router.query.serverImages,
         },
       },
-      '/edit/info',
+      '/edit-old/info',
     );
   };
 

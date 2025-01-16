@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
-import AddTemplate from '../components/templates/addTemplate';
 import { useRequireLogin } from '../hooks/useLogin';
+import AddTypeSelectorTemplate from '../components/templates/newDataForm/addTypeSelectorTemplate';
 
 const AddPage: NextPage = () => {
   useRequireLogin();
   return (
     <>
-      <AddTemplate />
+      <AddTypeSelectorTemplate />
     </>
   );
 };
