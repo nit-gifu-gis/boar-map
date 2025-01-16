@@ -85,7 +85,7 @@ const DetailTemplate: React.FunctionComponent = () => {
         if (featureType === 'boar-2') {
           const sid = (featureInfo.properties as Record<string, unknown>)['歯列写真ID'] as string;
           if (sid != null && sid !== '') {
-            imageIds.push(sid);
+            sid.split(',').filter(e=>e).forEach((e) => imageIds.push(e));
           }
         }
 

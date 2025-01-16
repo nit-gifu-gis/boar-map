@@ -16,9 +16,11 @@ import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { BoarTableProps } from './interface';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   const router = useRouter();
+  const paramParser = useFormDataParser();
   const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
@@ -75,36 +77,31 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     feature: FeatureBase,
   ) => {
     if (!id && !version) return;
-
+    
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？\n\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 (平日8:30～12:00、13:00～17:15)');
+    paramParser.updateData({
+      dataType: 'boar',
+      isLocationSkipped: !yesNoCheck,
+      isImageSkipped: false,
+      inputData: {
+        gisData: feature,
+      },
+      editData: {
+        id: id as string,
+        type: 'いのしし捕獲地点',
+        type_srv: `boar-${version}`,
+        version: `${version}`,
+        curImg: {
+          teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
+          other: ((feature.properties as Record<string, string>)[`boar-${version}` === 'boar-2' ? '写真ID' : '画像ID'] || '').split(','),
+        }
+      }
+    });
+    
     if (yesNoCheck) {
-      router.push(
-        {
-          pathname: '/edit-old/location',
-          query: {
-            id: id,
-            type: 'いのしし捕獲地点',
-            type_srv: `boar-${version}`,
-            version: version,
-            detail: JSON.stringify(feature),
-          },
-        },
-        '/edit-old/location',
-      );
+      router.push('/edit/location');
     } else {
-      router.push(
-        {
-          pathname: '/edit-old/image',
-          query: {
-            id: id,
-            type: 'いのしし捕獲地点',
-            type_srv: `boar-${version}`,
-            version: version,
-            detail: JSON.stringify(feature),
-          },
-        },
-        '/edit-old/image',
-      );
+      router.push('/edit/image');
     }
   };
 
@@ -132,7 +129,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     if (type === 'boar-2') {
       const sid = (feature.properties as Record<string, unknown>)['歯列写真ID'] as string;
       if (sid != null && sid !== '') {
-        imageIds.push(sid);
+        sid.split(',').filter(e=>e).forEach((e) => imageIds.push(e));
       }
     }
 
@@ -324,7 +321,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
           </tr>
           {features.map((f, i) => {
             const props = f.properties as BoarFeaturePropsV2;
-            const imageList = [props.歯列写真ID, ...props.写真ID.split(',')].filter((e) => e);
+            const imageList = [...props.歯列写真ID.split(','), ...props.写真ID.split(',')].filter((e) => e);
             return props.捕獲いのしし情報.map((_, index, arr) => {
               const d = arr[index].properties;
               return (

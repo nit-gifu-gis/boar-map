@@ -10,9 +10,11 @@ import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { VaccineTableProps } from './interface';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
   const router = useRouter();
+  const paramParser = useFormDataParser();
   const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
@@ -64,34 +66,29 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
     if (!id) return;
 
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
+    paramParser.updateData({
+      dataType: 'boar',
+      isLocationSkipped: !yesNoCheck,
+      isImageSkipped: false,
+      inputData: {
+        gisData: feature,
+      },
+      editData: {
+        id: id as string,
+        type: 'ワクチン散布地点',
+        type_srv: `vaccine`,
+        version: `1`,
+        curImg: {
+          teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
+          other: ((feature.properties as Record<string, string>)['画像ID'] || '').split(','),
+        }
+      }
+    });
+    
     if (yesNoCheck) {
-      router.push(
-        {
-          pathname: '/edit-old/location',
-          query: {
-            id: id,
-            type: 'ワクチン散布地点',
-            type_srv: `vaccine`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit-old/location',
-      );
+      router.push('/edit/location');
     } else {
-      router.push(
-        {
-          pathname: '/edit-old/image',
-          query: {
-            id: id,
-            type: 'ワクチン散布地点',
-            type_srv: `vaccine`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit-old/image',
-      );
+      router.push('/edit/image');
     }
   };
 

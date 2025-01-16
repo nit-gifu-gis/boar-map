@@ -10,9 +10,11 @@ import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { ReportTableProps } from './interface';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   const router = useRouter();
+  const paramParser = useFormDataParser();
   const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
@@ -64,34 +66,29 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
     if (!id) return;
 
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
+    paramParser.updateData({
+      dataType: 'report',
+      isLocationSkipped: !yesNoCheck,
+      isImageSkipped: true,
+      inputData: {
+        gisData: feature,
+      },
+      editData: {
+        id: id as string,
+        type: '作業日報',
+        type_srv: `report`,
+        version: `1`,
+        curImg: {
+          teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
+          other: ((feature.properties as Record<string, string>)['画像ID'] || '').split(','),
+        }
+      }
+    });
+    
     if (yesNoCheck) {
-      router.push(
-        {
-          pathname: '/edit-old/location',
-          query: {
-            id: id,
-            type: '作業日報',
-            type_srv: `report`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit-old/location',
-      );
+      router.push('/edit/location');
     } else {
-      router.push(
-        {
-          pathname: '/edit-old/image',
-          query: {
-            id: id,
-            type: '作業日報',
-            type_srv: `report`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit-old/image',
-      );
+      router.push('/edit/info');
     }
   };
 
