@@ -8,7 +8,7 @@ import Header from "../../../organisms/header";
 import { InputFormTemplateCommonProps } from "../interfaces";
 import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
 import { useRouter } from "next/router";
-import { BoarFeatureV2, FeatureBase } from "../../../../types/features";
+import { FeatureBase } from "../../../../types/features";
 import { alert, confirm } from "../../../../utils/modal";
 import { getAccessToken } from "../../../../utils/currentUser";
 import { SERVER_URI } from "../../../../utils/constants";
@@ -126,14 +126,14 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
         const teethImageIds = (await Promise.all((paramParser.currentData.inputData.teethImageUrls || []).map(e => uploadImage(e.objectURL)))).filter(e => e != null);
         
         const currentIds = (newData.inputData.gisData.properties as Record<string, string>)["歯列写真ID"].split(",");
-        const newIds = currentIds.concat(teethImageIds).filter(e => e);
+        const newIds = currentIds.concat(teethImageIds as string[]).filter(e => e);
         (newData.inputData.gisData.properties as Record<string, string>)['歯列写真ID'] = newIds.join(',');
       }
 
       // 画像をアップロードしてFeatureにセット
       const otherImageIds = (await Promise.all((paramParser.currentData.inputData.otherImageUrls || []).map(e => uploadImage(e.objectURL)))).filter(e => e != null);
       const currentIds = (newData.inputData.gisData.properties as Record<string, string>)[t == "boar" ? "写真ID" : "画像ID"].split(",");
-      const newIds = currentIds.concat(otherImageIds).filter(e => e);
+      const newIds = currentIds.concat(otherImageIds as string[]).filter(e => e);
 
       (newData.inputData.gisData.properties as Record<string, string>)[t == "boar" ? "写真ID" : "画像ID"] = newIds.join(',');
 
@@ -166,6 +166,7 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
       if (res.status === 200) {
         await alert('登録が完了しました。\nご協力ありがとうございました。');
+        paramParser.updateData(null);
         setIsLoading(false);
         router.push('/map');
       } else {
