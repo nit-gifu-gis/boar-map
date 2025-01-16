@@ -60,7 +60,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       
       const workdetail_other_animal = workdetail_other ? (document.getElementById('workdetail_other_animal') as HTMLInputElement).value : '';
 
-      const workdetail_mistake_str = `${workdetail_trap_type}\n${workdetail_head_count}\n${workdetail_response}\n${workdetail_deer ? 'シカ' : ''}/${workdetail_serow ? 'ニホンジカ' : ''}/${workdetail_boar ? 'イノシシ' : ''}/${workdetail_other ? 'その他' : ''}\n${workdetail_other ? workdetail_other_animal : ''}`;
+      const workdetail_mistake_str = `${workdetail_trap_type}\n${workdetail_head_count}\n${workdetail_response}\n${workdetail_deer ? 'ニホンジカ' : ''}/${workdetail_serow ? 'カモシカ' : ''}/${workdetail_boar ? 'ツキノワグマ' : ''}/${workdetail_other ? 'その他' : ''}\n${workdetail_other ? workdetail_other_animal : ''}`;
 
       const helper = (document.getElementById('report_b_helper') as HTMLInputElement).value;
       

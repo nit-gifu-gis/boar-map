@@ -41,7 +41,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
     }
 
     const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [NaN, NaN];
-    const isLocationExists = coordinates.filter((e) => !isNaN(e)).length == 2;
+    const isLocationExists = coordinates.filter((e) => e != null && !isNaN(e)).length == 2;
     if (isLocationExists) {
       // ポイント情報が既に存在する場合はその位置を初期位置とする
       const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [35.39135, 136.722418];

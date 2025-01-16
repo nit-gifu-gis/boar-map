@@ -114,7 +114,7 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
       // 削除される画像リストの取得
       const origImg = paramParser.currentData.editData?.curImg.other.concat(paramParser.currentData.editData?.curImg.teeth) || [];
-      const delImg = origImg.filter(e => !serverImages?.includes(e));
+      const delImg = origImg.filter(e => !serverImages?.includes(e)).filter(e => e);
 
       setIsLoading(true);
       
