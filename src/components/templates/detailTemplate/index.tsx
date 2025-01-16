@@ -185,6 +185,8 @@ const DetailTemplate: React.FunctionComponent = () => {
     
     if (yesNoCheck) {
       router.push('/edit/location');
+    } else if(isImageSkip) {
+      router.push('/edit/info');
     } else {
       router.push('/edit/image');
     }
