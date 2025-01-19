@@ -101,8 +101,6 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
         infoDiv = (
           <ReportInfoForm
             ref={formRef}
-            objectURLs={objectURLs}
-            imageIds={imageIds}
             location={location}
             featureInfo={featureInfo as ReportFeature}
           />

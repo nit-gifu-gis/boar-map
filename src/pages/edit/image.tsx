@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
-import EditImageTemplate from '../../components/templates/editImageTemplate';
 import { useRequireLogin } from '../../hooks/useLogin';
+import ImageSelectorTemplate from '../../components/templates/newDataForm/imageSelector';
 
 const EditImagePage: NextPage = () => {
   useRequireLogin();
   return (
     <>
-      <EditImageTemplate />
+      <ImageSelectorTemplate isEditing={true} />
     </>
   );
 };

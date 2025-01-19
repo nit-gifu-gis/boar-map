@@ -51,8 +51,8 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
       return imageIDs;
     } else {
       const d = detail.properties.写真ID.split(',');
-      d.unshift(detail.properties.歯列写真ID);
-      return d.filter((e) => e);
+      const d2 = detail.properties.歯列写真ID.split(',');
+      return d2.concat(d).filter((e) => e);
     }
   };
 

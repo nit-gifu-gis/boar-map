@@ -26,6 +26,10 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
   }, []);
 
   const onClickDownload = async () => {
+    if (searchInfo.get('type') == '作業日報') {
+      return;
+    }
+    
     setDownloading(true);
     const res = await fetch(SERVER_URI + '/List/Export', {
       method: 'POST',
@@ -69,11 +73,13 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
     <div className='mr-4 inline-block w-full'>
       <div className='relative mb-3 h-auto text-2xl font-bold'>
         検索結果
-        <div className='ml-5 inline-block w-52'>
-          <RoundButton color='excel' onClick={onClickDownload} disabled={isDownloading}>
-            {isDownloading ? 'ダウンロード中...' : 'ダウンロード'}
-          </RoundButton>
-        </div>
+        {searchInfo.get('type') == '作業日報' ? <></> : (
+          <div className='ml-5 inline-block w-52'>
+            <RoundButton color='excel' onClick={onClickDownload} disabled={isDownloading}>
+              {isDownloading ? 'ダウンロード中...' : 'ダウンロード'}
+            </RoundButton>
+          </div>)
+        }
       </div>
       <div>
         {searchInfo.get('type') == 'いのしし捕獲地点' ? (

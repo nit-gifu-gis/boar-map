@@ -5,10 +5,11 @@ import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { checkDateError } from '../../../utils/validateData';
 import WorkTimeInput from '../../atomos/workTimeInput';
-import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { ReportInfoFormProps } from './interface';
+import WorkDetailInput from '../../atomos/workDetailInput';
+import ReportBInput from '../../atomos/reportBInput';
 
 const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProps>(
   function InfoForm(props, ref) {
@@ -30,10 +31,53 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       const report = form.report.value as string;
       const note = form.note.value as string;
 
+      const city = (document.getElementById('city') as HTMLInputElement).value as string;
+      const vaccine_no = (document.getElementById('vaccine_no') as HTMLInputElement).value as string;
+
+      // 作業内容の組み立て
+      const workdetail_placed = (document.getElementById('workdetail_placed') as HTMLInputElement).value;
+      const workdetail_removed = (document.getElementById('workdetail_removed') as HTMLInputElement).value;
+
+      const workdetail_crawl = (document.getElementById('workdetail_crawl') as HTMLInputElement).checked;
+      const workdetail_capture = (document.getElementById('workdetail_capture') as HTMLInputElement).checked;
+
+      const workdetail_own = workdetail_capture ? (document.getElementById('workdetail_own') as HTMLInputElement).checked : false;
+      const workdetail_help = workdetail_capture ? (document.getElementById('workdetail_help') as HTMLInputElement).checked : false;
+      const workdetail_mistake = workdetail_capture ? (document.getElementById('workdetail_mistake') as HTMLInputElement).checked : false;
+
+      const workdetail = `${workdetail_placed}/${workdetail_removed}/${workdetail_crawl ? '見回り' : ''}/${workdetail_capture ? '捕獲' : ''}\n${workdetail_own ? '自身のわな' : ''}/${workdetail_help ? '捕獲手伝い' : ''}/${workdetail_mistake ? '錯誤捕獲' : ''}`;
+
+      // 錯誤捕獲の組み立て
+
+      const workdetail_trap_type = workdetail_mistake ? (document.getElementById('workdetail_trap_type') as HTMLInputElement).value : '';
+      const workdetail_head_count = workdetail_mistake ? (document.getElementById('workdetail_head') as HTMLInputElement).value : '';
+      const workdetail_response = workdetail_mistake ? (document.getElementById('workdetail_response') as HTMLInputElement).value : '';
+
+      const workdetail_deer = workdetail_mistake ? (document.getElementById('workdetail_deer') as HTMLInputElement).checked : false;
+      const workdetail_serow = workdetail_mistake ? (document.getElementById('workdetail_serow') as HTMLInputElement).checked : false;
+      const workdetail_boar = workdetail_mistake ? (document.getElementById('workdetail_boar') as HTMLInputElement).checked : false;
+      const workdetail_other = workdetail_mistake ? (document.getElementById('workdetail_other') as HTMLInputElement).checked : false;
+      
+      const workdetail_other_animal = workdetail_other ? (document.getElementById('workdetail_other_animal') as HTMLInputElement).value : '';
+
+      const workdetail_mistake_str = `${workdetail_trap_type}\n${workdetail_head_count}\n${workdetail_response}\n${workdetail_deer ? 'ニホンジカ' : ''}/${workdetail_serow ? 'カモシカ' : ''}/${workdetail_boar ? 'ツキノワグマ' : ''}/${workdetail_other ? 'その他' : ''}\n${workdetail_other ? workdetail_other_animal : ''}`;
+
+      const helper = (document.getElementById('report_b_helper') as HTMLInputElement).value;
+      
+      // とめさし道具の組み立て
+      const tool_elec = (document.getElementById('report_b_elec') as HTMLInputElement).checked;
+      const tool_gun = (document.getElementById('report_b_gun') as HTMLInputElement).checked;
+      const tool_other = (document.getElementById('report_b_other') as HTMLInputElement).checked;
+
+      const tool_other_content = (document.getElementById('report_b_other_tool') as HTMLInputElement).value;
+
+      const tool_str = `${tool_elec ? '電気とめさし器' : ''}/${tool_gun ? '銃' : ''}/${tool_other ? 'その他' : ''}\n${tool_other_content}`;
+
       const user =
         props.featureInfo?.properties.入力者 != null
           ? props.featureInfo.properties.入力者
           : currentUser?.userId;
+
       const data: ReportFeature = {
         properties: {
           入力者: user,
@@ -44,10 +88,13 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
           作業終了時: time_end,
           作業報告: report,
           備考: note,
-          画像ID:
-            props.featureInfo?.properties.画像ID != null
-              ? props.featureInfo?.properties.画像ID
-              : '',
+          画像ID: '',
+          錯誤捕獲: workdetail_mistake_str,
+          止刺道具: tool_str,
+          捕獲補助: helper,
+          作業内容: workdetail,
+          ワクチンNO: vaccine_no,
+          市町村字: city
         },
         geometry: {
           type: 'Point',
@@ -276,15 +323,6 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
     return (
       <div className='w-full'>
         <form id='form-report' onSubmit={(e) => e.preventDefault()}>
-          <InfoDiv
-            title='画像'
-            type='images'
-            data={{
-              objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
-              imageIDs: props.imageIds == null ? [] : props.imageIds,
-              confirmMode: true,
-            }}
-          />
           <InfoInput
             title='地域（農林事務所単位）'
             id='area'
@@ -312,6 +350,22 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.person_name}
             onChange={() => updateError('person_name', undefined)}
           />
+          <InfoInput
+            title='わなの場所'
+            subtitle='市町村・字'
+            id='city'
+            type='text'
+            error={errors.city}
+            defaultValue={featureValueOrUndefined('市町村字')}
+          />
+          <InfoInput
+            title=''
+            subtitle='ワクチンメッシュ番号'
+            id='vaccine_no'
+            type='text'
+            error={errors.vaccine}
+            defaultValue={featureValueOrUndefined('ワクチンNO')}
+          />
           <WorkTimeInput
             id='worktime'
             onChange={onChangeWorktime}
@@ -320,9 +374,16 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             required={true}
             error={errors.worktime}
           />
+          <WorkDetailInput
+            id='workdetail'
+            workDefaultValue={featureValueOrUndefined('作業内容')}
+            mistakeDefaultValue={featureValueOrUndefined('錯誤捕獲')}
+            error={errors.workdetail}
+          />
           <InfoInput
-            title='作業報告・状況報告'
-            rows={2}
+            title='作業結果・状況報告'
+            subtitle='イノシシの痕跡、餌の摂食状況、わな設置場所の検討内容、わなの箇所数・基数、見回り活動で気づいたこと、餌で工夫したこと、改善点などを入力してください。'
+            rows={3}
             type='textarea'
             id='report'
             required={true}
@@ -330,9 +391,15 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.report}
             onChange={() => reportChanged()}
           />
+          <ReportBInput
+            id='report_b'
+            error={errors.report_b}
+            toolDefaultValue={featureValueOrUndefined('止刺道具')}
+            helperDefaultValue={featureValueOrUndefined('捕獲補助')}
+          />
           <InfoInput
             title='備考'
-            rows={5}
+            rows={3}
             type='textarea'
             id='note'
             defaultValue={featureValueOrUndefined('備考')}

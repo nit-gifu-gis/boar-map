@@ -62,7 +62,7 @@ export const layerLabels: { name: string; icon: string }[] = [
   },
   {
     name: 'わな設置地点',
-    icon: '/static/images/icons/trap.svg',
+    icon: '/static/images/icons/trap-box.svg',
   },
   {
     name: 'ワクチン散布地点',

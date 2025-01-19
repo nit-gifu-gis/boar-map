@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { SERVER_URI } from "../utils/constants";
 import { getAccessToken } from "../utils/currentUser";
 

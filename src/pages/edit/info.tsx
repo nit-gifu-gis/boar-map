@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
-import EditInfoTemplate from '../../components/templates/editInfoTemplate';
 import { useRequireLogin } from '../../hooks/useLogin';
+import CommonInfoInputTemplate from '../../components/templates/newDataForm/commonInfoInput';
 
 const EditInfoPage: NextPage = () => {
   useRequireLogin();
   return (
     <>
-      <EditInfoTemplate />
+      <CommonInfoInputTemplate isEditing={true} />
     </>
   );
 };

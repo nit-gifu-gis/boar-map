@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { FeatureBase } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
@@ -12,9 +12,11 @@ import RoundButton from '../../atomos/roundButton';
 import FeatureViewer from '../../organisms/featureViewer';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const DetailTemplate: React.FunctionComponent = () => {
   const router = useRouter();
+  const paramParser = useFormDataParser();
   const { currentUser } = useCurrentUser();
   const [featureInfo, setFeatureInfo] = useState<FeatureBase | null>(null);
   const [featureType, setFeatureType] = useState<string | null>(null);
@@ -83,7 +85,7 @@ const DetailTemplate: React.FunctionComponent = () => {
         if (featureType === 'boar-2') {
           const sid = (featureInfo.properties as Record<string, unknown>)['歯列写真ID'] as string;
           if (sid != null && sid !== '') {
-            imageIds.push(sid);
+            sid.split(',').filter(e=>e).forEach((e) => imageIds.push(e));
           }
         }
 
@@ -152,40 +154,43 @@ const DetailTemplate: React.FunctionComponent = () => {
     setEditable(true);
   };
 
-  const onClickEdit = async () => {
+  const onClickEdit = useCallback(async () => {
     if (featureInfo == null) return;
 
+    const layerType = (
+      (featureType ?? '').startsWith('boar-') ? 'boar' : featureType
+    ) as LayerType;
+
+    const isImageSkip = layerType === 'report' || layerType === 'butanetsu' || layerType === 'youton'; 
+
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？\n\n(いのしし捕獲情報のみ)\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 \n(平日8:30～12:00、13:00～17:15)');
+    paramParser.updateData({
+      dataType: layerType,
+      isLocationSkipped: !yesNoCheck,
+      isImageSkipped: isImageSkip,
+      inputData: {
+        gisData: featureInfo,
+      },
+      editData: {
+        id: router.query.id as string,
+        type: router.query.type as string,
+        type_srv: featureType,
+        version: router.query.version as string,
+        curImg: {
+          teeth: ((featureInfo.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
+          other: ((featureInfo.properties as Record<string, string>)[router.query.type_srv === 'boar-2' ? '写真ID' : '画像ID'] || '').split(','),
+        }
+      }
+    });
+    
     if (yesNoCheck) {
-      router.push(
-        {
-          pathname: '/edit/location',
-          query: {
-            id: router.query.id as string,
-            type: router.query.type,
-            type_srv: featureType,
-            version: router.query.version,
-            detail: JSON.stringify(featureInfo),
-          },
-        },
-        '/edit/location',
-      );
+      router.push('/edit/location');
+    } else if(isImageSkip) {
+      router.push('/edit/info');
     } else {
-      router.push(
-        {
-          pathname: '/edit/image',
-          query: {
-            id: router.query.id as string,
-            type: router.query.type,
-            type_srv: featureType,
-            version: router.query.version,
-            detail: JSON.stringify(featureInfo),
-          },
-        },
-        '/edit/image',
-      );
+      router.push('/edit/image');
     }
-  };
+  }, [featureInfo, featureType]);
 
   return (
     <div className=''>

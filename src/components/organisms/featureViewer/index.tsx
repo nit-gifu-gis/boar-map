@@ -71,8 +71,6 @@ const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({
       infoDiv = (
         <ReportInfoView
           detail={featureInfo as ReportFeature}
-          imageIDs={imageIDs}
-          objectURLs={objectURLs}
           confirmMode={confirm}
         />
       );

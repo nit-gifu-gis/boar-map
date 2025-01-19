@@ -1,11 +1,24 @@
 import Image from 'next/image';
 import Header from '../../organisms/header';
 import LoginForm from '../../organisms/loginForm';
-import { LoginProps } from './interface';
+import { LoginProps, Notice } from './interface';
 import RoundButton from '../../atomos/roundButton';
-import { REPORT_FORM_URL } from '../../../utils/constants';
+import { REPORT_FORM_URL, SERVER_URI } from '../../../utils/constants';
+import { useEffect, useState } from 'react';
 
 const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginProps) => {
+  const [notice, setNotice] = useState<Notice[]>([]);
+
+  useEffect(() => {
+    const asyncTask = async () => {
+      const req = await fetch(`${SERVER_URI}/Settings/Notice`);
+      const res = await req.json();
+      setNotice(res);
+    };
+
+    asyncTask();
+  }, []);
+
   const openReportForm = () => {
     window.open(REPORT_FORM_URL);
   };
@@ -30,14 +43,12 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
         </div>
         <LoginForm />
         <hr />
-        <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
-          <span className="font-bold">お知らせ (2024/7/5追加)</span><br />
-          只今、一覧表での登録情報の検索の際に<br />
-          市町村を指定すると、今年の2～4月の情報が<br />
-          出ないことがあります。<br />
-          復旧までしばらくお待ちください。<br />
-          ご迷惑をおかけしております。<br />
-        </div>
+        {notice.map((n, i) => (
+          <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2" key={"notice_" + i}>
+            <span className="font-bold">{n.title}</span><br />
+            <span className="whitespace-pre-wrap">{n.content}</span>
+          </div>
+        ))}
         <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
           改修中のため入力項目等が<br />
           変更になる場合があります。<br />
@@ -57,7 +68,7 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
           </div>
         </div>
         <div className='pt-8 text-center'>
-          &copy; 2019-2022 National Institute of Technology, Gifu College GIS Team
+          &copy; 2019-2025 National Institute of Technology, Gifu College GIS Team
         </div>
       </div>
     </div>
