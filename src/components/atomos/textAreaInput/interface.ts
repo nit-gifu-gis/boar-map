@@ -8,4 +8,5 @@ export interface TextAreaInputProps {
   onChange?(): void;
   required?: boolean;
   error?: boolean;
+  value?: string;
 }

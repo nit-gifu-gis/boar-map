@@ -42,7 +42,7 @@ const IndexTemplate: React.FunctionComponent = () => {
           </div>
         </div>
         <div className='pt-8 text-center'>
-          &copy; 2019-2022 National Institute of Technology, Gifu College GIS Team
+          &copy; 2019-2025 National Institute of Technology, Gifu College GIS Team
         </div>
       </div>
     </div>

@@ -45,6 +45,16 @@ const SettingsTemplate: React.FunctionComponent = () => {
           path: '/settings/city',
           title: '市町村設定',
         });
+
+        s.push({
+          path: '/dummy-spacer-1',
+          title: '',
+        });
+
+        s.push({
+          path: '/settings/notice',
+          title: 'お知らせ設定',
+        });
       }
 
       setSettings(s);

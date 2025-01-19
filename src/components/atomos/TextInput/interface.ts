@@ -11,4 +11,5 @@ export interface TextInputProps {
   disabled?: boolean;
   required?: boolean;
   isError?: boolean;
+  value?: string | number;
 }
