@@ -423,14 +423,14 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
         const IDs = data[k].map(v=>v.id);
         const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
-        // 新しいメッシュを描画する
+        // 新しいメッシュを描画する#d14b02 #65db56
         newMeshData.forEach(v => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
           const gr: (L.Marker | L.Polygon)[] = [po];
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({
-                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + (v.name == null ? "" : v.name) + '</div>'
+                html: '<div style="font-weight: bold; font-size: 1.2em; word-break: keep-all; color: #000; -webkit-text-stroke: 0.5px ' + (k === "vaccine" ? "#d14b02" : "#65db56") + ';">' + (v.name == null ? "" : v.name) + '</div>',
               })
             });
             gr.push(ma);
