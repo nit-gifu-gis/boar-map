@@ -161,6 +161,7 @@ const ReportInfoView: React.FunctionComponent<ReportInfoViewProps> = ({
           type='location'
           data={{ lat: detail.geometry.coordinates[1], lng: detail.geometry.coordinates[0] }}
         />
+        <InfoDiv title='地域' type='text' data={detail.properties.地域} />
         <InfoDiv title='所属支部名' type='text' data={detail.properties.所属支部名} />
         <InfoDiv title='氏名' type='text' data={detail.properties.氏名} />
         <InfoDiv title="わなの場所(市町村・字)" data={detail.properties.市町村字} />

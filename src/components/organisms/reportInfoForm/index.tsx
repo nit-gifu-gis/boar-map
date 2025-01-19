@@ -22,8 +22,10 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
     const fetchData = () => {
       const form = document.getElementById('form-report') as HTMLFormElement;
       const area = form.area.options[form.area.selectedIndex].value as string;
-      const branch = form.branch.options[form.branch.selectedIndex].value as string;
-      const name = form.person_name.options[form.person_name.selectedIndex].value as string;
+      // const branch = form.branch.options[form.branch.selectedIndex].value as string;
+      const branch = form.branch.value as string;
+      const name = form.person_name.value as string;
+      // const name = form.person_name.options[form.person_name.selectedIndex].value as string;
       const time_start = (document.getElementById('worktime_start') as HTMLInputElement)
         .value as string;
       const time_end = (document.getElementById('worktime_end') as HTMLInputElement)
@@ -69,7 +71,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       const tool_gun = (document.getElementById('report_b_gun') as HTMLInputElement).checked;
       const tool_other = (document.getElementById('report_b_other') as HTMLInputElement).checked;
 
-      const tool_other_content = (document.getElementById('report_b_other_tool') as HTMLInputElement).value;
+      const tool_other_content = tool_other ? (document.getElementById('report_b_other_tool') as HTMLInputElement).value : "";
 
       const tool_str = `${tool_elec ? '電気とめさし器' : ''}/${tool_gun ? '銃' : ''}/${tool_other ? 'その他' : ''}\n${tool_other_content}`;
 
@@ -114,8 +116,10 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       const form = document.getElementById('form-report') as HTMLFormElement;
 
       const area = form.area.options[form.area.selectedIndex].value as string;
-      const branch = form.branch.options[form.branch.selectedIndex].value as string;
-      const name = form.person_name.options[form.person_name.selectedIndex].value as string;
+      // const branch = form.branch.options[form.branch.selectedIndex].value as string;
+      const branch = form.branch.value as string;
+      const name = form.person_name.value as string;
+      // const name = form.person_name.options[form.person_name.selectedIndex].value as string;
       const time_start = (document.getElementById('worktime_start') as HTMLInputElement)
         .value as string;
       const time_end = (document.getElementById('worktime_end') as HTMLInputElement)
@@ -130,12 +134,12 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
 
       if (branch == '' || branch == '（上を選択してください。）') {
         valid = false;
-        updateError('branch', '選択されていません');
+        updateError('branch', '入力されていません');
       }
 
       if (name == '' || name == '（上を選択してください。）') {
         valid = false;
-        updateError('person_name', '選択されていません');
+        updateError('person_name', '入力されていません');
       }
 
       if (!time_start || !time_end) {
@@ -203,7 +207,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
 
         form.area.selectedIndex = areaList.indexOf(props.featureInfo.properties.地域);
 
-        // 支部名のリストを取得
+        /* // 支部名のリストを取得
         const res = await fetch(
           SERVER_URI +
             '/Report/GetBranches?' +
@@ -247,7 +251,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
 
         if (!props.featureInfo.properties.氏名) return;
 
-        form.person_name.selectedIndex = nameList.indexOf(props.featureInfo.properties.氏名);
+        form.person_name.selectedIndex = nameList.indexOf(props.featureInfo.properties.氏名); */
       };
       fetchDefault();
     }, []);
@@ -333,6 +337,22 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.area}
           />
           <InfoInput
+            title="所属支部名"
+            id="branch"
+            type='text'
+            required={true}
+            error={errors.branch}
+            defaultValue={featureValueOrUndefined('所属支部名')}
+          />
+          <InfoInput
+            title='氏名'
+            id='person_name'
+            type='text'
+            required={true}
+            error={errors.person_name}
+            defaultValue={featureValueOrUndefined('氏名')}
+          />
+          {/*<InfoInput
             title='所属支部名'
             id='branch'
             type='select'
@@ -349,7 +369,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             required={true}
             error={errors.person_name}
             onChange={() => updateError('person_name', undefined)}
-          />
+          />*/}
           <InfoInput
             title='わなの場所'
             subtitle='市町村・字'
