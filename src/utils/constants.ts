@@ -20,7 +20,7 @@ const getServerURI = (): string => {
 };
 
 export const REPORT_FORM_URL = "https://boar-map.gifugis.jp/media/R5_ReportForm_FaxPaper_20231016.pdf";
-export const MANUAL_URL = "https://boar-map.gifugis.jp/media/manual_20221214.pdf";
+export const MANUAL_URL = "https://boar-map.gifugis.jp/media/manual_20250123.pdf";
 
 export const SERVER_URI = getServerURI();
 
