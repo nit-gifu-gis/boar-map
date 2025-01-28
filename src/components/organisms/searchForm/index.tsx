@@ -36,7 +36,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     list.push('ワクチン散布地点');
     if (
       currentUser.userDepartment === 'T' ||
-      currentUser.userDepartment === 'R' ||
+      currentUser.userDepartment === 'D' ||
       currentUser.userDepartment === 'K'
     )
       list.push('作業日報');

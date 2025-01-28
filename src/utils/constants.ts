@@ -20,7 +20,7 @@ const getServerURI = (): string => {
 };
 
 export const REPORT_FORM_URL = "https://boar-map.gifugis.jp/media/R5_ReportForm_FaxPaper_20231016.pdf";
-export const MANUAL_URL = "https://boar-map.gifugis.jp/media/manual_20221214.pdf";
+export const MANUAL_URL = "https://boar-map.gifugis.jp/media/manual_20250123.pdf";
 
 export const SERVER_URI = getServerURI();
 
@@ -62,7 +62,7 @@ export const layerLabels: { name: string; icon: string }[] = [
   },
   {
     name: 'わな設置地点',
-    icon: '/static/images/icons/trap.svg',
+    icon: '/static/images/icons/trap-box.svg',
   },
   {
     name: 'ワクチン散布地点',

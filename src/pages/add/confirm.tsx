@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
-import AddConfirmTemplate from '../../components/templates/addConfirmTemplate';
 import { useRequireLogin } from '../../hooks/useLogin';
+import DataConfirmTemplate from '../../components/templates/newDataForm/dataConfirmTemplate';
 
 const AddConfirmPage: NextPage = () => {
   useRequireLogin();
   return (
     <>
-      <AddConfirmTemplate />
+      <DataConfirmTemplate isEditing={false} />
     </>
   );
 };

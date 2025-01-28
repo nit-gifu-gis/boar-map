@@ -19,6 +19,7 @@ const TextInput: React.FunctionComponent<TextInputProps> = (props) => {
           'box-border w-full rounded-lg border-2 border-solid p-2 text-lg ' +
           (props.isError ? 'border-danger bg-input-error-bg' : 'border-border bg-input-bg')
         }
+        value={props.value}
       />
     </div>
   );

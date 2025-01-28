@@ -6,6 +6,7 @@ import EventListener from 'react-event-listener';
 import { parseCookies } from 'nookies';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
+import '../../../utils/extwms';
 
 const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);

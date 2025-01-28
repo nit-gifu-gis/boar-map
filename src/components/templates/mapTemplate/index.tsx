@@ -4,11 +4,14 @@ import RoundButton from '../../atomos/roundButton';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
 import MapBase from '../../organisms/mapBase';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const MapTemplate: React.FunctionComponent = () => {
+  const formParser = useFormDataParser();
   const router = useRouter();
 
   const onClickAdd = () => {
+    formParser.updateData(null);
     router.push('/add');
   };
 

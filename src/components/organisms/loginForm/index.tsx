@@ -7,7 +7,7 @@ import { SERVER_URI } from '../../../utils/constants';
 import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
-import { confirm } from '../../../utils/modal';
+import { alert } from '../../../utils/modal';
 import * as Sentry from '@sentry/nextjs';
 
 const LoginForm: React.FunctionComponent = () => {
@@ -19,13 +19,21 @@ const LoginForm: React.FunctionComponent = () => {
   useEffect(() => {
     const asyncTask = async () => {
       // 開発用サーバーだった場合には通知を表示する
-      if (
+      /*if (
         document.domain.toLowerCase().endsWith('.prsvr.net') ||
         document.domain.toLocaleLowerCase().endsWith('.gifu-nct.ac.jp')
       ) {
         if (await confirm('このサイトは開発版です。\n安定動作版のサイトへ移動しますか？')) {
           location.href = 'https://boar-map.gifugis.jp/login';
         }
+      }*/
+
+      // 開発版サーバーの場合の通知はOKメッセージだけにする。 (2025/1/20暫定対応)
+      if (
+        document.domain.toLowerCase().endsWith('.prsvr.net') ||
+        document.domain.toLocaleLowerCase().endsWith('.gifu-nct.ac.jp')
+      ) {
+        await alert('このサイトは開発版です。\n安定動作版と異なり、正常に動作しない場合があります。');
       }
     };
     asyncTask();

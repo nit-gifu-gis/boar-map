@@ -195,6 +195,12 @@ export interface ReportProps {
   氏名: string;
   画像ID: string;
   入力者?: string;
+  錯誤捕獲: string;
+  止刺道具: string;
+  捕獲補助: string;
+  作業内容: string;
+  ワクチンNO: string;
+  市町村字: string;
 }
 
 export interface ButanetsuFeature extends FeatureBase {

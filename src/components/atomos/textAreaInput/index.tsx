@@ -16,6 +16,7 @@ const TextAreaInput: React.FunctionComponent<TextAreaInputProps> = (props) => {
         placeholder={props.placeholder}
         defaultValue={props.defaultValue}
         onChange={props.onChange}
+        value={props.value}
       >
         {props.children}
       </textarea>

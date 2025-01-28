@@ -33,7 +33,7 @@ const InfoTypeSelector: React.FunctionComponent<InfoTypeSelectorProps> = ({
       {
         value: 'trap',
         alt: 'わなアイコン',
-        icon: '/static/images/icons/trap.svg',
+        icon: '/static/images/icons/trap-box.svg',
         label: 'わな情報',
         resolution: [32, 32],
       },

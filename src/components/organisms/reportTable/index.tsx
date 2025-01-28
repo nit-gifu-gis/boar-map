@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { ReportProps, FeatureBase, ReportFeature } from '../../../types/features';
 import { SERVER_URI } from '../../../utils/constants';
@@ -10,15 +10,18 @@ import { alert, yesNo } from '../../../utils/modal';
 import { sortFeatures } from '../../../utils/sort';
 import RoundButton from '../../atomos/roundButton';
 import { ReportTableProps } from './interface';
+import { useFormDataParser } from '../../../utils/form-data';
 
 const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   const router = useRouter();
+  const paramParser = useFormDataParser();
   const { currentUser } = useCurrentUser();
   const [sortKey, setSortKey] = useState('ID$');
   const [isDesc, setDesc] = useState(false);
   const [features, setFeatures] = useState<FeatureBase[]>([]);
   const [editable, setEditable] = useState(false);
   const [deletedFeatures, setDeletedFeatures] = useState<string[]>([]);
+  const [isDownloading, setDownloading] = useState(false);
 
   const sortableClass = (key: string) => {
     if (key == sortKey) {
@@ -64,36 +67,73 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
     if (!id) return;
 
     const yesNoCheck = await yesNo('位置情報の編集を行いますか？');
+    paramParser.updateData({
+      dataType: 'report',
+      isLocationSkipped: !yesNoCheck,
+      isImageSkipped: true,
+      inputData: {
+        gisData: feature,
+      },
+      editData: {
+        id: id as string,
+        type: '作業日報',
+        type_srv: `report`,
+        version: `1`,
+        curImg: {
+          teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
+          other: ((feature.properties as Record<string, string>)['画像ID'] || '').split(','),
+        }
+      }
+    });
+    
     if (yesNoCheck) {
-      router.push(
-        {
-          pathname: '/edit/location',
-          query: {
-            id: id,
-            type: '作業日報',
-            type_srv: `report`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit/location',
-      );
+      router.push('/edit/location');
     } else {
-      router.push(
-        {
-          pathname: '/edit/image',
-          query: {
-            id: id,
-            type: '作業日報',
-            type_srv: `report`,
-            detail: JSON.stringify(feature),
-            version: 1,
-          },
-        },
-        '/edit/image',
-      );
+      router.push('/edit/info');
     }
   };
+
+  const onClickPdfDownload = useCallback(async (id: string, feature: ReportFeature) => {
+    setDownloading(true);
+    const res = await fetch(SERVER_URI + '/Report/Export', {
+      method: 'POST',
+      body: JSON.stringify({ id }),
+      headers: {
+        Accept: 'application/pdf',
+        'X-Access-Token': getAccessToken(),
+      },
+    });
+
+    if (res.status === 200) {
+      const blob = await res.blob();
+      const anchor = document.createElement('a');
+      
+      const dtStr = feature.properties.作業開始時;
+      const dt = new Date(dtStr);
+      const yyyy = ('0000' + dt.getFullYear()).slice(-4);
+      const mm = ('00' + (dt.getMonth() + 1)).slice(-2);
+      const dd = ('00' + dt.getDate()).slice(-2);
+
+      const name = '作業日報 - ' + feature.properties.入力者 + ' (' + yyyy + '-' + mm + '-' + dd + ').pdf';
+      // IE対応
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (window.navigator.msSaveBlob) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.navigator.msSaveBlob(blob, name);
+        setDownloading(false);
+        return;
+      }
+      anchor.download = name;
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.click();
+      setDownloading(false);
+    } else {
+      const json = await res.json();
+      await alert(json.error);
+    }
+  }, []);
 
   const onClickDelete = async (id: string | undefined, feature: FeatureBase) => {
     if(!await confirm(`ID: ${id}の情報を削除しますか？`))
@@ -183,6 +223,7 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
         <tbody className='table'>
           <tr>
             <th className={'border border-b-2 border-solid border-border p-1'}></th>
+            <th className={'border border-b-2 border-solid border-border p-1'}></th>
             <th
               className={'border border-b-2 border-solid border-border p-1 ' + sortableClass('ID$')}
               onClick={() => sort('ID$')}
@@ -223,6 +264,21 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
             >
               氏名
             </th>
+            <th className={'border border-b-2 border-solid border-border p-1 '}>
+              捕獲補助者
+            </th>
+            <th
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('市町村字')
+              }
+              onClick={() => sort('市町村字')}
+            >市町村・字</th>
+            <th
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('ワクチンNO')
+              }
+              onClick={() => sort('ワクチンNO')}
+            >ワクチンメッシュ番号</th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('作業開始時')
@@ -249,11 +305,9 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
               状況報告
             </th>
             <th className={'border border-b-2 border-solid border-border p-1 '}>備考</th>
-            <th className={'border border-b-2 border-solid border-border p-1'}>写真</th>
           </tr>
           {features.map((f, i) => {
             const props = f.properties as ReportProps;
-            const imageList = props.画像ID.split(',').filter((e) => e);
             return (
               <tr key={'data-' + (i + 1) + '-trap'}>
                 <td className='border border-solid border-border p-1 text-right'>
@@ -270,11 +324,18 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                     </RoundButton>
                   </div>
                 </td>
+                <td className='border border-solid border-border p-1'>
+                  <RoundButton color='excel' onClick={() => onClickPdfDownload(`${props.ID$}`, f as ReportFeature)} disabled={isDownloading}>
+                    ダウンロード
+                  </RoundButton></td>
                 <td className='border border-solid border-border p-1 text-right'>{props.ID$}</td>
                 <td className='border border-solid border-border p-1'>{props.入力者}</td>
                 <td className='border border-solid border-border p-1'>{props.地域}</td>
                 <td className='border border-solid border-border p-1'>{props.所属支部名}</td>
                 <td className='border border-solid border-border p-1'>{props.氏名}</td>
+                <td className='border border-solid border-border p-1'>{props.捕獲補助}</td>
+                <td className='border border-solid border-border p-1'>{props.市町村字}</td>
+                <td className='border border-solid border-border p-1'>{props.ワクチンNO}</td>
                 <td className='border border-solid border-border p-1 text-right'>
                   {props.作業開始時.split(' ')[0]}
                   <br />
@@ -287,56 +348,6 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                 </td>
                 <td className='border border-solid border-border p-1'>{props.作業報告}</td>
                 <td className='border border-solid border-border p-1'>{props.備考}</td>
-
-                <td className='border border-solid border-border p-1'>
-                  <div className='flex w-[300px] flex-wrap'>
-                    {imageList.length == 0 ? (
-                      <div>画像なし</div>
-                    ) : (
-                      imageList
-                        .filter((e) => e)
-                        .map((v, img_i) => {
-                          const url = `${SERVER_URI}/Image/GetImage?id=${v}&token=${getAccessToken()}`;
-
-                          // 200px x 200pxでエリアを確保しておき、ロード後に長辺200pxになるようにリサイズする
-                          const onLoaded = (e: SyntheticEvent<HTMLImageElement>) => {
-                            const elem = e.target as HTMLImageElement;
-
-                            const calcShort = (long: number, short: number) => {
-                              return short * (200.0 / long);
-                            };
-
-                            const w =
-                              elem.naturalWidth > elem.naturalHeight
-                                ? 200
-                                : calcShort(elem.naturalHeight, elem.naturalWidth);
-                            const h =
-                              elem.naturalWidth > elem.naturalHeight
-                                ? calcShort(elem.naturalWidth, elem.naturalHeight)
-                                : 200;
-                            elem.setAttribute('style', `width: ${w}px; height: ${h}px;`);
-                          };
-
-                          return (
-                            <a
-                              href={url}
-                              rel='noopener noreferrer'
-                              target='_blank'
-                              key={'Image_' + (img_i + 1) + '_' + props.ID$}
-                            >
-                              <img
-                                src={url}
-                                alt={'Image ' + (img_i + 1) + ' of ID ' + props.ID$}
-                                className='m-[5px] max-w-none'
-                                style={{ width: '200px', height: '200px' }}
-                                onLoad={onLoaded}
-                              />
-                            </a>
-                          );
-                        })
-                    )}
-                  </div>
-                </td>
               </tr>
             );
           })}
