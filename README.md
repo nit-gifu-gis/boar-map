@@ -4,32 +4,30 @@
 
 ## 使用言語/フレームワーク
 
-※ Node.jsのバージョン固定のため、[Volta](https://docs.volta.sh/guide/getting-started)を使用しています。
-
 - TypeScript
-- Node.js v20.15
-- Yarn v4
-- Next.js v14
+- Node.js v20.00 >=
+- Pnpm
+- Next.js v15
 - Tailwindcss v3.4.1
 
 ## コマンド
 
 ```bash
 # 依存関係インストール
-$ yarn install
+$ pnpm install
 
 # パッケージの追加 (本番環境に必要なもの)
-$ yarn add <パッケージ名>
+$ pnpm add <パッケージ名>
 
 # パッケージの追加 (開発環境に必要なもの)
-$ yarn add -D <パッケージ名>
+$ pnpm add -D <パッケージ名>
 
 # 開発用サーバー起動
-$ yarn dev
+$ pnpm dev
 
 # ビルド + サーバー起動
-$ yarn build
-$ yarn start
+$ pnpm build
+$ pnpm start
 ```
 
 ## 開発の流れ
