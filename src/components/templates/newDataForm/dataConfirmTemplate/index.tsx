@@ -132,7 +132,7 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
       // 画像をアップロードしてFeatureにセット
       const otherImageIds = (await Promise.all((paramParser.currentData.inputData.otherImageUrls || []).map(e => uploadImage(e.objectURL)))).filter(e => e != null);
-      const currentIds = (newData.inputData.gisData.properties as Record<string, string>)[t == "boar" ? "写真ID" : "画像ID"].split(",");
+      const currentIds = ((newData.inputData.gisData.properties as Record<string, string>)[t == "boar" ? "写真ID" : "画像ID"] || "").split(",");
       const newIds = currentIds.concat(otherImageIds as string[]).filter(e => e);
 
       (newData.inputData.gisData.properties as Record<string, string>)[t == "boar" ? "写真ID" : "画像ID"] = newIds.join(',');
