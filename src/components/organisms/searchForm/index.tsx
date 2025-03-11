@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { alert } from '../../../utils/modal';
 import DateInput from '../../atomos/dateInput';
@@ -13,6 +13,12 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
   const [dataType, setDataType] = useState('いのしし捕獲地点');
   const [searching, setSearching] = useState(false);
   const [typeList, setTypeList] = useState<string[]>(['']);
+
+  const hasBoarSpecialFilterPermission = useMemo(() => {
+    if (!currentUser) return false;
+
+    return currentUser.userDepartment === 'K' || currentUser.userDepartment === 'R' || currentUser.userDepartment === 'D';
+  }, [currentUser]);
 
   const dateLabelList: { [key: string]: string } = {
     いのしし捕獲地点: '捕獲年月日',
@@ -61,14 +67,14 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     
     const arrival1Input = (document.getElementById('arrival_date1') as HTMLInputElement);
     const arrival2Input = (document.getElementById('arrival_date2') as HTMLInputElement);
-    const arrival1 = arrival1Input != undefined ? arrival1Input.value : undefined;
-    const arrival2 = arrival2Input != undefined ? arrival2Input.value : undefined;
+    const arrival1 = hasBoarSpecialFilterPermission && arrival1Input != undefined ? arrival1Input.value : undefined;
+    const arrival2 = hasBoarSpecialFilterPermission && arrival2Input != undefined ? arrival2Input.value : undefined;
 
     if (!(date1 && date2) && !(arrival1 && arrival2)) {
       // チェック
       alert(
         dataType === "いのしし捕獲地点" ? 
-          "「捕獲年月日」または「検体到着予定日」を入力してください。"
+          (hasBoarSpecialFilterPermission ? "「捕獲年月日」または「検体到着予定日」を入力してください。" : "「捕獲年月日」を入力してください。")
           : "日付が入力されていません。"
       );
       setDateError(true);
@@ -86,10 +92,10 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setSearching(true);
     const citiesInput = document.getElementById('cities') as HTMLInputElement;
     const citiesStr = citiesInput !== null ? citiesInput.value : '';
-    const cities = citiesStr
+    const cities = hasBoarSpecialFilterPermission ? citiesStr
       .split(/[\s\n,.，．、。]/)
       .filter((e) => e)
-      .join(',');
+      .join(',') : "";
     const divisionInput = document.getElementById('division') as HTMLInputElement;
     const division = divisionInput !== null ? divisionInput.value : '';
     const dataTypeStr = (document.getElementById('division_type') as HTMLSelectElement).value;
@@ -140,7 +146,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
               <DateInput id='date2' error={dateError} />
             </div>
           </div>
-          {dataType === 'いのしし捕獲地点' ? (
+          {dataType === 'いのしし捕獲地点' && hasBoarSpecialFilterPermission ? (
             <>
               <div className='col-[1/2] row-[3] m-1 flex items-center justify-center'>
                 検体到着予定日
@@ -179,7 +185,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
                 />
               </div>
             </>
-          ) : dataType === 'いのしし捕獲地点' ? (
+          ) : dataType === 'いのしし捕獲地点' && hasBoarSpecialFilterPermission ? (
             <>
               <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>市町村</div>
               <div className='col-[2/3] row-[4] m-1 flex flex-wrap items-center justify-start text-left'>
