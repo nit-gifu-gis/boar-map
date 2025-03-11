@@ -201,6 +201,17 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         </div>,
       );
     }
+    
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_notice'
+      >
+        <Link href='/notice'>
+          <a className='text-14pt text-background no-underline'>お知らせ</a>
+        </Link>
+      </div>,
+    );
 
     menuItems.push(
       <div
