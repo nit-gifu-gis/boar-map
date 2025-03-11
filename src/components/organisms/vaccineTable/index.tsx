@@ -242,6 +242,16 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
             </th>
             <th
               className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('更新日')
+              }
+              onClick={() => sort('更新日')}
+            >
+              最終
+              <br />
+              更新日
+            </th>
+            <th
+              className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('摂食数')
               }
               onClick={() => sort('摂食数')}
@@ -311,6 +321,9 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
                 </td>
                 <td className='border border-solid border-border p-1 text-right'>
                   {props.回収年月日}
+                </td>
+                <td className='border border-solid border-border p-1 text-right'>
+                  {props.更新日}
                 </td>
                 <td className='border border-solid border-border p-1 text-right'>{props.摂食数}</td>
                 <td className='border border-solid border-border p-1 text-right'>

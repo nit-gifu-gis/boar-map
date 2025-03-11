@@ -54,6 +54,7 @@ export interface BoarFeatureV1 extends FeatureBase {
 
 export interface BoarPropsV1 {
   ID$?: string;
+  更新日?: string;
   捕獲年月日: string;
   入力者?: string;
   区分: string;
@@ -82,6 +83,7 @@ export interface BoarFeatureV2 extends FeatureBase {
 
 export interface BoarFeaturePropsV2 {
   ID$?: string;
+  更新日?: string;
   メッシュ番: string;
   入力者?: string;
   写真ID: string;
@@ -106,6 +108,7 @@ export interface BoarCommonFeatureV2 extends FeatureBase {
 
 export interface BoarCommonPropsV2 {
   ID$?: string;
+  更新日?: string;
   メッシュ番: string;
   入力者?: string;
   写真ID: string;
@@ -149,6 +152,7 @@ export interface TrapFeature extends FeatureBase {
 
 export interface TrapProps {
   ID$?: string;
+  更新日?: string;
   位置情報: string;
   入力者?: string;
   撤去年月日: string;
@@ -165,6 +169,7 @@ export interface VaccineFeature extends FeatureBase {
 
 export interface VaccineProps {
   ID$?: string;
+  更新日?: string;
   散布年月日: string;
   入力者?: string;
   位置情報: string;
@@ -186,6 +191,7 @@ export interface ReportFeature extends FeatureBase {
 
 export interface ReportProps {
   ID$?: string;
+  更新日?: string;
   作業報告: string;
   作業終了時: string;
   作業開始時: string;
@@ -209,6 +215,7 @@ export interface ButanetsuFeature extends FeatureBase {
 
 export interface ButanetsuProps {
   ID$?: string;
+  更新日?: string;
   県番号: string;
   捕獲年月日: string;
   捕獲場所: string;

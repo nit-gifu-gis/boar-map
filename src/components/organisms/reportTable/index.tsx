@@ -299,6 +299,16 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
               <br />
               時刻
             </th>
+            <th
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('更新日')
+              }
+              onClick={() => sort('更新日')}
+            >
+              最終
+              <br />
+              更新日
+            </th>
             <th className={'border border-b-2 border-solid border-border p-1 '}>
               作業報告
               <br />
@@ -345,6 +355,9 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                   {props.作業終了時.split(' ')[0]}
                   <br />
                   {props.作業終了時.split(' ')[1]}
+                </td>
+                <td className='border border-solid border-border p-1 text-right'>
+                  {props.更新日}
                 </td>
                 <td className='border border-solid border-border p-1'>{props.作業報告}</td>
                 <td className='border border-solid border-border p-1'>{props.備考}</td>
