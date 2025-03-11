@@ -34,7 +34,7 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
     const asyncTask = async () => {
       const req = await fetch(`${SERVER_URI}/Settings/Notice`);
       const res = await req.json();
-      setNotice(res);
+      setNotice(res.data);
     };
 
     asyncTask();
