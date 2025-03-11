@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
 import { alert } from '../../../utils/modal';
@@ -9,6 +9,7 @@ import SearchResult from '../../organisms/searchResult';
 import RoundButton from '../../atomos/roundButton';
 import { useRouter } from 'next/router';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import BoarTable from '../../organisms/boarTable';
 
 const ListTemplate: React.FunctionComponent = () => {
   const router = useRouter();
@@ -16,6 +17,36 @@ const ListTemplate: React.FunctionComponent = () => {
 
   const [searchInfo, setSearchInfo] = useState<FormData | null>(null);
   const [searchResult, setSearchResult] = useState<FeatureBase[] | null>(null);
+
+  const [recentResult, setRecentResult] = useState<FeatureBase[] | null>(null);
+
+  const [noteLabel, setNoteLabel] = useState("備考");
+
+  const updateRecent = async () => {
+    setRecentResult(null);
+    const res = await fetch(SERVER_URI + '/List/Recent', {
+      headers: {
+        'X-Access-Token': getAccessToken(),
+      },
+    });
+    const list = (await res.json()) as FeatureBase[];
+    setRecentResult(list);
+  };
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
+        headers: {
+          'X-Access-Token': getAccessToken(),
+        },
+      });
+      const inputSettings = await inputRes.json();
+      setNoteLabel(inputSettings.note_label);
+
+      await updateRecent();
+    };
+    fetchTask();
+  }, []);
 
   const onClickSearch = async (data: FormData) => {
     setSearchInfo(data);
@@ -105,7 +136,27 @@ const ListTemplate: React.FunctionComponent = () => {
         {searchInfo != null && searchResult != null ? (
           <SearchResult searchInfo={searchInfo} searchResult={searchResult} />
         ) : (
-          <>検索条件に条件を入力して検索してください。</>
+          <>
+            検索条件に条件を入力して検索してください。
+            {recentResult != null ? (
+              <div className='mr-4 inline-block w-full'>
+                <div className='relative mb-3 h-auto text-xl font-bold'>
+                  直近5件の登録情報一覧を表示しています。 <div className='ml-5 inline-block w-32'>
+                    <RoundButton color='accent' onClick={updateRecent}>
+                      更新
+                    </RoundButton>
+                  </div>
+                </div>
+                <div>
+                  <BoarTable features={recentResult} noteLabel={noteLabel} />
+                </div>
+              </div>
+            ) : (
+              <div className='relative mb-3 h-auto text-xl font-bold'>
+                直近5件の登録情報を検索しています...
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
