@@ -277,7 +277,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_bugreport'
       >
         <Link href='#'>
-          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>デバッグ情報の送信</a>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>エラー・不具合情報の送信</a>
         </Link>
       </div>,
     );
