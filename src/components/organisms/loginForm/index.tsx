@@ -7,7 +7,7 @@ import { SERVER_URI } from '../../../utils/constants';
 import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
-import { alert } from '../../../utils/modal';
+import { alert, confirm } from '../../../utils/modal';
 import * as Sentry from '@sentry/nextjs';
 import { butanetsuViewState } from '../../../states/butanetsuView';
 
@@ -90,6 +90,26 @@ const LoginForm: React.FunctionComponent = () => {
 
           setCurrentUser(currentUser);
           Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
+
+          // ローカルストレージから前回のログイン日時を取得する
+          if (localStorage != null) {
+            const date = localStorage.getItem('lastLogin');
+            if (date != null) {
+              const lastLogin = new Date(date);
+              const reqNotice = await fetch(`${SERVER_URI}/Settings/Notice`);
+              const resNotice = await reqNotice.json();
+              const lastUpdated = new Date(resNotice.last_updated);
+
+              if (lastLogin < lastUpdated) {
+                if (await confirm('お知らせが更新されています。\nお知らせページへ移動しますか？')) {
+                  router.push('/notice');
+                  return;
+                }
+              }
+            }
+
+            localStorage.setItem('lastLogin', new Date().toLocaleString());
+          }
           router.push('/map');
         } catch {
           setCurrentUser(null);

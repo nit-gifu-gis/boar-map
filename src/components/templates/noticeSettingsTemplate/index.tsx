@@ -50,6 +50,8 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
   }, []);
 
   const onUpdateClicked = useCallback(async () => {
+    const notice_opt = document.getElementById('notice_opt') as HTMLInputElement;
+
     setButtonDisabled(true);
 
     const req = await fetch(`${SERVER_URI}/Settings/Notice`, {
@@ -59,6 +61,7 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
       },
       body: JSON.stringify({
         data: notice,
+        notice_opt: notice_opt.checked
       }),
     });
 
@@ -182,6 +185,12 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
         <RoundButton color='excel' onClick={onNewClicked} disabled={buttonDisabled}>
           新規追加
         </RoundButton>
+      </div>
+      <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
+        <div>
+          <input type="checkbox" id="notice_opt" className="scale-[2] w-7 mr-1" />
+          <label htmlFor={`notice_opt`} className="text-lg" >ユーザーの次回ログイン時に通知する</label>
+        </div>
       </div>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <RoundButton color='primary' onClick={onUpdateClicked} disabled={buttonDisabled}>
