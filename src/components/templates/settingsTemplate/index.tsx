@@ -55,6 +55,16 @@ const SettingsTemplate: React.FunctionComponent = () => {
           path: '/settings/notice',
           title: 'お知らせ設定',
         });
+
+        s.push({
+          path: '/dummy-spacer-1',
+          title: '',
+        });
+
+        s.push({
+          path: '/settings/image',
+          title: '画像サーバー設定',
+        });
       }
 
       setSettings(s);
