@@ -9,9 +9,12 @@ import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
 import { alert } from '../../../utils/modal';
 import * as Sentry from '@sentry/nextjs';
+import { butanetsuViewState } from '../../../states/butanetsuView';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
+    
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
@@ -69,6 +72,22 @@ const LoginForm: React.FunctionComponent = () => {
         setCookie(null, 'jwt', json.token);
         try {
           const currentUser = await fetchCurrentUser();
+
+          // 豚熱確認情報の設定を取得する
+          const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+            headers: {
+              'X-Access-Token': json.token,
+            },
+          });
+          
+          if (res.ok) {
+            const json = await res.json();
+            setCurrentButanetsuView({
+              radius: json['radius'] as number,
+              month: json['month'] as number,
+            });
+          }
+
           setCurrentUser(currentUser);
           Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
           router.push('/map');

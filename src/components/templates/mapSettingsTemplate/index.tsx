@@ -9,10 +9,13 @@ import RoundButton from '../../atomos/roundButton';
 import InfoInput from '../../molecules/infoInput';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
+import { useSetRecoilState } from 'recoil';
+import { butanetsuViewState } from '../../../states/butanetsuView';
 
 const MapSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(false);
@@ -153,6 +156,12 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         },
         body: JSON.stringify(settings_new),
       });
+      
+      setCurrentButanetsuView({
+        radius: radius_val,
+        month: time_val,
+      });
+
       const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
       setMessageDeleteTimerId((id) => {
         setMessage(message);
