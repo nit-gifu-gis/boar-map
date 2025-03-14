@@ -85,6 +85,8 @@ const LoginForm: React.FunctionComponent = () => {
             setCurrentButanetsuView({
               radius: json['radius'] as number,
               month: json['month'] as number,
+              style: 1,
+              origin: new Date()
             });
           }
 

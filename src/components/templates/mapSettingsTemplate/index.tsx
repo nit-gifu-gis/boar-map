@@ -160,6 +160,8 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       setCurrentButanetsuView({
         radius: radius_val,
         month: time_val,
+        style: 1,
+        origin: new Date()
       });
 
       const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
