@@ -1325,18 +1325,18 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                   <div>
                     <span className='py-1 font-bold'>豚熱陽性高率エリアの設定</span>
                     <span className='py-1 font-bold'>表示方法</span>
-                    <select id='butanetsu_style' className='w-full pb-1 bg-[#ffffff]' defaultValue="点と円">
+                    <select id='butanetsu_style' className='w-full pb-1 bg-[#ffffff]' defaultValue={`${currentView?.style}`}>
                       <option value="1">点と円で表示</option>
                       <option value="2">点のみで表示</option>
                       <option value="3">円のみで表示</option>
                     </select>
                     <span className='py-1 font-bold'>基準日</span>
                     <div className='w-full pb-1'>
-                      <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={today.getFullYear()}/>
+                      <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={currentView?.origin.getFullYear()}/>
                       <span className='px-1'>年</span>
-                      <input id='butanetsu_date_m' type='number' className='w-[36px] h-8 pl-1' defaultValue={today.getMonth() + 1} />
+                      <input id='butanetsu_date_m' type='number' className='w-[36px] h-8 pl-1' defaultValue={(currentView?.origin.getMonth() || 0) + 1} />
                       <span className='px-1'>月</span>
-                      <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={today.getDate()}/>
+                      <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()}/>
                       <span className='px-1'>日</span>
                     </div>
                     <span className='py-1 font-bold'>期間 (月)</span>
