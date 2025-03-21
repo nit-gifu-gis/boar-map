@@ -96,6 +96,12 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
       method: 'POST',
     });
 
+    if (res.status === 404) {
+      alert('検索条件に一致する画像が見つかりませんでした。');
+      setIsDisabled(false);
+      return;
+    }
+
     if (res.status !== 200) {
       alert('エラーが発生しました。');
       setIsDisabled(false);
@@ -154,6 +160,12 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
       }),
       method: 'POST',
     });
+
+    if (res.status === 404) {
+      alert('検索条件に一致する画像が見つかりませんでした。');
+      setIsDisabled(false);
+      return;
+    }
 
     if (res.status !== 200) {
       alert('エラーが発生しました。');
