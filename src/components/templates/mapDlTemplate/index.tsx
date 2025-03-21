@@ -19,7 +19,8 @@ const MapDLTemplate: React.FunctionComponent = () => {
   const [currentPrefix, setPrefix] = useState<string | null>(null);
 
   const indexNo = useMemo(() => {
-    return fileInfo.find((info) => info.mesh.includes('インデックス'))?.file_no || -1;
+    const d = fileInfo.map((info, i) => info.mesh.indexOf('インデックス') !== -1 ? i : -1).find((no) => no !== -1);
+    return d === undefined ? -1 : d;
   }, [fileInfo]);
 
 
