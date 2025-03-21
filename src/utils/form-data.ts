@@ -34,10 +34,6 @@ export const useFormDataParser = () => {
   const isDataExsiting = useMemo(() => Object.keys(currentData).length === 0, [currentData]);
 
   useEffect(() => {
-    console.log('updated', currentData);
-  }, [currentData]);
-
-  useEffect(() => {
     if (isObjectURLChecked)
       return;
 

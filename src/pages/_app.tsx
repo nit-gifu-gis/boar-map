@@ -4,16 +4,19 @@ import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 import { useSetRecoilState, RecoilRoot } from 'recoil';
 import { currentUserState } from '../states/currentUser';
-import { fetchCurrentUser } from '../utils/currentUser';
+import { fetchCurrentUser, getAccessToken } from '../utils/currentUser';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import LoadingTemplate from '../components/templates/loadingTemplate';
 import Head from 'next/head';
 import { currentAppLogs } from '../states/appLog';
 import * as Sentry from "@sentry/nextjs";
+import { butanetsuViewState } from '../states/butanetsuView';
+import { SERVER_URI } from '../utils/constants';
 
 const AppInit: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
   const setCurrentAppLog = useSetRecoilState(currentAppLogs);
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
 
   let appLogs: AppLog[] = [];
 
@@ -70,6 +73,24 @@ const AppInit: React.FunctionComponent = () => {
     (async function () {
       try {
         const currentUser = await fetchCurrentUser();
+
+        // 豚熱確認情報の設定を取得する
+        const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+          headers: {
+            'X-Access-Token': getAccessToken(),
+          },
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          setCurrentButanetsuView({
+            radius: json['radius'] as number,
+            month: json['month'] as number,
+            style: 1,
+            origin: new Date()
+          });
+        }
+
         setCurrentUser(currentUser);
         Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
       } catch {

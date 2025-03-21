@@ -246,6 +246,14 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
             >
               検体到着<br />予定日
             </th>
+            <th 
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('更新日')
+              }
+              onClick={() => sort('更新日')}
+            >
+              最終<br />更新日
+            </th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('罠発見場所')
@@ -390,6 +398,16 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                       rowSpan={arr.length}
                     >
                       {props.検体到着日}
+                    </td>
+                  ) : (
+                    <></>
+                  )}
+                  {index == 0 ? (
+                    <td
+                      className='border border-solid border-border p-1 text-right'
+                      rowSpan={arr.length}
+                    >
+                      {props.更新日}
                     </td>
                   ) : (
                     <></>

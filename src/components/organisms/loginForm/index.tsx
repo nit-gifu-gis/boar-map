@@ -7,11 +7,14 @@ import { SERVER_URI } from '../../../utils/constants';
 import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { setCookie } from 'nookies';
-import { alert } from '../../../utils/modal';
+import { alert, confirm } from '../../../utils/modal';
 import * as Sentry from '@sentry/nextjs';
+import { butanetsuViewState } from '../../../states/butanetsuView';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
+    
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
@@ -69,8 +72,46 @@ const LoginForm: React.FunctionComponent = () => {
         setCookie(null, 'jwt', json.token);
         try {
           const currentUser = await fetchCurrentUser();
+
+          // 豚熱確認情報の設定を取得する
+          const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+            headers: {
+              'X-Access-Token': json.token,
+            },
+          });
+          
+          if (res.ok) {
+            const json = await res.json();
+            setCurrentButanetsuView({
+              radius: json['radius'] as number,
+              month: json['month'] as number,
+              style: 1,
+              origin: new Date()
+            });
+          }
+
           setCurrentUser(currentUser);
           Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
+
+          // ローカルストレージから前回のログイン日時を取得する
+          if (localStorage != null) {
+            const date = localStorage.getItem('lastLogin');
+            if (date != null) {
+              const lastLogin = new Date(date);
+              const reqNotice = await fetch(`${SERVER_URI}/Settings/Notice`);
+              const resNotice = await reqNotice.json();
+              const lastUpdated = new Date(resNotice.last_updated);
+
+              if (lastLogin < lastUpdated) {
+                if (await confirm('お知らせが更新されています。\nお知らせページへ移動しますか？')) {
+                  router.push('/notice');
+                  return;
+                }
+              }
+            }
+
+            localStorage.setItem('lastLogin', new Date().toLocaleString());
+          }
           router.push('/map');
         } catch {
           setCurrentUser(null);

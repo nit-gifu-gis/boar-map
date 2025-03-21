@@ -54,7 +54,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
     const validateData = () => {
       let valid = true;
       valid = valid && validateDate('catchDate', true);
-      valid = valid && validateNumber('prefNo');
+      valid = valid && validateText('prefNo', true);
       valid = valid && validateNumber("bLength");
       return new Promise<boolean>((resolve) => resolve(valid));
     };
@@ -65,6 +65,17 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
       const error = checkDateError(dateStr);
       if (error != null && !(!required && error == '日付が入力されていません。')) {
         updateError(id, error);
+        return false;
+      }
+      updateError(id, undefined);
+      return true;
+    };
+
+    const validateText = (id: string, required: boolean) => {
+      const form = document.getElementById('form-butanetsu') as HTMLFormElement;
+      const text = form[id].value;
+      if (required && text === '') {
+        updateError(id, '入力されていません。');
         return false;
       }
       updateError(id, undefined);
@@ -123,11 +134,11 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
           />
           <InfoInput
             title='県番号'
-            type='number'
+            type='text'
             defaultValue={featureValueOrUndefined('県番号')}
             id='prefNo'
             required={true}
-            onChange={() => validateNumber('prefNo')}
+            onChange={() => validateText('prefNo', true)}
             error={errors.prefNo}
           />
           <InfoInput
