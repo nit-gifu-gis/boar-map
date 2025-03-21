@@ -60,8 +60,6 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState('検索');
   const [viewSettingVisible, setViewSettingVisible] = useState(false);
-  
-  const today = new Date();
 
   const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
     if (currentView == null) return;
@@ -80,7 +78,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     const features = _features.filter((f) => {
       const date = new Date(f.properties.捕獲年月日);
-      return show_date <= date;
+      return show_date <= date && date <= origin;
     });
 
     const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];

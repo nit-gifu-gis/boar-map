@@ -60,8 +60,6 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     boar: {}
   });
 
-  const today = new Date();
-
   const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
     if (currentView == null) return;
   
@@ -79,7 +77,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   
     const features = _features.filter((f) => {
       const date = new Date(f.properties.捕獲年月日);
-      return show_date <= date;
+      return show_date <= date && date <= origin;
     });
   
     const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];
