@@ -26,7 +26,7 @@ const IndexTemplate: React.FunctionComponent = () => {
             <Link href='/trace'>
               <a>
                 <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
-                  ジビエ肉の履歴確認
+                  ジビエ肉の履歴<br />確認
                 </div>
               </a>
             </Link>

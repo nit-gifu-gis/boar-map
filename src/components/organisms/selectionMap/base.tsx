@@ -1310,7 +1310,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
               <></>
             )}
             {viewSettingVisible ? (
-              <div className='mb-3 box-border h-[360px] w-full p-1'>
+              <div className='mb-3 box-border h-[386px] w-full p-1'>
                 <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
                     <div className='flex-1 text-center font-bold'>地図表示設定</div>
@@ -1337,8 +1337,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                       <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()}/>
                       <span className='px-1'>日</span>
                     </div>
-                    <span className='py-1 font-bold'>期間 (月)</span>
-                    <input id='butanetsu_month' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.month} />
+                    <span className='py-1 font-bold'>表示期間<br/>(基準日より前の期間)</span>
+                    <div className="w-full pb-1 flex justify-center items-center">
+                      <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.month} /></div>
+                      <div className="whitespace-nowrap">ヵ月</div>
+                    </div>
                     <span className='py-1 font-bold'>範囲 (km)</span>
                     <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius}/>
                     <div className='w-full p-4'>
