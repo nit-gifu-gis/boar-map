@@ -145,7 +145,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
     setButtonDisabled(true);
     const settings_new = {
       radius: radius_val,
-      month: time_val,
+      days: time_val,
     };
 
     const updateTask = async () => {
