@@ -64,12 +64,12 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
     if (currentView == null) return;
 
-    const { radius, month, style, origin } = currentView;
+    const { radius, days, style, origin } = currentView;
     const show_date = new Date(origin);
     show_date.setHours(0);
     show_date.setMinutes(0);
     show_date.setSeconds(0);
-    show_date.setMonth(show_date.getMonth() - month);
+    show_date.setDate(show_date.getDate() - days);
 
     // ここで描画条件に合わせてマーカーのフィルタを行う
     // style 1: 点と円
@@ -218,7 +218,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     
     setCurrentButanetsuView({
       radius: range_val,
-      month: month_val,
+      days: month_val,
       style: style_val,
       origin: d
     });
@@ -1287,8 +1287,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                   </div>
                   <span className='py-1 font-bold'>表示期間<br/>(基準日より前の期間)</span>
                   <div className="w-full pb-1 flex justify-center items-center">
-                    <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.month} /></div>
-                    <div className="whitespace-nowrap">ヵ月</div>
+                    <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.days} /></div>
+                    <div className="whitespace-nowrap">日</div>
                   </div>
                   <span className='py-1 font-bold'>範囲 (km)</span>
                   <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius}/>

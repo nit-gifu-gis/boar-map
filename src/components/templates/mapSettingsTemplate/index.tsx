@@ -159,7 +159,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       
       setCurrentButanetsuView({
         radius: radius_val,
-        month: time_val,
+        days: time_val,
         style: 1,
         origin: new Date()
       });
@@ -213,7 +213,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         <div className='text-2xl font-bold'>豚熱陽性高率エリア表示設定</div>
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
           <InfoInput type='number' id='map_radius' title='円の表示半径(km)' error={radiusError} />
-          <InfoInput type='number' id='map_time' title='円の表示期間(月)' error={timeError} />
+          <InfoInput type='number' id='map_time' title='円の表示期間(日)' error={timeError} />
           <RoundButton color='primary' onClick={onButanetsuUpdateClicked} disabled={buttonDisabled}>
             保存
           </RoundButton>

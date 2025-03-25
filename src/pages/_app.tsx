@@ -85,7 +85,7 @@ const AppInit: React.FunctionComponent = () => {
           const json = await res.json();
           setCurrentButanetsuView({
             radius: json['radius'] as number,
-            month: json['month'] as number,
+            days: json['month'] as number,
             style: 1,
             origin: new Date()
           });

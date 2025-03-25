@@ -4,7 +4,7 @@ export const butanetsuViewState = atom<undefined | null | ButanetsuView>({
   key: 'ButanetsuView',
   default: {
     radius: 10,
-    month: 6,
+    days: 180,
     style: 1,
     origin: new Date(),
   },

@@ -1,6 +1,6 @@
 type ButanetsuView = {
   radius: number;
-  month: number;
+  days: number;
   style: number;
   origin: Date;
 }
