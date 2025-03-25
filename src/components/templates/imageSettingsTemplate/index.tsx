@@ -192,8 +192,8 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div className='text-2xl font-bold'>画像ダウンロード</div>
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
-          <InfoInput type='date' id='download_from' title='ダウンロード対象日（開始）' error={isDownloadError ? " " : ""}/>
-          <InfoInput type='date' id='download_to' title='ダウンロード対象日（終了）' error={isDownloadError ? " " : ""} />
+          <InfoInput type='date' id='download_from' title='ダウンロード対象捕獲日（開始）' error={isDownloadError ? " " : ""}/>
+          <InfoInput type='date' id='download_to' title='ダウンロード対象捕獲日（終了）' error={isDownloadError ? " " : ""} />
           <InfoInput
             title='画像ファイルのグループ分け'
             type='select'
@@ -212,10 +212,10 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
             <span>
               <span className="underline font-bold text-danger">注意</span><br />
               一度削除した画像は復元することが出来ません。<br />
-              削除を行う場合には十分にご注意ください。
+              削除を行う場合には十分にご注意ください。<br />
             </span>
-            <InfoInput type='date' id='delete_from' title='削除対象日（開始）' error={isDeleteError ? " " : ""} />
-            <InfoInput type='date' id='delete_to' title='削除対象日（終了）' error={isDeleteError ? " " : ""} />
+            <InfoInput type='date' id='delete_from' title='削除対象捕獲日（開始）' error={isDeleteError ? " " : ""} />
+            <InfoInput type='date' id='delete_to' title='削除対象捕獲日（終了）' error={isDeleteError ? " " : ""} />
             <RoundButton color='danger' onClick={onClickDelete} disabled={isDisabled}>
               削除
             </RoundButton>
