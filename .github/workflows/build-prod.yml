@@ -3,7 +3,8 @@ name: Build-prod
 on:
   push:
     branches: [ main ]
-
+  workflow_dispatch:
+  
 env:
   DOCKER_REGISTRY: boarmap-dev.gifu-nct.ac.jp:5000
   DOCKER_REPOSITORY: boar-map
