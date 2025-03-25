@@ -148,6 +148,17 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
       </div>,
     );
 
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_map-dl'
+      >
+        <Link href='/map-dl'>
+          <a className='text-14pt text-background no-underline'>ワクチンメッシュ図面ダウンロード</a>
+        </Link>
+      </div>
+    );
+
     if (hasListPermission(currentUser)) {
       menuItems.push(
         <div
@@ -190,6 +201,28 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         </div>,
       );
     }
+    
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_notice'
+      >
+        <Link href='/notice'>
+          <a className='text-14pt text-background no-underline'>お知らせ</a>
+        </Link>
+      </div>,
+    );
+
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_bugreport'
+      >
+        <Link href='#'>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>エラー情報の送信</a>
+        </Link>
+      </div>,
+    );
 
     menuItems.push(
       <div
@@ -255,18 +288,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_trace'
       >
         <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>履歴管理システム</a>
-        </Link>
-      </div>,
-    );
-
-    menuItems.push(
-      <div
-        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
-        key='menu_bugreport'
-      >
-        <Link href='#'>
-          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>デバッグ情報の送信</a>
+          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
         </Link>
       </div>,
     );
@@ -303,7 +325,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_trace'
       >
         <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>履歴管理システム</a>
+          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
         </Link>
       </div>,
     );

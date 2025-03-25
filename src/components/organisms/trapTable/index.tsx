@@ -222,6 +222,14 @@ const TrapTable: React.FunctionComponent<TrapTableProps> = (p) => {
               <br />
               年月日
             </th>
+            <th
+              className={
+                'border border-b-2 border-solid border-border p-1 ' + sortableClass('更新日')
+              }
+              onClick={() => sort('更新日')}
+            >
+              最終<br />更新日
+            </th>
             <th className={'border border-b-2 border-solid border-border p-1 '}>備考</th>
             <th className={'border border-b-2 border-solid border-border p-1'}>写真</th>
           </tr>
@@ -252,6 +260,9 @@ const TrapTable: React.FunctionComponent<TrapTableProps> = (p) => {
                 </td>
                 <td className='border border-solid border-border p-1 text-right'>
                   {props.撤去年月日}
+                </td>
+                <td className='border border-solid border-border p-1 text-right'>
+                  {props.更新日}
                 </td>
                 <td className='border border-solid border-border p-1'>{props.備考}</td>
 

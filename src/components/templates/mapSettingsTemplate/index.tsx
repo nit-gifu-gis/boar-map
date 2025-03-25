@@ -9,10 +9,13 @@ import RoundButton from '../../atomos/roundButton';
 import InfoInput from '../../molecules/infoInput';
 import Footer from '../../organisms/footer';
 import Header from '../../organisms/header';
+import { useSetRecoilState } from 'recoil';
+import { butanetsuViewState } from '../../../states/butanetsuView';
 
 const MapSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(false);
@@ -47,7 +50,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       const time_input = document.getElementById('map_time') as HTMLInputElement;
 
       radius_input.value = settings.radius;
-      time_input.value = settings.month;
+      time_input.value = settings.days;
 
       const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
         headers: {
@@ -142,7 +145,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
     setButtonDisabled(true);
     const settings_new = {
       radius: radius_val,
-      month: time_val,
+      days: time_val,
     };
 
     const updateTask = async () => {
@@ -153,6 +156,14 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         },
         body: JSON.stringify(settings_new),
       });
+      
+      setCurrentButanetsuView({
+        radius: radius_val,
+        days: time_val,
+        style: 1,
+        origin: new Date()
+      });
+
       const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
       setMessageDeleteTimerId((id) => {
         setMessage(message);
@@ -202,7 +213,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         <div className='text-2xl font-bold'>豚熱陽性高率エリア表示設定</div>
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
           <InfoInput type='number' id='map_radius' title='円の表示半径(km)' error={radiusError} />
-          <InfoInput type='number' id='map_time' title='円の表示期間(月)' error={timeError} />
+          <InfoInput type='number' id='map_time' title='円の表示期間(日)' error={timeError} />
           <RoundButton color='primary' onClick={onButanetsuUpdateClicked} disabled={buttonDisabled}>
             保存
           </RoundButton>

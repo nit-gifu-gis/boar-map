@@ -28,6 +28,10 @@ import {
 } from '../../../types/features';
 import { useRouter } from 'next/router';
 import RoundButton from '../../atomos/roundButton';
+import { useButanetsuView } from '../../../hooks/useButanetsuView';
+import { useSetRecoilState } from 'recoil';
+import { butanetsuViewState } from '../../../states/butanetsuView';
+import React from 'react';
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
@@ -37,6 +41,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     Record<string, L.MarkerClusterGroup | L.LayerGroup>
   >({});
   const { currentUser } = useCurrentUser();
+  const { currentView } = useButanetsuView();
+  const firstRunRef = React.useRef(true);
+  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
@@ -52,6 +59,170 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState('検索');
+  const [viewSettingVisible, setViewSettingVisible] = useState(false);
+
+  const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
+    if (currentView == null) return;
+
+    const { radius, days, style, origin } = currentView;
+    const show_date = new Date(origin);
+    show_date.setHours(0);
+    show_date.setMinutes(0);
+    show_date.setSeconds(0);
+    show_date.setDate(show_date.getDate() - days);
+
+    // ここで描画条件に合わせてマーカーのフィルタを行う
+    // style 1: 点と円
+    // style 2: 点のみ
+    // style 3: 円のみ
+
+    const features = _features.filter((f) => {
+      const date = new Date(f.properties.捕獲年月日);
+      return show_date <= date && date <= origin;
+    });
+
+    const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];
+    
+    const newMarkers = style !== 3 ? features.map((f) => makeMarker(f, '豚熱陽性高率エリア')) : [];
+    
+    setButanetsuLayerID((id) => {
+      const l = overlayList['豚熱陽性高率エリア'] as L.LayerGroup;
+      const lg = overlayList['豚熱陽性高率エリア'].getLayer(id) as L.MarkerClusterGroup;
+      lg.addLayers(newMarkers);
+      circleMarkers.forEach((m) => {
+        l.addLayer(m);
+      });
+      return id;
+    });
+  };
+
+  useEffect(() => {
+    if(firstRunRef.current) {
+      firstRunRef.current = false;
+      return;
+    }
+    const renderMarkers = async () => {
+      if (myMap == null) return;
+
+      setLoading(true);
+      // 既存のマーカーをすべて削除
+      const currentButanetsuLayerId = await new Promise<number>((resolve) => {
+        setButanetsuLayerID((id) => {
+          resolve(id);
+          return id;
+        });
+      });
+      const butanetsuLayer = overlayList['豚熱陽性高率エリア'].getLayer(currentButanetsuLayerId) as L.MarkerClusterGroup;
+
+      featureIDs['豚熱陽性高率エリア'] = [];
+      const layer = overlayList['豚熱陽性高率エリア'];
+      layer.getLayers().forEach((l) => {
+        if (l === butanetsuLayer) return;
+        layer.removeLayer(l);
+      });
+      butanetsuLayer.clearLayers();
+
+      // 現在の描画範囲で情報を検索
+      const bounds = myMap.getBounds();
+
+      const topLat = bounds.getNorth();
+      const rightLng = bounds.getEast();
+      const bottomLat = bounds.getSouth();
+      const leftLng = bounds.getWest();
+
+      const req_body = {
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [leftLng, topLat],
+            [rightLng, topLat],
+            [rightLng, bottomLat],
+            [leftLng, bottomLat],
+            [leftLng, topLat],
+          ]],
+        },
+      };
+
+      const res = await fetch(SERVER_URI + '/Features/GetFeaturesByExtent', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Access-Token': getAccessToken(),
+        },
+        body: JSON.stringify(req_body),
+      });
+
+      if (res.status === 200) {
+        const json = (await res.json()) as FeatureExtentResponse;
+        if (json.豚熱陽性高率エリア != null) {
+          // 新しい条件で描画する
+          addNewButanetsuMarkers(json.豚熱陽性高率エリア);
+
+          featureIDs['豚熱陽性高率エリア'].push(
+            ...json.豚熱陽性高率エリア.map((f) => {
+              return `${f.properties.ID$}`;
+            }),
+          );
+        }
+      } else {
+        alert('情報の取得に失敗しました。');
+      }
+
+      setLoading(false);
+    };
+    renderMarkers();
+  }, [currentView]);
+
+  const handleViewSettingsUpdate = () => {
+    const range_input = document.getElementById('butanetsu_range') as HTMLInputElement;
+    const style_input = document.getElementById('butanetsu_style') as HTMLInputElement;
+    const month_input = document.getElementById('butanetsu_month') as HTMLInputElement;
+    const date_y_input = document.getElementById('butanetsu_date_y') as HTMLInputElement;
+    const date_m_input = document.getElementById('butanetsu_date_m') as HTMLInputElement;
+    const date_d_input = document.getElementById('butanetsu_date_d') as HTMLInputElement;
+
+    const range_val = parseInt(range_input.value);
+    const style_val = parseInt(style_input.value);
+    const month_val = parseInt(month_input.value);
+    const date_y_val = parseInt(date_y_input.value);
+    const date_m_val = parseInt(date_m_input.value);
+    const date_d_val = parseInt(date_d_input.value);
+
+    if (isNaN(range_val) || range_val <= 0) {
+      alert('無効な値が入力されました。');
+      return;
+    }
+
+    if (isNaN(month_val) || month_val <= 0) {
+      alert('無効な値が入力されました。');
+      return;
+    }
+
+    if (isNaN(date_y_val) || date_y_val <= 0) {
+      alert('無効な値が入力されました。');
+      return;
+    }
+
+    if (isNaN(date_m_val) || date_m_val <= 0) {
+      alert('無効な値が入力されました。');
+      return;
+    }
+
+    if (isNaN(date_d_val) || date_d_val <= 0) {
+      alert('無効な値が入力されました。');
+      return;
+    }
+
+    const d = new Date(date_y_val, date_m_val - 1, date_d_val);
+    
+    setCurrentButanetsuView({
+      radius: range_val,
+      days: month_val,
+      style: style_val,
+      origin: d
+    });
+  };
 
   const [, setMyLocMarker] = useState<L.Marker | null>(null);
   // let myLocMarker: L.Marker | null = null;
@@ -215,6 +386,10 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     setLocSearchVisible((l) => !l);
   }).setPosition('bottomright');
 
+  const viewSettingButton = L.easyButton('<div class="leaflet-button">表示設定</div>', () => {
+    setViewSettingVisible((l) => !l);
+  }).setPosition('bottomright');
+
   const onClickSetLocation = () => {
     setCurrentLocation(true);
   };
@@ -338,30 +513,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
           // 描画するマーカーの生成
           if (key === '豚熱陽性高率エリア') {
-            const asyncTask = async () => {
-              const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
-                headers: {
-                  'X-Access-Token': getAccessToken(),
-                },
-              });
-              const settings = await res.json();
-
-              const circleMarkers = await makeCircleMarkers(
-                settings,
-                newFeatures as ButanetsuFeature[],
-              );
-              const newMarkers = newFeatures.map(f => makeMarker(f, key as layerType));
-              setButanetsuLayerID((id) => {
-                const l = overlayList[key] as L.LayerGroup;
-                const lg = overlayList[key].getLayer(id) as L.MarkerClusterGroup;
-                lg.addLayers(newMarkers);
-                circleMarkers.forEach((m) => {
-                  l.addLayer(m);
-                });
-                return id;
-              });
-            };
-            asyncTask();
+            addNewButanetsuMarkers(newFeatures as ButanetsuFeature[]);
           } else {
             const newMarkers = newFeatures.map((f) => makeMarker(f, key as layerType));
             (overlayList[key] as L.MarkerClusterGroup).addLayers(newMarkers);
@@ -461,34 +613,25 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   const makeCircleMarkers = async (
-    settings: Record<string, number>,
+    radius: number,
     features: ButanetsuFeature[],
   ): Promise<L.Circle[]> => {
-    const show_date = new Date();
-    show_date.setHours(0);
-    show_date.setMinutes(0);
-    show_date.setSeconds(0);
-    show_date.setMonth(show_date.getMonth() - settings.month);
-
     const l: L.Circle[] = [];
     features.forEach((feature) => {
-      const date = new Date(feature.properties.捕獲年月日);
-      if (show_date <= date) {
-        const loc = [
-          feature.geometry.coordinates[1],
-          feature.geometry.coordinates[0],
-        ] as LatLngExpression;
-        const markers = L.circle(loc, {
-          radius: settings.radius * 1000,
-          color: '#e33b3b',
-          weight: 2,
-          fill: true,
-          fillColor: '#e33b3b',
-          fillOpacity: 0.05,
-          opacity: 0.4,
-        });
-        l.push(markers);
-      }
+      const loc = [
+        feature.geometry.coordinates[1],
+        feature.geometry.coordinates[0],
+      ] as LatLngExpression;
+      const markers = L.circle(loc, {
+        radius: radius * 1000,
+        color: '#e33b3b',
+        weight: 2,
+        fill: true,
+        fillColor: '#e33b3b',
+        fillOpacity: 0.05,
+        opacity: 0.4,
+      });
+      l.push(markers);
     });
     return l;
   };
@@ -687,7 +830,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     const options = {
       enableHighAccuracy: false, // 高精度の位置情報は利用しない
       timeout: Infinity, // 取得できるまで待つ
-      maximumAge: 0, // キャッシュは使わな設置地点い
+      maximumAge: 0, // キャッシュは使わない
     };
 
     setWatchPosId(navigator.geolocation.watchPosition(success, error, options));
@@ -863,6 +1006,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     labelButton.remove();
     labelButton.addTo(myMap);
+
+    viewSettingButton.remove();
+    viewSettingButton.addTo(myMap);
 
     // 位置情報の取得開始
     startWatchLocation();
@@ -1105,6 +1251,55 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                       <div className='ml-1'>{k.name}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          {viewSettingVisible ? (
+            <div className='mb-3 box-border h-[386px] w-full p-1'>
+              <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
+                <div className='mr-1 flex items-center justify-end pb-1'>
+                  <div className='flex-1 text-center font-bold'>地図表示設定</div>
+                  <div className='text-center text-lg'>
+                    <button type='button' onClick={() => setViewSettingVisible(false)}>
+                    ×
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <span className='py-1 font-bold'>豚熱陽性高率エリアの設定</span>
+                  <span className='py-1 font-bold'>表示方法</span>
+                  <select id='butanetsu_style' className='w-full pb-1 bg-[#ffffff]' defaultValue={`${currentView?.style}`}>
+                    <option value="1">点と円で表示</option>
+                    <option value="2">点のみで表示</option>
+                    <option value="3">円のみで表示</option>
+                  </select>
+                  <span className='py-1 font-bold'>基準日</span>
+                  <div className='w-full pb-1'>
+                    <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={currentView?.origin.getFullYear()}/>
+                    <span className='px-1'>年</span>
+                    <input id='butanetsu_date_m' type='number' className='w-[36px] h-8 pl-1' defaultValue={(currentView?.origin.getMonth() || 0) + 1} />
+                    <span className='px-1'>月</span>
+                    <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()}/>
+                    <span className='px-1'>日</span>
+                  </div>
+                  <span className='py-1 font-bold'>表示期間<br/>(基準日より前の期間)</span>
+                  <div className="w-full pb-1 flex justify-center items-center">
+                    <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.days} /></div>
+                    <div className="whitespace-nowrap">日</div>
+                  </div>
+                  <span className='py-1 font-bold'>範囲 (km)</span>
+                  <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius}/>
+                  <div className='w-full p-4'>
+                    <RoundButton
+                      color='primary'
+                      onClick={handleViewSettingsUpdate}
+                    >
+                      設定
+                    </RoundButton>
+                  </div>
                 </div>
               </div>
             </div>
