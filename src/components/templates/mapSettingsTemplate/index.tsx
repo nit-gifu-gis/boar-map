@@ -50,7 +50,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       const time_input = document.getElementById('map_time') as HTMLInputElement;
 
       radius_input.value = settings.radius;
-      time_input.value = settings.month;
+      time_input.value = settings.days;
 
       const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
         headers: {
