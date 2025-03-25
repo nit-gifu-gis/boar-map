@@ -3,6 +3,7 @@ name: Build-develop
 on:
   push:
     branches: [ develop ]
+  workflow_dispatch:
 
 env:
   DOCKER_REGISTRY: boarmap-dev.gifu-nct.ac.jp:5000
