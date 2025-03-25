@@ -1,0 +1,26 @@
+name: Deploy-develop
+
+on:
+  workflow_run:
+    workflows:
+      - Build-develop
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: Notify update to production server
+        shell: bash
+        run: |
+          curl -X POST -d '{ "secret": "${{ secrets.SECRET_PRODUCTION }}" }' https://boar-map.gifugis.jp/cd-scripts/update.php
+          
+      - name: Notify update to development server
+        shell: bash
+        run: |
+          curl -X POST -d '{ "secret": "${{ secrets.SECRET_DEVELOPMENT }}" }' https://boarmap-dev.gifu-nct.ac.jp/cd-scripts/update.php
