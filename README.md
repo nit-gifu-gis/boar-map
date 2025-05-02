@@ -47,4 +47,4 @@ https://bm-v3-stg.db0.jp/
 
 ## 著作権表記
 
-Copyright (c) 2019-2024 National Institute of Technology, Gifu College GIS Team
+Copyright (c) 2019-2025 National Institute of Technology, Gifu College GIS Team

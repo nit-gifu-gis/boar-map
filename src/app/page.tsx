@@ -1,11 +1,11 @@
-import Header from '@/components/block/Header';
-import Image from 'next/image';
-import Link from 'next/link';
+import Header from "@/components/block/Header";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+export default function TopPage() {
   return (
     <div className="w-full">
-      <Header />
+      <Header headerText="トップページ" />
       <div className="mx-auto box-border w-screen max-w-window px-2">
         <div className="mt-1 w-full text-center">
           <Image
