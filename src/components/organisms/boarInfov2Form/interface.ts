@@ -1,7 +1,8 @@
-import { BoarFeatureV2 } from '../../../types/features';
-import { BoarDetailFormHandler } from '../../atomos/boarDetailForm/interface';
-import { ImagewithLocation } from '../../atomos/imageInput/interface';
-import { LatLngZoom } from '../mapBase/interface';
+import { BoarFeatureV2 } from '@/types/features';
+
+import { BoarDetailFormHandler } from '@/components/atomos/boarDetailForm/interface';
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
+import { LatLngZoom } from '@/components/organisms/mapBase/interface';
 
 export interface BoarInfov2FormProps {
   location: LatLngZoom;

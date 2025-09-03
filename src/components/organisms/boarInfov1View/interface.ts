@@ -1,4 +1,4 @@
-import { BoarFeatureV1 } from '../../../types/features';
+import { BoarFeatureV1 } from '@/types/features';
 
 export interface BoarInfov1ViewProps {
   detail: BoarFeatureV1;

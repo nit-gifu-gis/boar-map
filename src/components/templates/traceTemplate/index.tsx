@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import Spacer from '../../atomos/spacer';
-import TraceData from '../../atomos/traceData';
-import Header from '../../organisms/header';
-import TraceForm from '../../organisms/traceForm';
+
+import Spacer from '@/components/atomos/spacer';
+import TraceData from '@/components/atomos/traceData';
+import Header from '@/components/organisms/header';
+import TraceForm from '@/components/organisms/traceForm';
+import { SERVER_URI } from '@/utils/constants';
+
 import { isError, QueryError, QueryResult } from './interface';
 
 const TraceTemplate: React.FunctionComponent = () => {

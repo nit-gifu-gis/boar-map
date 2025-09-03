@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../../hooks/useLogin';
-import LocationSelectorTemplate from '../../components/templates/newDataForm/locationSelector';
+
+import LocationSelectorTemplate from '@/components/templates/newDataForm/locationSelector';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const EditLocationPage: NextPage = () => {
   useRequireLogin();

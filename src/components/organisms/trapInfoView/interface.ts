@@ -1,4 +1,4 @@
-import { TrapFeature } from '../../../types/features';
+import { TrapFeature } from '@/types/features';
 
 export interface TrapInfoViewProps {
   detail: TrapFeature;

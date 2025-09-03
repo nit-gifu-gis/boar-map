@@ -1,15 +1,19 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { FeatureBase, ReportFeature, ReportProps } from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { checkDateError } from '../../../utils/validateData';
-import WorkTimeInput from '../../atomos/workTimeInput';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { FeatureBase, ReportFeature, ReportProps } from '@/types/features';
+
+import ReportBInput from '@/components/atomos/reportBInput';
+import WorkDetailInput from '@/components/atomos/workDetailInput';
+import WorkTimeInput from '@/components/atomos/workTimeInput';
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { checkDateError } from '@/utils/validateData';
+
 import { ReportInfoFormProps } from './interface';
-import WorkDetailInput from '../../atomos/workDetailInput';
-import ReportBInput from '../../atomos/reportBInput';
+
 
 const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProps>(
   function InfoForm(props, ref) {

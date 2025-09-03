@@ -1,4 +1,5 @@
-import InfoDiv from '../../molecules/infoDiv';
+import InfoDiv from '@/components/molecules/infoDiv';
+
 import { YoutonInfoViewProps } from './interface';
 
 const YoutonInfoView: React.FunctionComponent<YoutonInfoViewProps> = ({ detail }) => {

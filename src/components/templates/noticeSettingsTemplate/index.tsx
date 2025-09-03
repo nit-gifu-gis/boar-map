@@ -1,15 +1,16 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
-import { Notice } from '../loginTemplate/interface';
-import TextInput from '../../atomos/TextInput';
-import TextAreaInput from '../../atomos/textAreaInput';
+
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import TextAreaInput from '@/components/atomos/textAreaInput';
+import TextInput from '@/components/atomos/TextInput';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { Notice } from '@/components/templates/loginTemplate/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
 
 const NoticeSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

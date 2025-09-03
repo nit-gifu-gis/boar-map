@@ -1,4 +1,5 @@
-import InfoDiv from '../../molecules/infoDiv';
+import InfoDiv from '@/components/molecules/infoDiv';
+
 import { VaccineInfoViewProps } from './interface';
 
 const VaccineInfoView: React.FunctionComponent<VaccineInfoViewProps> = ({

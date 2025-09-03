@@ -1,6 +1,7 @@
-import { FeatureBase } from '../../../types/features';
-import { ImagewithLocation } from '../../atomos/imageInput/interface';
-import { LatLngZoom } from '../mapBase/interface';
+import { FeatureBase } from '@/types/features';
+
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
+import { LatLngZoom } from '@/components/organisms/mapBase/interface';
 
 export interface FeatureEditorProps {
   featureInfo?: FeatureBase;

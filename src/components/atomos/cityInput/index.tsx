@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
+
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
 import { CityInput } from './interface';
 
 const CityInput: React.FunctionComponent<CityInput> = (props) => {

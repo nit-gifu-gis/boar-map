@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { to_header_color, to_header_title } from "../../../../utils/header";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import RoundButton from "../../../atomos/roundButton";
-import FeatureViewer from "../../../organisms/featureViewer";
-import Footer from "../../../organisms/footer";
-import Header from "../../../organisms/header";
-import { InputFormTemplateCommonProps } from "../interfaces";
-import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
 import { useRouter } from "next/router";
-import { FeatureBase } from "../../../../types/features";
-import { alert, confirm } from "../../../../utils/modal";
-import { getAccessToken } from "../../../../utils/currentUser";
-import { SERVER_URI } from "../../../../utils/constants";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { FeatureBase } from "@/types/features";
+
+import FooterAdjustment from "@/components/atomos/footerAdjustment";
+import RoundButton from "@/components/atomos/roundButton";
+import FeatureViewer from "@/components/organisms/featureViewer";
+import Footer from "@/components/organisms/footer";
+import Header from "@/components/organisms/header";
+import { SERVER_URI } from "@/utils/constants";
+import { getAccessToken } from "@/utils/currentUser";
+import { InputFormData, useFormDataParser } from "@/utils/form-data";
+import { to_header_color, to_header_title } from "@/utils/header";
+import { alert, confirm } from "@/utils/modal";
+
+import { InputFormTemplateCommonProps } from "../interfaces";
 
 const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();

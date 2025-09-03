@@ -1,18 +1,20 @@
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { FeatureBase } from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { hasWritePermission, LayerType, toServerType } from '../../../utils/gis';
-import { to_header_color, to_header_title } from '../../../utils/header';
-import { alert, confirm, yesNo } from '../../../utils/modal';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import FeatureViewer from '../../organisms/featureViewer';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
-import { useFormDataParser } from '../../../utils/form-data';
+
+import { FeatureBase } from '@/types/features';
+
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import FeatureViewer from '@/components/organisms/featureViewer';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { useFormDataParser } from '@/utils/form-data';
+import { hasWritePermission, LayerType, toServerType } from '@/utils/gis';
+import { to_header_color, to_header_title } from '@/utils/header';
+import { alert, confirm, yesNo } from '@/utils/modal';
 
 const DetailTemplate: React.FunctionComponent = () => {
   const router = useRouter();

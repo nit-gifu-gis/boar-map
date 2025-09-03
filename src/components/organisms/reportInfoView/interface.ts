@@ -1,4 +1,4 @@
-import { ReportFeature } from '../../../types/features';
+import { ReportFeature } from '@/types/features';
 
 export interface ReportInfoViewProps {
   detail: ReportFeature;

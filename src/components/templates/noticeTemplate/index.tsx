@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import Header from '../../organisms/header';
-import { Notice } from '../loginTemplate/interface';
-import { SERVER_URI } from '../../../utils/constants';
-import RoundButton from '../../atomos/roundButton';
 import { useRouter } from 'next/router';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import { useEffect, useState } from 'react';
+
+import RoundButton from '@/components/atomos/roundButton';
+import Header from '@/components/organisms/header';
+import { Notice } from '@/components/templates/loginTemplate/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
 
 const NoticeTemplate: React.FunctionComponent = () => {
   const router = useRouter();

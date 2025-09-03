@@ -1,4 +1,5 @@
-import InfoDiv from '../../molecules/infoDiv';
+import InfoDiv from '@/components/molecules/infoDiv';
+
 import { BoarInfov1ViewProps } from './interface';
 
 const BoarInfov1View: React.FunctionComponent<BoarInfov1ViewProps> = ({

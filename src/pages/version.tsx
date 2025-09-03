@@ -1,8 +1,9 @@
 import { GetStaticProps, NextPage } from 'next';
-import { VersionInfoProps } from '../components/organisms/versionInfo/interface';
-import VersionTemplate from '../components/templates/versionTemplate';
-import { useRequireLogin } from '../hooks/useLogin';
-import { getVersionInfo } from '../utils/version';
+
+import { VersionInfoProps } from '@/components/organisms/versionInfo/interface';
+import VersionTemplate from '@/components/templates/versionTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
+import { getVersionInfo } from '@/utils/version';
 
 const VersionPage: NextPage<VersionInfoProps> = ({ version }) => {
   useRequireLogin();

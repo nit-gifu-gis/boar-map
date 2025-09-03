@@ -1,4 +1,5 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
+
 import {
   BoarFeatureV1,
   BoarFeatureV2,
@@ -8,14 +9,16 @@ import {
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
-} from '../../../types/features';
-import BoarInfov1Form from '../boarInfov1Form';
-import BoarInfov2Form from '../boarInfov2Form';
-import ButanetsuInfoForm from '../butanetsuInfoForm';
-import ReportInfoForm from '../reportInfoForm';
-import TrapInfoForm from '../trapInfoForm';
-import VaccineInfoForm from '../vaccineInfoForm';
-import YoutonInfoForm from '../youtonInfoForm';
+} from '@/types/features';
+
+import BoarInfov1Form from '@/components/organisms/boarInfov1Form';
+import BoarInfov2Form from '@/components/organisms/boarInfov2Form';
+import ButanetsuInfoForm from '@/components/organisms/butanetsuInfoForm';
+import ReportInfoForm from '@/components/organisms/reportInfoForm';
+import TrapInfoForm from '@/components/organisms/trapInfoForm';
+import VaccineInfoForm from '@/components/organisms/vaccineInfoForm';
+import YoutonInfoForm from '@/components/organisms/youtonInfoForm';
+
 import { FeatureEditorHandler, FeatureEditorProps } from './interface';
 
 const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>(

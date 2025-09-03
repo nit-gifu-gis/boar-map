@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import RoundButton from '../../atomos/roundButton';
-import SelectInput from '../../atomos/selectInput';
 import Image from 'next/image';
-import { MeshFormInterface } from './interface';
-import { alert } from '../../../utils/modal';
+import React, { useState } from 'react';
 import shapefile, { FeatureCollectionWithFilename } from 'shpjs';
+
+import RoundButton from '@/components/atomos/roundButton';
+import SelectInput from '@/components/atomos/selectInput';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
+
+import { MeshFormInterface } from './interface';
+
+
 
 const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);

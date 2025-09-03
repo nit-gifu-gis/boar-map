@@ -1,4 +1,4 @@
-import { VaccineFeature } from '../../../types/features';
+import { VaccineFeature } from '@/types/features';
 
 export interface VaccineInfoViewProps {
   detail: VaccineFeature;

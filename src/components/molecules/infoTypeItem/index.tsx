@@ -1,5 +1,6 @@
-import InfoTypeItemImage from '../../atomos/infoTypeItemImage';
-import InfoTypeItemText from '../../atomos/infoTypeItemText';
+import InfoTypeItemImage from '@/components/atomos/infoTypeItemImage';
+import InfoTypeItemText from '@/components/atomos/infoTypeItemText';
+
 import { InfoTypeItemProps } from './interface';
 
 const InfoTypeItem: React.FunctionComponent<InfoTypeItemProps> = ({

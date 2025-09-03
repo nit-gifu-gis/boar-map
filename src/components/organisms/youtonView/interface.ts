@@ -1,4 +1,4 @@
-import { YoutonFeature } from '../../../types/features';
+import { YoutonFeature } from '@/types/features';
 
 export interface YoutonInfoViewProps {
   detail: YoutonFeature;

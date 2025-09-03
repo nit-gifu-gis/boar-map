@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import CitySettingsTemplate from '../../components/templates/citySettingsTemplate';
-import { useRequireLogin } from '../../hooks/useLogin';
+
+import CitySettingsTemplate from '@/components/templates/citySettingsTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const CitySettingsPage: NextPage = () => {
   useRequireLogin();

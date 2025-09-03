@@ -1,16 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { VaccineProps, FeatureBase, VaccineFeature } from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { hasWritePermission } from '../../../utils/gis';
-import { alert, yesNo } from '../../../utils/modal';
-import { sortFeatures } from '../../../utils/sort';
-import RoundButton from '../../atomos/roundButton';
+
+import { VaccineProps, FeatureBase, VaccineFeature } from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { useFormDataParser } from '@/utils/form-data';
+import { hasWritePermission } from '@/utils/gis';
+import { alert, yesNo } from '@/utils/modal';
+import { sortFeatures } from '@/utils/sort';
+
 import { VaccineTableProps } from './interface';
-import { useFormDataParser } from '../../../utils/form-data';
+
 
 const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
   const router = useRouter();

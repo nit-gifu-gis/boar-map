@@ -1,17 +1,19 @@
-import '../styles/globals.css';
-import React from 'react';
-import type { AppProps } from 'next/app';
-import { useEffect } from 'react';
-import { useSetRecoilState, RecoilRoot } from 'recoil';
-import { currentUserState } from '../states/currentUser';
-import { fetchCurrentUser, getAccessToken } from '../utils/currentUser';
-import { useCurrentUser } from '../hooks/useCurrentUser';
-import LoadingTemplate from '../components/templates/loadingTemplate';
-import Head from 'next/head';
-import { currentAppLogs } from '../states/appLog';
+import '@/styles/globals.css';
 import * as Sentry from "@sentry/nextjs";
-import { butanetsuViewState } from '../states/butanetsuView';
-import { SERVER_URI } from '../utils/constants';
+import Head from 'next/head';
+import { useEffect } from 'react';
+import React from 'react';
+import { useSetRecoilState, RecoilRoot } from 'recoil';
+
+import LoadingTemplate from '@/components/templates/loadingTemplate';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { currentAppLogs } from '@/states/appLog';
+import { butanetsuViewState } from '@/states/butanetsuView';
+import { currentUserState } from '@/states/currentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { fetchCurrentUser, getAccessToken } from '@/utils/currentUser';
+
+import type { AppProps } from 'next/app';
 
 const AppInit: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
@@ -98,26 +100,26 @@ const AppInit: React.FunctionComponent = () => {
       }
 
       setCurrentAppLog([]);
-      if(console.log != null && console.log != logHandler) {
+      if (console.log != null && console.log != logHandler) {
         origLog = console.log;
         console.log = logHandler;
       }
-      
-      if(console.error != null && console.error != errorHandler) {
+
+      if (console.error != null && console.error != errorHandler) {
         origError = console.error;
         console.error = errorHandler;
       }
-      
-      if(console.warn != null && console.warn != warnHandler) {
+
+      if (console.warn != null && console.warn != warnHandler) {
         origWarn = console.warn;
         console.warn = warnHandler;
       }
 
-      if(console.trace != null && console.trace != traceHandler) {
+      if (console.trace != null && console.trace != traceHandler) {
         origTrace = console.trace;
         console.trace = traceHandler;
       }
-        
+
     })();
   }, []);
 

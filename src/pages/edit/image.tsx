@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../../hooks/useLogin';
-import ImageSelectorTemplate from '../../components/templates/newDataForm/imageSelector';
+
+import ImageSelectorTemplate from '@/components/templates/newDataForm/imageSelector';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const EditImagePage: NextPage = () => {
   useRequireLogin();

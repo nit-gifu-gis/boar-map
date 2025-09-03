@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { useCurrentUser } from "../../../../hooks/useCurrentUser";
-import { hasWritePermission, LayerType } from "../../../../utils/gis";
 import { useRouter } from "next/router";
-import { useFormDataParser } from "../../../../utils/form-data";
-import Header from "../../../organisms/header";
-import InfoTypeSelector from "../../../organisms/infoTypeSelector";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import Footer from "../../../organisms/footer";
-import RoundButton from "../../../atomos/roundButton";
+import { useState } from "react";
+
+import FooterAdjustment from "@/components/atomos/footerAdjustment";
+import RoundButton from "@/components/atomos/roundButton";
+import Footer from "@/components/organisms/footer";
+import Header from "@/components/organisms/header";
+import InfoTypeSelector from "@/components/organisms/infoTypeSelector";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useFormDataParser } from "@/utils/form-data";
+import { hasWritePermission, LayerType } from "@/utils/gis";
 
 const AddTypeSelectorTemplate = () => {
   const paramParser = useFormDataParser();

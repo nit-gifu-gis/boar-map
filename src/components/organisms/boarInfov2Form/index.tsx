@@ -1,17 +1,20 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { BoarFeaturePropsV2, BoarFeatureV2, BoarInfoFeatureV2 } from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { fetchTraderInfo } from '../../../utils/jibie';
-import { makeRandStr } from '../../../utils/randStr';
-import { checkDateError } from '../../../utils/validateData';
-import BoarDetailForm from '../../atomos/boarDetailForm';
-import { BoarDetailFormHandler, MyTraderInfo } from '../../atomos/boarDetailForm/interface';
-import Divider from '../../atomos/divider';
-import InfoDiv from '../../molecules/infoDiv';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { BoarFeaturePropsV2, BoarFeatureV2, BoarInfoFeatureV2 } from '@/types/features';
+
+import BoarDetailForm from '@/components/atomos/boarDetailForm';
+import { BoarDetailFormHandler, MyTraderInfo } from '@/components/atomos/boarDetailForm/interface';
+import Divider from '@/components/atomos/divider';
+import InfoDiv from '@/components/molecules/infoDiv';
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { fetchTraderInfo } from '@/utils/jibie';
+import { makeRandStr } from '@/utils/randStr';
+import { checkDateError } from '@/utils/validateData';
+
 import { BoarFormRef, BoarInfov2FormProps } from './interface';
 
 const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProps>(

@@ -1,6 +1,6 @@
+import { NextPage, NextPageContext } from 'next';
 import Image from 'next/image';
 import React from 'react';
-import { NextPage, NextPageContext } from 'next';
 
 // production時のみ有効
 // そのため，ビルドした場合のみここが表示される
