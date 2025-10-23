@@ -10,14 +10,16 @@ import { setCookie } from 'nookies';
 import { alert, confirm } from '../../../utils/modal';
 import * as Sentry from '@sentry/nextjs';
 import { butanetsuViewState } from '../../../states/butanetsuView';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
   const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
-    
+
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const asyncTask = async () => {
@@ -36,7 +38,9 @@ const LoginForm: React.FunctionComponent = () => {
         document.domain.toLowerCase().endsWith('.prsvr.net') ||
         document.domain.toLocaleLowerCase().endsWith('.gifu-nct.ac.jp')
       ) {
-        await alert('このサイトは開発版です。\n安定動作版と異なり、正常に動作しない場合があります。');
+        await alert(
+          'このサイトは開発版です。\n安定動作版と異なり、正常に動作しない場合があります。',
+        );
       }
     };
     asyncTask();
@@ -79,14 +83,14 @@ const LoginForm: React.FunctionComponent = () => {
               'X-Access-Token': json.token,
             },
           });
-          
+
           if (res.ok) {
             const json = await res.json();
             setCurrentButanetsuView({
               radius: json['radius'] as number,
               days: json['days'] as number,
               style: 1,
-              origin: new Date()
+              origin: new Date(),
             });
           }
 
@@ -134,7 +138,7 @@ const LoginForm: React.FunctionComponent = () => {
           <TextInput
             type='text'
             id='login_id'
-            placeholder='ユーザーID'
+            placeholder={t('user-id')}
             required={true}
             isError={error != ''}
           />
@@ -143,14 +147,14 @@ const LoginForm: React.FunctionComponent = () => {
           <TextInput
             type='password'
             id='login_pass'
-            placeholder='パスワード'
+            placeholder={t('password')}
             required={true}
             isError={error != ''}
           />
         </div>
         <div className='mt-5 text-xl text-danger'>{error}</div>
         <RoundButton color='primary' disabled={isLoggingIn}>
-          {isLoggingIn ? 'ログイン中...' : 'ログイン'}
+          {isLoggingIn ? t('logging-in') : t('login')}
         </RoundButton>
       </form>
     </div>

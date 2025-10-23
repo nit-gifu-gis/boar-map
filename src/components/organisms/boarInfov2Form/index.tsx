@@ -13,6 +13,7 @@ import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { BoarFormRef, BoarInfov2FormProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProps>(
   function InfoForm(props, ref) {
@@ -21,6 +22,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const [myTraderInfo, setMyTraderInfo] = useState<MyTraderInfo | undefined | null>(undefined);
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
     const { currentUser } = useCurrentUser();
+    const { t, locale } = useTranslation();
 
     const featureValueOrUndefined = (key: keyof BoarFeaturePropsV2): string | undefined => {
       if (props.featureInfo == null) return undefined;
@@ -155,10 +157,10 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       // 捕獲頭数
       const catchNum = !isMultiple || isEnv ? 1 : parseInt(form['catchNum'].value);
       // 捕獲者
-      const catchUser = form["capture_user"].value;
+      const catchUser = form['capture_user'].value;
       // 検体到着予定日
-      const arrivalDate = form["arrival_date"].value;
-      
+      const arrivalDate = form['arrival_date'].value;
+
       // 罠・発見場所
       let trapOrEnv = '';
       if (isEnv) {
@@ -170,7 +172,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       const data: BoarFeatureV2 = {
         properties: {
           入力者: user,
-          メッシュ番: "",
+          メッシュ番: '',
           区分: division,
           市町村: city,
           捕獲年月日: dateStr,
@@ -405,7 +407,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       <div className='w-full'>
         <form id='form-boar2' onSubmit={(e) => e.preventDefault()}>
           <InfoDiv
-            title='画像'
+            title={t('photo')}
             type='images'
             data={{
               objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
@@ -414,7 +416,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
             }}
           />
           <InfoInput
-            title='区分'
+            title={t('category')}
             type='select'
             id='division'
             options={['調査捕獲', '有害捕獲', '死亡', '狩猟', 'その他']}
@@ -422,7 +424,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
             defaultValue={featureValueOrUndefined('区分')}
           />
           <InfoInput
-            title='捕獲年月日'
+            title={t('capture-date')}
             type='date'
             id='date'
             defaultValue={featureValueOrUndefined('捕獲年月日')}
@@ -432,7 +434,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           />
           <div style={{ display: !isEnv ? 'none' : 'block' }}>
             <InfoInput
-              title='発見場所'
+              title={t('discovery-location')}
               type='select'
               id='env'
               options={['山際', '山地', 'その他']}
@@ -441,7 +443,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           </div>
           <div style={{ display: isEnv ? 'none' : 'block' }}>
             <InfoInput
-              title='わなの種類'
+              title={t('trap-type')}
               type='select'
               id='trap'
               options={['くくりわな', '箱わな', '囲いわな', '銃猟', 'その他']}
@@ -450,21 +452,21 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
             />
           </div>
           <InfoInput
-            title="捕獲者"
+            title={t('capturer')}
             type='text'
             id='capture_user'
             defaultValue={featureValueOrUndefined('捕獲者')}
           />
-          <InfoInput 
-            title="検体到着予定日"
+          <InfoInput
+            title={t('specimen-eta')}
             type='date'
             id='arrival_date'
             defaultValue={featureValueOrUndefined('検体到着日')}
-            caption='平日水曜日以外の午前中指定'
+            caption={t('delivery-pref')}
           />
           <div style={{ display: !isEnv && isMultiple ? 'block' : 'none' }}>
             <InfoInput
-              title='捕獲頭数'
+              title={t('capture-count')}
               type='number'
               id='catchNum'
               min={0}
@@ -473,9 +475,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
               onChange={validateCatchNum}
               error={errors.catchNum}
             />
-            <p className='boar-form__description'>
-              ※以下に捕獲した個体の情報について入力してください。
-            </p>
+            <p className='boar-form__description'>※{t('capture-details-prompt')}</p>
           </div>
         </form>
         {myTraderInfo !== undefined && boarFormList != null ? (
@@ -484,7 +484,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
               {index > 0 ? <Divider /> : <></>}
               {boarFormList.length > 1 ? (
                 <div className='w-full p-[15px] text-justify text-2xl font-bold text-text'>
-                  {index + 1}体目
+                  {locale == 'ja' ? `${index + 1}体目` : `Indivisual ${index + 1}`}
                 </div>
               ) : (
                 <></>

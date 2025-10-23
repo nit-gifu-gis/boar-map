@@ -5,6 +5,6 @@ export const useAppLogs = () => {
   const appLogs = useRecoilValue(currentAppLogs);
 
   return {
-    appLogs
+    appLogs,
   };
 };

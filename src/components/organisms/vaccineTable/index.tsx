@@ -34,7 +34,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
   };
 
   const updateTable = () => {
-    const features = p.features.filter(v=>{
+    const features = p.features.filter((v) => {
       return !deletedFeatures.includes((v as VaccineFeature).properties.ID$ as string);
     });
 
@@ -81,10 +81,10 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
         curImg: {
           teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
           other: ((feature.properties as Record<string, string>)['画像ID'] || '').split(','),
-        }
-      }
+        },
+      },
     });
-    
+
     if (yesNoCheck) {
       router.push('/edit/location');
     } else {
@@ -93,10 +93,9 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
   };
 
   const onClickDelete = async (id: string | undefined, feature: FeatureBase) => {
-    if(!await confirm(`ID: ${id}の情報を削除しますか？`))
-      return;
+    if (!(await confirm(`ID: ${id}の情報を削除しますか？`))) return;
 
-    const type = "vaccine";
+    const type = 'vaccine';
 
     setEditable(false);
     // 画像の削除用関数の準備
@@ -104,9 +103,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
     let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
     let imageIds: string[] = [];
 
-    imageIds = ((feature.properties as Record<string, unknown>)['画像ID'] as string).split(
-      ',',
-    );
+    imageIds = ((feature.properties as Record<string, unknown>)['画像ID'] as string).split(',');
 
     // 画像ファイルが存在する場合のみ関数を定義する。
     if (imageIds.length >= 1 && imageIds[0] != '') {
@@ -305,7 +302,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
                       disabled={!editable}
                       onClick={() => onClickDelete(props.ID$, f)}
                     >
-                        削除
+                      削除
                     </RoundButton>
                   </div>
                 </td>
@@ -322,9 +319,7 @@ const VaccineTable: React.FunctionComponent<VaccineTableProps> = (p) => {
                 <td className='border border-solid border-border p-1 text-right'>
                   {props.回収年月日}
                 </td>
-                <td className='border border-solid border-border p-1 text-right'>
-                  {props.更新日}
-                </td>
+                <td className='border border-solid border-border p-1 text-right'>{props.更新日}</td>
                 <td className='border border-solid border-border p-1 text-right'>{props.摂食数}</td>
                 <td className='border border-solid border-border p-1 text-right'>
                   {props.その他の破損数}

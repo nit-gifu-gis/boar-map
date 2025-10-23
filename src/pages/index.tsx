@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import Header from '../components/organisms/header';
-import { useTranslation } from "../i18n/useTranslation";
+import { useTranslation } from '../i18n/useTranslation';
 
 const IndexPage: NextPage = () => {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ const IndexPage: NextPage = () => {
             <div className='shadow-selector relative mb-5 w-sel min-w-sel max-w-sel overflow-hidden rounded-xl bg-index-trace before:block before:pb-full'>
               <Link href='/trace'>
                 <a>
-                  <div className='absolute top-0 left-0 flex whitespace-pre h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
+                  <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center whitespace-pre rounded-lg p-1 text-center text-xl'>
                     {t('trace-jibie')}
                   </div>
                 </a>
@@ -39,7 +39,7 @@ const IndexPage: NextPage = () => {
             <div className='shadow-selector relative mb-5 w-sel min-w-sel max-w-sel overflow-hidden rounded-xl bg-index-map before:block before:pb-full'>
               <Link href='/map'>
                 <a>
-                  <div className='absolute top-0 left-0 flex whitespace-pre h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
+                  <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center whitespace-pre rounded-lg p-1 text-center text-xl'>
                     {t('map')}
                   </div>
                 </a>

@@ -4,10 +4,12 @@ import { checkDateError, checkNumberError } from '../../../utils/validateData';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { YoutonInfoFormProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProps>(
   function InfoForm(props, ref) {
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
+    const { t, locale } = useTranslation();
 
     const fetchData = () => {
       const form = document.getElementById('form-youton') as HTMLFormElement;
@@ -75,7 +77,7 @@ const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProp
       }
       const num = parseInt(numberStr);
       if (num < 0) {
-        await updateError(id, '0未満の数値が入力されています。');
+        await updateError(id, t('min-zero'));
         return false;
       }
       await updateError(id, undefined);
@@ -119,7 +121,7 @@ const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProp
       const form = document.getElementById('form-youton') as HTMLFormElement;
       const text = form[id].value as string;
       if (text.length === 0) {
-        await updateError(id, '入力されていません。');
+        await updateError(id, t('required'));
         return false;
       }
       await updateError(id, undefined);
@@ -131,74 +133,82 @@ const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProp
         <form id='form-youton' onSubmit={(e) => e.preventDefault()}>
           <InfoInput
             type='text'
-            title='施設名'
+            title={t('facility-name')}
             id='farm_name'
             required={true}
             defaultValue={featureValueOrUndefined('施設名')}
             onChange={() => validateText('farm_name')}
             error={errors.farm_name}
+            key={locale}
           />
           <InfoInput
             type='text'
-            title='農場区分'
+            title={t('farm-category')}
             id='kind'
             required={true}
             defaultValue={featureValueOrUndefined('農場区分')}
             onChange={() => validateText('kind')}
             error={errors.kind}
+            key={locale}
           />
           <InfoInput
             type='select'
-            title='肥育・繁殖の別'
+            title={t('farm-type')}
             options={['不明', '肥育', '繁殖']}
             id='type'
             defaultValue={featureValueOrUndefined('肥育繁殖別')}
+            key={locale}
           />
           <InfoInput
             type='text'
-            title='経営者'
+            title={t('owner-name')}
             id='holder'
             required={true}
             defaultValue={featureValueOrUndefined('経営者')}
             onChange={() => validateText('holder')}
             error={errors.holder}
+            key={locale}
           />
           <InfoInput
             type='city'
-            title='市町村'
+            title={t('municipality')}
             id='city'
             lat={props.location.lat}
             lng={props.location.lng}
             defaultValue={featureValueOrUndefined('市町村')}
+            key={locale}
           />
           <InfoInput
             type='text'
-            title='地名'
+            title={t('area-name')}
             id='area'
             required={true}
             defaultValue={featureValueOrUndefined('地名')}
             onChange={() => validateText('area')}
             error={errors.area}
+            key={locale}
           />
           <InfoInput
             type='number'
             min={0}
             step={1}
-            title='飼養頭数'
+            title={t('head-count')}
             id='pig_count'
             required={true}
             defaultValue={featureValueOrUndefined('飼養頭数')}
             onChange={() => validateNumber('pig_count')}
             error={errors.pig_count}
+            key={locale}
           />
           <InfoInput
             type='date'
-            title='更新年月日'
+            title={t('last-updated')}
             id='update_date'
             required={true}
             defaultValue={featureValueOrUndefined('更新日')}
             onChange={() => validateDate('update_date')}
             error={errors.update_date}
+            key={locale}
           />
         </form>
       </div>

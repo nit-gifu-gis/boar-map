@@ -13,6 +13,7 @@ import { MANUAL_URL, SERVER_URI } from '../../../utils/constants';
 import { getFormUrl } from '../../../utils/questionaire';
 import PDFViewer from '../../atomos/pdfViewer';
 import { useAppLogs } from '../../../hooks/useAppLogs';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
   const { appLogs } = useAppLogs();
@@ -22,6 +23,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   const [manualViewer, setManualViewer] = useState<JSX.Element | null>(null);
   const setCurrentUser = useSetRecoilState(currentUserState);
   const router = useRouter();
+  const { t, locale } = useTranslation();
 
   const isChildrenString = typeof props.children === 'string';
   const fontSize =
@@ -72,16 +74,15 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   }, [currentUser]);
 
   const onClickBugReport = async () => {
-    let msg =  `・ ユーザーID\n`;
+    let msg = `・ ユーザーID\n`;
     msg += `・ ${appLogs.length}件のログデータ\n`;
     msg += `・ 画面遷移についての情報\n`;
     msg += `・ 使用中の機種についての情報\n`;
     msg += `\n`;
     msg += `を開発チームに送信してもよろしいですか？`;
 
-    const additional = await inputBox(msg, "その他に送信したい情報がある場合はご記入ください。");
-    if(additional == null)
-      return;
+    const additional = await inputBox(msg, 'その他に送信したい情報がある場合はご記入ください。');
+    if (additional == null) return;
 
     const data = {
       logs: appLogs,
@@ -92,28 +93,28 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         userAgent: navigator.userAgent,
         vendor: navigator.vendor,
         platform: navigator.platform,
-        product: [navigator.product, navigator.productSub]
+        product: [navigator.product, navigator.productSub],
       },
       user: currentUser?.userId,
-      addtional: additional
+      addtional: additional,
     };
 
-    const req = await fetch(SERVER_URI + "/Debug/Report", {
+    const req = await fetch(SERVER_URI + '/Debug/Report', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
-        "Content-Type": "application/json",
-        "X-Access-Token": await getAccessToken()
-      }
+        'Content-Type': 'application/json',
+        'X-Access-Token': await getAccessToken(),
+      },
     });
 
     const res = await req.json();
-    if(!req.ok) {
-      await alert("送信中にエラーが発生しました。\n\n" + res.error);
+    if (!req.ok) {
+      await alert('送信中にエラーが発生しました。\n\n' + res.error);
       return;
     }
 
-    await alert("送信ありがとうございました。");
+    await alert('送信ありがとうございました。');
   };
 
   const onLogoutClicked = async () => {
@@ -143,7 +144,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_map'
       >
         <Link href='/map'>
-          <a className='text-14pt text-background no-underline'>マップ</a>
+          <a className='text-14pt text-background no-underline'>{t('map')}</a>
         </Link>
       </div>,
     );
@@ -154,9 +155,9 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_map-dl'
       >
         <Link href='/map-dl'>
-          <a className='text-14pt text-background no-underline'>ワクチンメッシュ図面ダウンロード</a>
+          <a className='text-14pt text-background no-underline'>{t('vaccine-mesh-dl')}</a>
         </Link>
-      </div>
+      </div>,
     );
 
     if (hasListPermission(currentUser)) {
@@ -166,7 +167,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           key='menu_list'
         >
           <Link href='/list'>
-            <a className='text-14pt text-background no-underline'>一覧表</a>
+            <a className='text-14pt text-background no-underline'>{t('list')}</a>
           </Link>
         </div>,
       );
@@ -179,7 +180,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           key='menu_settings'
         >
           <Link href='/settings'>
-            <a className='text-14pt text-background no-underline'>サイト設定</a>
+            <a className='text-14pt text-background no-underline'>{t('site-settings')}</a>
           </Link>
         </div>,
       );
@@ -196,19 +197,19 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           key='menu_import'
         >
           <Link href='/import'>
-            <a className='text-14pt text-background no-underline'>データインポート</a>
+            <a className='text-14pt text-background no-underline'>{t('data-import')}</a>
           </Link>
         </div>,
       );
     }
-    
+
     menuItems.push(
       <div
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_notice'
       >
         <Link href='/notice'>
-          <a className='text-14pt text-background no-underline'>お知らせ</a>
+          <a className='text-14pt text-background no-underline'>{t('announcements')}</a>
         </Link>
       </div>,
     );
@@ -219,7 +220,9 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_bugreport'
       >
         <Link href='#'>
-          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>エラー情報の送信</a>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>
+            {t('send-err-report')}
+          </a>
         </Link>
       </div>,
     );
@@ -235,7 +238,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
             target='_blank'
             rel='noopener noreferrer'
           >
-            アンケート
+            {t('survey')}
           </a>
         </Link>
       </div>,
@@ -246,18 +249,18 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_manual'
       >
-        <Link href="#">
+        <Link href='#'>
           <a
             className='text-14pt text-background no-underline'
             onClick={() => {
-              setManualViewer(viewer => {
+              setManualViewer((viewer) => {
                 setOpen(false);
-                if(viewer == null) {
+                if (viewer == null) {
                   return (
-                    <PDFViewer 
-                      url={MANUAL_URL} 
-                      closeHandler={() => setManualViewer(null)} 
-                      title="操作マニュアル"
+                    <PDFViewer
+                      url={MANUAL_URL}
+                      closeHandler={() => setManualViewer(null)}
+                      title='操作マニュアル'
                     />
                   );
                 }
@@ -265,7 +268,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
               });
             }}
           >
-            操作マニュアル
+            {t('user-manual')}
           </a>
         </Link>
       </div>,
@@ -277,7 +280,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_version'
       >
         <Link href='/version'>
-          <a className='text-14pt text-background no-underline'>バージョン情報</a>
+          <a className='text-14pt text-background no-underline'>{t('version-info')}</a>
         </Link>
       </div>,
     );
@@ -288,7 +291,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_trace'
       >
         <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
+          <a className='text-14pt text-background no-underline'>{t('trace-jibie')}</a>
         </Link>
       </div>,
     );
@@ -303,7 +306,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
             className='text-14pt text-background no-underline'
             onClick={onLogoutClicked.bind(this)}
           >
-            ログアウト
+            {t('logout')}
           </a>
         </Link>
       </div>,
@@ -315,7 +318,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_top'
       >
         <Link href='/'>
-          <a className='text-14pt text-background no-underline'>トップページ</a>
+          <a className='text-14pt text-background no-underline'>{t('top-page')}</a>
         </Link>
       </div>,
     );
@@ -325,8 +328,38 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_trace'
       >
         <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
+          <a className='text-14pt text-background no-underline'>{t('trace-jibie')}</a>
         </Link>
+      </div>,
+    );
+  }
+
+  const changeLanguage = (newLocale: 'en' | 'ja') => {
+    router.push(router.pathname, router.asPath, {
+      locale: newLocale,
+    });
+  };
+
+  if (locale == 'ja') {
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_lang'
+      >
+        <span className='cursor-pointer' onClick={() => changeLanguage('en')}>
+          <a className='text-14pt text-background no-underline'>Switch to English version</a>
+        </span>
+      </div>,
+    );
+  } else {
+    menuItems.push(
+      <div
+        className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
+        key='menu_lang'
+      >
+        <span className='cursor-pointer' onClick={() => changeLanguage('ja')}>
+          <a className='text-14pt text-background no-underline'>日本語版への切り替え</a>
+        </span>
       </div>,
     );
   }
@@ -345,7 +378,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
               <div
                 className={
                   'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
-                bgColor
+                  bgColor
                 }
                 onClick={() => {
                   setOpen(!isOpen);
@@ -361,14 +394,14 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
             <div
               className={
                 bgColor +
-              ' ' +
-              (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
+                ' ' +
+                (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
               }
             >
               <div
                 className={
                   'overflow-y-hidden ' +
-                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
+                  (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
                 }
               >
                 <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
@@ -378,7 +411,6 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         </div>
       </div>
     </>
-    
   );
 };
 

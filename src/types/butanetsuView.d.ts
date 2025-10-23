@@ -3,4 +3,4 @@ type ButanetsuView = {
   days: number;
   style: number;
   origin: Date;
-}
+};

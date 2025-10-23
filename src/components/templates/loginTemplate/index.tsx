@@ -44,25 +44,48 @@ const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginPr
         <LoginForm />
         <hr />
         {notice.map((n, i) => (
-          <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2" key={"notice_" + i}>
-            <span className="font-bold">{n.title}</span><br />
-            <span className="whitespace-pre-wrap">{n.content}</span>
+          <div
+            className='my-2 box-border rounded-2xl border-2 border-border px-3 py-2'
+            key={'notice_' + i}
+          >
+            <span className='font-bold'>{n.title}</span>
+            <br />
+            <span className='whitespace-pre-wrap'>{n.content}</span>
           </div>
         ))}
-        <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2">
-          改修中のため入力項目等が<br />
-          変更になる場合があります。<br />
+        <div className='my-2 box-border rounded-2xl border-2 border-border px-3 py-2'>
+          改修中のため入力項目等が
           <br />
-          不具合等が発生した場合は、<br />
-          下記にご連絡ください。<br />
-          Tel. <a href="tel:0582728096" className="text-[#0000ff] underline font-bold">058-272-8096</a><br />(平日8:30～12:00、13:00〜17:15)<br />
+          変更になる場合があります。
           <br />
-          検体提供のご報告は、<br />
-          電話又はFAXでも受け付けています。<br />
-          Tel. <a href="tel:0582728096" className="text-[#0000ff] underline font-bold">058-272-8096</a><br />(平日8:30～12:00、13:00〜17:15)<br />
-          Fax. <span className="font-bold">058-278-3533</span><br />
+          <br />
+          不具合等が発生した場合は、
+          <br />
+          下記にご連絡ください。
+          <br />
+          Tel.{' '}
+          <a href='tel:0582728096' className='font-bold text-[#0000ff] underline'>
+            058-272-8096
+          </a>
+          <br />
+          (平日8:30～12:00、13:00〜17:15)
+          <br />
+          <br />
+          検体提供のご報告は、
+          <br />
+          電話又はFAXでも受け付けています。
+          <br />
+          Tel.{' '}
+          <a href='tel:0582728096' className='font-bold text-[#0000ff] underline'>
+            058-272-8096
+          </a>
+          <br />
+          (平日8:30～12:00、13:00〜17:15)
+          <br />
+          Fax. <span className='font-bold'>058-278-3533</span>
+          <br />
           <div className='my-3'>
-            <RoundButton color="excel" onClick={openReportForm}>
+            <RoundButton color='excel' onClick={openReportForm}>
               検体提供報告書様式
             </RoundButton>
           </div>

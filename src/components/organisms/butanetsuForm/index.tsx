@@ -8,16 +8,16 @@ const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) 
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('インポート');
   const [error, setError] = useState('');
-  const [message, ] = useState('');
+  const [message] = useState('');
 
   const onClickImport = () => {
     setUploading(true);
-    setButtonLabel("インポート中...");
+    setButtonLabel('インポート中...');
 
     /** インポート処理をここに書く */
-    setError("アップロード処理を実装してください。");
+    setError('アップロード処理を実装してください。');
 
-    setButtonLabel("インポート");
+    setButtonLabel('インポート');
     setUploading(false);
   };
 
@@ -38,8 +38,8 @@ const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) 
   const onClickDownload = async () => {
     const res = await fetch(SERVER_URI + '/List/ButanetsuDownload', {
       headers: {
-        'X-Access-Token': getAccessToken()
-      }
+        'X-Access-Token': getAccessToken(),
+      },
     });
 
     if (res.status === 200) {

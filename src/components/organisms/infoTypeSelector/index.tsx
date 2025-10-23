@@ -4,6 +4,7 @@ import { hasWritePermission, LayerType } from '../../../utils/gis';
 import RoundedCheck from '../../atomos/roundedCheck';
 import InfoTypeItem from '../../molecules/infoTypeItem';
 import { InfoTypeSelectorProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 interface InfoType {
   value: LayerType;
@@ -20,6 +21,7 @@ const InfoTypeSelector: React.FunctionComponent<InfoTypeSelectorProps> = ({
   const { currentUser } = useCurrentUser();
   const [options, setOptions] = useState<InfoType[] | null>(null);
   const [selected, setSelected] = useState<string>(defaultValue == null ? '' : defaultValue);
+  const { t } = useTranslation();
 
   if (currentUser != null && options == null) {
     const optionBase: InfoType[] = [
@@ -27,42 +29,42 @@ const InfoTypeSelector: React.FunctionComponent<InfoTypeSelectorProps> = ({
         value: 'boar',
         alt: 'いのししアイコン',
         icon: '/static/images/icons/boar.svg',
-        label: '捕獲情報',
+        label: t('capture-info'),
         resolution: [46, 32],
       },
       {
         value: 'trap',
         alt: 'わなアイコン',
         icon: '/static/images/icons/trap-box.svg',
-        label: 'わな情報',
+        label: t('trap-info'),
         resolution: [32, 32],
       },
       {
         value: 'vaccine',
         alt: 'ワクチンアイコン',
         icon: '/static/images/icons/vaccine.svg',
-        label: 'ワクチン情報',
+        label: t('vaccine-info'),
         resolution: [32, 32],
       },
       {
         value: 'youton',
         alt: '養豚場アイコン',
         icon: '/static/images/icons/youton.png',
-        label: '養豚場情報',
+        label: t('pig-farm-info'),
         resolution: [32, 32],
       },
       {
         value: 'butanetsu',
         alt: '豚熱確認アイコン',
         icon: '/static/images/icons/butanetsu.png',
-        label: '豚熱陽性確認情報',
+        label: t('csf-positive-confirmation'),
         resolution: [32, 32],
       },
       {
         value: 'report',
         alt: '作業日報アイコン',
         icon: '/static/images/icons/report.png',
-        label: '作業日報',
+        label: t('daily-work-repo'),
         resolution: [32, 32],
       },
     ];

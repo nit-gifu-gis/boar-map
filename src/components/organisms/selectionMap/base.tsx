@@ -31,6 +31,7 @@ import { useButanetsuView } from '../../../hooks/useButanetsuView';
 import { useSetRecoilState } from 'recoil';
 import { butanetsuViewState } from '../../../states/butanetsuView';
 import React from 'react';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [, setLoc] = useState<Location | null>(null);
@@ -57,33 +58,34 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [meshLayers] = useState<Record<string, Record<string, L.LayerGroup>>>({
     vaccine: {},
     hunter: {},
-    boar: {}
+    boar: {},
   });
+  const { t, locale } = useTranslation();
 
   const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
     if (currentView == null) return;
-  
+
     const { radius, days, style, origin } = currentView;
     const show_date = new Date(origin);
     show_date.setHours(0);
     show_date.setMinutes(0);
     show_date.setSeconds(0);
     show_date.setDate(show_date.getDate() - days);
-  
+
     // ここで描画条件に合わせてマーカーのフィルタを行う
     // style 1: 点と円
     // style 2: 点のみ
     // style 3: 円のみ
-  
+
     const features = _features.filter((f) => {
       const date = new Date(f.properties.捕獲年月日);
       return show_date <= date && date <= origin;
     });
-  
+
     const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];
-      
+
     const newMarkers = style !== 3 ? features.map((f) => makeMarker(f, '豚熱陽性高率エリア')) : [];
-      
+
     setButanetsuLayerID((id) => {
       const l = overlayList['豚熱陽性高率エリア'] as L.LayerGroup;
       const lg = overlayList['豚熱陽性高率エリア'].getLayer(id) as L.MarkerClusterGroup;
@@ -96,7 +98,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
 
   useEffect(() => {
-    if(firstRunRef.current) {
+    if (firstRunRef.current) {
       firstRunRef.current = false;
       return;
     }
@@ -111,7 +113,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           return id;
         });
       });
-      const butanetsuLayer = overlayList['豚熱陽性高率エリア'].getLayer(currentButanetsuLayerId) as L.MarkerClusterGroup;
+      const butanetsuLayer = overlayList['豚熱陽性高率エリア'].getLayer(
+        currentButanetsuLayerId,
+      ) as L.MarkerClusterGroup;
 
       featureIDs['豚熱陽性高率エリア'] = [];
       const layer = overlayList['豚熱陽性高率エリア'];
@@ -132,13 +136,15 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       const req_body = {
         geometry: {
           type: 'Polygon',
-          coordinates: [[
-            [leftLng, topLat],
-            [rightLng, topLat],
-            [rightLng, bottomLat],
-            [leftLng, bottomLat],
-            [leftLng, topLat],
-          ]],
+          coordinates: [
+            [
+              [leftLng, topLat],
+              [rightLng, topLat],
+              [rightLng, bottomLat],
+              [leftLng, bottomLat],
+              [leftLng, topLat],
+            ],
+          ],
         },
       };
 
@@ -180,46 +186,46 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const date_y_input = document.getElementById('butanetsu_date_y') as HTMLInputElement;
     const date_m_input = document.getElementById('butanetsu_date_m') as HTMLInputElement;
     const date_d_input = document.getElementById('butanetsu_date_d') as HTMLInputElement;
-  
+
     const range_val = parseInt(range_input.value);
     const style_val = parseInt(style_input.value);
     const month_val = parseInt(month_input.value);
     const date_y_val = parseInt(date_y_input.value);
     const date_m_val = parseInt(date_m_input.value);
     const date_d_val = parseInt(date_d_input.value);
-  
+
     if (isNaN(range_val) || range_val <= 0) {
       alert('無効な値が入力されました。');
       return;
     }
-  
+
     if (isNaN(month_val) || month_val <= 0) {
       alert('無効な値が入力されました。');
       return;
     }
-  
+
     if (isNaN(date_y_val) || date_y_val <= 0) {
       alert('無効な値が入力されました。');
       return;
     }
-  
+
     if (isNaN(date_m_val) || date_m_val <= 0) {
       alert('無効な値が入力されました。');
       return;
     }
-  
+
     if (isNaN(date_d_val) || date_d_val <= 0) {
       alert('無効な値が入力されました。');
       return;
     }
-  
+
     const d = new Date(date_y_val, date_m_val - 1, date_d_val);
-      
+
     setCurrentButanetsuView({
       radius: range_val,
       days: month_val,
       style: style_val,
-      origin: d
+      origin: d,
     });
   };
 
@@ -382,9 +388,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
   const boarIconLink = '/static/images/icons/boar.svg';
   const trapIconLink = {
-    'box': '/static/images/icons/trap-box.svg',
-    'tie': '/static/images/icons/trap-tie.svg',
-    'gun': '/static/images/icons/trap-gun.svg',
+    box: '/static/images/icons/trap-box.svg',
+    tie: '/static/images/icons/trap-tie.svg',
+    gun: '/static/images/icons/trap-gun.svg',
   };
   const vaccineIconLink = '/static/images/icons/vaccine.svg';
   const youtonIconLink = '/static/images/icons/youton.png';
@@ -417,17 +423,23 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     ],
   });
 
-  const labelButton = L.easyButton('<div class="leaflet-button">凡例</div>', () => {
+  const labelButton = L.easyButton(`<div class="leaflet-button">${t('legend')}</div>`, () => {
     setLabelVisible((l) => !l);
   }).setPosition('bottomright');
 
-  const locSearchButton = L.easyButton('<div class="leaflet-button">地点検索</div>', () => {
-    setLocSearchVisible((l) => !l);
-  }).setPosition('bottomright');
+  const locSearchButton = L.easyButton(
+    `<div class="leaflet-button">${t('loc-search')}</div>`,
+    () => {
+      setLocSearchVisible((l) => !l);
+    },
+  ).setPosition('bottomright');
 
-  const viewSettingButton = L.easyButton('<div class="leaflet-button">表示設定</div>', () => {
-    setViewSettingVisible((l) => !l);
-  }).setPosition('bottomright');
+  const viewSettingButton = L.easyButton(
+    `<div class="leaflet-button">${t('display-setting')}</div>`,
+    () => {
+      setViewSettingVisible((l) => !l);
+    },
+  ).setPosition('bottomright');
 
   const updateMarkers = async () => {
     if (myMap == null) return;
@@ -446,13 +458,15 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const req_body = {
       geometry: {
         type: 'Polygon',
-        coordinates: [[
-          [leftLng, topLat],
-          [rightLng, topLat],
-          [rightLng, bottomLat],
-          [leftLng, bottomLat],
-          [leftLng, topLat],
-        ]],
+        coordinates: [
+          [
+            [leftLng, topLat],
+            [rightLng, topLat],
+            [rightLng, bottomLat],
+            [leftLng, bottomLat],
+            [leftLng, topLat],
+          ],
+        ],
       },
     };
 
@@ -509,8 +523,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
 
     // メッシュデータを取得する
-    const resMesh = await fetch(SERVER_URI + "/Mesh/Search", {
-      method: "POST",
+    const resMesh = await fetch(SERVER_URI + '/Mesh/Search', {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
@@ -518,21 +532,25 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       },
       body: JSON.stringify({
         lat: [topLat, bottomLat],
-        lng: [leftLng, rightLng]
+        lng: [leftLng, rightLng],
       }),
     });
 
-    if(resMesh.status === 200) {
-      const data = await resMesh.json() as MeshDataResponse;
+    if (resMesh.status === 200) {
+      const data = (await resMesh.json()) as MeshDataResponse;
 
-      const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
+      const keys = {
+        vaccine: ['vaccineMesh', 'ワクチンメッシュ'],
+        hunter: ['hunterMesh', 'ハンターメッシュ'],
+        boar: ['boarMesh', '捕獲いのしし分布'],
+      };
 
-      const polygonParam = (key: "vaccine" | "hunter" | "boar", opacity?: number) => {
-        if(key != "boar") {
+      const polygonParam = (key: 'vaccine' | 'hunter' | 'boar', opacity?: number) => {
+        if (key != 'boar') {
           return {
-            color: key == "vaccine" ? '#0288d1' : '#cc56db',
+            color: key == 'vaccine' ? '#0288d1' : '#cc56db',
             weight: 2,
-            fill: false 
+            fill: false,
           };
         } else {
           return {
@@ -540,36 +558,38 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             weight: 2,
             fill: true,
             fillColor: '#ff1f0f',
-            fillOpacity: opacity ? Math.min(opacity, 0.8) : 0
+            fillOpacity: opacity ? Math.min(opacity, 0.8) : 0,
           };
         }
       };
 
       // メッシュデータの処理
-      Object.keys(data).forEach(_k => {
-        const k = _k as "vaccine" | "hunter" | "boar";
+      Object.keys(data).forEach((_k) => {
+        const k = _k as 'vaccine' | 'hunter' | 'boar';
         const k0 = keys[k][0];
         const k1 = keys[k][1];
 
         // 分布表示以外の場合、メッシュが一定数を超えていたら表示しない
-        if(data[k].length > MAX_MESH_COUNT && k != "boar")
-          data[k] = [];
+        if (data[k].length > MAX_MESH_COUNT && k != 'boar') data[k] = [];
 
         if (featureIDs[k0] == null) featureIDs[k0] = [];
 
         // 各条件に合致する要素を取得する
-        const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
-        const IDs = data[k].map(v=>v.id);
-        const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
+        const newMeshData = data[k].filter((v) => !featureIDs[k0].includes(v.id));
+        const IDs = data[k].map((v) => v.id);
+        const deleteMeshIDs = featureIDs[k0].filter((id) => !IDs.includes(id));
         // 新しいメッシュを描画する
-        newMeshData.forEach(v => {
+        newMeshData.forEach((v) => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
           const gr: (L.Marker | L.Polygon)[] = [po];
           if (v.fillOpacity === undefined) {
             const ma = L.marker(po.getBounds().getCenter(), {
               icon: L.divIcon({
-                html: '<div style="white-space: nowrap; font-weight: bold; font-size: 1.2em; word-break: keep-all;">' + (v.name == null ? "" : v.name) + '</div>'
-              })
+                html:
+                  '<div style="white-space: nowrap; font-weight: bold; font-size: 1.2em; word-break: keep-all;">' +
+                  (v.name == null ? '' : v.name) +
+                  '</div>',
+              }),
             });
             gr.push(ma);
           }
@@ -581,10 +601,9 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         });
 
         // 検索に引っかからなかったメッシュを削除する
-        deleteMeshIDs.forEach(id => {
+        deleteMeshIDs.forEach((id) => {
           const po = meshLayers[k][id];
-          if(po != null)
-            overlayList[k1].removeLayer(po);
+          if (po != null) overlayList[k1].removeLayer(po);
 
           meshLayers[k][id].remove();
           delete meshLayers[k][id];
@@ -707,11 +726,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     });
   };
 
-  const makeMarker = (f: FeatureBase, t: layerType): L.Marker => {
+  const makeMarker = (f: FeatureBase, typ: layerType): L.Marker => {
     let icon = undefined;
     let dataLabel = '';
     let dataValue = '';
-    switch (t) {
+    switch (typ) {
       case 'いのしし捕獲地点': {
         const f1 = f as BoarFeatureV1 | BoarCommonFeatureV2;
         icon = markerIcon(boarIconLink, formatDate(f1.properties.捕獲年月日));
@@ -864,74 +883,83 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
 
   // メイン地図レイヤー
-  const [baseMap] = useState(L.TileLayer.wmsHeader(
-    SERVER_URI + "/Map/GetImage",
-    {
-      TENANTID: '21000S',
-      version: '1.3.0',
-      layers: '999999194',
-      format: 'image/png',
-      maxZoom: 18,
-      tileSize: 256,
-      crs: L.CRS.EPSG3857,
-      uppercase: true,
-      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
-    },
-    [
+  const [baseMap] = useState(
+    L.TileLayer.wmsHeader(
+      SERVER_URI + '/Map/GetImage',
       {
-        header: 'X-Access-Token',
-        value: getAccessToken(),
+        TENANTID: '21000S',
+        version: '1.3.0',
+        layers: '999999194',
+        format: 'image/png',
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true,
+        attribution:
+          '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
       },
-    ],
-  ));
-  
+      [
+        {
+          header: 'X-Access-Token',
+          value: getAccessToken(),
+        },
+      ],
+    ),
+  );
+
   // メイン地図レイヤー
-  const [structureMap] = useState(L.TileLayer.wmsHeader(
-    SERVER_URI + "/Map/GetImage",
-    {
-      TENANTID: '21000S',
-      version: '1.3.0',
-      layers: '999999194,5003069,5003070,15003824,15003830',
-      format: 'image/png',
-      maxZoom: 18,
-      tileSize: 256,
-      crs: L.CRS.EPSG3857,
-      uppercase: true,
-      attribution: '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
-    },
-    [
+  const [structureMap] = useState(
+    L.TileLayer.wmsHeader(
+      SERVER_URI + '/Map/GetImage',
       {
-        header: 'X-Access-Token',
-        value: getAccessToken(),
+        TENANTID: '21000S',
+        version: '1.3.0',
+        layers: '999999194,5003069,5003070,15003824,15003830',
+        format: 'image/png',
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true,
+        attribution:
+          '<a href="https://gifugis.jp/"><span class="copyright">&copy 県域統合型GISぎふ</span></a>',
       },
-    ],
-  ));
-  
+      [
+        {
+          header: 'X-Access-Token',
+          value: getAccessToken(),
+        },
+      ],
+    ),
+  );
+
   // メイン地図レイヤー
-  const [satelliteMap] = useState(L.TileLayer.wmsHeader(
-    SERVER_URI + "/Map/GetImage",
-    {
-      TENANTID: '21000S',
-      version: '1.3.0',
-      layers: '999999600',
-      format: 'image/png',
-      maxZoom: 18,
-      tileSize: 256,
-      crs: L.CRS.EPSG3857,
-      uppercase: true,
-      attribution: '<a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
-    },
-    [
+  const [satelliteMap] = useState(
+    L.TileLayer.wmsHeader(
+      SERVER_URI + '/Map/GetImage',
       {
-        header: 'X-Access-Token',
-        value: getAccessToken(),
+        TENANTID: '21000S',
+        version: '1.3.0',
+        layers: '999999600',
+        format: 'image/png',
+        maxZoom: 18,
+        tileSize: 256,
+        crs: L.CRS.EPSG3857,
+        uppercase: true,
+        attribution:
+          '<a href="https://www.jsicorp.jp/"><span class="copyright">&copy 日本スペースイメージング</span></a>',
       },
-    ],
-  ));
-    
+      [
+        {
+          header: 'X-Access-Token',
+          value: getAccessToken(),
+        },
+      ],
+    ),
+  );
+
   const layers = {
-    "通常マップ": baseMap,
-    "目標物マップ": structureMap,
+    通常マップ: baseMap,
+    目標物マップ: structureMap,
     //    "衛星写真": satelliteMap
   };
 
@@ -944,12 +972,12 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
     if (myMap == null) {
       setupMap();
-      setMyMap(L.map(selfNode, { 
-        keyboard: false, 
-        layers: [
-          baseMap
-        ] 
-      }));
+      setMyMap(
+        L.map(selfNode, {
+          keyboard: false,
+          layers: [baseMap],
+        }),
+      );
     }
   }, [selfNode, currentUser, defaultLoc, myMap]);
 
@@ -1001,10 +1029,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }).addTo(myMap);
 
     // 各種レイヤー追加
-    Object.keys(overlayList).forEach(k => {
-      if(k != "ハンターメッシュ" 
-        && k != "ワクチンメッシュ" 
-        && k != "捕獲いのしし分布")
+    Object.keys(overlayList).forEach((k) => {
+      if (k != 'ハンターメッシュ' && k != 'ワクチンメッシュ' && k != '捕獲いのしし分布')
         overlayList[k].addTo(myMap);
     });
 
@@ -1087,7 +1113,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         alert('内部エラーが発生しました。');
         return;
       }
-      
+
       const text = text_input.value;
       setSearchButtonLabel('検索中...');
       const res = await fetch(SERVER_URI + '/City/Search', {
@@ -1127,11 +1153,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         });
         setLocSearchVisible(false);
       }
-    } else if(type === "緯度・経度（度分秒）" || type === "緯度・経度（度）") {
+    } else if (type === '緯度・経度（度分秒）' || type === '緯度・経度（度）') {
       // モードごとに緯度経度の計算・チェックを行う
       let lat = 0.0;
       let lng = 0.0;
-      if (type === "緯度・経度（度）") {
+      if (type === '緯度・経度（度）') {
         // 入力されているかのチェック
         const lat_input = document.getElementById('point_search_lat') as HTMLInputElement | null;
         const lng_input = document.getElementById('point_search_lng') as HTMLInputElement | null;
@@ -1143,37 +1169,47 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         lat = parseFloat(lat_input.value);
         lng = parseFloat(lng_input.value);
 
-        if(Number.isNaN(lat) || Number.isNaN(lng)) {
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
           alert('不正な形式のデータが入力されました。');
           return;
         }
       } else {
         // 最低限度が入力されているかのチェック＋度分秒から度に変換
-        const lat_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement).filter(v=> v != null);
-        const lng_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement).filter(v=> v != null);
+        const lat_input_divs = [1, 2, 3]
+          .map((v) => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement)
+          .filter((v) => v != null);
+        const lng_input_divs = [1, 2, 3]
+          .map((v) => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement)
+          .filter((v) => v != null);
         if (lat_input_divs.length != 3 || lng_input_divs.length != 3) {
           alert('内部エラーが発生しました。');
           return;
         }
 
-        const lat_inputs = lat_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
-        const lng_inputs = lng_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
+        const lat_inputs = lat_input_divs
+          .map((e) => parseFloat(e.value))
+          .map((e, i) => (Number.isNaN(e) && i != 0 ? 0.0 : e));
+        const lng_inputs = lng_input_divs
+          .map((e) => parseFloat(e.value))
+          .map((e, i) => (Number.isNaN(e) && i != 0 ? 0.0 : e));
 
-        if(Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
+        if (Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
           alert('不正な形式のデータが入力されました。');
           return;
         }
 
-        lat = lat_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
-        lng = lng_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
+        lat = lat_inputs.reduce((prev, cur, i) => prev + cur / Math.pow(60, i), 0);
+        lng = lng_inputs.reduce((prev, cur, i) => prev + cur / Math.pow(60, i), 0);
       }
 
-      const map = await new Promise<L.Map | null>(resolve=> setMyMap(m => {
-        resolve(m);
-        return m;
-      }));
-      if(map == null) {
-        alert("内部エラーが発生しました。");
+      const map = await new Promise<L.Map | null>((resolve) =>
+        setMyMap((m) => {
+          resolve(m);
+          return m;
+        }),
+      );
+      if (map == null) {
+        alert('内部エラーが発生しました。');
         return;
       }
 
@@ -1184,16 +1220,14 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     }
   };
 
-  const [searchMode, setSearchMode] = useState<string>("市町村名");
+  const [searchMode, setSearchMode] = useState<string>('市町村名');
 
   return (
     <div style={{ height: divHeight }} className='z-0 flex w-full flex-col overflow-hidden'>
-      <div className='mx-[15px] mb-[5px] mt-[15px] h-auto text-justify'>
-        登録したい地点にピンが立つようにしてください。
-      </div>
+      <div className='mx-[15px] mb-[5px] mt-[15px] h-auto text-justify'>{t('pls-place-pin')}</div>
       {props.isLoaded ? (
         <div className='mx-[15px] mb-[5px] h-auto text-justify font-bold'>
-          ※ 歯列画像の撮影場所がロードされました。
+          ※ {t('loaded-dent-photo-loc')}
         </div>
       ) : (
         <></>
@@ -1215,10 +1249,15 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         >
           <div className='mx-auto flex h-full w-[220px] flex-col-reverse'>
             {locSearchVisible ? (
-              <div className={'mb-3 box-border w-full p-1 ' + (searchMode === "市町村名" ? "h-[236px]" : "h-[310px] ")}>
+              <div
+                className={
+                  'mb-3 box-border w-full p-1 ' +
+                  (searchMode === '市町村名' ? 'h-[236px]' : 'h-[310px] ')
+                }
+              >
                 <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-border p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
-                    <div className='flex-1 text-center font-bold'>地点検索</div>
+                    <div className='flex-1 text-center font-bold'>{t('loc-search')}</div>
                     <div className='text-center text-lg'>
                       <button type='button' onClick={() => setLocSearchVisible(false)}>
                         ×
@@ -1227,49 +1266,52 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
                   </div>
                   <div className='flex flex-col'>
                     <span className='py-1 font-bold'>検索項目</span>
-                    <select id='point_search_type' className='w-full pb-1 bg-[#ffffff]' defaultValue={"市町村名"} onChange={(e) => setSearchMode(e.target.value)}>
+                    <select
+                      id='point_search_type'
+                      className='w-full bg-[#ffffff] pb-1'
+                      defaultValue={'市町村名'}
+                      onChange={(e) => setSearchMode(e.target.value)}
+                    >
                       <option>市町村名</option>
                       <option>緯度・経度（度分秒）</option>
                       <option>緯度・経度（度）</option>
                     </select>
-                    {searchMode === "市町村名" ? (
+                    {searchMode === '市町村名' ? (
                       <>
                         <span className='py-1 font-bold'>検索ワード</span>
                         <input id='point_search_text' type='text' className='w-full' />
                       </>
-                    ) : (searchMode === "緯度・経度（度分秒）" ? (
+                    ) : searchMode === '緯度・経度（度分秒）' ? (
                       <>
                         <span className='py-1 font-bold'>緯度</span>
                         <div className='flex justify-center'>
                           <input id='point_search_lat_1' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>°</span>
                           <input id='point_search_lat_2' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>′</span>
                           <input id='point_search_lat_3' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>″</span>
                         </div>
                         <span className='py-1 font-bold'>経度</span>
                         <div className='flex justify-center'>
                           <input id='point_search_lng_1' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">°</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>°</span>
                           <input id='point_search_lng_2' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">′</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>′</span>
                           <input id='point_search_lng_3' type='number' className='w-[36px] pl-1' />
-                          <span className="w-[16px] text-2xl ml-[2px]">″</span>
+                          <span className='ml-[2px] w-[16px] text-2xl'>″</span>
                         </div>
                       </>
-                    ) : (searchMode === "緯度・経度（度）" ? (
+                    ) : searchMode === '緯度・経度（度）' ? (
                       <>
                         <span className='py-1 font-bold'>緯度</span>
-                        <input id='point_search_lat' type='number' className='w-full h-8 pl-1' />
+                        <input id='point_search_lat' type='number' className='h-8 w-full pl-1' />
                         <span className='py-1 font-bold'>経度</span>
-                        <input id='point_search_lng' type='number' className='w-full h-8 pl-1' />
+                        <input id='point_search_lng' type='number' className='h-8 w-full pl-1' />
                       </>
                     ) : (
-                      <>
-                      エラー: 不明な選択肢
-                      </>
-                    )))}
+                      <>エラー: 不明な選択肢</>
+                    )}
                     <div className='w-full p-4'>
                       <RoundButton
                         color='primary'
@@ -1289,7 +1331,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
               <div className='mb-3 box-border h-[226px] w-full p-1'>
                 <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
-                    <div className='flex-1 text-center font-bold'>凡例</div>
+                    <div className='flex-1 text-center font-bold'>{t('legend')}</div>
                     <div className='text-center text-lg'>
                       <button type='button' onClick={() => setLabelVisible(false)}>
                         ×
@@ -1313,43 +1355,75 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
               <div className='mb-3 box-border h-[386px] w-full p-1'>
                 <div className='pointer-events-auto flex h-full w-full flex-col rounded-xl border-2 border-border bg-[#dddcdc] p-2'>
                   <div className='mr-1 flex items-center justify-end pb-1'>
-                    <div className='flex-1 text-center font-bold'>地図表示設定</div>
+                    <div className='flex-1 text-center font-bold'>{t('display-setting')}</div>
                     <div className='text-center text-lg'>
                       <button type='button' onClick={() => setViewSettingVisible(false)}>
-                    ×
+                        ×
                       </button>
                     </div>
                   </div>
                   <div>
                     <span className='py-1 font-bold'>豚熱陽性高率エリアの設定</span>
                     <span className='py-1 font-bold'>表示方法</span>
-                    <select id='butanetsu_style' className='w-full pb-1 bg-[#ffffff]' defaultValue={`${currentView?.style}`}>
-                      <option value="1">点と円で表示</option>
-                      <option value="2">点のみで表示</option>
-                      <option value="3">円のみで表示</option>
+                    <select
+                      id='butanetsu_style'
+                      className='w-full bg-[#ffffff] pb-1'
+                      defaultValue={`${currentView?.style}`}
+                    >
+                      <option value='1'>点と円で表示</option>
+                      <option value='2'>点のみで表示</option>
+                      <option value='3'>円のみで表示</option>
                     </select>
                     <span className='py-1 font-bold'>基準日</span>
                     <div className='w-full pb-1'>
-                      <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={currentView?.origin.getFullYear()}/>
+                      <input
+                        id='butanetsu_date_y'
+                        type='number'
+                        className='h-8 w-[48px] pl-1'
+                        defaultValue={currentView?.origin.getFullYear()}
+                      />
                       <span className='px-1'>年</span>
-                      <input id='butanetsu_date_m' type='number' className='w-[36px] h-8 pl-1' defaultValue={(currentView?.origin.getMonth() || 0) + 1} />
+                      <input
+                        id='butanetsu_date_m'
+                        type='number'
+                        className='h-8 w-[36px] pl-1'
+                        defaultValue={(currentView?.origin.getMonth() || 0) + 1}
+                      />
                       <span className='px-1'>月</span>
-                      <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()}/>
+                      <input
+                        id='butanetsu_date_d'
+                        type='number'
+                        className='h-8 w-[36px] pl-1'
+                        defaultValue={currentView?.origin.getDate()}
+                      />
                       <span className='px-1'>日</span>
                     </div>
-                    <span className='py-1 font-bold'>表示期間<br/>(基準日より前の期間)</span>
-                    <div className="w-full pb-1 flex justify-center items-center">
-                      <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.days} /></div>
-                      <div className="whitespace-nowrap">日</div>
+                    <span className='py-1 font-bold'>
+                      表示期間
+                      <br />
+                      (基準日より前の期間)
+                    </span>
+                    <div className='flex w-full items-center justify-center pb-1'>
+                      <div className='flex-1'>
+                        <input
+                          id='butanetsu_month'
+                          type='number'
+                          className='mr-1 w-full bg-[#ffffff]'
+                          defaultValue={currentView?.days}
+                        />
+                      </div>
+                      <div className='whitespace-nowrap'>日</div>
                     </div>
                     <span className='py-1 font-bold'>範囲 (km)</span>
-                    <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius}/>
+                    <input
+                      id='butanetsu_range'
+                      type='number'
+                      className='w-full bg-[#ffffff] pb-1'
+                      defaultValue={currentView?.radius}
+                    />
                     <div className='w-full p-4'>
-                      <RoundButton
-                        color='primary'
-                        onClick={handleViewSettingsUpdate}
-                      >
-                      設定
+                      <RoundButton color='primary' onClick={handleViewSettingsUpdate}>
+                        {t('setting')}
                       </RoundButton>
                     </div>
                   </div>

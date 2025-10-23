@@ -11,7 +11,7 @@ import { SearchResultProps } from './interface';
 
 const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, searchResult }) => {
   const [isDownloading, setDownloading] = useState(false);
-  const [noteLabel, setNoteLabel] = useState("備考");
+  const [noteLabel, setNoteLabel] = useState('備考');
   useEffect(() => {
     const fetchTask = async () => {
       const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
@@ -29,7 +29,7 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
     if (searchInfo.get('type') == '作業日報') {
       return;
     }
-    
+
     setDownloading(true);
     const res = await fetch(SERVER_URI + '/List/Export', {
       method: 'POST',
@@ -73,13 +73,15 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
     <div className='mr-4 inline-block w-full'>
       <div className='relative mb-3 h-auto text-2xl font-bold'>
         検索結果
-        {searchInfo.get('type') == '作業日報' ? <></> : (
+        {searchInfo.get('type') == '作業日報' ? (
+          <></>
+        ) : (
           <div className='ml-5 inline-block w-52'>
             <RoundButton color='excel' onClick={onClickDownload} disabled={isDownloading}>
               {isDownloading ? 'ダウンロード中...' : 'ダウンロード'}
             </RoundButton>
-          </div>)
-        }
+          </div>
+        )}
       </div>
       <div>
         {searchInfo.get('type') == 'いのしし捕獲地点' ? (
