@@ -68,12 +68,7 @@ const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({
     } else if (type === 'youton') {
       infoDiv = <YoutonInfoView detail={featureInfo as YoutonFeature} />;
     } else if (type === 'report') {
-      infoDiv = (
-        <ReportInfoView
-          detail={featureInfo as ReportFeature}
-          confirmMode={confirm}
-        />
-      );
+      infoDiv = <ReportInfoView detail={featureInfo as ReportFeature} confirmMode={confirm} />;
     } else if (type === 'butanetsu') {
       infoDiv = <ButanetsuInfoView detail={featureInfo as ButanetsuFeature} />;
     } else {

@@ -13,10 +13,13 @@ import InfoInput from '../../molecules/infoInput';
 import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } from './interface';
 import { getAccessToken } from '../../../utils/currentUser';
 import { SERVER_URI } from '../../../utils/constants';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {
-    const [noteLabel, setNoteLabel] = useState("備考");
+    const [noteLabel, setNoteLabel] = useState('備考');
+    const { t } = useTranslation();
+
     useEffect(() => {
       const fetchTask = async () => {
         const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
@@ -29,7 +32,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       };
       fetchTask();
     }, []);
-    
+
     const { currentUser } = useCurrentUser();
 
     const featureValueOrUndefined = (key: keyof BoarInfoPropsV2): string | undefined => {
@@ -183,7 +186,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           成獣幼獣別: age,
           性別: gender,
           体長: `${parseInt(length)}`,
-          体重: "",
+          体重: '',
           処分方法: disposal,
           備考: note,
           妊娠の状況: pregnant,
@@ -376,7 +379,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       <div>
         <form id={'form-' + props.formKey}>
           <InfoInput
-            title='体長 (cm)'
+            title={t('body-length')}
             type='number'
             id='length'
             min={1}
@@ -385,9 +388,9 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             onChange={validateLength}
             error={errors.length}
           />
-          <InfoDiv title='幼獣・成獣の別' type='text' data={isAdult ? '成獣' : '幼獣'} />
+          <InfoDiv title={t('maturity')} type='text' data={isAdult ? '成獣' : '幼獣'} />
           <InfoInput
-            title='性別'
+            title={t('sex')}
             type='select'
             id='sex'
             options={['オス', 'メス', '不明']}
@@ -396,7 +399,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           />
           <div style={{ display: isAdult && isFemale ? 'block' : 'none' }}>
             <InfoInput
-              title='妊娠の状況'
+              title={t('pregnancy-status')}
               type='select'
               id='pregnant'
               options={['なし', 'あり', '不明']}
@@ -407,13 +410,13 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             />
           </div>
           <InfoInput
-            title='遠沈管番号'
+            title={t('tube-no')}
             type='text'
             id='enchinkan'
             defaultValue={featureValueOrUndefined('遠沈管番号')}
           />
           <InfoInput
-            title='処分方法'
+            title={t('disposal-method')}
             type='select'
             id='disposal'
             options={['埋却', '焼却', '自家消費', 'ジビエ業者渡し', 'その他（備考に記入）', '―']}
@@ -429,7 +432,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             }}
           >
             <InfoInput
-              title='地域（圏域）'
+              title={t('area-region')}
               type='select'
               id='area'
               options={areaList2}
@@ -444,7 +447,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             />
 
             <InfoInput
-              title='ジビエ業者'
+              title={t('gibier-dealer')}
               type='select'
               id='trader'
               options={filteredNameList}
@@ -460,14 +463,15 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
               error={errors.trader}
               onChange={onChangeTrader}
             />
-
             {props.detail?.properties.個体管理番 != null &&
             props.detail?.properties.個体管理番 != '' ? (
-                <InfoDiv
-                  title='個体管理番号'
-                  type='text'
-                  data={props.detail?.properties.個体管理番}
-                />
+                <>
+                  <InfoDiv
+                    title={t('individual-id')}
+                    type='text'
+                    data={props.detail?.properties.個体管理番}
+                  />
+                </>
               ) : (
                 <></>
               )}
@@ -481,7 +485,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
             }}
           >
             <InfoInput
-              title='PCR検査日'
+              title={t('pcr-test-date')}
               type='date'
               defaultValue={featureValueOrUndefined('PCR検査日')}
               id='pcr_date'
@@ -489,7 +493,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
               error={errors.pcr_date}
             />
             <InfoInput
-              title='PCR検査結果'
+              title={t('pcr-test-result')}
               type='select'
               options={['', '陽性', '陰性']}
               defaultValue={featureValueOrUndefined('PCR結果')}
@@ -498,7 +502,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           </div>
           <InfoInput
             title={noteLabel}
-            caption='入力途中の場合は備考欄に記入'
+            caption={t('in-progress-note')}
             type='textarea'
             rows={4}
             id='note'

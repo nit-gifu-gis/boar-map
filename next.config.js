@@ -10,7 +10,12 @@ module.exports = {
 const { withSentryConfig } = require("@sentry/nextjs");
 
 module.exports = withSentryConfig(
-  module.exports,
+  {
+    i18n: {
+      locales: ["en", "ja"],
+      defaultLocale: "ja",
+    },
+  },
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options

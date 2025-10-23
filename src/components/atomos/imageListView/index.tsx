@@ -39,8 +39,14 @@ const ImageListView: React.FunctionComponent<ImageListViewProps> = ({
             src={SERVER_URI + '/Image/GetImage?id=' + data + '&token=' + token}
             alt={'Uploaded image ' + (index + 1)}
             key={'Uploaded image ' + (index + 1)}
-            className={imgbox_class + " cursor-pointer"}
-            onClick={() => window.open('/image?id=' + encodeURIComponent(data), 'img_' + data, 'width=800,height=600')}
+            className={imgbox_class + ' cursor-pointer'}
+            onClick={() =>
+              window.open(
+                '/image?id=' + encodeURIComponent(data),
+                'img_' + data,
+                'width=800,height=600',
+              )
+            }
           />
         );
       });
@@ -69,8 +75,14 @@ const ImageListView: React.FunctionComponent<ImageListViewProps> = ({
             src={SERVER_URI + '/Image/GetImage?id=' + data + '&token=' + token}
             alt={'Uploaded image ' + (index + 1)}
             key={'Uploaded image ' + (index + 1)}
-            className={imgbox_class + " cursor-pointer"}
-            onClick={() => window.open('/image?id=' + encodeURIComponent(data), 'img_' + data, 'width=800,height=600')}
+            className={imgbox_class + ' cursor-pointer'}
+            onClick={() =>
+              window.open(
+                '/image?id=' + encodeURIComponent(data),
+                'img_' + data,
+                'width=800,height=600',
+              )
+            }
           />
         );
       });

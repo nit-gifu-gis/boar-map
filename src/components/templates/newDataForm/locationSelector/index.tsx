@@ -1,15 +1,16 @@
-import { useRouter } from "next/router";
-import { InputFormTemplateCommonProps } from "../interfaces";
-import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import RoundButton from "../../../atomos/roundButton";
-import Footer from "../../../organisms/footer";
-import Header from "../../../organisms/header";
-import { to_header_color } from "../../../../utils/header";
-import { useCallback, useEffect, useState } from "react";
-import { LatLngZoom, LatLngZoomCookie, Location } from "../../../organisms/mapBase/interface";
-import SelectionMap from "../../../organisms/selectionMap";
-import { parseCookies } from "nookies";
+import { useRouter } from 'next/router';
+import { InputFormTemplateCommonProps } from '../interfaces';
+import { InputFormData, useFormDataParser } from '../../../../utils/form-data';
+import FooterAdjustment from '../../../atomos/footerAdjustment';
+import RoundButton from '../../../atomos/roundButton';
+import Footer from '../../../organisms/footer';
+import Header from '../../../organisms/header';
+import { to_header_color } from '../../../../utils/header';
+import { useCallback, useEffect, useState } from 'react';
+import { LatLngZoom, LatLngZoomCookie, Location } from '../../../organisms/mapBase/interface';
+import SelectionMap from '../../../organisms/selectionMap';
+import { parseCookies } from 'nookies';
+import { useTranslation } from '../../../../i18n/useTranslation';
 
 const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
@@ -19,6 +20,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [mapDiv, setMapDiv] = useState<JSX.Element | null>(null);
   const [currentLoc, setCurrentLoc] = useState<LatLngZoom | null>(null);
+  const { t, locale } = useTranslation();
 
   useEffect(() => {
     if (!paramParser.currentData.dataType) {
@@ -40,11 +42,16 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       defaultZoom = last_geo_obj.zoom;
     }
 
-    const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [NaN, NaN];
+    const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [
+      NaN,
+      NaN,
+    ];
     const isLocationExists = coordinates.filter((e) => e != null && !isNaN(e)).length == 2;
     if (isLocationExists) {
       // ポイント情報が既に存在する場合はその位置を初期位置とする
-      const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [35.39135, 136.722418];
+      const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [
+        35.39135, 136.722418,
+      ];
       setDefaultLoc({
         isDefault: false,
         zoom: defaultZoom,
@@ -55,7 +62,9 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       // ポイント情報が取得しない場合に初期位置を決定する。
 
       // 画像に位置情報が存在する場合はその位置を初期位置とする
-      const imageArray = (paramParser.currentData.inputData.teethImageUrls ?? []).concat(paramParser.currentData.inputData.otherImageUrls ?? []);
+      const imageArray = (paramParser.currentData.inputData.teethImageUrls ?? []).concat(
+        paramParser.currentData.inputData.otherImageUrls ?? [],
+      );
       let loc: Location | null = null;
 
       for (const imageInfo of imageArray) {
@@ -65,7 +74,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
         }
       }
 
-      if(loc != null) {
+      if (loc != null) {
         setDefaultLoc({
           isDefault: false,
           zoom: defaultZoom,
@@ -98,6 +107,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
         location={defaultLoc}
         onCenterChanged={(loc) => setCurrentLoc(loc)}
         isLoaded={false}
+        key={locale}
       />,
     );
   }, [defaultLoc]);
@@ -111,10 +121,10 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
             type: paramParser.currentData.editData?.type,
             type_srv: paramParser.currentData.editData?.type_srv,
             id: paramParser.currentData.editData?.id,
-            version: paramParser.currentData.editData?.version
-          }
-        }, 
-        '/detail'
+            version: paramParser.currentData.editData?.version,
+          },
+        },
+        '/detail',
       );
     } else {
       if (paramParser.currentData.isImageSkipped) {
@@ -126,8 +136,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   }, [isEditing]);
 
   const onClickNext = useCallback(() => {
-    if (currentLoc == null)
-      return;
+    if (currentLoc == null) return;
 
     // 現在の入力情報を保存する。
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
@@ -136,20 +145,19 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       newData.inputData.gisData = {
         geometry: {
           type: 'Point',
-          coordinates: [NaN, NaN]
+          coordinates: [NaN, NaN],
         },
         properties: {},
-        type: 'Feature'
+        type: 'Feature',
       };
     }
 
-    if (newData?.inputData?.gisData == null)
-      return;
+    if (newData?.inputData?.gisData == null) return;
 
     newData.inputData.gisData.geometry.coordinates = [currentLoc.lng, currentLoc.lat];
 
     paramParser.updateData(newData as InputFormData);
-    
+
     // ページを遷移する
     if (isEditing) {
       if (paramParser.currentData.isImageSkipped) {
@@ -162,19 +170,21 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       router.push('/add/info');
     }
   }, [currentLoc]);
-      
+
   return (
     <div>
-      <Header color={to_header_color(type == null ? '' : type)}>位置情報{isEditing ? '編集' : '登録'}</Header>
+      <Header color={to_header_color(type == null ? '' : type)}>
+        {isEditing ? t('edit-loc') : t('register-loc')}
+      </Header>
       {mapDiv}
       <FooterAdjustment />
       <div className='fixed bottom-0 w-full'>
         <Footer>
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
-            &lt; 戻る
+            &lt; {t('back')}
           </RoundButton>
           <RoundButton color='primary' onClick={onClickNext.bind(this)}>
-            進む &gt;
+            {t('next')} &gt;
           </RoundButton>
         </Footer>
       </div>

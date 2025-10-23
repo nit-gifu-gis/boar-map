@@ -3,10 +3,12 @@ import { checkLuhn } from '../../../utils/jibie';
 import RoundButton from '../../atomos/roundButton';
 import TextInput from '../../atomos/TextInput';
 import { TraceFormProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
+  const { t } = useTranslation();
   const [buttonEnabled, setButtonEnabled] = useState(false);
-  const [buttonLabel, setButtonLabel] = useState('検索');
+  const [buttonLabel, setButtonLabel] = useState(t('search'));
   const [inputDisabled, setInputDisabled] = useState(false);
   const [boarNo, setBoarNo] = useState('');
   const [error, setError] = useState('');
@@ -14,11 +16,11 @@ const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
   const handleSubmit = async () => {
     setInputDisabled(true);
     setButtonEnabled(false);
-    setButtonLabel('検索中...');
+    setButtonLabel(t('searching...'));
     await onSubmit(boarNo);
     setInputDisabled(false);
     setButtonEnabled(true);
-    setButtonLabel('検索');
+    setButtonLabel(t('search'));
   };
 
   const inputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +74,12 @@ const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
 
   return (
     <>
-      <div className='text-2xl font-bold'>検索条件</div>
+      <div className='text-2xl font-bold'>{t('search-criteria')}</div>
       <div className='mb-8 box-border w-full rounded-xl border-2 border-solid border-border py-3 px-4'>
         <div className='grid grid-cols-[100px,1fr]'>
-          <div className='col-[1/2] row-[1] m-1 flex items-center justify-center'>確認番号</div>
+          <div className='col-[1/2] row-[1] m-1 flex items-center justify-center'>
+            {t('confirm-no')}
+          </div>
           <div className='col-[2/3] row-[1] m-1 flex flex-wrap items-center justify-start text-left'>
             <TextInput
               type='number'

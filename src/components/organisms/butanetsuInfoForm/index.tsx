@@ -34,7 +34,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
           捕獲場所: place,
           性別: gender,
           体長: bLength,
-          遠沈管番号: enchinkan
+          遠沈管番号: enchinkan,
         },
         geometry: {
           type: 'Point',
@@ -55,7 +55,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
       let valid = true;
       valid = valid && validateDate('catchDate', true);
       valid = valid && validateText('prefNo', true);
-      valid = valid && validateNumber("bLength");
+      valid = valid && validateNumber('bLength');
       return new Promise<boolean>((resolve) => resolve(valid));
     };
 
@@ -154,7 +154,7 @@ const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFo
             min={1}
             defaultValue={featureValueOrUndefined('体長')}
             required={true}
-            onChange={() => validateNumber("bLength")}
+            onChange={() => validateNumber('bLength')}
             error={errors.bLength}
           />
           <InfoInput

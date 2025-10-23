@@ -34,46 +34,85 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
       const note = form.note.value as string;
 
       const city = (document.getElementById('city') as HTMLInputElement).value as string;
-      const vaccine_no = (document.getElementById('vaccine_no') as HTMLInputElement).value as string;
+      const vaccine_no = (document.getElementById('vaccine_no') as HTMLInputElement)
+        .value as string;
 
       // 作業内容の組み立て
-      const workdetail_placed = (document.getElementById('workdetail_placed') as HTMLInputElement).value;
-      const workdetail_removed = (document.getElementById('workdetail_removed') as HTMLInputElement).value;
+      const workdetail_placed = (document.getElementById('workdetail_placed') as HTMLInputElement)
+        .value;
+      const workdetail_removed = (document.getElementById('workdetail_removed') as HTMLInputElement)
+        .value;
 
-      const workdetail_crawl = (document.getElementById('workdetail_crawl') as HTMLInputElement).checked;
-      const workdetail_capture = (document.getElementById('workdetail_capture') as HTMLInputElement).checked;
+      const workdetail_crawl = (document.getElementById('workdetail_crawl') as HTMLInputElement)
+        .checked;
+      const workdetail_capture = (document.getElementById('workdetail_capture') as HTMLInputElement)
+        .checked;
 
-      const workdetail_own = workdetail_capture ? (document.getElementById('workdetail_own') as HTMLInputElement).checked : false;
-      const workdetail_help = workdetail_capture ? (document.getElementById('workdetail_help') as HTMLInputElement).checked : false;
-      const workdetail_mistake = workdetail_capture ? (document.getElementById('workdetail_mistake') as HTMLInputElement).checked : false;
+      const workdetail_own = workdetail_capture
+        ? (document.getElementById('workdetail_own') as HTMLInputElement).checked
+        : false;
+      const workdetail_help = workdetail_capture
+        ? (document.getElementById('workdetail_help') as HTMLInputElement).checked
+        : false;
+      const workdetail_mistake = workdetail_capture
+        ? (document.getElementById('workdetail_mistake') as HTMLInputElement).checked
+        : false;
 
-      const workdetail = `${workdetail_placed}/${workdetail_removed}/${workdetail_crawl ? '見回り' : ''}/${workdetail_capture ? '捕獲' : ''}\n${workdetail_own ? '自身のわな' : ''}/${workdetail_help ? '捕獲手伝い' : ''}/${workdetail_mistake ? '錯誤捕獲' : ''}`;
+      const workdetail = `${workdetail_placed}/${workdetail_removed}/${
+        workdetail_crawl ? '見回り' : ''
+      }/${workdetail_capture ? '捕獲' : ''}\n${workdetail_own ? '自身のわな' : ''}/${
+        workdetail_help ? '捕獲手伝い' : ''
+      }/${workdetail_mistake ? '錯誤捕獲' : ''}`;
 
       // 錯誤捕獲の組み立て
 
-      const workdetail_trap_type = workdetail_mistake ? (document.getElementById('workdetail_trap_type') as HTMLInputElement).value : '';
-      const workdetail_head_count = workdetail_mistake ? (document.getElementById('workdetail_head') as HTMLInputElement).value : '';
-      const workdetail_response = workdetail_mistake ? (document.getElementById('workdetail_response') as HTMLInputElement).value : '';
+      const workdetail_trap_type = workdetail_mistake
+        ? (document.getElementById('workdetail_trap_type') as HTMLInputElement).value
+        : '';
+      const workdetail_head_count = workdetail_mistake
+        ? (document.getElementById('workdetail_head') as HTMLInputElement).value
+        : '';
+      const workdetail_response = workdetail_mistake
+        ? (document.getElementById('workdetail_response') as HTMLInputElement).value
+        : '';
 
-      const workdetail_deer = workdetail_mistake ? (document.getElementById('workdetail_deer') as HTMLInputElement).checked : false;
-      const workdetail_serow = workdetail_mistake ? (document.getElementById('workdetail_serow') as HTMLInputElement).checked : false;
-      const workdetail_boar = workdetail_mistake ? (document.getElementById('workdetail_boar') as HTMLInputElement).checked : false;
-      const workdetail_other = workdetail_mistake ? (document.getElementById('workdetail_other') as HTMLInputElement).checked : false;
-      
-      const workdetail_other_animal = workdetail_other ? (document.getElementById('workdetail_other_animal') as HTMLInputElement).value : '';
+      const workdetail_deer = workdetail_mistake
+        ? (document.getElementById('workdetail_deer') as HTMLInputElement).checked
+        : false;
+      const workdetail_serow = workdetail_mistake
+        ? (document.getElementById('workdetail_serow') as HTMLInputElement).checked
+        : false;
+      const workdetail_boar = workdetail_mistake
+        ? (document.getElementById('workdetail_boar') as HTMLInputElement).checked
+        : false;
+      const workdetail_other = workdetail_mistake
+        ? (document.getElementById('workdetail_other') as HTMLInputElement).checked
+        : false;
 
-      const workdetail_mistake_str = `${workdetail_trap_type}\n${workdetail_head_count}\n${workdetail_response}\n${workdetail_deer ? 'ニホンジカ' : ''}/${workdetail_serow ? 'カモシカ' : ''}/${workdetail_boar ? 'ツキノワグマ' : ''}/${workdetail_other ? 'その他' : ''}\n${workdetail_other ? workdetail_other_animal : ''}`;
+      const workdetail_other_animal = workdetail_other
+        ? (document.getElementById('workdetail_other_animal') as HTMLInputElement).value
+        : '';
+
+      const workdetail_mistake_str = `${workdetail_trap_type}\n${workdetail_head_count}\n${workdetail_response}\n${
+        workdetail_deer ? 'ニホンジカ' : ''
+      }/${workdetail_serow ? 'カモシカ' : ''}/${workdetail_boar ? 'ツキノワグマ' : ''}/${
+        workdetail_other ? 'その他' : ''
+      }\n${workdetail_other ? workdetail_other_animal : ''}`;
 
       const helper = (document.getElementById('report_b_helper') as HTMLInputElement).value;
-      
+
       // とめさし道具の組み立て
       const tool_elec = (document.getElementById('report_b_elec') as HTMLInputElement).checked;
       const tool_gun = (document.getElementById('report_b_gun') as HTMLInputElement).checked;
       const tool_other = (document.getElementById('report_b_other') as HTMLInputElement).checked;
 
-      const tool_other_content = tool_other ? (document.getElementById('report_b_other_tool') as HTMLInputElement).value : "";
+      const tool_other_content = tool_other
+        ? (document.getElementById('report_b_other_tool') as HTMLInputElement).value
+        : '';
 
-      const tool_str = `${tool_elec ? '電気とめさし器' : ''}/${tool_gun ? '銃' : ''}/${tool_other ? 'その他' : ''}\n${tool_other_content}`;
+      const tool_str = `${tool_elec ? '電気とめさし器' : ''}/${tool_gun ? '銃' : ''}/${
+        tool_other ? 'その他' : ''
+      }\n${tool_other_content}`;
 
       const user =
         props.featureInfo?.properties.入力者 != null
@@ -96,7 +135,7 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
           捕獲補助: helper,
           作業内容: workdetail,
           ワクチンNO: vaccine_no,
-          市町村字: city
+          市町村字: city,
         },
         geometry: {
           type: 'Point',
@@ -337,8 +376,8 @@ const ReportInfoForm = React.forwardRef<FeatureEditorHandler, ReportInfoFormProp
             error={errors.area}
           />
           <InfoInput
-            title="所属支部名"
-            id="branch"
+            title='所属支部名'
+            id='branch'
             type='text'
             required={true}
             error={errors.branch}

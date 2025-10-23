@@ -6,6 +6,7 @@ import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { VaccineInfoFormProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(function InfoForm(
   props,
@@ -13,6 +14,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
 ) {
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
   const { currentUser } = useCurrentUser();
+  const { t } = useTranslation();
 
   const fetchData = () => {
     const form = document.getElementById('form-vaccine') as HTMLFormElement;
@@ -258,7 +260,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
     <div className='w-full'>
       <form name='form-vaccine' id='form-vaccine' onSubmit={(e) => e.preventDefault()}>
         <InfoDiv
-          title='画像'
+          title={t('photo')}
           type='images'
           data={{
             objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
@@ -267,7 +269,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
           }}
         />
         <InfoInput
-          title='メッシュ番号'
+          title={t('mesh-number')}
           type='mesh-num'
           id='meshNo'
           defaultValue={featureValueOrUndefined('メッシュ番号')}
@@ -278,7 +280,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
           error={errors.meshNo}
         />
         <InfoInput
-          title='散布年月日'
+          title={t('distribution-date')}
           type='date'
           id='treatDate'
           defaultValue={featureValueOrUndefined('散布年月日')}
@@ -287,7 +289,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
           error={errors.treatDate}
         />
         <InfoInput
-          title='散布数'
+          title={t('distribution-count')}
           type='number'
           id='treatNumber'
           min={1}
@@ -297,7 +299,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
           error={errors.treatNumber}
         />
         <InfoInput
-          title='回収状況'
+          title={t('retrieval-status')}
           type='select'
           id='recover'
           onChange={onChangeRecover}
@@ -309,7 +311,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
         ) : (
           <>
             <InfoInput
-              title='回収年月日'
+              title={t('retrieval-date')}
               type='date'
               id='recoverDate'
               defaultValue={featureValueOrUndefined('回収年月日')}
@@ -318,7 +320,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
               error={errors.recoverDate}
             />
             <InfoInput
-              title='いのししの摂食数'
+              title={t('consumption-count')}
               type='number'
               id='eatenNumber'
               min={0}
@@ -329,7 +331,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
               error={errors.eatenNumber}
             />
             <InfoInput
-              title='その他の破損数'
+              title={t('other-damage-count')}
               type='number'
               id='damageNumber'
               min={0}
@@ -340,7 +342,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
               error={errors.damageNumber}
             />
             <InfoInput
-              title='破損なし'
+              title={t('no-damage')}
               type='number'
               id='noDamageNumber'
               min={0}
@@ -351,7 +353,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
               error={errors.noDamageNumber}
             />
             <InfoInput
-              title='ロスト数'
+              title={t('lost-count')}
               type='number'
               id='lostNumber'
               min={0}
@@ -364,7 +366,7 @@ const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(fu
           </>
         )}
         <InfoInput
-          title='備考'
+          title={t('remarks')}
           type='textarea'
           rows={4}
           id='note'

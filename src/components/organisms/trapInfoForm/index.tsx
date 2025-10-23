@@ -8,6 +8,7 @@ import { checkDateError, compareDate } from '../../../utils/validateData';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import { SERVER_URI } from '../../../utils/constants';
 import { getAccessToken } from '../../../utils/currentUser';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(function InfoForm(
   props,
@@ -15,6 +16,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
 ) {
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
   const { currentUser } = useCurrentUser();
+  const { t } = useTranslation();
 
   const getCityName = async () => {
     const body = {
@@ -173,7 +175,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
     <div className='w-full'>
       <form name='form-trap' id='form-trap' onSubmit={(e) => e.preventDefault()}>
         <InfoDiv
-          title='画像'
+          title={t('photo')}
           type='images'
           data={{
             objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
@@ -182,7 +184,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
           }}
         />
         <InfoInput
-          title='設置年月日'
+          title={t('capture-date')}
           type='date'
           id='place_date'
           defaultValue={featureValueOrUndefined('設置年月日')}
@@ -191,14 +193,14 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
           error={errors.place_date}
         />
         <InfoInput
-          title='わなの種類'
+          title={t('trap-type')}
           type='select'
           id='kind'
           options={['くくりわな', '箱わな', '囲いわな', '銃猟', 'その他']}
           defaultValue={featureValueOrUndefined('罠の種類')}
         />
         <InfoInput
-          title='撤去年月日'
+          title={t('removal-date')}
           type='date'
           id='remove_date'
           defaultValue={featureValueOrUndefined('撤去年月日')}
@@ -206,7 +208,7 @@ const TrapInfoForm = React.forwardRef<FeatureEditorHandler, TrapInfoFormProps>(f
           error={errors.remove_date}
         />
         <InfoInput
-          title='備考'
+          title={t('remarks')}
           type='textarea'
           rows={4}
           id='note'

@@ -28,7 +28,7 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
   const friendlySpace = useMemo(() => {
     if (space == null) return null;
 
-    const usedPct = Math.round((space.total - space.free) / space.total * 100);
+    const usedPct = Math.round(((space.total - space.free) / space.total) * 100);
     const freeGB = Math.round(space.free / 1024 / 1024 / 1024);
     const totalGB = Math.round(space.total / 1024 / 1024 / 1024);
 
@@ -52,7 +52,7 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
   }, [currentUser]);
 
   const fetchSpace = useCallback(async () => {
-    if(currentUser == null) return;
+    if (currentUser == null) return;
 
     const res = await fetch(`${SERVER_URI}/Image/GetSpace`, {
       headers: {
@@ -86,7 +86,7 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
 
     const res = await fetch(SERVER_URI + `/Image/Download`, {
       headers: {
-        'X-Access-Token': getAccessToken()
+        'X-Access-Token': getAccessToken(),
       },
       body: JSON.stringify({
         date_from: from,
@@ -113,7 +113,7 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
     const blob = await res.blob();
     const anchor = document.createElement('a');
 
-    const name = "画像ダウンロード.zip";
+    const name = '画像ダウンロード.zip';
     // IE対応
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -146,13 +146,13 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
       return;
     }
 
-    if (!await confirm("本当に削除してもよろしいですか？")) {
+    if (!(await confirm('本当に削除してもよろしいですか？'))) {
       return;
     }
 
     const res = await fetch(SERVER_URI + `/Image/DeleteAll`, {
       headers: {
-        'X-Access-Token': getAccessToken()
+        'X-Access-Token': getAccessToken(),
       },
       body: JSON.stringify({
         date_from: from,
@@ -182,9 +182,12 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
     <div>
       <Header color='primary'>画像サーバー設定</Header>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3 px-3'>
-        {friendlySpace == null ? <></> : (
+        {friendlySpace == null ? (
+          <></>
+        ) : (
           <div>
-            現在 {friendlySpace.freeGB} GBの空き容量がサーバーに残っています。<br />
+            現在 {friendlySpace.freeGB} GBの空き容量がサーバーに残っています。
+            <br />
             (全体容量: {friendlySpace.totalGB} GB、使用率: {friendlySpace.usedPct}%)
           </div>
         )}
@@ -192,8 +195,18 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div className='text-2xl font-bold'>画像ダウンロード</div>
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
-          <InfoInput type='date' id='download_from' title='ダウンロード対象捕獲日（開始）' error={isDownloadError ? " " : ""}/>
-          <InfoInput type='date' id='download_to' title='ダウンロード対象捕獲日（終了）' error={isDownloadError ? " " : ""} />
+          <InfoInput
+            type='date'
+            id='download_from'
+            title='ダウンロード対象捕獲日（開始）'
+            error={isDownloadError ? ' ' : ''}
+          />
+          <InfoInput
+            type='date'
+            id='download_to'
+            title='ダウンロード対象捕獲日（終了）'
+            error={isDownloadError ? ' ' : ''}
+          />
           <InfoInput
             title='画像ファイルのグループ分け'
             type='select'
@@ -210,12 +223,25 @@ const ImageSettingsTemplate: React.FunctionComponent = () => {
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
           <div className='pb-3 text-left'>
             <span>
-              <span className="underline font-bold text-danger">注意</span><br />
-              一度削除した画像は復元することが出来ません。<br />
-              削除を行う場合には十分にご注意ください。<br />
+              <span className='font-bold text-danger underline'>注意</span>
+              <br />
+              一度削除した画像は復元することが出来ません。
+              <br />
+              削除を行う場合には十分にご注意ください。
+              <br />
             </span>
-            <InfoInput type='date' id='delete_from' title='削除対象捕獲日（開始）' error={isDeleteError ? " " : ""} />
-            <InfoInput type='date' id='delete_to' title='削除対象捕獲日（終了）' error={isDeleteError ? " " : ""} />
+            <InfoInput
+              type='date'
+              id='delete_from'
+              title='削除対象捕獲日（開始）'
+              error={isDeleteError ? ' ' : ''}
+            />
+            <InfoInput
+              type='date'
+              id='delete_to'
+              title='削除対象捕獲日（終了）'
+              error={isDeleteError ? ' ' : ''}
+            />
             <RoundButton color='danger' onClick={onClickDelete} disabled={isDisabled}>
               削除
             </RoundButton>

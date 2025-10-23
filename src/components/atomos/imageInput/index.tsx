@@ -7,12 +7,15 @@ import { makeRandStr } from '../../../utils/randStr';
 import RoundButton from '../roundButton';
 import { ImageInputProps, ImagewithLocation } from './interface';
 import EXIF from 'exif-js';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
   const [error, setError] = useState('');
   const [form_id, setFormId] = useState('');
   const [objURLs, setObjURLs] = useState(props.objectURLs == null ? [] : props.objectURLs);
   const [imgIDs, setImgIDs] = useState(props.imageIDs == null ? [] : props.imageIDs);
+  const { t } = useTranslation();
+
   if (form_id == '') {
     setFormId(makeRandStr(10));
   }
@@ -166,7 +169,13 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
           className='w-full cursor-pointer'
           src={SERVER_URI + '/Image/GetImage?id=' + imgIDs[i] + '&token=' + token}
           alt={'Uploaded image ' + (i + 1)}
-          onClick={() => window.open('/image?id=' + encodeURIComponent(imgIDs[i]), 'img_' + imgIDs[i], 'width=800,height=600')}
+          onClick={() =>
+            window.open(
+              '/image?id=' + encodeURIComponent(imgIDs[i]),
+              'img_' + imgIDs[i],
+              'width=800,height=600',
+            )
+          }
         />
         <button
           type='button'
@@ -218,7 +227,7 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
       <canvas className='hidden' id={'canvas_' + form_id}></canvas>
       <div className='w-full text-center'>
         <RoundButton color='primary' onClick={onClickSelect.bind(this)}>
-          画像を選択
+          {t('select-img-btn')}
         </RoundButton>
       </div>
     </div>

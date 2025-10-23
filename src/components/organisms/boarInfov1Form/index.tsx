@@ -6,11 +6,13 @@ import InfoDiv from '../../molecules/infoDiv';
 import InfoInput from '../../molecules/infoInput';
 import { FeatureEditorHandler } from '../featureEditor/interface';
 import { BoarInfov1FormProps } from './interface';
+import { useTranslation } from '../../../i18n/useTranslation';
 
 const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProps>(
   function InfoForm(props, ref) {
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
     const { currentUser } = useCurrentUser();
+    const { t } = useTranslation();
 
     const fetchData = () => {
       const form = getForm();
@@ -79,7 +81,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
         },
         properties: {
           入力者: user,
-          メッシュ番号: "",
+          メッシュ番号: '',
           区分: division,
           捕獲年月日: date,
           位置情報: '(' + lat + ',' + lng + ')',
@@ -90,7 +92,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           '幼獣・成獣': age,
           性別: sex,
           体長: length,
-          体重: "",
+          体重: '',
           妊娠の状況: pregnant,
           処分方法: disposal,
           備考: note,
@@ -302,7 +304,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
       <div className='w-full'>
         <form id='form-boar-old' onSubmit={(e) => e.preventDefault()}>
           <InfoDiv
-            title='画像'
+            title={t('photo')}
             type='images'
             data={{
               objectURLs: props.objectURLs == null ? [] : props.objectURLs.map((p) => p.objectURL),
@@ -311,7 +313,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             }}
           />
           <InfoInput
-            title='区分'
+            title={t('category')}
             type='select'
             id='division'
             options={['調査捕獲', '有害捕獲', '死亡', '狩猟', 'その他']}
@@ -319,7 +321,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             defaultValue={featureValueOrUndefined('区分')}
           />
           <InfoInput
-            title='捕獲年月日'
+            title={t('capture-date')}
             type='date'
             id='date'
             defaultValue={featureValueOrUndefined('捕獲年月日')}
@@ -329,7 +331,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           />
           <div style={{ display: isEnv ? 'block' : 'none' }}>
             <InfoInput
-              title='発見場所'
+              title={t('discovery-location')}
               type='select'
               id='env'
               options={['山際', '山地', 'その他']}
@@ -338,7 +340,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           </div>
           <div style={{ display: !isEnv ? 'block' : 'none' }}>
             <InfoInput
-              title='わなの種類'
+              title={t('trap-type')}
               type='select'
               id='trap'
               options={['くくりわな', '箱わな', 'その他']}
@@ -348,7 +350,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           </div>
           <div style={{ display: isBox ? 'block' : 'none' }}>
             <InfoInput
-              title='幼獣の頭数'
+              title={t('juvenile-count')}
               type='number'
               id='childrenNum'
               min={0}
@@ -358,7 +360,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
               error={errors.childrenNum}
             />
             <InfoInput
-              title='成獣の頭数'
+              title={t('adult-count')}
               type='number'
               id='adultsNum'
               min={0}
@@ -372,7 +374,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             </p>
           </div>
           <InfoInput
-            title='幼獣・成獣の別'
+            title={t('maturity')}
             type='select'
             id='age'
             options={['幼獣', '成獣']}
@@ -384,7 +386,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             onChange={onChangeAge}
           />
           <InfoInput
-            title='性別'
+            title={t('sex')}
             type='select'
             id='sex'
             options={['オス', 'メス', '不明']}
@@ -396,7 +398,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             onChange={onChangeSex}
           />
           <InfoInput
-            title='体長 (cm)'
+            title={t('body-length')}
             type='number'
             id='length'
             min={1}
@@ -407,7 +409,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           />
           <div style={{ display: isFemale && isAdult ? 'block' : 'none' }}>
             <InfoInput
-              title='妊娠の状況'
+              title={t('pregnancy-status')}
               type='select'
               id='pregnant'
               options={['なし', 'あり', '不明']}
@@ -418,7 +420,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             />
           </div>
           <InfoInput
-            title='処分方法'
+            title={t('disposal-method')}
             type='select'
             id='disposal'
             options={['埋設', '焼却', '家保', '利活用', 'その他']}
@@ -429,7 +431,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
             }
           />
           <InfoInput
-            title='備考（遠沈管番号）（作業時間）'
+            title={t('remarks-tube-work-time')}
             type='textarea'
             rows={4}
             id='note'

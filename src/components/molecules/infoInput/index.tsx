@@ -1,3 +1,4 @@
+import { useTranslation } from '../../../i18n/useTranslation';
 import CityInput from '../../atomos/cityInput';
 import DateInput from '../../atomos/dateInput';
 import MeshNoInput from '../../atomos/meshNoInput';
@@ -7,6 +8,8 @@ import TextInput from '../../atomos/TextInput';
 import { InfoInputProps } from './interface';
 
 const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
+  const { t } = useTranslation();
+
   let input_div = null;
   switch (props.type) {
     case 'number':
@@ -20,7 +23,7 @@ const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
           defaultValue={props.defaultValue}
           step={props.step}
           onChange={props.onChange}
-          placeholder='数字で入力'
+          placeholder={t('must-be-numeric')}
           isError={props.error != null && props.error != ''}
         />
       );
@@ -105,11 +108,7 @@ const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
         {props.title}
         {props.required ? <span className='ml-[5px] font-bold text-danger'>*</span> : <></>}
       </div>
-      {!props.subtitle ? (
-        <></>
-      ) : (
-        <div className='-mt-[5px] ml-[5px]'>{props.subtitle}</div>
-      )}
+      {!props.subtitle ? <></> : <div className='-mt-[5px] ml-[5px]'>{props.subtitle}</div>}
       {!props.caption ? (
         <></>
       ) : (

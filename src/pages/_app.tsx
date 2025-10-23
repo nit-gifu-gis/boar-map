@@ -9,7 +9,7 @@ import { useCurrentUser } from '../hooks/useCurrentUser';
 import LoadingTemplate from '../components/templates/loadingTemplate';
 import Head from 'next/head';
 import { currentAppLogs } from '../states/appLog';
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from '@sentry/nextjs';
 import { butanetsuViewState } from '../states/butanetsuView';
 import { SERVER_URI } from '../utils/constants';
 
@@ -29,9 +29,9 @@ const AppInit: React.FunctionComponent = () => {
     origLog(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "log",
+      type: 'log',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -40,9 +40,9 @@ const AppInit: React.FunctionComponent = () => {
     origWarn(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "warn",
+      type: 'warn',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -51,9 +51,9 @@ const AppInit: React.FunctionComponent = () => {
     origError(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "error",
+      type: 'error',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -62,9 +62,9 @@ const AppInit: React.FunctionComponent = () => {
     origTrace(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "trace",
+      type: 'trace',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -87,7 +87,7 @@ const AppInit: React.FunctionComponent = () => {
             radius: json['radius'] as number,
             days: json['days'] as number,
             style: 1,
-            origin: new Date()
+            origin: new Date(),
           });
         }
 
@@ -98,26 +98,25 @@ const AppInit: React.FunctionComponent = () => {
       }
 
       setCurrentAppLog([]);
-      if(console.log != null && console.log != logHandler) {
+      if (console.log != null && console.log != logHandler) {
         origLog = console.log;
         console.log = logHandler;
       }
-      
-      if(console.error != null && console.error != errorHandler) {
+
+      if (console.error != null && console.error != errorHandler) {
         origError = console.error;
         console.error = errorHandler;
       }
-      
-      if(console.warn != null && console.warn != warnHandler) {
+
+      if (console.warn != null && console.warn != warnHandler) {
         origWarn = console.warn;
         console.warn = warnHandler;
       }
 
-      if(console.trace != null && console.trace != traceHandler) {
+      if (console.trace != null && console.trace != traceHandler) {
         origTrace = console.trace;
         console.trace = traceHandler;
       }
-        
     })();
   }, []);
 
