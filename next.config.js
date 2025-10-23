@@ -6,6 +6,7 @@ const nextConfig = {
     locales: ["en", "ja"],
     defaultLocale: "ja",
   },
+  trailingSlash: true,
 };
 
 
