@@ -2,6 +2,10 @@
 module.exports = {
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
+  i18n: {
+    locales: ["en", "ja"],
+    defaultLocale: "ja",
+  },
 };
 
 
@@ -10,12 +14,7 @@ module.exports = {
 const { withSentryConfig } = require("@sentry/nextjs");
 
 module.exports = withSentryConfig(
-  {
-    i18n: {
-      locales: ["en", "ja"],
-      defaultLocale: "ja",
-    },
-  },
+  module.exports,
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
