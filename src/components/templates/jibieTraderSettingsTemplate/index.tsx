@@ -1,15 +1,16 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { confirm, alert } from '../../../utils/modal';
-import { TraderInfo } from '../../atomos/boarDetailForm/interface';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import TextInput from '../../atomos/TextInput';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
+
+import { TraderInfo } from '@/components/atomos/boarDetailForm/interface';
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import TextInput from '@/components/atomos/TextInput';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { confirm, alert } from '@/utils/modal';
 
 const JibieTraderSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

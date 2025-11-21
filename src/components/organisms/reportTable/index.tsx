@@ -1,16 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { ReportProps, FeatureBase, ReportFeature } from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { hasWritePermission } from '../../../utils/gis';
-import { alert, yesNo } from '../../../utils/modal';
-import { sortFeatures } from '../../../utils/sort';
-import RoundButton from '../../atomos/roundButton';
+
+import { ReportProps, FeatureBase, ReportFeature } from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { useFormDataParser } from '@/utils/form-data';
+import { hasWritePermission } from '@/utils/gis';
+import { alert, yesNo } from '@/utils/modal';
+import { sortFeatures } from '@/utils/sort';
+
 import { ReportTableProps } from './interface';
-import { useFormDataParser } from '../../../utils/form-data';
+
 
 const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   const router = useRouter();

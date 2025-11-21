@@ -13,15 +13,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+
+    // Path alias settings
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx"
-, "src/utils/extwms.js"  ],
-  "exclude": [
-    "node_modules",
-    "src/utils/extwms.js"
-  ]
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/utils/extwms.js"],
+  "exclude": ["node_modules", "src/utils/extwms.js"]
 }

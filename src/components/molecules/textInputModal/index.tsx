@@ -1,10 +1,11 @@
 // 選択肢がOKしか無いアラートのモーダル
 
 import React, { useState } from 'react';
-import ModalBg from '../../atomos/modalBg';
-import ModalWindw from '../../atomos/modalWindow';
-import RoundButton from '../../atomos/roundButton';
-import InfoInput from '../infoInput';
+
+import ModalBg from '@/components/atomos/modalBg';
+import ModalWindw from '@/components/atomos/modalWindow';
+import RoundButton from '@/components/atomos/roundButton';
+import InfoInput from '@/components/molecules/infoInput';
 
 type Props = {
   message: string;

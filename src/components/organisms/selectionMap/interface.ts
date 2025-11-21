@@ -1,4 +1,4 @@
-import { LatLngZoom } from '../mapBase/interface';
+import { LatLngZoom } from '@/components/organisms/mapBase/interface';
 
 export interface SelectionMapProps {
   location: LatLngZoom;

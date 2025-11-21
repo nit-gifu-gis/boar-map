@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { hasWritePermission, LayerType } from '../../../utils/gis';
-import RoundedCheck from '../../atomos/roundedCheck';
-import InfoTypeItem from '../../molecules/infoTypeItem';
+
+import RoundedCheck from '@/components/atomos/roundedCheck';
+import InfoTypeItem from '@/components/molecules/infoTypeItem';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { hasWritePermission, LayerType } from '@/utils/gis';
+
 import { InfoTypeSelectorProps } from './interface';
 
 interface InfoType {

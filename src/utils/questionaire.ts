@@ -1,6 +1,6 @@
 // アンケートフォーム周り
-import { User } from '../types/user';
 import { Device, Browser, getBrowser, getDevice } from './browser';
+import { User } from '../types/user';
 
 const FORM_URL_BASE =
   'https://docs.google.com/forms/d/e/1FAIpQLSfakcKdjbkTD6HMHZ4dnIZhUhjQgSYnuZ9Cwm6S8LeLoX0dMQ/viewform?usp=pp_url';

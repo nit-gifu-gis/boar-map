@@ -1,6 +1,6 @@
-import Header from '../../organisms/header';
-import VersionInfo from '../../organisms/versionInfo';
-import { VersionInfoProps } from '../../organisms/versionInfo/interface';
+import Header from '@/components/organisms/header';
+import VersionInfo from '@/components/organisms/versionInfo';
+import { VersionInfoProps } from '@/components/organisms/versionInfo/interface';
 
 const VersionTemplate: React.FunctionComponent<VersionInfoProps> = ({ version }) => {
   return (

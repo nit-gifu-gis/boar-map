@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import SelectInput from '../selectInput';
-import TextInput from '../TextInput';
+
+import SelectInput from '@/components/atomos/selectInput';
+import TextInput from '@/components/atomos/TextInput';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
 import { MeshNoInputProps } from './interface';
 
 const MeshNoInput: React.FunctionComponent<MeshNoInputProps> = (props) => {

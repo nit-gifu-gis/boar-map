@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../../hooks/useLogin';
-import NoticeSettingsTemplate from '../../components/templates/noticeSettingsTemplate';
+
+import NoticeSettingsTemplate from '@/components/templates/noticeSettingsTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const NoticeSettingsPage: NextPage = () => {
   useRequireLogin();

@@ -1,12 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import { useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { confirm, alert } from '../../../utils/modal';
-import { makeRandStr } from '../../../utils/randStr';
-import RoundButton from '../roundButton';
-import { ImageInputProps, ImagewithLocation } from './interface';
 import EXIF from 'exif-js';
+import { useState } from 'react';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { confirm, alert } from '@/utils/modal';
+import { makeRandStr } from '@/utils/randStr';
+
+import { ImageInputProps, ImagewithLocation } from './interface';
 
 const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
   const [error, setError] = useState('');

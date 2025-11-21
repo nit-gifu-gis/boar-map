@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import DetailTemplate from '../components/templates/detailTemplate';
-import { useRequireLogin } from '../hooks/useLogin';
+
+import DetailTemplate from '@/components/templates/detailTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const DetailPage: NextPage = () => {
   useRequireLogin();

@@ -1,6 +1,7 @@
-import { BoarInfoFeatureV2, FeatureBase } from '../../../types/features';
-import { BoarFormRef } from '../../organisms/boarInfov2Form/interface';
-import { Location } from '../../organisms/mapBase/interface';
+import { BoarInfoFeatureV2, FeatureBase } from '@/types/features';
+
+import { BoarFormRef } from '@/components/organisms/boarInfov2Form/interface';
+import { Location } from '@/components/organisms/mapBase/interface';
 
 export interface BoarDetailFormProps {
   detail?: BoarInfoFeatureV2;

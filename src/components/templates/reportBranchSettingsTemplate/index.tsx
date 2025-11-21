@@ -1,14 +1,15 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { alert, confirm } from '../../../utils/modal';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import TextInput from '../../atomos/TextInput';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
+
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import TextInput from '@/components/atomos/TextInput';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert, confirm } from '@/utils/modal';
 
 interface BranchInfo {
   name: string;

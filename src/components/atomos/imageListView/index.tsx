@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
 import { ImageListViewProps } from './interface';
 
 const ImageListView: React.FunctionComponent<ImageListViewProps> = ({

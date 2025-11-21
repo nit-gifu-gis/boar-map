@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../hooks/useLogin';
-import AddTypeSelectorTemplate from '../components/templates/newDataForm/addTypeSelectorTemplate';
+
+import AddTypeSelectorTemplate from '@/components/templates/newDataForm/addTypeSelectorTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const AddPage: NextPage = () => {
   useRequireLogin();

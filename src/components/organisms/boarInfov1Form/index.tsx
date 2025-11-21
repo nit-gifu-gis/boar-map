@@ -1,10 +1,13 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { BoarFeatureV1, BoarPropsV1, FeatureBase } from '../../../types/features';
-import { checkDateError, checkNumberError } from '../../../utils/validateData';
-import InfoDiv from '../../molecules/infoDiv';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { BoarFeatureV1, BoarPropsV1, FeatureBase } from '@/types/features';
+
+import InfoDiv from '@/components/molecules/infoDiv';
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { checkDateError, checkNumberError } from '@/utils/validateData';
+
 import { BoarInfov1FormProps } from './interface';
 
 const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProps>(

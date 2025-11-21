@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { alert } from '../../../utils/modal';
-import Header from '../../organisms/header';
-import SearchForm from '../../organisms/searchForm';
-import { FeatureBase } from '../../../types/features';
-import SearchResult from '../../organisms/searchResult';
-import RoundButton from '../../atomos/roundButton';
 import { useRouter } from 'next/router';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import BoarTable from '../../organisms/boarTable';
+import { useEffect, useState } from 'react';
+
+import { FeatureBase } from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import BoarTable from '@/components/organisms/boarTable';
+import Header from '@/components/organisms/header';
+import SearchForm from '@/components/organisms/searchForm';
+import SearchResult from '@/components/organisms/searchResult';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
 
 const ListTemplate: React.FunctionComponent = () => {
   const router = useRouter();

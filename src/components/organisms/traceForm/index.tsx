@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { checkLuhn } from '../../../utils/jibie';
-import RoundButton from '../../atomos/roundButton';
-import TextInput from '../../atomos/TextInput';
+
+import RoundButton from '@/components/atomos/roundButton';
+import TextInput from '@/components/atomos/TextInput';
+import { checkLuhn } from '@/utils/jibie';
+
 import { TraceFormProps } from './interface';
 
 const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {

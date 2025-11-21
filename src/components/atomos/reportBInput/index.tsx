@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
-import TextInput from "../TextInput";
+
+import TextInput from "@/components/atomos/TextInput";
+
 import { ReportBInputProps } from "./interface";
 
 const ReportBInput: React.FC<ReportBInputProps> = (props) => {

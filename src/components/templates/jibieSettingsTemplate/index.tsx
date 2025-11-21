@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
+
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const JibieSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

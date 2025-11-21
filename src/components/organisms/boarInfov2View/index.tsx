@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import Divider from '../../atomos/divider';
-import InfoDiv from '../../molecules/infoDiv';
+
+import Divider from '@/components/atomos/divider';
+import InfoDiv from '@/components/molecules/infoDiv';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
 import { BoarInfov2ViewProps } from './interface';
-import { getAccessToken } from '../../../utils/currentUser';
-import { SERVER_URI } from '../../../utils/constants';
 
 const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
   detail,

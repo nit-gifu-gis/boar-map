@@ -1,18 +1,20 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { hasListPermission } from '../../../utils/gis';
-import { HeaderProps } from './interface';
-import { alert, confirm, inputBox } from '../../../utils/modal';
-import { useSetRecoilState } from 'recoil';
 import { useRouter } from 'next/router';
-import { currentUserState } from '../../../states/currentUser';
-import { getAccessToken } from '../../../utils/currentUser';
 import { destroyCookie } from 'nookies';
-import { MANUAL_URL, SERVER_URI } from '../../../utils/constants';
-import { getFormUrl } from '../../../utils/questionaire';
-import PDFViewer from '../../atomos/pdfViewer';
-import { useAppLogs } from '../../../hooks/useAppLogs';
+import { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+
+import PDFViewer from '@/components/atomos/pdfViewer';
+import { useAppLogs } from '@/hooks/useAppLogs';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { currentUserState } from '@/states/currentUser';
+import { MANUAL_URL, SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { hasListPermission } from '@/utils/gis';
+import { alert, confirm, inputBox } from '@/utils/modal';
+import { getFormUrl } from '@/utils/questionaire';
+
+import { HeaderProps } from './interface';
 
 const Header: React.FunctionComponent<HeaderProps> = (props) => {
   const { appLogs } = useAppLogs();

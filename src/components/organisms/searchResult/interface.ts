@@ -1,4 +1,4 @@
-import { FeatureBase } from '../../../types/features';
+import { FeatureBase } from '@/types/features';
 
 export interface SearchResultProps {
   searchInfo: FormData;

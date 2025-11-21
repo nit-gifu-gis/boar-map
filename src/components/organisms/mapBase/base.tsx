@@ -1,17 +1,14 @@
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interface';
-import EventListener from 'react-event-listener';
 import L, { LatLngExpression } from 'leaflet';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { parseCookies, setCookie } from 'nookies';
-import '../../../utils/extwms';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import { useEffect, useState } from 'react';
+import React from 'react';
+import EventListener from 'react-event-listener';
+import { useSetRecoilState } from 'recoil';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
-import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '../../../utils/constants';
-import { hasReadPermission } from '../../../utils/gis';
-import { alert, cityList } from '../../../utils/modal';
-import { getAccessToken } from '../../../utils/currentUser';
+
 import {
   BoarCommonFeatureV2,
   BoarFeatureV1,
@@ -25,13 +22,21 @@ import {
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
-} from '../../../types/features';
-import { useRouter } from 'next/router';
-import RoundButton from '../../atomos/roundButton';
-import { useButanetsuView } from '../../../hooks/useButanetsuView';
-import { useSetRecoilState } from 'recoil';
-import { butanetsuViewState } from '../../../states/butanetsuView';
-import React from 'react';
+} from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { useButanetsuView } from '@/hooks/useButanetsuView';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { butanetsuViewState } from '@/states/butanetsuView';
+import '@/utils/extwms';
+import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { hasReadPermission } from '@/utils/gis';
+import { alert, cityList } from '@/utils/modal';
+
+
+import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interface';
+
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
@@ -82,9 +87,9 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     });
 
     const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];
-    
+
     const newMarkers = style !== 3 ? features.map((f) => makeMarker(f, '豚熱陽性高率エリア')) : [];
-    
+
     setButanetsuLayerID((id) => {
       const l = overlayList['豚熱陽性高率エリア'] as L.LayerGroup;
       const lg = overlayList['豚熱陽性高率エリア'].getLayer(id) as L.MarkerClusterGroup;
@@ -97,7 +102,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   useEffect(() => {
-    if(firstRunRef.current) {
+    if (firstRunRef.current) {
       firstRunRef.current = false;
       return;
     }
@@ -215,7 +220,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     const d = new Date(date_y_val, date_m_val - 1, date_d_val);
-    
+
     setCurrentButanetsuView({
       radius: range_val,
       days: month_val,
@@ -334,8 +339,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       iconSize: [0, 0],
       html:
         '<div class="markerDiv">' +
-        `<img src="${iconUrl}" class="markerDiv__img" style="${
-          !iconUrl.toLowerCase().endsWith('.svg') ? 'width: 20px;' : ''
+        `<img src="${iconUrl}" class="markerDiv__img" style="${!iconUrl.toLowerCase().endsWith('.svg') ? 'width: 20px;' : ''
         }" />` +
         `<div class="markerDiv__title">${label}</div>` +
         '</div>',
@@ -536,17 +540,17 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       }),
     });
 
-    if(resMesh.status === 200) {
+    if (resMesh.status === 200) {
       const data = await resMesh.json() as MeshDataResponse;
 
       const keys = { vaccine: ["vaccineMesh", "ワクチンメッシュ"], hunter: ["hunterMesh", "ハンターメッシュ"], boar: ["boarMesh", "捕獲いのしし分布"] };
 
       const polygonParam = (key: "vaccine" | "hunter" | "boar", opacity?: number) => {
-        if(key != "boar") {
+        if (key != "boar") {
           return {
             color: key == "vaccine" ? '#0288d1' : '#cc56db',
             weight: 2,
-            fill: false 
+            fill: false
           };
         } else {
           return {
@@ -566,15 +570,15 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const k1 = keys[k][1];
 
         // 分布表示以外の場合、メッシュが一定数を超えていたら表示しない
-        if(data[k].length > MAX_MESH_COUNT && k != "boar")
+        if (data[k].length > MAX_MESH_COUNT && k != "boar")
           data[k] = [];
 
         if (featureIDs[k0] == null) featureIDs[k0] = [];
 
         // 各条件に合致する要素を取得する
-        const newMeshData = data[k].filter(v=>!featureIDs[k0].includes(v.id));
-        const IDs = data[k].map(v=>v.id);
-        const deleteMeshIDs = featureIDs[k0].filter(id=>!IDs.includes(id));
+        const newMeshData = data[k].filter(v => !featureIDs[k0].includes(v.id));
+        const IDs = data[k].map(v => v.id);
+        const deleteMeshIDs = featureIDs[k0].filter(id => !IDs.includes(id));
         // 新しいメッシュを描画する#d14b02 #65db56
         newMeshData.forEach(v => {
           const po = L.polygon(v.coordinates, polygonParam(k, v.fillOpacity));
@@ -597,7 +601,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         // 検索に引っかからなかったメッシュを削除する
         deleteMeshIDs.forEach(id => {
           const po = meshLayers[k][id];
-          if(po != null)
+          if (po != null)
             overlayList[k1].removeLayer(po);
 
           meshLayers[k][id].remove();
@@ -907,7 +911,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       },
     ],
   ));
-  
+
   const layers = {
     "通常マップ": baseMap,
     "目標物マップ": structureMap,
@@ -934,11 +938,11 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     if (myMap == null) {
-      const map = L.map(selfNode, { 
-        keyboard: false, 
+      const map = L.map(selfNode, {
+        keyboard: false,
         layers: [
           baseMap
-        ] 
+        ]
       });
       setupMap();
       setMyMap(map);
@@ -984,8 +988,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     // 各種レイヤー追加
     Object.keys(overlayList).forEach(k => {
-      if(k != "ハンターメッシュ" 
-        && k != "ワクチンメッシュ" 
+      if (k != "ハンターメッシュ"
+        && k != "ワクチンメッシュ"
         && k != "捕獲いのしし分布")
         overlayList[k].addTo(myMap);
     });
@@ -1048,7 +1052,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         alert('内部エラーが発生しました。');
         return;
       }
-      
+
       const text = text_input.value;
       setSearchButtonLabel('検索中...');
       const res = await fetch(SERVER_URI + '/City/Search', {
@@ -1088,7 +1092,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         });
         setLocSearchVisible(false);
       }
-    } else if(type === "緯度・経度（度分秒）" || type === "緯度・経度（度）") {
+    } else if (type === "緯度・経度（度分秒）" || type === "緯度・経度（度）") {
       // モードごとに緯度経度の計算・チェックを行う
       let lat = 0.0;
       let lng = 0.0;
@@ -1104,14 +1108,14 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         lat = parseFloat(lat_input.value);
         lng = parseFloat(lng_input.value);
 
-        if(Number.isNaN(lat) || Number.isNaN(lng)) {
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
           alert('不正な形式のデータが入力されました。');
           return;
         }
       } else {
         // 最低限度が入力されているかのチェック＋度分秒から度に変換
-        const lat_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement).filter(v=> v != null);
-        const lng_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement).filter(v=> v != null);
+        const lat_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lat_${v}`) as HTMLInputElement).filter(v => v != null);
+        const lng_input_divs = [1, 2, 3].map(v => document.getElementById(`point_search_lng_${v}`) as HTMLInputElement).filter(v => v != null);
         if (lat_input_divs.length != 3 || lng_input_divs.length != 3) {
           alert('内部エラーが発生しました。');
           return;
@@ -1120,7 +1124,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         const lat_inputs = lat_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
         const lng_inputs = lng_input_divs.map(e => parseFloat(e.value)).map((e, i) => Number.isNaN(e) && i != 0 ? 0.0 : e);
 
-        if(Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
+        if (Number.isNaN(lat_inputs[0]) || Number.isNaN(lng_inputs[0])) {
           alert('不正な形式のデータが入力されました。');
           return;
         }
@@ -1129,11 +1133,11 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         lng = lng_inputs.reduce((prev, cur, i) => (prev + (cur / Math.pow(60, i))), 0);
       }
 
-      const map = await new Promise<L.Map | null>(resolve=> setMyMap(m => {
+      const map = await new Promise<L.Map | null>(resolve => setMyMap(m => {
         resolve(m);
         return m;
       }));
-      if(map == null) {
+      if (map == null) {
         alert("内部エラーが発生しました。");
         return;
       }
@@ -1264,7 +1268,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                   <div className='flex-1 text-center font-bold'>地図表示設定</div>
                   <div className='text-center text-lg'>
                     <button type='button' onClick={() => setViewSettingVisible(false)}>
-                    ×
+                      ×
                     </button>
                   </div>
                 </div>
@@ -1278,20 +1282,20 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
                   </select>
                   <span className='py-1 font-bold'>基準日</span>
                   <div className='w-full pb-1'>
-                    <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={currentView?.origin.getFullYear()}/>
+                    <input id='butanetsu_date_y' type='number' className='w-[48px] h-8 pl-1' defaultValue={currentView?.origin.getFullYear()} />
                     <span className='px-1'>年</span>
                     <input id='butanetsu_date_m' type='number' className='w-[36px] h-8 pl-1' defaultValue={(currentView?.origin.getMonth() || 0) + 1} />
                     <span className='px-1'>月</span>
-                    <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()}/>
+                    <input id='butanetsu_date_d' type='number' className='w-[36px] h-8 pl-1' defaultValue={currentView?.origin.getDate()} />
                     <span className='px-1'>日</span>
                   </div>
-                  <span className='py-1 font-bold'>表示期間<br/>(基準日より前の期間)</span>
+                  <span className='py-1 font-bold'>表示期間<br />(基準日より前の期間)</span>
                   <div className="w-full pb-1 flex justify-center items-center">
                     <div className="flex-1"><input id='butanetsu_month' type='number' className='bg-[#ffffff] mr-1 w-full' defaultValue={currentView?.days} /></div>
                     <div className="whitespace-nowrap">日</div>
                   </div>
                   <span className='py-1 font-bold'>範囲 (km)</span>
-                  <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius}/>
+                  <input id='butanetsu_range' type='number' className='w-full pb-1 bg-[#ffffff]' defaultValue={currentView?.radius} />
                   <div className='w-full p-4'>
                     <RoundButton
                       color='primary'

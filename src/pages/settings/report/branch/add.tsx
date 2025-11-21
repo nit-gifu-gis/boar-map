@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import ReportBranchAddTemplate from '../../../../components/templates/reportBranchAddTemplate';
-import { useRequireLogin } from '../../../../hooks/useLogin';
+
+import ReportBranchAddTemplate from '@/components/templates/reportBranchAddTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const ReportBranchAddPage: NextPage = () => {
   useRequireLogin();

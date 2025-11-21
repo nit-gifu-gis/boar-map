@@ -1,7 +1,5 @@
 {
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint", "import"],
   "extends": [
     "next",
     "next/core-web-vitals",
@@ -13,6 +11,43 @@
     "semi": ["error", "always"],
     "indent": ["error", 2, { "SwitchCase": 1 }],
     "react-hooks/exhaustive-deps": "off",
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["parent", "sibling"],
+          "object",
+          "type",
+          "index"
+        ],
+        "newlines-between": "always",
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "pathGroups": [
+          {
+            "pattern": "@/components/",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@/types/**",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "after"
+          }
+        ]
+      }
+    ]
   }
 }

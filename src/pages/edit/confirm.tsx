@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../../hooks/useLogin';
-import DataConfirmTemplate from '../../components/templates/newDataForm/dataConfirmTemplate';
+
+import DataConfirmTemplate from '@/components/templates/newDataForm/dataConfirmTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const EditConfirmPage: NextPage = () => {
   useRequireLogin();

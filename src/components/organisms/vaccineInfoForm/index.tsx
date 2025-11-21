@@ -1,10 +1,13 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { FeatureBase, VaccineFeature, VaccineProps } from '../../../types/features';
-import { checkDateError, checkNumberError, compareDate } from '../../../utils/validateData';
-import InfoDiv from '../../molecules/infoDiv';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { FeatureBase, VaccineFeature, VaccineProps } from '@/types/features';
+
+import InfoDiv from '@/components/molecules/infoDiv';
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { checkDateError, checkNumberError, compareDate } from '@/utils/validateData';
+
 import { VaccineInfoFormProps } from './interface';
 
 const InfoForm = React.forwardRef<FeatureEditorHandler, VaccineInfoFormProps>(function InfoForm(

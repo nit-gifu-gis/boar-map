@@ -1,4 +1,5 @@
 import Image from 'next/image';
+
 import { InfoTypeItemImageProps } from './interface';
 
 const InfoTypeItemImage: React.FunctionComponent<InfoTypeItemImageProps> = ({

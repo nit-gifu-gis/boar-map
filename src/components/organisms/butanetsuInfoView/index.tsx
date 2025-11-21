@@ -1,4 +1,5 @@
-import InfoDiv from '../../molecules/infoDiv';
+import InfoDiv from '@/components/molecules/infoDiv';
+
 import { ButanetsuInfoViewProps } from './interface';
 
 const ButanetsuInfoView: React.FunctionComponent<ButanetsuInfoViewProps> = ({ detail }) => {

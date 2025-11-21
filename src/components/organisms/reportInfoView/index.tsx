@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
-import InfoDiv from '../../molecules/infoDiv';
-import { ReportBBodyValue, ReportInfoViewProps } from './interface';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
 import { useRouter } from 'next/router';
-import { alert } from '../../../utils/modal';
+import { useEffect, useMemo, useState } from 'react';
+
+import InfoDiv from '@/components/molecules/infoDiv';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
+
+import { ReportBBodyValue, ReportInfoViewProps } from './interface';
 
 const ReportInfoView: React.FunctionComponent<ReportInfoViewProps> = ({
   detail,

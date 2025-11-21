@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
+
 import { VersionInfoProps } from './interface';
 
 const VersionInfo: React.FunctionComponent<VersionInfoProps> = ({ version }) => {

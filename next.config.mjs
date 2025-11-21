@@ -1,16 +1,20 @@
-/** @type {import('next').NextConfig} */
-module.exports = {
+// Injected content via Sentry wizard below
+import { withSentryConfig } from "@sentry/nextjs";
+import path from "path";
+
+const nextConfig = {
   productionBrowserSourceMaps: true,
   reactStrictMode: true,
+  webpack: config => {
+    // Vue と同じように 「@ = src/」,「~ = src/」に設定する。
+    // => モジュールのパス解決とエイリアスを設定している。
+    config.resolve.alias["@"] = path.resolve(process.cwd(), "src");
+    return config;
+  },
 };
 
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(
-  module.exports,
+export default withSentryConfig(
+  nextConfig,
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
@@ -20,7 +24,7 @@ module.exports = withSentryConfig(
 
     org: "boar-map",
     project: "boar-map",
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE
+    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
   },
   {
     // For all available options, see:

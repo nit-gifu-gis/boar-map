@@ -1,4 +1,5 @@
-import InfoDiv from '../../molecules/infoDiv';
+import InfoDiv from '@/components/molecules/infoDiv';
+
 import { TrapInfoViewProps } from './interface';
 
 const TrapInfoView: React.FunctionComponent<TrapInfoViewProps> = ({

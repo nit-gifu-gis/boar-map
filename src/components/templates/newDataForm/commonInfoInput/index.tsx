@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { to_header_color, to_header_title } from "../../../../utils/header";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import RoundButton from "../../../atomos/roundButton";
-import Footer from "../../../organisms/footer";
-import Header from "../../../organisms/header";
-import { InputFormTemplateCommonProps } from "../interfaces";
 import { useRouter } from "next/router";
-import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
-import FeatureEditor from "../../../organisms/featureEditor";
-import { FeatureEditorHandler } from "../../../organisms/featureEditor/interface";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
-import { ImagewithLocation } from "../../../atomos/imageInput/interface";
-import { alert } from '../../../../utils/modal';
+
+import FooterAdjustment from "@/components/atomos/footerAdjustment";
+import { ImagewithLocation } from "@/components/atomos/imageInput/interface";
+import RoundButton from "@/components/atomos/roundButton";
+import FeatureEditor from "@/components/organisms/featureEditor";
+import { FeatureEditorHandler } from "@/components/organisms/featureEditor/interface";
+import Footer from "@/components/organisms/footer";
+import Header from "@/components/organisms/header";
+import { InputFormData, useFormDataParser } from "@/utils/form-data";
+import { to_header_color, to_header_title } from "@/utils/header";
+import { alert } from '@/utils/modal';
+
+import { InputFormTemplateCommonProps } from "../interfaces";
 
 const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();

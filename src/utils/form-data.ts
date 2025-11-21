@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { LayerType } from "./gis";
 import { parseCookies, setCookie } from "nookies";
+import { useEffect, useMemo, useState } from "react";
+
+import { LayerType } from "./gis";
 import { isObjectURLAvailable } from "./image";
-import { FeatureBase } from "../types/features";
 import { ImagewithLocation } from "../components/atomos/imageInput/interface";
+import { FeatureBase } from "../types/features";
 
 export interface InputFormData {
   dataType: LayerType;

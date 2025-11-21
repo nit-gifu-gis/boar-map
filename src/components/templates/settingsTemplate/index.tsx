@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import RoundButton from '../../atomos/roundButton';
-import Header from '../../organisms/header';
+
+import RoundButton from '@/components/atomos/roundButton';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

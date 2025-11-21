@@ -1,8 +1,11 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { FeatureBase, YoutonFeature, YoutonProps } from '../../../types/features';
-import { checkDateError, checkNumberError } from '../../../utils/validateData';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { FeatureBase, YoutonFeature, YoutonProps } from '@/types/features';
+
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { checkDateError, checkNumberError } from '@/utils/validateData';
+
 import { YoutonInfoFormProps } from './interface';
 
 const YoutonInfoForm = React.forwardRef<FeatureEditorHandler, YoutonInfoFormProps>(
