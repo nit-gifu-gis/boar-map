@@ -1,15 +1,19 @@
 import { useRouter } from "next/router";
-import { InputFormTemplateCommonProps } from "../interfaces";
-import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import RoundButton from "../../../atomos/roundButton";
-import Footer from "../../../organisms/footer";
-import Header from "../../../organisms/header";
-import { to_header_color } from "../../../../utils/header";
-import { useCallback, useEffect, useState } from "react";
-import { LatLngZoom, LatLngZoomCookie, Location } from "../../../organisms/mapBase/interface";
-import SelectionMap from "../../../organisms/selectionMap";
 import { parseCookies } from "nookies";
+import { useCallback, useEffect, useState } from "react";
+
+import { to_header_color } from "@/components/../utils/header";
+
+import FooterAdjustment from "@/components/atomos/footerAdjustment";
+import RoundButton from "@/components/atomos/roundButton";
+import Footer from "@/components/organisms/footer";
+import Header from "@/components/organisms/header";
+import { LatLngZoom, LatLngZoomCookie, Location } from "@/components/organisms/mapBase/interface";
+import SelectionMap from "@/components/organisms/selectionMap";
+import { InputFormData, useFormDataParser } from "@/utils/form-data";
+
+import { InputFormTemplateCommonProps } from "../interfaces";
+
 
 const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();

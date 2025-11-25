@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import { useRequireLogin } from '../../hooks/useLogin';
-import CommonInfoInputTemplate from '../../components/templates/newDataForm/commonInfoInput';
+
+import CommonInfoInputTemplate from '@/components/templates/newDataForm/commonInfoInput';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const EditInfoPage: NextPage = () => {
   useRequireLogin();

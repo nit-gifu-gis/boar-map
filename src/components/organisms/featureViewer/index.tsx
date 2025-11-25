@@ -6,14 +6,16 @@ import {
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
-} from '../../../types/features';
-import BoarInfov1View from '../boarInfov1View';
-import BoarInfov2View from '../boarInfov2View';
-import ButanetsuInfoView from '../butanetsuInfoView';
-import ReportInfoView from '../reportInfoView';
-import TrapInfoView from '../trapInfoView';
-import VaccineInfoView from '../vaccineInfoView';
-import YoutonInfoView from '../youtonView';
+} from '@/types/features';
+
+import BoarInfov1View from '@/components/organisms/boarInfov1View';
+import BoarInfov2View from '@/components/organisms/boarInfov2View';
+import ButanetsuInfoView from '@/components/organisms/butanetsuInfoView';
+import ReportInfoView from '@/components/organisms/reportInfoView';
+import TrapInfoView from '@/components/organisms/trapInfoView';
+import VaccineInfoView from '@/components/organisms/vaccineInfoView';
+import YoutonInfoView from '@/components/organisms/youtonView';
+
 import { FeatureViewerProps } from './interface';
 
 const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({

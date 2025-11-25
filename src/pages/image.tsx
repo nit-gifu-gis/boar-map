@@ -1,8 +1,9 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-import { SERVER_URI } from "../utils/constants";
-import { getAccessToken } from "../utils/currentUser";
+
+import { SERVER_URI } from "@/utils/constants";
+import { getAccessToken } from "@/utils/currentUser";
 
 const ImageViewer: NextPage = () => {
   const router = useRouter();

@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import JibieTraderAddTemplate from '../../../../components/templates/jibieTraderAddTemplate';
-import { useRequireLogin } from '../../../../hooks/useLogin';
+
+import JibieTraderAddTemplate from '@/components/templates/jibieTraderAddTemplate';
+import { useRequireLogin } from '@/hooks/useLogin';
 
 const JibieTraderAddPage: NextPage = () => {
   useRequireLogin();

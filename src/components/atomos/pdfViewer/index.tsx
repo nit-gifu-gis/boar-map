@@ -1,5 +1,7 @@
 import Link from "next/link";
-import RoundButton from "../roundButton";
+
+import RoundButton from "@/components/atomos/roundButton";
+
 import { PDFViewerInterface } from "./interface";
 
 const PDFViewer: React.FunctionComponent<PDFViewerInterface> = (props) => {

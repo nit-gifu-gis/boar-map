@@ -1,6 +1,7 @@
-import { VaccineFeature } from '../../../types/features';
-import { ImagewithLocation } from '../../atomos/imageInput/interface';
-import { LatLngZoom } from '../mapBase/interface';
+import { VaccineFeature } from '@/types/features';
+
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
+import { LatLngZoom } from '@/components/organisms/mapBase/interface';
 
 export interface VaccineInfoFormProps {
   location: LatLngZoom;

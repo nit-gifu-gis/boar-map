@@ -1,5 +1,5 @@
-import { User } from '../types/user';
 import { strEnum } from './strEnum';
+import { User } from '../types/user';
 
 const UserDepartments = strEnum(['T', 'U', 'S', 'R', 'W', 'K', 'D', 'J', 'H', 'Y']);
 export type UserDepartment = keyof typeof UserDepartments;

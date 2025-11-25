@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { alert } from '../../../utils/modal';
-import RoundButton from '../../atomos/roundButton';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
+
 import { PCRFormInterface } from './interface';
 
 const PCRForm: React.FunctionComponent<PCRFormInterface> = ({ maxSize }) => {

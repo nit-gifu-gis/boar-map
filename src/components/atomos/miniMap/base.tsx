@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
-import { MiniMapProps } from './interface';
 import L from 'leaflet';
-import { LatLngZoom, LatLngZoomCookie } from '../../organisms/mapBase/interface';
-import EventListener from 'react-event-listener';
 import { parseCookies } from 'nookies';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import '../../../utils/extwms';
+import { useEffect, useState } from 'react';
+import EventListener from 'react-event-listener';
+
+import { LatLngZoom, LatLngZoomCookie } from '@/components/organisms/mapBase/interface';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
+import { MiniMapProps } from './interface';
+import '@/utils/extwms';
 
 const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);

@@ -1,9 +1,10 @@
-import CityInput from '../../atomos/cityInput';
-import DateInput from '../../atomos/dateInput';
-import MeshNoInput from '../../atomos/meshNoInput';
-import SelectInput from '../../atomos/selectInput';
-import TextAreaInput from '../../atomos/textAreaInput';
-import TextInput from '../../atomos/TextInput';
+import CityInput from '@/components/atomos/cityInput';
+import DateInput from '@/components/atomos/dateInput';
+import MeshNoInput from '@/components/atomos/meshNoInput';
+import SelectInput from '@/components/atomos/selectInput';
+import TextAreaInput from '@/components/atomos/textAreaInput';
+import TextInput from '@/components/atomos/TextInput';
+
 import { InfoInputProps } from './interface';
 
 const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {

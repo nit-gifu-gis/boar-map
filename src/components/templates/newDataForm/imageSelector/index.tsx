@@ -1,15 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { InputFormData, useFormDataParser } from "../../../../utils/form-data";
-import { to_header_color } from "../../../../utils/header";
-import FooterAdjustment from "../../../atomos/footerAdjustment";
-import RoundButton from "../../../atomos/roundButton";
-import Footer from "../../../organisms/footer";
-import Header from "../../../organisms/header";
-import { InputFormTemplateCommonProps } from "../interfaces";
 import { useRouter } from "next/router";
-import ImageInput from "../../../atomos/imageInput";
-import { ImagewithLocation } from "../../../atomos/imageInput/interface";
-import { alert } from '../../../../utils/modal';
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import FooterAdjustment from "@/components/atomos/footerAdjustment";
+import ImageInput from "@/components/atomos/imageInput";
+import { ImagewithLocation } from "@/components/atomos/imageInput/interface";
+import RoundButton from "@/components/atomos/roundButton";
+import Footer from "@/components/organisms/footer";
+import Header from "@/components/organisms/header";
+import { InputFormData, useFormDataParser } from "@/utils/form-data";
+import { to_header_color } from "@/utils/header";
+import { alert } from '@/utils/modal';
+
+import { InputFormTemplateCommonProps } from "../interfaces";
 
 const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();

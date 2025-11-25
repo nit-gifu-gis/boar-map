@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import RoundButton from '../../atomos/roundButton';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+
 import { MeshFormInterface } from './interface';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
 
 const ButanetsuForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);

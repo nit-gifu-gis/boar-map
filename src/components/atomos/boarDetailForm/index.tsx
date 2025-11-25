@@ -1,18 +1,22 @@
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { BoarInfoFeatureV2, BoarInfoPropsV2 } from '../../../types/features';
+
+import { BoarInfoFeatureV2, BoarInfoPropsV2 } from '@/types/features';
+
+import InfoDiv from '@/components/molecules/infoDiv';
+import InfoInput from '@/components/molecules/infoInput';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
 import {
   fetchTraderList,
   filterListByArea,
   getTraderByName,
   includeTrader,
-} from '../../../utils/jibie';
-import { checkDateError, checkNumberError } from '../../../utils/validateData';
-import InfoDiv from '../../molecules/infoDiv';
-import InfoInput from '../../molecules/infoInput';
+} from '@/utils/jibie';
+import { checkDateError, checkNumberError } from '@/utils/validateData';
+
 import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } from './interface';
-import { getAccessToken } from '../../../utils/currentUser';
-import { SERVER_URI } from '../../../utils/constants';
+
 
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {

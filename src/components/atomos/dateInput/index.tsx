@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getBrowser, getDevice } from '../../../utils/browser';
-import TextInput from '../TextInput';
+
+import TextInput from '@/components/atomos/TextInput';
+import { getBrowser, getDevice } from '@/utils/browser';
+
 import { DateInputProps } from './interface';
 
 const DateInput: React.FunctionComponent<DateInputProps> = (props) => {

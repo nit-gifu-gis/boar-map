@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import SelectInput from '../selectInput';
+
+import SelectInput from '@/components/atomos/selectInput';
+
 import { WorkTimeInputProps } from './interface';
 
 const WorkTimeInput: React.FunctionComponent<WorkTimeInputProps> = (props) => {

@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
-import FooterAdjustment from '../../atomos/footerAdjustment';
-import RoundButton from '../../atomos/roundButton';
-import Footer from '../../organisms/footer';
-import Header from '../../organisms/header';
-import MapBase from '../../organisms/mapBase';
-import { useFormDataParser } from '../../../utils/form-data';
+
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import MapBase from '@/components/organisms/mapBase';
+import { useFormDataParser } from '@/utils/form-data';
 
 const MapTemplate: React.FunctionComponent = () => {
   const formParser = useFormDataParser();

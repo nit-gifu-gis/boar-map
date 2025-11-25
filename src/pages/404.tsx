@@ -1,6 +1,6 @@
+import { NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
-import { NextPage } from 'next';
 
 // 404はここで捕捉する
 

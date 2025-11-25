@@ -1,12 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
-import { alert } from '../../../utils/modal';
-import PCRForm from '../../organisms/pcrForm';
-import Header from '../../organisms/header';
-import MeshForm from '../../organisms/meshForm';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
+
+import Header from '@/components/organisms/header';
+import MeshForm from '@/components/organisms/meshForm';
+import PCRForm from '@/components/organisms/pcrForm';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
 
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();

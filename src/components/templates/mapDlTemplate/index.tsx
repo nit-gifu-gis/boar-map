@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { alert } from '../../../utils/modal';
-import Header from '../../organisms/header';
-import RoundButton from '../../atomos/roundButton';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
+
+import RoundButton from '@/components/atomos/roundButton';
+import Header from '@/components/organisms/header';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
 
 interface MapDLInfo {
   file_no: number;

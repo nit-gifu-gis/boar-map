@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '../../organisms/header';
+
+import Header from '@/components/organisms/header';
 
 const IndexTemplate: React.FunctionComponent = () => {
   return (

@@ -1,10 +1,10 @@
+import { SERVER_URI } from './constants';
+import { getAccessToken } from './currentUser';
 import {
   MyTraderInfo,
   TraderInfo,
   TraderList,
 } from '../components/atomos/boarDetailForm/interface';
-import { SERVER_URI } from './constants';
-import { getAccessToken } from './currentUser';
 
 export const checkLuhn = (value: string): boolean => {
   if (value.length < 0) return false;

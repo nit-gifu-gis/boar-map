@@ -1,8 +1,11 @@
 import React, { useImperativeHandle, useState } from 'react';
-import { ButanetsuFeature, ButanetsuProps, FeatureBase } from '../../../types/features';
-import { checkDateError, checkNumberError } from '../../../utils/validateData';
-import InfoInput from '../../molecules/infoInput';
-import { FeatureEditorHandler } from '../featureEditor/interface';
+
+import { ButanetsuFeature, ButanetsuProps, FeatureBase } from '@/types/features';
+
+import InfoInput from '@/components/molecules/infoInput';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import { checkDateError, checkNumberError } from '@/utils/validateData';
+
 import { ButanetsuInfoFormProps } from './interface';
 
 const ButanetsuInfoForm = React.forwardRef<FeatureEditorHandler, ButanetsuInfoFormProps>(

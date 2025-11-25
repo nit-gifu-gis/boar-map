@@ -1,9 +1,11 @@
-import ImageListView from '../../atomos/imageListView';
-import InfoText from '../../atomos/infoText';
-import MiniMap from '../../atomos/miniMap';
-import InfoTitle from '../../atomos/infoTitle';
+import ImageListView from '@/components/atomos/imageListView';
+import InfoText from '@/components/atomos/infoText';
+import InfoTitle from '@/components/atomos/infoTitle';
+import MiniMap from '@/components/atomos/miniMap';
+import { MistakeValue, ReportBServerValue, ToolValue, WorkValue } from '@/components/organisms/reportInfoView/interface';
+
 import { InfoDivProps } from './interface';
-import { MistakeValue, ReportBServerValue, ToolValue, WorkValue } from '../../organisms/reportInfoView/interface';
+
 
 const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, title }) => {
   const getTimeStr = (date_str: string): string => {

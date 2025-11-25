@@ -1,7 +1,12 @@
+import L, { LatLngExpression } from 'leaflet';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import React from 'react';
 import EventListener from 'react-event-listener';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import { useSetRecoilState } from 'recoil';
+import 'leaflet-easybutton';
+import 'leaflet.markercluster';
+
 import {
   BoarCommonFeatureV2,
   BoarFeatureV1,
@@ -15,22 +20,20 @@ import {
   TrapFeature,
   VaccineFeature,
   YoutonFeature,
-} from '../../../types/features';
-import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { hasReadPermission } from '../../../utils/gis';
-import { LatLngZoom, Location } from '../mapBase/interface';
+} from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { LatLngZoom, Location } from '@/components/organisms/mapBase/interface';
+import { useButanetsuView } from '@/hooks/useButanetsuView';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { butanetsuViewState } from '@/states/butanetsuView';
+import '@/utils/extwms';
+import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { hasReadPermission } from '@/utils/gis';
+import { cityList } from '@/utils/modal';
+
 import { SelectionMapProps } from './interface';
-import L, { LatLngExpression } from 'leaflet';
-import '../../../utils/extwms';
-import 'leaflet-easybutton';
-import 'leaflet.markercluster';
-import RoundButton from '../../atomos/roundButton';
-import { cityList } from '../../../utils/modal';
-import { useButanetsuView } from '../../../hooks/useButanetsuView';
-import { useSetRecoilState } from 'recoil';
-import { butanetsuViewState } from '../../../states/butanetsuView';
-import React from 'react';
 
 const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   const [, setLoc] = useState<Location | null>(null);

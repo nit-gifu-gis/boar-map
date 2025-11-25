@@ -1,11 +1,13 @@
 // 選択肢がOKしか無いアラートのモーダル
 
 import React, { useState } from 'react';
-import { CityInfo } from '../../../types/features';
-import ModalBg from '../../atomos/modalBg';
-import ModalWindw from '../../atomos/modalWindow';
-import RoundButton from '../../atomos/roundButton';
-import SelectInput from '../../atomos/selectInput';
+
+import { CityInfo } from '@/components/../types/features';
+
+import ModalBg from '@/components/atomos/modalBg';
+import ModalWindw from '@/components/atomos/modalWindow';
+import RoundButton from '@/components/atomos/roundButton';
+import SelectInput from '@/components/atomos/selectInput';
 
 type Props = {
   list: CityInfo[];

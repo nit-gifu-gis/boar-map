@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { alert } from '../../../utils/modal';
-import RoundButton from '../../atomos/roundButton';
-import BoarTable from '../boarTable';
-import ReportTable from '../reportTable';
-import TrapTable from '../trapTable';
-import VaccineTable from '../vaccineTable';
+
+import RoundButton from '@/components/atomos/roundButton';
+import BoarTable from '@/components/organisms/boarTable';
+import ReportTable from '@/components/organisms/reportTable';
+import TrapTable from '@/components/organisms/trapTable';
+import VaccineTable from '@/components/organisms/vaccineTable';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { alert } from '@/utils/modal';
+
 import { SearchResultProps } from './interface';
 
 const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, searchResult }) => {

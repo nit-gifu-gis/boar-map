@@ -1,10 +1,13 @@
 import Image from 'next/image';
-import Header from '../../organisms/header';
-import LoginForm from '../../organisms/loginForm';
-import { LoginProps, Notice } from './interface';
-import RoundButton from '../../atomos/roundButton';
-import { REPORT_FORM_URL, SERVER_URI } from '../../../utils/constants';
 import { useEffect, useState } from 'react';
+
+import RoundButton from '@/components/atomos/roundButton';
+import Header from '@/components/organisms/header';
+import LoginForm from '@/components/organisms/loginForm';
+import { REPORT_FORM_URL, SERVER_URI } from '@/utils/constants';
+
+import { LoginProps, Notice } from './interface';
+
 
 const LoginTemplate: React.FunctionComponent<LoginProps> = ({ version }: LoginProps) => {
   const [notice, setNotice] = useState<Notice[]>([]);

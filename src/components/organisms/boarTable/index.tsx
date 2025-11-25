@@ -1,22 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/router';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { useCurrentUser } from '../../../hooks/useCurrentUser';
+
 import {
   BoarCommonPropsV2,
   BoarFeaturePropsV2,
   BoarFeatureV2,
   BoarInfoPropsV2,
   FeatureBase,
-} from '../../../types/features';
-import { SERVER_URI } from '../../../utils/constants';
-import { getAccessToken } from '../../../utils/currentUser';
-import { hasWritePermission } from '../../../utils/gis';
-import { alert, yesNo } from '../../../utils/modal';
-import { sortFeatures } from '../../../utils/sort';
-import RoundButton from '../../atomos/roundButton';
+} from '@/types/features';
+
+import RoundButton from '@/components/atomos/roundButton';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { getAccessToken } from '@/utils/currentUser';
+import { useFormDataParser } from '@/utils/form-data';
+import { hasWritePermission } from '@/utils/gis';
+import { alert, yesNo } from '@/utils/modal';
+import { sortFeatures } from '@/utils/sort';
+
 import { BoarTableProps } from './interface';
-import { useFormDataParser } from '../../../utils/form-data';
+
 
 const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   const router = useRouter();

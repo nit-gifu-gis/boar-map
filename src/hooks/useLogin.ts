@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+
 import { useCurrentUser } from './useCurrentUser';
 
 // ログイン状態でしかアクセスd系内ページはこれを呼び出す

@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
+
+import TextInput from "@/components/atomos/TextInput";
+import InfoInput from "@/components/molecules/infoInput";
+
 import { WorkDetailInputProps } from "./interface";
-import TextInput from "../TextInput";
-import InfoInput from "../../molecules/infoInput";
 
 const WorkDetailInput: React.FC<WorkDetailInputProps> = (props) => {
   const parsedDefaultValue = useMemo(() => {

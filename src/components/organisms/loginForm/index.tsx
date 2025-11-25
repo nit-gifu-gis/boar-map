@@ -1,15 +1,16 @@
+import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/router';
+import { setCookie } from 'nookies';
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { currentUserState } from '../../../states/currentUser';
-import { fetchCurrentUser } from '../../../utils/currentUser';
-import { SERVER_URI } from '../../../utils/constants';
-import RoundButton from '../../atomos/roundButton';
-import TextInput from '../../atomos/TextInput';
-import { setCookie } from 'nookies';
-import { alert, confirm } from '../../../utils/modal';
-import * as Sentry from '@sentry/nextjs';
-import { butanetsuViewState } from '../../../states/butanetsuView';
+
+import RoundButton from '@/components/atomos/roundButton';
+import TextInput from '@/components/atomos/TextInput';
+import { butanetsuViewState } from '@/states/butanetsuView';
+import { currentUserState } from '@/states/currentUser';
+import { SERVER_URI } from '@/utils/constants';
+import { fetchCurrentUser } from '@/utils/currentUser';
+import { alert, confirm } from '@/utils/modal';
 
 const LoginForm: React.FunctionComponent = () => {
   const setCurrentUser = useSetRecoilState(currentUserState);
