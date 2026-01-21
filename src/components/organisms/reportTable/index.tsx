@@ -15,7 +15,6 @@ import { sortFeatures } from '@/utils/sort';
 
 import { ReportTableProps } from './interface';
 
-
 const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   const router = useRouter();
   const paramParser = useFormDataParser();
@@ -39,7 +38,7 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   };
 
   const updateTable = () => {
-    const features = p.features.filter(v=>{
+    const features = p.features.filter((v) => {
       return !deletedFeatures.includes((v as ReportFeature).properties.ID$ as string);
     });
 
@@ -86,10 +85,10 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
         curImg: {
           teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
           other: ((feature.properties as Record<string, string>)['画像ID'] || '').split(','),
-        }
-      }
+        },
+      },
     });
-    
+
     if (yesNoCheck) {
       router.push('/edit/location');
     } else {
@@ -111,14 +110,15 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
     if (res.status === 200) {
       const blob = await res.blob();
       const anchor = document.createElement('a');
-      
+
       const dtStr = feature.properties.作業開始時;
       const dt = new Date(dtStr);
       const yyyy = ('0000' + dt.getFullYear()).slice(-4);
       const mm = ('00' + (dt.getMonth() + 1)).slice(-2);
       const dd = ('00' + dt.getDate()).slice(-2);
 
-      const name = '作業日報 - ' + feature.properties.入力者 + ' (' + yyyy + '-' + mm + '-' + dd + ').pdf';
+      const name =
+        '作業日報 - ' + feature.properties.入力者 + ' (' + yyyy + '-' + mm + '-' + dd + ').pdf';
       // IE対応
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -140,10 +140,9 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
   }, []);
 
   const onClickDelete = async (id: string | undefined, feature: FeatureBase) => {
-    if(!await confirm(`ID: ${id}の情報を削除しますか？`))
-      return;
+    if (!(await confirm(`ID: ${id}の情報を削除しますか？`))) return;
 
-    const type = "report";
+    const type = 'report';
 
     setEditable(false);
     // 画像の削除用関数の準備
@@ -151,9 +150,7 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
     let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
     let imageIds: string[] = [];
 
-    imageIds = ((feature.properties as Record<string, unknown>)['画像ID'] as string).split(
-      ',',
-    );
+    imageIds = ((feature.properties as Record<string, unknown>)['画像ID'] as string).split(',');
 
     // 画像ファイルが存在する場合のみ関数を定義する。
     if (imageIds.length >= 1 && imageIds[0] != '') {
@@ -268,21 +265,23 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
             >
               氏名
             </th>
-            <th className={'border border-b-2 border-solid border-border p-1 '}>
-              捕獲補助者
-            </th>
+            <th className={'border border-b-2 border-solid border-border p-1 '}>捕獲補助者</th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('市町村字')
               }
               onClick={() => sort('市町村字')}
-            >市町村・字</th>
+            >
+              市町村・字
+            </th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('ワクチンNO')
               }
               onClick={() => sort('ワクチンNO')}
-            >ワクチンメッシュ番号</th>
+            >
+              ワクチンメッシュ番号
+            </th>
             <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('作業開始時')
@@ -334,14 +333,19 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                       disabled={!editable}
                       onClick={() => onClickDelete(props.ID$, f)}
                     >
-                        削除
+                      削除
                     </RoundButton>
                   </div>
                 </td>
                 <td className='border border-solid border-border p-1'>
-                  <RoundButton color='excel' onClick={() => onClickPdfDownload(`${props.ID$}`, f as ReportFeature)} disabled={isDownloading}>
+                  <RoundButton
+                    color='excel'
+                    onClick={() => onClickPdfDownload(`${props.ID$}`, f as ReportFeature)}
+                    disabled={isDownloading}
+                  >
                     ダウンロード
-                  </RoundButton></td>
+                  </RoundButton>
+                </td>
                 <td className='border border-solid border-border p-1 text-right'>{props.ID$}</td>
                 <td className='border border-solid border-border p-1'>{props.入力者}</td>
                 <td className='border border-solid border-border p-1'>{props.地域}</td>
@@ -360,9 +364,7 @@ const ReportTable: React.FunctionComponent<ReportTableProps> = (p) => {
                   <br />
                   {props.作業終了時.split(' ')[1]}
                 </td>
-                <td className='border border-solid border-border p-1 text-right'>
-                  {props.更新日}
-                </td>
+                <td className='border border-solid border-border p-1 text-right'>{props.更新日}</td>
                 <td className='border border-solid border-border p-1'>{props.作業報告}</td>
                 <td className='border border-solid border-border p-1'>{props.備考}</td>
               </tr>

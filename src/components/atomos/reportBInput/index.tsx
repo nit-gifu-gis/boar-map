@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 
-import TextInput from "@/components/atomos/TextInput";
+import TextInput from '@/components/atomos/TextInput';
 
-import { ReportBInputProps } from "./interface";
+import { ReportBInputProps } from './interface';
 
 const ReportBInput: React.FC<ReportBInputProps> = (props) => {
   const parsedToolValue = useMemo(() => {
@@ -13,15 +13,15 @@ const ReportBInput: React.FC<ReportBInputProps> = (props) => {
       tool: {
         elec: false,
         gun: false,
-        other: false
+        other: false,
       },
-      other_tool: ''
+      other_tool: '',
     };
 
     if (!props.toolDefaultValue) {
       return data;
     }
-    
+
     const lines = props.toolDefaultValue.split('\n');
     const tool = (lines[0] || '').split('/');
     data.tool.elec = tool[0] === '電気とめさし器';
@@ -51,9 +51,9 @@ const ReportBInput: React.FC<ReportBInputProps> = (props) => {
         <div className='mt-[15px] mb-[5px] w-full text-justify text-lg font-bold text-text'>
           捕獲作業を手伝った者の氏名
         </div>
-        <TextInput 
-          type="text"
-          id={props.id + "_helper"}
+        <TextInput
+          type='text'
+          id={props.id + '_helper'}
           defaultValue={props.helperDefaultValue || ''}
         />
       </div>
@@ -61,27 +61,51 @@ const ReportBInput: React.FC<ReportBInputProps> = (props) => {
         <div className='mt-[15px] mb-[5px] w-full text-justify text-lg font-bold text-text'>
           とめさしの道具
         </div>
-        <div className="flex mb-2 flex-wrap">
-          <div className="mr-4 mb-2">
-            <input type="checkbox" id={`${props.id}_elec`} className="scale-[2] w-7 mr-1" defaultChecked={parsedToolValue.tool.elec} />
-            <label htmlFor={`${props.id}_elec`} className="text-lg" >電気とめさし器</label>
+        <div className='mb-2 flex flex-wrap'>
+          <div className='mr-4 mb-2'>
+            <input
+              type='checkbox'
+              id={`${props.id}_elec`}
+              className='mr-1 w-7 scale-[2]'
+              defaultChecked={parsedToolValue.tool.elec}
+            />
+            <label htmlFor={`${props.id}_elec`} className='text-lg'>
+              電気とめさし器
+            </label>
           </div>
-          <div className="mr-4 mb-2">
-            <input type="checkbox" id={`${props.id}_gun`} className="scale-[2] w-7 mr-1" defaultChecked={parsedToolValue.tool.gun} />
-            <label htmlFor={`${props.id}_gun`} className="text-lg" >銃</label>
+          <div className='mr-4 mb-2'>
+            <input
+              type='checkbox'
+              id={`${props.id}_gun`}
+              className='mr-1 w-7 scale-[2]'
+              defaultChecked={parsedToolValue.tool.gun}
+            />
+            <label htmlFor={`${props.id}_gun`} className='text-lg'>
+              銃
+            </label>
           </div>
           <div>
-            <input type="checkbox" id={`${props.id}_other`} className="scale-[2] w-7 mr-1" defaultChecked={parsedToolValue.tool.other} onChange={(e) => setIsOther(e.target.checked)}/>
-            <label htmlFor={`${props.id}_other`} className="text-lg" >その他</label>
+            <input
+              type='checkbox'
+              id={`${props.id}_other`}
+              className='mr-1 w-7 scale-[2]'
+              defaultChecked={parsedToolValue.tool.other}
+              onChange={(e) => setIsOther(e.target.checked)}
+            />
+            <label htmlFor={`${props.id}_other`} className='text-lg'>
+              その他
+            </label>
           </div>
         </div>
         {isOther ? (
-          <TextInput 
-            type="text"
-            id={props.id + "_other_tool"}
+          <TextInput
+            type='text'
+            id={props.id + '_other_tool'}
             defaultValue={parsedToolValue.other_tool}
           />
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,6 @@ export const useButanetsuView = () => {
   const currentView = useRecoilValue(butanetsuViewState);
 
   return {
-    currentView
+    currentView,
   };
 };

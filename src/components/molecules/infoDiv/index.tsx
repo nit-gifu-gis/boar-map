@@ -2,10 +2,14 @@ import ImageListView from '@/components/atomos/imageListView';
 import InfoText from '@/components/atomos/infoText';
 import InfoTitle from '@/components/atomos/infoTitle';
 import MiniMap from '@/components/atomos/miniMap';
-import { MistakeValue, ReportBServerValue, ToolValue, WorkValue } from '@/components/organisms/reportInfoView/interface';
+import {
+  MistakeValue,
+  ReportBServerValue,
+  ToolValue,
+  WorkValue,
+} from '@/components/organisms/reportInfoView/interface';
 
 import { InfoDivProps } from './interface';
-
 
 const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, title }) => {
   const getTimeStr = (date_str: string): string => {
@@ -80,51 +84,61 @@ const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, titl
         const [d1, d2] = data as unknown as [WorkValue, MistakeValue];
 
         const vals = {
-          'deer': 'ニホンジカ',
-          'serow': 'カモシカ',
-          'boar': 'ツキノワグマ',
-          'other': `その他 (${d2.animal_other})`
+          deer: 'ニホンジカ',
+          serow: 'カモシカ',
+          boar: 'ツキノワグマ',
+          other: `その他 (${d2.animal_other})`,
         };
 
         dataDiv = (
-          <div className="mb-4">
-            <div className="text-xl">
-              わな設置: {d1.trap.placed}基 / 撤去: {d1.trap.removed}基 {d1.crawl ? "/ 見回り" : ""} {d1.capture ? "/ 捕獲" : ""}<br />
+          <div className='mb-4'>
+            <div className='text-xl'>
+              わな設置: {d1.trap.placed}基 / 撤去: {d1.trap.removed}基 {d1.crawl ? '/ 見回り' : ''}{' '}
+              {d1.capture ? '/ 捕獲' : ''}
+              <br />
             </div>
             {d1.capture ? (
-              <div className="text-lg">
-                ({d1.capture_type.own ? "自身の罠で捕獲" : ""}{d1.capture_type.own && d1.capture_type.help ? "・" : ""}{d1.capture_type.help ? "捕獲手伝い" : ""}{(d1.capture_type.help && d1.capture_type.mistake) || (d1.capture_type.own && !d1.capture_type.help && d1.capture_type.mistake) ? "・" : ""}{d1.capture_type.mistake ? "錯誤捕獲" : ""})
+              <div className='text-lg'>
+                ({d1.capture_type.own ? '自身の罠で捕獲' : ''}
+                {d1.capture_type.own && d1.capture_type.help ? '・' : ''}
+                {d1.capture_type.help ? '捕獲手伝い' : ''}
+                {(d1.capture_type.help && d1.capture_type.mistake) ||
+                (d1.capture_type.own && !d1.capture_type.help && d1.capture_type.mistake)
+                  ? '・'
+                  : ''}
+                {d1.capture_type.mistake ? '錯誤捕獲' : ''})
               </div>
-            ) : <></>}
+            ) : (
+              <></>
+            )}
             {d1.capture_type.mistake ? (
               <>
                 <InfoTitle>錯誤捕獲</InfoTitle>
                 <div className='inside-border box-border w-full'>
                   <InfoTitle>わなの種類</InfoTitle>
-                  <div className="mb-4 text-xl">
-                    {d2.trap_type}
-                  </div>
+                  <div className='mb-4 text-xl'>{d2.trap_type}</div>
                 </div>
                 <div className='inside-border box-border w-full'>
                   <InfoTitle>獣種</InfoTitle>
-                  <div className="mb-4 text-xl">
-                    {Object.keys(d2.animal_type).filter((key) => d2.animal_type[key as 'deer' | 'serow' | 'boar' | 'other']).map(d => vals[d as 'deer' | 'serow' | 'boar' | 'other']).join('・')}
+                  <div className='mb-4 text-xl'>
+                    {Object.keys(d2.animal_type)
+                      .filter((key) => d2.animal_type[key as 'deer' | 'serow' | 'boar' | 'other'])
+                      .map((d) => vals[d as 'deer' | 'serow' | 'boar' | 'other'])
+                      .join('・')}
                   </div>
                 </div>
                 <div className='inside-border box-border w-full'>
                   <InfoTitle>頭数</InfoTitle>
-                  <div className="mb-4 text-xl">
-                    {d2.head_count} 頭
-                  </div>
+                  <div className='mb-4 text-xl'>{d2.head_count} 頭</div>
                 </div>
                 <div className='inside-border box-border w-full'>
                   <InfoTitle>対応</InfoTitle>
-                  <div className="mb-4 text-xl">
-                    {d2.response}
-                  </div>
+                  <div className='mb-4 text-xl'>{d2.response}</div>
                 </div>
               </>
-            ) : <></>}
+            ) : (
+              <></>
+            )}
           </div>
         );
         break;
@@ -132,51 +146,52 @@ const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, titl
       case 'workB': {
         const [d1, d2, d3] = data as unknown as [ReportBServerValue, string, ToolValue];
         const vals = {
-          'elec': '電気とめさし器',
-          'gun': '銃',
-          'other': `その他 (${d3.other_tool})`
+          elec: '電気とめさし器',
+          gun: '銃',
+          other: `その他 (${d3.other_tool})`,
         };
 
         dataDiv = (
-          <div className="mb-4">
+          <div className='mb-4'>
             <div className='inside-border box-border w-full'>
               <InfoTitle>捕獲者氏名</InfoTitle>
-              <div className="mb-4 text-xl">
-                {d1.捕獲者}
-              </div>
+              <div className='mb-4 text-xl'>{d1.捕獲者}</div>
             </div>
             <div className='inside-border box-border w-full'>
               <InfoTitle>捕獲補助者氏名</InfoTitle>
-              <div className="mb-4 text-xl">
-                {d2}
-              </div>
+              <div className='mb-4 text-xl'>{d2}</div>
             </div>
             <div className='inside-border box-border w-full'>
               <InfoTitle>とめさしの道具</InfoTitle>
-              <div className="mb-4 text-xl">
-                {Object.keys(d3.tool).filter((key) => d3.tool[key as 'elec' | 'gun' | 'other']).map(d => vals[d as 'elec' | 'gun' | 'other']).join('・')}
+              <div className='mb-4 text-xl'>
+                {Object.keys(d3.tool)
+                  .filter((key) => d3.tool[key as 'elec' | 'gun' | 'other'])
+                  .map((d) => vals[d as 'elec' | 'gun' | 'other'])
+                  .join('・')}
               </div>
             </div>
             <InfoTitle>捕獲情報</InfoTitle>
-            {Object.keys(d1.捕獲数).filter(key => d1.捕獲数[key as keyof typeof d1.捕獲数].捕獲数 != 0).map((key) => (
-              <div className='inside-border box-border w-full' key={key}>
-                <InfoTitle>{key.substring(0, 2)}({key.substring(2, 4)})</InfoTitle>
-                <div className="mb-4 text-xl">
-                  {d1.捕獲数[key as keyof typeof d1.捕獲数].捕獲数} 頭 / {d1.捕獲数[key as keyof typeof d1.捕獲数].体長} cm / {d1.捕獲数[key as keyof typeof d1.捕獲数].処分方法.join('・')}
+            {Object.keys(d1.捕獲数)
+              .filter((key) => d1.捕獲数[key as keyof typeof d1.捕獲数].捕獲数 != 0)
+              .map((key) => (
+                <div className='inside-border box-border w-full' key={key}>
+                  <InfoTitle>
+                    {key.substring(0, 2)}({key.substring(2, 4)})
+                  </InfoTitle>
+                  <div className='mb-4 text-xl'>
+                    {d1.捕獲数[key as keyof typeof d1.捕獲数].捕獲数} 頭 /{' '}
+                    {d1.捕獲数[key as keyof typeof d1.捕獲数].体長} cm /{' '}
+                    {d1.捕獲数[key as keyof typeof d1.捕獲数].処分方法.join('・')}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             <div className='inside-border box-border w-full'>
               <InfoTitle>遠沈管番号</InfoTitle>
-              <div className="mb-4 text-xl">
-                {d1.遠沈管番号.join('、')}
-              </div>
+              <div className='mb-4 text-xl'>{d1.遠沈管番号.join('、')}</div>
             </div>
             <div className='inside-border box-border w-full'>
               <InfoTitle>わなの種類</InfoTitle>
-              <div className="mb-4 text-xl">
-                {d1.わなの種類.join('・')}
-              </div>
+              <div className='mb-4 text-xl'>{d1.わなの種類.join('・')}</div>
             </div>
           </div>
         );

@@ -39,18 +39,9 @@ const TextInputModal: React.FunctionComponent<Props> = (props) => {
   return (
     <ModalBg>
       <ModalWindw>
-        <div className='whitespace-pre-wrap'>
-          {props.message}
-        </div>
-        <div className='pt-5 whitespace-pre-wrap'>
-          {props.input_title}
-        </div>
-        <InfoInput
-          title={""}
-          type='textarea'
-          rows={3}
-          id='modalinput_text'
-        />
+        <div className='whitespace-pre-wrap'>{props.message}</div>
+        <div className='whitespace-pre-wrap pt-5'>{props.input_title}</div>
+        <InfoInput title={''} type='textarea' rows={3} id='modalinput_text' />
         <div className='mt-4 flex justify-around'>
           <div className='w-2/5'>
             <RoundButton color='accent' onClick={onCancelClicked.bind(this)}>

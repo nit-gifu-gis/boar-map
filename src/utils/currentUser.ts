@@ -1,8 +1,8 @@
 import { parseCookies, destroyCookie } from 'nookies';
 
+import { User } from '../types/user';
 import { SERVER_URI } from './constants';
 import { getUserDepartment } from './gis';
-import { User } from '../types/user';
 
 export const getAccessToken = (): string => {
   const cookies = parseCookies();

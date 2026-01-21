@@ -22,7 +22,7 @@ const ListTemplate: React.FunctionComponent = () => {
 
   const [recentResult, setRecentResult] = useState<FeatureBase[] | null>(null);
 
-  const [noteLabel, setNoteLabel] = useState("備考");
+  const [noteLabel, setNoteLabel] = useState('備考');
 
   const updateRecent = async () => {
     setRecentResult(null);
@@ -80,8 +80,8 @@ const ListTemplate: React.FunctionComponent = () => {
     setDownloading(true);
     const res = await fetch(SERVER_URI + '/List/Youton', {
       headers: {
-        'X-Access-Token': getAccessToken()
-      }
+        'X-Access-Token': getAccessToken(),
+      },
     });
 
     setDownloading(false);
@@ -122,12 +122,12 @@ const ListTemplate: React.FunctionComponent = () => {
             <>
               <div className='mx-auto max-w-[400px] py-5'>
                 <RoundButton color='excel' onClick={() => router.push('/import')}>
-                  データのインポート
+                データのインポート
                 </RoundButton>
               </div>
               <div className='mx-auto max-w-[400px] py-5'>
-                <RoundButton color="accent" onClick={() => downloadYouton()} disabled={downloading}>
-                  {downloading ? "ダウンロード中..." : "養豚場リストのダウンロード"}
+                <RoundButton color='accent' onClick={() => downloadYouton()} disabled={downloading}>
+                  {downloading ? 'ダウンロード中...' : '養豚場リストのダウンロード'}
                 </RoundButton>
               </div>
             </>
@@ -143,7 +143,8 @@ const ListTemplate: React.FunctionComponent = () => {
             {recentResult != null ? (
               <div className='mr-4 inline-block w-full'>
                 <div className='relative mb-3 h-auto text-xl font-bold'>
-                  直近5件の登録情報一覧を表示しています。 <div className='ml-5 inline-block w-32'>
+                  直近5件の登録情報一覧を表示しています。{' '}
+                  <div className='ml-5 inline-block w-32'>
                     <RoundButton color='accent' onClick={updateRecent}>
                       更新
                     </RoundButton>

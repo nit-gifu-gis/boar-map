@@ -82,7 +82,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
         },
         properties: {
           入力者: user,
-          メッシュ番号: "",
+          メッシュ番号: '',
           区分: division,
           捕獲年月日: date,
           位置情報: '(' + lat + ',' + lng + ')',
@@ -93,7 +93,7 @@ const BoarInfov1Form = React.forwardRef<FeatureEditorHandler, BoarInfov1FormProp
           '幼獣・成獣': age,
           性別: sex,
           体長: length,
-          体重: "",
+          体重: '',
           妊娠の状況: pregnant,
           処分方法: disposal,
           備考: note,

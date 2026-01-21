@@ -84,7 +84,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
       valid = false;
     }
 
-    if(!valid) {
+    if (!valid) {
       return;
     }
 
@@ -96,7 +96,7 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         'X-Access-Token': getAccessToken(),
       },
       body: JSON.stringify({
-        note_label: note_input.value
+        note_label: note_input.value,
       }),
     });
     const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
@@ -157,12 +157,12 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         },
         body: JSON.stringify(settings_new),
       });
-      
+
       setCurrentButanetsuView({
         radius: radius_val,
         days: time_val,
         style: 1,
-        origin: new Date()
+        origin: new Date(),
       });
 
       const message = res.ok ? '設定を更新しました。' : `エラーが発生しました。(${res.status})`;
@@ -182,20 +182,23 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
   };
 
   const onDeleteClicked = async () => {
-    if(!await confirm("本当に地図画像のキャッシュを削除しますか？")) 
-      return;
+    if (!(await confirm('本当に地図画像のキャッシュを削除しますか？'))) return;
 
     setDeleteButtonDisabled(true);
     const res = await fetch(SERVER_URI + '/Map/DeleteImage', {
       method: 'GET',
       headers: {
         'X-Access-Token': getAccessToken(),
-      }
+      },
     });
 
     const data = await res.json();
     setDeleteMessageDeleteTimerId((id) => {
-      setDeleteMessage(res.ok ? `${data.deleted}件のキャッシュされたデータを削除しました。` : `エラーが発生しました。(${res.status})`);
+      setDeleteMessage(
+        res.ok
+          ? `${data.deleted}件のキャッシュされたデータを削除しました。`
+          : `エラーが発生しました。(${res.status})`,
+      );
 
       if (id != null) clearTimeout(id);
 
@@ -227,7 +230,11 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         <div className='text-2xl font-bold'>入力項目設定</div>
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
           <InfoInput type='text' id='input_note' title='備考欄の入力項目名' error={inputsError} />
-          <RoundButton color='primary' onClick={onInputsUpdateClicked} disabled={inputsButtonDisabled}>
+          <RoundButton
+            color='primary'
+            onClick={onInputsUpdateClicked}
+            disabled={inputsButtonDisabled}
+          >
             保存
           </RoundButton>
           <div className='pt-3 text-center'>
@@ -240,8 +247,10 @@ const MapSettingsTemplate: React.FunctionComponent = () => {
         <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
           <div className='pb-3 text-left'>
             <span>
-              <span className="underline font-bold text-danger">注意</span><br />
-              地図画像のキャッシュを削除すると再度地図画像がキャッシュされるまで地図画像の表示速度が遅くなります。<br />
+              <span className='font-bold text-danger underline'>注意</span>
+              <br />
+              地図画像のキャッシュを削除すると再度地図画像がキャッシュされるまで地図画像の表示速度が遅くなります。
+              <br />
               GISの地図画像に更新があった場合などのみに実行してください。
             </span>
           </div>
