@@ -1,17 +1,17 @@
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import FooterAdjustment from "@/components/atomos/footerAdjustment";
-import ImageInput from "@/components/atomos/imageInput";
-import { ImagewithLocation } from "@/components/atomos/imageInput/interface";
-import RoundButton from "@/components/atomos/roundButton";
-import Footer from "@/components/organisms/footer";
-import Header from "@/components/organisms/header";
-import { InputFormData, useFormDataParser } from "@/utils/form-data";
-import { to_header_color } from "@/utils/header";
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import ImageInput from '@/components/atomos/imageInput';
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
+import RoundButton from '@/components/atomos/roundButton';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { InputFormData, useFormDataParser } from '@/utils/form-data';
+import { to_header_color } from '@/utils/header';
 import { alert } from '@/utils/modal';
 
-import { InputFormTemplateCommonProps } from "../interfaces";
+import { InputFormTemplateCommonProps } from '../interfaces';
 
 const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
@@ -21,32 +21,46 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
   const currentServerOtherImageIds = useMemo(() => {
     if (!isEditing) return [];
-    
-    const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<string, string> | undefined;
+
+    const featureProps = paramParser.currentData.inputData?.gisData?.properties as
+      | Record<string, string>
+      | undefined;
     if (!featureProps) return [];
 
     const t = paramParser.currentData.editData?.type_srv;
-    
+
     return (featureProps[t === 'boar-2' ? '写真ID' : '画像ID'] ?? '').split(',').filter((e) => e);
-  }, [isEditing, paramParser.currentData.inputData?.gisData, paramParser.currentData.editData?.type_srv]);
+  }, [
+    isEditing,
+    paramParser.currentData.inputData?.gisData,
+    paramParser.currentData.editData?.type_srv,
+  ]);
   const [newOtherImageIds, setNewOtherImageIds] = useState<string[]>(currentServerOtherImageIds);
-  const [otherImages, setOtherImages] = useState<ImagewithLocation[] | null>(paramParser.currentData.inputData?.otherImageUrls ?? null);
+  const [otherImages, setOtherImages] = useState<ImagewithLocation[] | null>(
+    paramParser.currentData.inputData?.otherImageUrls ?? null,
+  );
 
   const currentServerTeethImageIds = useMemo(() => {
     if (!isEditing) return [];
 
-    const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<string, string> | undefined;
+    const featureProps = paramParser.currentData.inputData?.gisData?.properties as
+      | Record<string, string>
+      | undefined;
     if (!featureProps) return [];
 
     const t = paramParser.currentData.editData?.type_srv;
-    if (t !== 'boar-2')
-      return [];
+    if (t !== 'boar-2') return [];
 
     return featureProps['歯列写真ID'].split(',').filter((e) => e);
-  }, [isEditing, paramParser.currentData.inputData?.gisData, paramParser.currentData.editData?.type_srv]);
+  }, [
+    isEditing,
+    paramParser.currentData.inputData?.gisData,
+    paramParser.currentData.editData?.type_srv,
+  ]);
   const [newTeethImageIds, setNewTeethImageIds] = useState<string[]>(currentServerTeethImageIds);
-  const [teethImages, setTeethImages] = useState<ImagewithLocation[] | null>(paramParser.currentData.inputData?.teethImageUrls?? null);
-
+  const [teethImages, setTeethImages] = useState<ImagewithLocation[] | null>(
+    paramParser.currentData.inputData?.teethImageUrls ?? null,
+  );
 
   useEffect(() => {
     if (!paramParser.currentData.dataType) {
@@ -60,10 +74,10 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
       router.push('/add/location');
     }
   }, [paramParser.currentData]);
-    
+
   const onClickNext = useCallback(() => {
     const t = paramParser.currentData.editData?.type_srv;
-    
+
     // 現在の入力情報を保存する。
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
 
@@ -72,10 +86,10 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
       newData.inputData.gisData = {
         geometry: {
           type: 'Point',
-          coordinates: [NaN, NaN]
+          coordinates: [NaN, NaN],
         },
         properties: {},
-        type: 'Feature'
+        type: 'Feature',
       };
     }
     const featureProps = newData.inputData?.gisData?.properties as Record<string, string>;
@@ -110,10 +124,10 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
               type: paramParser.currentData.editData?.type,
               type_srv: paramParser.currentData.editData?.type_srv,
               id: paramParser.currentData.editData?.id,
-              version: paramParser.currentData.editData?.version
-            }
-          }, 
-          '/detail'
+              version: paramParser.currentData.editData?.version,
+            },
+          },
+          '/detail',
         );
       } else {
         router.push('/edit/location');
@@ -143,36 +157,45 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
   return (
     <div>
-      <Header color={to_header_color(paramParser.currentData.dataType ?? '')}>{isEditing ? "登録画像編集" : "画像登録"}</Header>
+      <Header color={to_header_color(paramParser.currentData.dataType ?? '')}>
+        {isEditing ? '登録画像編集' : '画像登録'}
+      </Header>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div className='mx-[15px] mt-2 text-justify'>画像を登録してください。</div>
         <div className='mx-[15px] mt-2 text-justify'>
           {type === 'boar' ? (
             <>
-              <div className="flex mt-2">
+              <div className='mt-2 flex'>
                 <div>※&nbsp;</div>
                 <div>歯列の写真は2枚まで登録できます。</div>
               </div>
-              <div className="flex mt-2">
+              <div className='mt-2 flex'>
                 <div>※&nbsp;</div>
                 <div>その他の写真は8枚まで登録できます。</div>
               </div>
-              <div className="flex mt-2">
-                <div>※&nbsp;</div>
-                <div>歯列の写真は必ず遠沈管番号がわかるように<br />撮影してください。</div>
-              </div>
-              <div className="flex mt-3">
+              <div className='mt-2 flex'>
                 <div>※&nbsp;</div>
                 <div>
-                  <span className="font-bold">有害捕獲の場合:</span><br />
+                  歯列の写真は必ず遠沈管番号がわかるように
+                  <br />
+                  撮影してください。
+                </div>
+              </div>
+              <div className='mt-3 flex'>
+                <div>※&nbsp;</div>
+                <div>
+                  <span className='font-bold'>有害捕獲の場合:</span>
+                  <br />
                   ・検体採取個体の歯列写真
                 </div>
               </div>
-              <div className="flex">
+              <div className='flex'>
                 <div>※&nbsp;</div>
                 <div>
-                  <span className="font-bold">調査捕獲の場合:</span><br />
-                  ・検体採取個体の歯列写真<br />
+                  <span className='font-bold'>調査捕獲の場合:</span>
+                  <br />
+                  ・検体採取個体の歯列写真
+                  <br />
                   ・全捕獲個体のそれぞれ全体の写真
                 </div>
               </div>
@@ -181,7 +204,9 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
             <>※ 画像は10枚まで登録できます。</>
           )}
         </div>
-        {type != 'boar' ? <></> : (
+        {type != 'boar' ? (
+          <></>
+        ) : (
           <div className='box-border w-full px-[15px] py-2'>
             <div className='text-justify text-lg font-bold text-text'>
               歯列の画像

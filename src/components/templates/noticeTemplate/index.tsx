@@ -26,31 +26,33 @@ const NoticeTemplate: React.FunctionComponent = () => {
     <div className='w-screen bg-background'>
       <Header color='primary'>お知らせ</Header>
       <div className='mx-auto box-border w-screen max-w-window px-2'>
-        {notice ? notice.length ? (
-          notice.map((n, i) => (
-            <div className="box-border rounded-2xl border-2 border-border my-2 px-3 py-2" key={"notice_" + i}>
-              <span className="font-bold">{n.title}</span><br />
-              <span className="whitespace-pre-wrap">{n.content}</span>
-            </div>
-          ))
+        {notice ? (
+          notice.length ? (
+            notice.map((n, i) => (
+              <div
+                className='my-2 box-border rounded-2xl border-2 border-border px-3 py-2'
+                key={'notice_' + i}
+              >
+                <span className='font-bold'>{n.title}</span>
+                <br />
+                <span className='whitespace-pre-wrap'>{n.content}</span>
+              </div>
+            ))
+          ) : (
+            <div className='my-2 text-2xl font-bold'>現在お知らせはありません。</div>
+          )
         ) : (
-          <div className="font-bold text-2xl my-2">
-            現在お知らせはありません。
-          </div>
-        ) : (
-          <div className="font-bold text-2xl my-2">
-            読み込み中...
-          </div>
+          <div className='my-2 text-2xl font-bold'>読み込み中...</div>
         )}
-        { isAuthChecking || currentUser ? (
+        {isAuthChecking || currentUser ? (
           <div className='my-3'>
-            <RoundButton color="accent" onClick={() => router.push('/map')}>
+            <RoundButton color='accent' onClick={() => router.push('/map')}>
               マップへ戻る
             </RoundButton>
           </div>
         ) : (
           <div className='my-3'>
-            <RoundButton color="accent" onClick={() => router.push('/login')}>
+            <RoundButton color='accent' onClick={() => router.push('/login')}>
               ログイン画面へ戻る
             </RoundButton>
           </div>

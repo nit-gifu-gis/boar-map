@@ -1,19 +1,18 @@
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useCallback, useEffect, useState } from 'react';
 
-import { to_header_color } from "@/components/../utils/header";
+import { to_header_color } from '@/components/../utils/header';
 
-import FooterAdjustment from "@/components/atomos/footerAdjustment";
-import RoundButton from "@/components/atomos/roundButton";
-import Footer from "@/components/organisms/footer";
-import Header from "@/components/organisms/header";
-import { LatLngZoom, LatLngZoomCookie, Location } from "@/components/organisms/mapBase/interface";
-import SelectionMap from "@/components/organisms/selectionMap";
-import { InputFormData, useFormDataParser } from "@/utils/form-data";
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { LatLngZoom, LatLngZoomCookie, Location } from '@/components/organisms/mapBase/interface';
+import SelectionMap from '@/components/organisms/selectionMap';
+import { InputFormData, useFormDataParser } from '@/utils/form-data';
 
-import { InputFormTemplateCommonProps } from "../interfaces";
-
+import { InputFormTemplateCommonProps } from '../interfaces';
 
 const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
@@ -44,11 +43,16 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       defaultZoom = last_geo_obj.zoom;
     }
 
-    const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [NaN, NaN];
+    const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [
+      NaN,
+      NaN,
+    ];
     const isLocationExists = coordinates.filter((e) => e != null && !isNaN(e)).length == 2;
     if (isLocationExists) {
       // ポイント情報が既に存在する場合はその位置を初期位置とする
-      const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [35.39135, 136.722418];
+      const coordinates = paramParser.currentData.inputData.gisData?.geometry?.coordinates ?? [
+        35.39135, 136.722418,
+      ];
       setDefaultLoc({
         isDefault: false,
         zoom: defaultZoom,
@@ -59,7 +63,9 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       // ポイント情報が取得しない場合に初期位置を決定する。
 
       // 画像に位置情報が存在する場合はその位置を初期位置とする
-      const imageArray = (paramParser.currentData.inputData.teethImageUrls ?? []).concat(paramParser.currentData.inputData.otherImageUrls ?? []);
+      const imageArray = (paramParser.currentData.inputData.teethImageUrls ?? []).concat(
+        paramParser.currentData.inputData.otherImageUrls ?? [],
+      );
       let loc: Location | null = null;
 
       for (const imageInfo of imageArray) {
@@ -69,7 +75,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
         }
       }
 
-      if(loc != null) {
+      if (loc != null) {
         setDefaultLoc({
           isDefault: false,
           zoom: defaultZoom,
@@ -115,10 +121,10 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
             type: paramParser.currentData.editData?.type,
             type_srv: paramParser.currentData.editData?.type_srv,
             id: paramParser.currentData.editData?.id,
-            version: paramParser.currentData.editData?.version
-          }
-        }, 
-        '/detail'
+            version: paramParser.currentData.editData?.version,
+          },
+        },
+        '/detail',
       );
     } else {
       if (paramParser.currentData.isImageSkipped) {
@@ -130,8 +136,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   }, [isEditing]);
 
   const onClickNext = useCallback(() => {
-    if (currentLoc == null)
-      return;
+    if (currentLoc == null) return;
 
     // 現在の入力情報を保存する。
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
@@ -140,20 +145,19 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       newData.inputData.gisData = {
         geometry: {
           type: 'Point',
-          coordinates: [NaN, NaN]
+          coordinates: [NaN, NaN],
         },
         properties: {},
-        type: 'Feature'
+        type: 'Feature',
       };
     }
 
-    if (newData?.inputData?.gisData == null)
-      return;
+    if (newData?.inputData?.gisData == null) return;
 
     newData.inputData.gisData.geometry.coordinates = [currentLoc.lng, currentLoc.lat];
 
     paramParser.updateData(newData as InputFormData);
-    
+
     // ページを遷移する
     if (isEditing) {
       if (paramParser.currentData.isImageSkipped) {
@@ -166,10 +170,12 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
       router.push('/add/info');
     }
   }, [currentLoc]);
-      
+
   return (
     <div>
-      <Header color={to_header_color(type == null ? '' : type)}>位置情報{isEditing ? '編集' : '登録'}</Header>
+      <Header color={to_header_color(type == null ? '' : type)}>
+        位置情報{isEditing ? '編集' : '登録'}
+      </Header>
       {mapDiv}
       <FooterAdjustment />
       <div className='fixed bottom-0 w-full'>

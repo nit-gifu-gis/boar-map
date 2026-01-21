@@ -62,7 +62,7 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
       },
       body: JSON.stringify({
         data: notice,
-        notice_opt: notice_opt.checked
+        notice_opt: notice_opt.checked,
       }),
     });
 
@@ -88,70 +88,95 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
     setNotice(newNotice);
   }, [notice]);
 
-  const onDeleteClicked = useCallback((index: number) => {
-    const newNotice = [...notice];
-    newNotice.splice(index, 1);
-    setNotice(newNotice);
-  }, [notice]);
+  const onDeleteClicked = useCallback(
+    (index: number) => {
+      const newNotice = [...notice];
+      newNotice.splice(index, 1);
+      setNotice(newNotice);
+    },
+    [notice],
+  );
 
-  const onClickUp = useCallback((index: number) => {
-    if (index == 0) return;
+  const onClickUp = useCallback(
+    (index: number) => {
+      if (index == 0) return;
 
-    const newNotice = [...notice];
-    const tmp = newNotice[index - 1];
-    newNotice[index - 1] = newNotice[index];
-    newNotice[index] = tmp;
-    setNotice(newNotice);
-  }, [notice]);
-  const onClickDown = useCallback((index: number) => {
-    if (index + 1 >= notice.length) return;
+      const newNotice = [...notice];
+      const tmp = newNotice[index - 1];
+      newNotice[index - 1] = newNotice[index];
+      newNotice[index] = tmp;
+      setNotice(newNotice);
+    },
+    [notice],
+  );
+  const onClickDown = useCallback(
+    (index: number) => {
+      if (index + 1 >= notice.length) return;
 
-    const newNotice = [...notice];
-    const tmp = newNotice[index + 1];
-    newNotice[index + 1] = newNotice[index];
-    newNotice[index] = tmp;
-    setNotice(newNotice);
-  }, [notice]);
+      const newNotice = [...notice];
+      const tmp = newNotice[index + 1];
+      newNotice[index + 1] = newNotice[index];
+      newNotice[index] = tmp;
+      setNotice(newNotice);
+    },
+    [notice],
+  );
 
-  const onChangeTitle = useCallback((index: number, value: string) => {
-    const newNotice = [...notice];
-    newNotice[index].title = value;
-    setNotice(newNotice);
-  }, [notice]);
-  const onChangeBody = useCallback((index: number) => {
-    const body = document.getElementById(`body_${index}`) as HTMLTextAreaElement;
-    if (body == null) return;
-    
-    const newNotice = [...notice];
-    newNotice[index].content = body.value;
-    setNotice(newNotice);
-  }, [notice]);
+  const onChangeTitle = useCallback(
+    (index: number, value: string) => {
+      const newNotice = [...notice];
+      newNotice[index].title = value;
+      setNotice(newNotice);
+    },
+    [notice],
+  );
+  const onChangeBody = useCallback(
+    (index: number) => {
+      const body = document.getElementById(`body_${index}`) as HTMLTextAreaElement;
+      if (body == null) return;
+
+      const newNotice = [...notice];
+      newNotice[index].content = body.value;
+      setNotice(newNotice);
+    },
+    [notice],
+  );
 
   return (
     <div>
       <Header color='primary'>お知らせ設定</Header>
       {notice.length === 0 ? (
         <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
-          <div className='text-xl font-bold'>
-            お知らせはありません。
-          </div>
+          <div className='text-xl font-bold'>お知らせはありません。</div>
         </div>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
       {notice.map((n, i, a) => (
         <div className='mx-auto w-full max-w-[400px] bg-background py-3' key={`notice_${i}`}>
           <div className='box-border w-full rounded-xl border-2 border-solid border-border py-[10px] px-2'>
-            <div className='text-2xl font-bold flex flex-wrap items-center'>
-              <div className="mx-3">お知らせ{i + 1}</div>
+            <div className='flex flex-wrap items-center text-2xl font-bold'>
+              <div className='mx-3'>お知らせ{i + 1}</div>
             </div>
             <div className='flex flex-wrap items-center'>
-              <div className="w-32">
-                <RoundButton color='danger' onClick={() => onDeleteClicked(i)}>削除</RoundButton>
+              <div className='w-32'>
+                <RoundButton color='danger' onClick={() => onDeleteClicked(i)}>
+                  削除
+                </RoundButton>
               </div>
-              <div className="w-16 mx-2">
-                <RoundButton color="accent" onClick={() => onClickUp(i)} disabled={i == 0}>↑</RoundButton>
+              <div className='mx-2 w-16'>
+                <RoundButton color='accent' onClick={() => onClickUp(i)} disabled={i == 0}>
+                  ↑
+                </RoundButton>
               </div>
-              <div className="w-16 mx-2">
-                <RoundButton color="accent" onClick={() => onClickDown(i)} disabled={(i + 1) >= a.length}>↓</RoundButton>
+              <div className='mx-2 w-16'>
+                <RoundButton
+                  color='accent'
+                  onClick={() => onClickDown(i)}
+                  disabled={i + 1 >= a.length}
+                >
+                  ↓
+                </RoundButton>
               </div>
             </div>
             <div className='m-[15px]'>
@@ -189,8 +214,10 @@ const NoticeSettingsTemplate: React.FunctionComponent = () => {
       </div>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>
         <div>
-          <input type="checkbox" id="notice_opt" className="scale-[2] w-7 mr-1" />
-          <label htmlFor={`notice_opt`} className="text-lg" >ユーザーの次回ログイン時に通知する</label>
+          <input type='checkbox' id='notice_opt' className='mr-1 w-7 scale-[2]' />
+          <label htmlFor={`notice_opt`} className='text-lg'>
+            ユーザーの次回ログイン時に通知する
+          </label>
         </div>
       </div>
       <div className='mx-auto w-full max-w-[400px] bg-background py-3'>

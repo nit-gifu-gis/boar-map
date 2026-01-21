@@ -21,7 +21,6 @@ import { sortFeatures } from '@/utils/sort';
 
 import { BoarTableProps } from './interface';
 
-
 const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   const router = useRouter();
   const paramParser = useFormDataParser();
@@ -44,7 +43,7 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   };
 
   const updateTable = () => {
-    const features = p.features.filter(v=>{
+    const features = p.features.filter((v) => {
       const k = `${(v as BoarFeatureV2).version}-${(v as BoarFeatureV2).properties.ID$}`;
       return !deletedFeatures.includes(k);
     });
@@ -65,7 +64,13 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
   }, [currentUser]);
 
   const sort = (
-    key: keyof BoarInfoPropsV2 | keyof BoarCommonPropsV2 | '幼獣の頭数' | '成獣の頭数' | "検体到着日" | "捕獲者",
+    key:
+      | keyof BoarInfoPropsV2
+      | keyof BoarCommonPropsV2
+      | '幼獣の頭数'
+      | '成獣の頭数'
+      | '検体到着日'
+      | '捕獲者',
   ) => {
     if (key == sortKey) {
       setDesc((b) => !b);
@@ -81,8 +86,10 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     feature: FeatureBase,
   ) => {
     if (!id && !version) return;
-    
-    const yesNoCheck = await yesNo('位置情報の編集を行いますか？\n\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 (平日8:30～12:00、13:00～17:15)');
+
+    const yesNoCheck = await yesNo(
+      '位置情報の編集を行いますか？\n\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 (平日8:30～12:00、13:00～17:15)',
+    );
     paramParser.updateData({
       dataType: 'boar',
       isLocationSkipped: !yesNoCheck,
@@ -97,11 +104,15 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
         version: `${version}`,
         curImg: {
           teeth: ((feature.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
-          other: ((feature.properties as Record<string, string>)[`boar-${version}` === 'boar-2' ? '写真ID' : '画像ID'] || '').split(','),
-        }
-      }
+          other: (
+            (feature.properties as Record<string, string>)[
+              `boar-${version}` === 'boar-2' ? '写真ID' : '画像ID'
+            ] || ''
+          ).split(','),
+        },
+      },
     });
-    
+
     if (yesNoCheck) {
       router.push('/edit/location');
     } else {
@@ -114,26 +125,26 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
     version: number | undefined,
     feature: FeatureBase,
   ) => {
-    if(!await confirm(`ID: ${id}の情報を削除しますか？`))
-      return;
-    
+    if (!(await confirm(`ID: ${id}の情報を削除しますか？`))) return;
+
     setEditable(false);
     const type = `boar-${version}`;
-   
+
     // 画像の削除用関数の準備
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
     let imageIds: string[] = [];
 
     const idKey = type === 'boar-2' ? '写真ID' : '画像ID'; // 新レイヤーの時のみ写真IDになる。
-    imageIds = ((feature.properties as Record<string, unknown>)[idKey] as string).split(
-      ',',
-    );
+    imageIds = ((feature.properties as Record<string, unknown>)[idKey] as string).split(',');
     // 新レイヤーの場合のみ歯列写真IDという名前も確認する。
     if (type === 'boar-2') {
       const sid = (feature.properties as Record<string, unknown>)['歯列写真ID'] as string;
       if (sid != null && sid !== '') {
-        sid.split(',').filter(e=>e).forEach((e) => imageIds.push(e));
+        sid
+          .split(',')
+          .filter((e) => e)
+          .forEach((e) => imageIds.push(e));
       }
     }
 
@@ -242,21 +253,25 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
               <br />
               年月日
             </th>
-            <th 
+            <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('検体到着日')
               }
               onClick={() => sort('検体到着日')}
             >
-              検体到着<br />予定日
+              検体到着
+              <br />
+              予定日
             </th>
-            <th 
+            <th
               className={
                 'border border-b-2 border-solid border-border p-1 ' + sortableClass('更新日')
               }
               onClick={() => sort('更新日')}
             >
-              最終<br />更新日
+              最終
+              <br />
+              更新日
             </th>
             <th
               className={
@@ -333,7 +348,9 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
           </tr>
           {features.map((f, i) => {
             const props = f.properties as BoarFeaturePropsV2;
-            const imageList = [...props.歯列写真ID.split(','), ...props.写真ID.split(',')].filter((e) => e);
+            const imageList = [...props.歯列写真ID.split(','), ...props.写真ID.split(',')].filter(
+              (e) => e,
+            );
             return props.捕獲いのしし情報.map((_, index, arr) => {
               const d = arr[index].properties;
               return (
@@ -348,14 +365,15 @@ const BoarTable: React.FunctionComponent<BoarTableProps> = (p) => {
                         onClick={() => onClickEdit(props.ID$, (f as BoarFeatureV2).version, f)}
                       >
                         編集
-                      </RoundButton><br />
+                      </RoundButton>
+                      <br />
                       <div className='mt-2'>
                         <RoundButton
                           color='danger'
                           disabled={!editable}
                           onClick={() => onClickDelete(props.ID$, (f as BoarFeatureV2).version, f)}
                         >
-                        削除
+                          削除
                         </RoundButton>
                       </div>
                     </td>

@@ -1,19 +1,19 @@
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import React from "react";
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 
-import FooterAdjustment from "@/components/atomos/footerAdjustment";
-import { ImagewithLocation } from "@/components/atomos/imageInput/interface";
-import RoundButton from "@/components/atomos/roundButton";
-import FeatureEditor from "@/components/organisms/featureEditor";
-import { FeatureEditorHandler } from "@/components/organisms/featureEditor/interface";
-import Footer from "@/components/organisms/footer";
-import Header from "@/components/organisms/header";
-import { InputFormData, useFormDataParser } from "@/utils/form-data";
-import { to_header_color, to_header_title } from "@/utils/header";
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
+import RoundButton from '@/components/atomos/roundButton';
+import FeatureEditor from '@/components/organisms/featureEditor';
+import { FeatureEditorHandler } from '@/components/organisms/featureEditor/interface';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import { InputFormData, useFormDataParser } from '@/utils/form-data';
+import { to_header_color, to_header_title } from '@/utils/header';
 import { alert } from '@/utils/modal';
 
-import { InputFormTemplateCommonProps } from "../interfaces";
+import { InputFormTemplateCommonProps } from '../interfaces';
 
 const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
@@ -28,9 +28,9 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
     const tt = paramParser.currentData.editData?.type_srv;
     if (tt == null) {
       return paramParser.currentData.dataType;
-    } else if(tt === 'boar-1') {
+    } else if (tt === 'boar-1') {
       return 'boar-old';
-    } else if(tt === 'boar-2') {
+    } else if (tt === 'boar-2') {
       return 'boar';
     }
 
@@ -42,7 +42,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
       isDefault: false,
       lat: paramParser.currentData.inputData.gisData?.geometry?.coordinates[1] ?? 0,
       lng: paramParser.currentData.inputData.gisData?.geometry?.coordinates[0] ?? 0,
-      zoom: 17
+      zoom: 17,
     };
   }, [paramParser.currentData]);
 
@@ -59,18 +59,23 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
       setEditorRef(React.createRef());
     }
 
-    setImageArray((paramParser.currentData.inputData.teethImageUrls ?? []).concat(paramParser.currentData.inputData.otherImageUrls ?? []));
+    setImageArray(
+      (paramParser.currentData.inputData.teethImageUrls ?? []).concat(
+        paramParser.currentData.inputData.otherImageUrls ?? [],
+      ),
+    );
     setServerImages(() => {
-      const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<string, string>;
-      if (!featureProps)
-        return [];
+      const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
+        string,
+        string
+      >;
+      if (!featureProps) return [];
 
-      const arr 
-        = (featureProps['歯列写真ID'] || '')
-          .split(',')
-          .concat((featureProps['写真ID'] || '').split(','))
-          .concat((featureProps['画像ID'] || '').split(','))
-          .filter((e) => e);
+      const arr = (featureProps['歯列写真ID'] || '')
+        .split(',')
+        .concat((featureProps['写真ID'] || '').split(','))
+        .concat((featureProps['画像ID'] || '').split(','))
+        .filter((e) => e);
       return arr;
     });
   }, [paramParser.currentData, editorRef]);
@@ -86,10 +91,10 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
                 type: paramParser.currentData.editData?.type,
                 type_srv: paramParser.currentData.editData?.type_srv,
                 id: paramParser.currentData.editData?.id,
-                version: paramParser.currentData.editData?.version
-              }
-            }, 
-            '/detail'
+                version: paramParser.currentData.editData?.version,
+              },
+            },
+            '/detail',
           );
         } else {
           router.push('/edit/location');
@@ -127,7 +132,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
     newData.inputData.gisData = featureInfo;
     paramParser.updateData(newData);
-    
+
     if (isEditing) {
       router.push('/edit/confirm');
     } else {
@@ -138,7 +143,8 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   return (
     <div>
       <Header color={to_header_color(type == null ? '' : type)}>
-        {to_header_title(type == null ? '' : type)}{isEditing ? '編集' : '登録'}
+        {to_header_title(type == null ? '' : type)}
+        {isEditing ? '編集' : '登録'}
       </Header>
       <FeatureEditor
         type={t}
@@ -152,7 +158,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
       <div className='fixed bottom-0 w-full'>
         <Footer>
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
-                &lt; 戻る
+            &lt; 戻る
           </RoundButton>
           <RoundButton color='primary' onClick={onClickNext.bind(this)} disabled={isValidating}>
             {isValidating ? '読み込み中...' : '進む >'}

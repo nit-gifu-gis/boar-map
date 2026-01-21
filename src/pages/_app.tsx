@@ -1,5 +1,5 @@
 import '@/styles/globals.css';
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from '@sentry/nextjs';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import React from 'react';
@@ -31,9 +31,9 @@ const AppInit: React.FunctionComponent = () => {
     origLog(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "log",
+      type: 'log',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -42,9 +42,9 @@ const AppInit: React.FunctionComponent = () => {
     origWarn(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "warn",
+      type: 'warn',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -53,9 +53,9 @@ const AppInit: React.FunctionComponent = () => {
     origError(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "error",
+      type: 'error',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -64,9 +64,9 @@ const AppInit: React.FunctionComponent = () => {
     origTrace(message, ...optionalParams);
     appLogs = appLogs.slice();
     appLogs.push({
-      type: "trace",
+      type: 'trace',
       message: message,
-      optionalParams: optionalParams
+      optionalParams: optionalParams,
     });
     setCurrentAppLog(appLogs);
   };
@@ -89,7 +89,7 @@ const AppInit: React.FunctionComponent = () => {
             radius: json['radius'] as number,
             days: json['days'] as number,
             style: 1,
-            origin: new Date()
+            origin: new Date(),
           });
         }
 
@@ -119,7 +119,6 @@ const AppInit: React.FunctionComponent = () => {
         origTrace = console.trace;
         console.trace = traceHandler;
       }
-
     })();
   }, []);
 

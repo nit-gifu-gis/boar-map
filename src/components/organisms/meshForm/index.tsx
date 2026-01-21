@@ -10,8 +10,6 @@ import { alert } from '@/utils/modal';
 
 import { MeshFormInterface } from './interface';
 
-
-
 const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
   const [isUploading, setUploading] = useState(false);
   const [buttonLabel, setButtonLabel] = useState('インポート');
@@ -59,17 +57,18 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
       return;
     }
 
-    const t = fileType.options[fileType.selectedIndex].value == "ワクチンメッシュ" ? "vaccine" : "hunter";
+    const t =
+      fileType.options[fileType.selectedIndex].value == 'ワクチンメッシュ' ? 'vaccine' : 'hunter';
 
     // ファイルの内容に問題がなければ取得してパースする
-    const zipres = await fetch(SERVER_URI + "/Mesh/Get?type=" + t, {
+    const zipres = await fetch(SERVER_URI + '/Mesh/Get?type=' + t, {
       headers: {
         'X-Access-Token': getAccessToken(),
       },
     });
 
     if (!zipres.ok) {
-      setError("ZIPファイルを取得できません。(" + zipres.status + ")");
+      setError('ZIPファイルを取得できません。(' + zipres.status + ')');
       setUploading(false);
       setButtonLabel('アップロード');
       return;
@@ -90,15 +89,15 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
     // パースした内容をサーバーに投げて保存
     const d = {
       type: t,
-      data: featurecollection
+      data: featurecollection,
     };
 
-    const res2 = await fetch(SERVER_URI + "/Mesh/Import", {
+    const res2 = await fetch(SERVER_URI + '/Mesh/Import', {
       method: 'POST',
       headers: {
-        'X-Access-Token': getAccessToken()
+        'X-Access-Token': getAccessToken(),
       },
-      body: JSON.stringify(d)
+      body: JSON.stringify(d),
     });
 
     if (res2.status !== 200) {
@@ -108,8 +107,8 @@ const MeshForm: React.FunctionComponent<MeshFormInterface> = ({ maxSize }) => {
       setButtonLabel('アップロード');
       return;
     }
-    
-    setMessage("データを更新しました。");
+
+    setMessage('データを更新しました。');
     setUploading(false);
     setButtonLabel('アップロード');
   };

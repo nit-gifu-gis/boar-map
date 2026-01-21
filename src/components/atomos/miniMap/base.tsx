@@ -85,7 +85,7 @@ const MiniMap_: React.FunctionComponent<MiniMapProps> = (props) => {
 
     // メイン地図レイヤー
     L.TileLayer.wmsHeader(
-      SERVER_URI + "/Map/GetImage",
+      SERVER_URI + '/Map/GetImage',
       {
         TENANTID: '21000S',
         version: '1.3.0',

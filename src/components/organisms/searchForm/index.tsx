@@ -19,7 +19,11 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
   const hasBoarSpecialFilterPermission = useMemo(() => {
     if (!currentUser) return false;
 
-    return currentUser.userDepartment === 'K' || currentUser.userDepartment === 'R' || currentUser.userDepartment === 'D';
+    return (
+      currentUser.userDepartment === 'K' ||
+      currentUser.userDepartment === 'R' ||
+      currentUser.userDepartment === 'D'
+    );
   }, [currentUser]);
 
   const dateLabelList: { [key: string]: string } = {
@@ -66,33 +70,43 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setDateError(false);
     const date1 = (document.getElementById('date1') as HTMLInputElement).value;
     const date2 = (document.getElementById('date2') as HTMLInputElement).value;
-    
-    const arrival1Input = (document.getElementById('arrival_date1') as HTMLInputElement);
-    const arrival2Input = (document.getElementById('arrival_date2') as HTMLInputElement);
-    const arrival1 = hasBoarSpecialFilterPermission && arrival1Input != undefined ? arrival1Input.value : undefined;
-    const arrival2 = hasBoarSpecialFilterPermission && arrival2Input != undefined ? arrival2Input.value : undefined;
 
-    const edit1Input = (document.getElementById('edit_date1') as HTMLInputElement);
-    const edit2Input = (document.getElementById('edit_date2') as HTMLInputElement);
+    const arrival1Input = document.getElementById('arrival_date1') as HTMLInputElement;
+    const arrival2Input = document.getElementById('arrival_date2') as HTMLInputElement;
+    const arrival1 =
+      hasBoarSpecialFilterPermission && arrival1Input != undefined
+        ? arrival1Input.value
+        : undefined;
+    const arrival2 =
+      hasBoarSpecialFilterPermission && arrival2Input != undefined
+        ? arrival2Input.value
+        : undefined;
 
-    const edit1 = hasBoarSpecialFilterPermission && edit1Input != undefined ? edit1Input.value : undefined;
-    const edit2 = hasBoarSpecialFilterPermission && edit2Input != undefined ? edit2Input.value : undefined;
+    const edit1Input = document.getElementById('edit_date1') as HTMLInputElement;
+    const edit2Input = document.getElementById('edit_date2') as HTMLInputElement;
+
+    const edit1 =
+      hasBoarSpecialFilterPermission && edit1Input != undefined ? edit1Input.value : undefined;
+    const edit2 =
+      hasBoarSpecialFilterPermission && edit2Input != undefined ? edit2Input.value : undefined;
 
     if (!(date1 && date2) && !(arrival1 && arrival2) && !(edit1 && edit2)) {
       // チェック
       alert(
-        dataType === "いのしし捕獲地点" ? 
-          (hasBoarSpecialFilterPermission ? "「捕獲年月日」または「検体到着予定日」または「最終更新日」を入力してください。" : "「捕獲年月日」を入力してください。")
-          : "日付が入力されていません。"
+        dataType === 'いのしし捕獲地点'
+          ? hasBoarSpecialFilterPermission
+            ? '「捕獲年月日」または「検体到着予定日」または「最終更新日」を入力してください。'
+            : '「捕獲年月日」を入力してください。'
+          : '日付が入力されていません。',
       );
       setDateError(true);
       return;
     }
 
     if (
-      (date1 && date2 && !validateDate(date1, date2))
-      || (arrival1 && arrival2 && !validateDate(arrival1, arrival2))
-      || (edit1 && edit2 && !validateDate(edit1, edit2))
+      (date1 && date2 && !validateDate(date1, date2)) ||
+      (arrival1 && arrival2 && !validateDate(arrival1, arrival2)) ||
+      (edit1 && edit2 && !validateDate(edit1, edit2))
     ) {
       alert('日付の前後が間違っています。');
       setDateError(true);
@@ -102,10 +116,12 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setSearching(true);
     const citiesInput = document.getElementById('cities') as HTMLInputElement;
     const citiesStr = citiesInput !== null ? citiesInput.value : '';
-    const cities = hasBoarSpecialFilterPermission ? citiesStr
-      .split(/[\s\n,.，．、。]/)
-      .filter((e) => e)
-      .join(',') : "";
+    const cities = hasBoarSpecialFilterPermission
+      ? citiesStr
+        .split(/[\s\n,.，．、。]/)
+        .filter((e) => e)
+        .join(',')
+      : '';
     const divisionInput = document.getElementById('division') as HTMLInputElement;
     const division = divisionInput !== null ? divisionInput.value : '';
     const dataTypeStr = (document.getElementById('division_type') as HTMLSelectElement).value;
@@ -114,10 +130,10 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     const data = new FormData();
     data.append('fromDate', date1);
     data.append('toDate', date2);
-    if (hasBoarSpecialFilterPermission) data.append('fromArrivalDate', arrival1 || "");
-    if (hasBoarSpecialFilterPermission) data.append('toArrivalDate', arrival2 || "");
-    if (hasBoarSpecialFilterPermission) data.append('fromEditDate', edit1 || "");
-    if (hasBoarSpecialFilterPermission) data.append('toEditDate', edit2 || "");
+    if (hasBoarSpecialFilterPermission) data.append('fromArrivalDate', arrival1 || '');
+    if (hasBoarSpecialFilterPermission) data.append('toArrivalDate', arrival2 || '');
+    if (hasBoarSpecialFilterPermission) data.append('fromEditDate', edit1 || '');
+    if (hasBoarSpecialFilterPermission) data.append('toEditDate', edit2 || '');
     if (hasBoarSpecialFilterPermission) data.append('cities', cities);
     data.append('divisions', division);
     data.append('type', dataTypeStr);
@@ -171,8 +187,11 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
                 <div className='flex-[0_1_300px]'>
                   <DateInput id='arrival_date2' error={dateError} />
                 </div>
-              </div></>
-          ) : <></>}
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
           {hasBoarSpecialFilterPermission ? (
             <>
               <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>
@@ -188,7 +207,9 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
                 </div>
               </div>
             </>
-          ) : <></>}
+          ) : (
+            <></>
+          )}
           {dataType === '作業日報' ? (
             <>
               <div className='col-[1/2] row-[5] m-1 flex items-center justify-center'>地域</div>

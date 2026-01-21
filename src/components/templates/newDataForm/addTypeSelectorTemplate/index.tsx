@@ -1,14 +1,14 @@
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
-import FooterAdjustment from "@/components/atomos/footerAdjustment";
-import RoundButton from "@/components/atomos/roundButton";
-import Footer from "@/components/organisms/footer";
-import Header from "@/components/organisms/header";
-import InfoTypeSelector from "@/components/organisms/infoTypeSelector";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useFormDataParser } from "@/utils/form-data";
-import { hasWritePermission, LayerType } from "@/utils/gis";
+import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import RoundButton from '@/components/atomos/roundButton';
+import Footer from '@/components/organisms/footer';
+import Header from '@/components/organisms/header';
+import InfoTypeSelector from '@/components/organisms/infoTypeSelector';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useFormDataParser } from '@/utils/form-data';
+import { hasWritePermission, LayerType } from '@/utils/gis';
 
 const AddTypeSelectorTemplate = () => {
   const paramParser = useFormDataParser();
@@ -16,7 +16,7 @@ const AddTypeSelectorTemplate = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
   const [selected, setSelected] = useState<LayerType | null>(
-    paramParser.currentData.dataType ?? null
+    paramParser.currentData.dataType ?? null,
   );
 
   const onClickNext = async () => {
@@ -32,8 +32,13 @@ const AddTypeSelectorTemplate = () => {
 
     const isImageSkip = selected === 'report' || selected === 'butanetsu' || selected === 'youton';
 
-    paramParser.updateData({ dataType: selected, isLocationSkipped: false, isImageSkipped: isImageSkip, inputData: {} });
-    
+    paramParser.updateData({
+      dataType: selected,
+      isLocationSkipped: false,
+      isImageSkipped: isImageSkip,
+      inputData: {},
+    });
+
     // 作業日報と豚熱要請確認情報、養豚場情報は画像の登録が必要ないので直接位置情報ページへ遷移
     // それ以外は画像の登録ページへ遷移
     if (isImageSkip) {

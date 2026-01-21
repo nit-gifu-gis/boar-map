@@ -1,4 +1,4 @@
-import { LatLngExpression } from "leaflet";
+import { LatLngExpression } from 'leaflet';
 
 export interface MeshData {
   id: string;

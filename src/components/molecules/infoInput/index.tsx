@@ -106,11 +106,7 @@ const InfoInput: React.FunctionComponent<InfoInputProps> = (props) => {
         {props.title}
         {props.required ? <span className='ml-[5px] font-bold text-danger'>*</span> : <></>}
       </div>
-      {!props.subtitle ? (
-        <></>
-      ) : (
-        <div className='-mt-[5px] ml-[5px]'>{props.subtitle}</div>
-      )}
+      {!props.subtitle ? <></> : <div className='-mt-[5px] ml-[5px]'>{props.subtitle}</div>}
       {!props.caption ? (
         <></>
       ) : (
