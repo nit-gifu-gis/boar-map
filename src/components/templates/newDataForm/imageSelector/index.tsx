@@ -233,7 +233,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
         </div>
       </div>
       <FooterAdjustment />
-      <div className='fixed bottom-0 w-full'>
+      <div className='fixed bottom-0 w-full z-50'>
         <Footer>
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
             &lt; {t('back')}

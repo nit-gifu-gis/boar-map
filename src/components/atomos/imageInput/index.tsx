@@ -159,12 +159,41 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
     }
   };
 
+  // 配列の要素を移動させる関数
+  const moveElement = <T,>(array: T[], index: number, direction: 'up' | 'down'): T[] => {
+    const newList = [...array];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    // 範囲外チェック
+    if (targetIndex < 0 || targetIndex >= newList.length) return newList;
+
+    // 要素の入れ替え
+    [newList[index], newList[targetIndex]] = [newList[targetIndex], newList[index]];
+    return newList;
+  };
+
+  // サーバー画像の移動
+  const onMoveRemoteImage = (index: number, direction: 'up' | 'down') => {
+    const newList = moveElement(imgIDs, index, direction);
+    setImgIDs(newList);
+    // 必要であれば親コンポーネントに通知（propsにonOrderChangeなどがあれば）
+    if (props.onServerImageDeleted != null) props.onServerImageDeleted(newList);
+  };
+
+  // ローカル画像の移動
+  const onMoveLocalImage = (index: number, direction: 'up' | 'down') => {
+    const newList = moveElement(objURLs, index, direction);
+    setObjURLs(newList);
+    if (props.onChange != null) props.onChange(newList);
+  };
+
   const previewChildren: JSX.Element[] = [];
   const token = getAccessToken();
-  // もともと登録されている画像
+
+  // 1. もともと登録されている画像（サーバー側）
   for (let i = 0; i < imgIDs.length; i++) {
     const previewChild = (
-      <div className='img-preview relative w-full' key={'Uploaded-' + (i + 1)}>
+      <div className='img-preview relative w-full mb-4' key={'Remote-' + imgIDs[i]}>
         <img
           className='w-full cursor-pointer'
           src={SERVER_URI + '/Image/GetImage?id=' + imgIDs[i] + '&token=' + token}
@@ -177,29 +206,64 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
             )
           }
         />
-        <button
-          type='button'
-          className='shadow-2 absolute -top-[5px] -right-[5px] box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-xl font-bold text-text'
-          onClick={onClickDeleteRemoteImage.bind(this, i)}
-        >
-          ×
-        </button>
+        {/* 削除ボタン */}
+        <div className="absolute -top-[5px] -right-[5px] flex flex-col gap-[5px] z-30">
+          <button
+            type='button'
+            className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-xl font-bold text-text z-10'
+            onClick={onClickDeleteRemoteImage.bind(this, i)}
+          > × </button>
+
+          {/* 上移動ボタン */}
+          {i > 0 && (
+            <button
+              type='button'
+              className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-sm font-bold text-text z-10'
+              onClick={() => onMoveRemoteImage(i, 'up')}
+            > ▲ </button>
+          )}
+
+          {/* 下移動ボタン */}
+          {i < imgIDs.length - 1 && (
+            <button
+              type='button'
+              className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-sm font-bold text-text z-10'
+              onClick={() => onMoveRemoteImage(i, 'down')}
+            > ▼ </button>
+          )}
+        </div>
       </div>
     );
     previewChildren.push(previewChild);
   }
-  // ローカルの画像
+
+  // 2. ローカルの画像（アップロード前）
   for (let i = 0; i < objURLs.length; i++) {
     const previewChild = (
-      <div className='img-preview relative w-full' key={'Uploaded-' + (i + 1)}>
-        <img className='w-full' src={objURLs[i].objectURL} alt={'Uploaded image ' + (i + 1)} />
-        <button
-          type='button'
-          className='shadow-2 absolute -top-[5px] -right-[5px] box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-xl font-bold text-text'
-          onClick={onClickDeleteLocalImage.bind(this, i)}
-        >
-          ×
-        </button>
+      <div className='img-preview relative w-full mb-4' key={'Local-' + i}>
+        <img className='w-full' src={objURLs[i].objectURL} alt={'Local image ' + (i + 1)} />
+
+        <div className="absolute -top-[5px] -right-[5px] flex flex-col gap-[5px]">
+          <button
+            type='button'
+            className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-xl font-bold text-text z-10'
+            onClick={onClickDeleteLocalImage.bind(this, i)}
+          > × </button>
+          {i > 0 && (
+            <button
+              type='button'
+              className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-sm font-bold text-text z-10'
+              onClick={() => onMoveLocalImage(i, 'up')}
+            > ▲ </button>
+          )}
+          {i < objURLs.length - 1 && (
+            <button
+              type='button'
+              className='shadow-2 box-border h-[30px] w-[30px] rounded-[30px] bg-background text-center text-sm font-bold text-text z-10'
+              onClick={() => onMoveLocalImage(i, 'down')}
+            > ▼ </button>
+          )}
+        </div>
       </div>
     );
     previewChildren.push(previewChild);
@@ -221,6 +285,7 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
           multiple={!props.single_file}
           onChange={formChanged.bind(this)}
           className='hidden'
+          placeholder="file input"
         />
       </form>
       <div className='w-full'>{previewChildren}</div>
