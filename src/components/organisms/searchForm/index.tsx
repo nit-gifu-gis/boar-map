@@ -54,6 +54,40 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
       list.push('作業日報');
     setDataType(list[0]);
     setTypeList(list);
+
+    if (sessionStorage.getItem('fromList') === "2") {
+      const latestSearchParamStr = localStorage.getItem("latestSearchParam");
+      if (latestSearchParamStr) {
+        const latestSearchParam = JSON.parse(latestSearchParamStr);
+        (document.getElementById('division_type') as HTMLSelectElement).value =
+          latestSearchParam.dataType;
+        setDataType(latestSearchParam.dataType);
+        console.log(latestSearchParam.dataType, (document.getElementById('division_type') as HTMLSelectElement).value);
+        (document.getElementById('date1') as HTMLInputElement).value = latestSearchParam.date1;
+        (document.getElementById('date2') as HTMLInputElement).value = latestSearchParam.date2;
+        if (hasBoarSpecialFilterPermission) {
+          const arrival1Input = document.getElementById('arrival_date1') as HTMLInputElement;
+          const arrival2Input = document.getElementById('arrival_date2') as HTMLInputElement;
+          if (arrival1Input)
+            arrival1Input.value = latestSearchParam.arrival1 ? latestSearchParam.arrival1 : '';
+          if (arrival2Input)
+            arrival2Input.value = latestSearchParam.arrival2 ? latestSearchParam.arrival2 : '';
+          const edit1Input = document.getElementById('edit_date1') as HTMLInputElement;
+          const edit2Input = document.getElementById('edit_date2') as HTMLInputElement;
+          if (edit1Input)
+            edit1Input.value = latestSearchParam.edit1 ? latestSearchParam.edit1 : '';
+          if (edit2Input)
+            edit2Input.value = latestSearchParam.edit2 ? latestSearchParam.edit2 : '';
+        }
+        if (latestSearchParam.cities) {
+          const citiesInput = document.getElementById('cities') as HTMLInputElement;
+          if (citiesInput) citiesInput.value = latestSearchParam.cities;
+        }
+        sessionStorage.removeItem('fromList');
+        setTimeout(() =>
+          onClickSearch());
+      }
+    }
   }, [currentUser]);
 
   const validateDate = (date1: string, date2: string) => {
@@ -127,6 +161,22 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     const dataTypeStr = (document.getElementById('division_type') as HTMLSelectElement).value;
     // ファイルを取得しておく
     const userList = (document.getElementById('userList') as HTMLInputElement).files as FileList;
+
+    const saveParam = {
+      dataType: dataTypeStr,
+      date1: date1,
+      date2: date2,
+      arrival1: arrival1 || '',
+      arrival2: arrival2 || '',
+      edit1: edit1 || '',
+      edit2: edit2 || '',
+      cities: cities,
+      division: division,
+      userList: userList.length !== 0 ? userList[0].name : '',
+    };
+    console.log(saveParam);
+    localStorage.setItem("latestSearchParam", JSON.stringify(saveParam));
+
     const data = new FormData();
     data.append('fromDate', date1);
     data.append('toDate', date2);

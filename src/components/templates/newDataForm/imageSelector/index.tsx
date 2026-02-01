@@ -116,11 +116,11 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
   const onClickPrev = useCallback(() => {
     if (sessionStorage.getItem('fromList') === "1") {
-      sessionStorage.removeItem('fromList');
+      sessionStorage.setItem('fromList', "2");
       router.push('/list');
       return;
     }
-    
+
     if (isEditing) {
       if (paramParser.currentData.isLocationSkipped) {
         router.push(
