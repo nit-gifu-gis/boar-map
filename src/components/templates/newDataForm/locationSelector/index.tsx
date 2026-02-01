@@ -113,6 +113,12 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   }, [defaultLoc]);
 
   const onClickPrev = useCallback(() => {
+    if (sessionStorage.getItem('fromList') === "1") {
+      sessionStorage.setItem('fromList', "2");
+      router.push('/list');
+      return;
+    }
+
     if (isEditing) {
       router.push(
         {

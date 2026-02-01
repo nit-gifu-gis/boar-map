@@ -115,6 +115,12 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
   }, [teethImages, otherImages, newOtherImageIds, newTeethImageIds, paramParser.currentData]);
 
   const onClickPrev = useCallback(() => {
+    if (sessionStorage.getItem('fromList') === "1") {
+      sessionStorage.setItem('fromList', "2");
+      router.push('/list');
+      return;
+    }
+
     if (isEditing) {
       if (paramParser.currentData.isLocationSkipped) {
         router.push(
@@ -238,7 +244,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
         </div>
       </div>
       <FooterAdjustment />
-      <div className='fixed bottom-0 w-full z-50'>
+      <div className='fixed bottom-0 w-full'>
         <Footer>
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
             &lt; 戻る
