@@ -24,7 +24,6 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const [myTraderInfo, setMyTraderInfo] = useState<MyTraderInfo | undefined | null>(undefined);
     const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
     const { currentUser } = useCurrentUser();
-
     const featureValueOrUndefined = (key: keyof BoarFeaturePropsV2): string | undefined => {
       if (props.featureInfo == null) return undefined;
 
@@ -117,11 +116,12 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
       });
     };
 
-    const [isEnv, setEnv] = useState(featureValueOrUndefined('区分') === '死亡');
-    const [isMultiple, setMultiple] = useState(
-      featureValueOrUndefined('罠発見場所') == '箱わな' ||
-        featureValueOrUndefined('罠発見場所') == '囲いわな',
-    );
+    const [division, setDivision] = useState('調査捕獲');
+    const [trap, setTrap] = useState('くくりわな');
+
+    const isEnv = division === '死亡';
+    const isMultiple = trap === '箱わな' || trap === '囲いわな';
+    const isBlood = isMultiple && (division === '有害捕獲' || division === '狩猟');
 
     const fetchData = async () => {
       const boarListData = await new Promise<BoarInfoFeatureV2[]>((resolve) => {
@@ -276,7 +276,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const onChangeDivision = () => {
       const form = getForm();
       const division = form.division.options[form.division.selectedIndex].value as string;
-      setEnv(division === '死亡');
+      setDivision(division);
       setBoarFormList((boarList) => {
         if (boarList != null && division === '死亡' && boarList.length != 0) {
           // 自動で処分方法を - に変更
@@ -290,7 +290,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const onChangeTrap = () => {
       const form = getForm();
       const division = form.trap.options[form.trap.selectedIndex].value as string;
-      setMultiple(division === '箱わな' || division === '囲いわな');
+      setTrap(division)
     };
 
     const validateDate = () => {
@@ -314,11 +314,12 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
 
       const form = getForm();
       const catchNum = !isMultiple || isEnv ? 1 : parseInt(form['catchNum'].value);
+      const maxCatchNum = isBlood ? 2 : 20;
       if (catchNum <= 0) {
         updateError('catchNum', '捕獲頭数が0以下です。');
         return false;
-      } else if (catchNum >= 21) {
-        updateError('catchNum', '捕獲頭数が21以上です。');
+      } else if (catchNum > maxCatchNum) {
+        updateError('catchNum', `捕獲頭数が${maxCatchNum + 1}以上です。`);
         return false;
       } else {
         updateError('catchNum', undefined);
@@ -467,7 +468,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           />
           <div style={{ display: !isEnv && isMultiple ? 'block' : 'none' }}>
             <InfoInput
-              title='捕獲頭数'
+              title={isBlood ? '捕獲頭数：「血液検体採取個体」のみを登録してください（最大２頭まで）' : '捕獲頭数'}
               type='number'
               id='catchNum'
               min={0}
