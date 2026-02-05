@@ -1,5 +1,6 @@
 import {
   BoarFeatureV2,
+  ButanetsuFeature,
   FeatureBase,
   ReportFeature,
   TrapFeature,
@@ -8,9 +9,9 @@ import {
 
 export const sortFeatures = (
   key: string,
-  features: BoarFeatureV2[] | TrapFeature[] | ReportFeature[] | VaccineFeature[],
+  features: BoarFeatureV2[] | TrapFeature[] | ReportFeature[] | VaccineFeature[] | ButanetsuFeature[],
   desc: boolean,
-): BoarFeatureV2[] | TrapFeature[] | ReportFeature[] | VaccineFeature[] => {
+): BoarFeatureV2[] | TrapFeature[] | ReportFeature[] | VaccineFeature[] | ButanetsuFeature[] => {
   return features.sort((a, b) => {
     const getItem = (feature: FeatureBase, key: string): string | Date | number => {
       const props = feature.properties as Record<string, string>;

@@ -31,6 +31,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     わな設置地点: '設置年月日',
     ワクチン散布地点: '散布年月日',
     作業日報: '作業日',
+    豚熱陽性確認情報: '捕獲年月日',
   };
 
   useEffect(() => {
@@ -52,6 +53,11 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
       currentUser.userDepartment === 'K'
     )
       list.push('作業日報');
+    if(
+      currentUser.userDepartment === 'D' ||
+      currentUser.userDepartment === 'K'
+    )
+      list.push('豚熱陽性確認情報')
     setDataType(list[0]);
     setTypeList(list);
 
@@ -242,7 +248,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
           ) : (
             <></>
           )}
-          {hasBoarSpecialFilterPermission ? (
+          {hasBoarSpecialFilterPermission && dataType !== '豚熱陽性確認情報' ? (
             <>
               <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>
                 最終更新日
