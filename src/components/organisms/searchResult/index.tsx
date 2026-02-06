@@ -5,6 +5,7 @@ import BoarTable from '@/components/organisms/boarTable';
 import ReportTable from '@/components/organisms/reportTable';
 import TrapTable from '@/components/organisms/trapTable';
 import VaccineTable from '@/components/organisms/vaccineTable';
+import ButanetsuTable from '@/components/organisms/ButanetsuTable'
 import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
 import { alert } from '@/utils/modal';
@@ -94,6 +95,8 @@ const SearchResult: React.FunctionComponent<SearchResultProps> = ({ searchInfo, 
           <VaccineTable features={searchResult} />
         ) : searchInfo.get('type') == '作業日報' ? (
           <ReportTable features={searchResult} />
+        ) : searchInfo.get('type') == '豚熱陽性確認情報' ? (
+          <ButanetsuTable features={searchResult} />
         ) : (
           <>不明なデータ形式です。</>
         )}
