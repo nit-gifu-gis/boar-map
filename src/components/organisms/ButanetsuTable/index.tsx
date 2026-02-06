@@ -93,7 +93,7 @@ const ButanetsuTable: React.FunctionComponent<ButanetsuTableProps> = (p) => {
     if (yesNoCheck) {
       router.push('/edit/location');
     } else {
-      router.push('/edit/image');
+      router.push('/edit/info');
     }
   };
 
@@ -109,7 +109,6 @@ const ButanetsuTable: React.FunctionComponent<ButanetsuTableProps> = (p) => {
       shapeIds: [id as string],
     };
     try {
-      // 先に画像を削除する.
       const res = await fetch(SERVER_URI + '/Features/DeleteFeature', {
         method: 'POST',
         headers: {
