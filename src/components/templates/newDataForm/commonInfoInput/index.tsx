@@ -60,9 +60,12 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
     }
 
     setImageArray(
-      (paramParser.currentData.inputData.teethImageUrls ?? []).concat(
-        paramParser.currentData.inputData.otherImageUrls ?? [],
-      ),
+      (paramParser.currentData.inputData.teethImageUrls ?? [])
+      .concat(paramParser.currentData.inputData.otherImageUrls ?? [],)
+      .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
+      .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
+      .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
+      .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
     );
     setServerImages(() => {
       const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
