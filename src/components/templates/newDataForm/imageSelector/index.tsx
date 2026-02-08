@@ -10,16 +10,40 @@ import Header from '@/components/organisms/header';
 import { InputFormData, useFormDataParser } from '@/utils/form-data';
 import { to_header_color } from '@/utils/header';
 import { alert } from '@/utils/modal';
+import { createImageConfigs } from '@/utils/imageConfig';
 
 import { InputFormTemplateCommonProps } from '../interfaces';
+
+type AllImageIdsState = {
+  [configKey: string]: string[];
+};
+
+type AllImagesState = {
+  [configKey: string]: ImagewithLocation[] | null;
+};
 
 const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
   const paramParser = useFormDataParser();
 
   const type = paramParser.currentData.dataType;
+  const type_srv = paramParser.currentData.editData?.type_srv;
 
-  const currentServerOtherImageIds = useMemo(() => {
+  const imageConfigs = useMemo(
+    () => createImageConfigs({ type, type_srv, isEditing }),
+    [type, type_srv],
+  );
+
+  const getInitialImages = useCallback((configKey: string): ImagewithLocation[] | null => {
+    const config = imageConfigs[configKey];
+    if (!config) return null;
+    
+    const inputData = paramParser.currentData.inputData as Record<string, any>;
+    return inputData?.[config.frontUrlKey] ?? null;
+  }, [imageConfigs, paramParser.currentData.inputData]);
+
+  // 各画像タイプのサーバーIDを取得するヘルパー関数
+  const getServerImageIds = useCallback((configKey: string): string[] => {
     if (!isEditing) return [];
 
     const featureProps = paramParser.currentData.inputData?.gisData?.properties as
@@ -27,40 +51,49 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
       | undefined;
     if (!featureProps) return [];
 
-    const t = paramParser.currentData.editData?.type_srv;
+    const config = imageConfigs[configKey];
+    if (!config || !config.condition) return [];
 
-    return (featureProps[t === 'boar-2' ? '写真ID' : '画像ID'] ?? '').split(',').filter((e) => e);
-  }, [
-    isEditing,
-    paramParser.currentData.inputData?.gisData,
-    paramParser.currentData.editData?.type_srv,
-  ]);
-  const [newOtherImageIds, setNewOtherImageIds] = useState<string[]>(currentServerOtherImageIds);
-  const [otherImages, setOtherImages] = useState<ImagewithLocation[] | null>(
-    paramParser.currentData.inputData?.otherImageUrls ?? null,
-  );
+    const propertyKey = config.propertyKey;
 
-  const currentServerTeethImageIds = useMemo(() => {
-    if (!isEditing) return [];
+    return (featureProps[propertyKey] ?? '').split(',').filter((e) => e);
+  }, [isEditing, paramParser.currentData.inputData?.gisData, imageConfigs, type_srv]);
 
-    const featureProps = paramParser.currentData.inputData?.gisData?.properties as
-      | Record<string, string>
-      | undefined;
-    if (!featureProps) return [];
+  const [newAllImageIds, setNewAllImageIds] = useState<AllImageIdsState>(() => {
+    const initialIds: AllImageIdsState = {};
+    
+    Object.keys(imageConfigs).forEach((key) => {
+      initialIds[key] = getServerImageIds(key);
+    });
+    
+    return initialIds;
+  });
 
-    const t = paramParser.currentData.editData?.type_srv;
-    if (t !== 'boar-2') return [];
+  const [allImages, setAllImages] = useState<AllImagesState>(() => {
+    const initialImages: AllImagesState = {};
+    
+    Object.keys(imageConfigs).forEach((key) => {
+      initialImages[key] = getInitialImages(key);
+    });
+    
+    return initialImages;
+  });
 
-    return featureProps['歯列写真ID'].split(',').filter((e) => e);
-  }, [
-    isEditing,
-    paramParser.currentData.inputData?.gisData,
-    paramParser.currentData.editData?.type_srv,
-  ]);
-  const [newTeethImageIds, setNewTeethImageIds] = useState<string[]>(currentServerTeethImageIds);
-  const [teethImages, setTeethImages] = useState<ImagewithLocation[] | null>(
-    paramParser.currentData.inputData?.teethImageUrls ?? null,
-  );
+  // 特定の画像タイプのIDを更新する関数
+  const updateImageIds = useCallback((configKey: string, ids: string[]) => {
+    setNewAllImageIds((prev) => ({
+      ...prev,
+      [configKey]: ids,
+    }));
+  }, []);
+
+  // 特定の画像タイプの画像を更新する関数
+  const updateImages = useCallback((configKey: string, images: ImagewithLocation[] | null) => {
+    setAllImages((prev) => ({
+      ...prev,
+      [configKey]: images,
+    }));
+  }, []);
 
   useEffect(() => {
     if (!paramParser.currentData.dataType) {
@@ -76,13 +109,9 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
   }, [paramParser.currentData]);
 
   const onClickNext = useCallback(() => {
-    const t = paramParser.currentData.editData?.type_srv;
-
-    // 現在の入力情報を保存する。
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
 
     if (!isEditing && !newData.inputData?.gisData) {
-      // 新規登録の場合はベースとなるデータを作成
       newData.inputData.gisData = {
         geometry: {
           type: 'Point',
@@ -92,27 +121,33 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
         type: 'Feature',
       };
     }
+
     const featureProps = newData.inputData?.gisData?.properties as Record<string, string>;
 
-    newData.inputData.teethImageUrls = teethImages ?? [];
-    newData.inputData.otherImageUrls = otherImages ?? [];
+    // すべての画像設定に対して処理
+    Object.entries(imageConfigs).forEach(([configKey, config]) => {
+      if (!config.condition) return;
 
-    if (type === 'boar') {
-      featureProps['歯列写真ID'] = newTeethImageIds.join(',');
-    }
+      // 画像URLを保存
+      const urlKey = config.frontUrlKey;
+      (newData.inputData as any)[urlKey] = allImages[configKey] ?? [];
 
-    featureProps[t === 'boar-2' ? '写真ID' : '画像ID'] = newOtherImageIds.join(',');
+      // 画像IDをプロパティに保存
+      const propertyKey = config.propertyKey;
+      
+      featureProps[propertyKey] = newAllImageIds[configKey]?.join(',') ?? '';
+    });
+
+    console.log(newData);
 
     paramParser.updateData(newData as InputFormData);
-
-    // ページを遷移する
 
     if (isEditing) {
       router.push('/edit/info');
     } else {
       router.push('/add/location');
     }
-  }, [teethImages, otherImages, newOtherImageIds, newTeethImageIds, paramParser.currentData]);
+  }, [allImages, newAllImageIds, imageConfigs, type_srv, paramParser, isEditing, router]);
 
   const onClickPrev = useCallback(() => {
     if (sessionStorage.getItem('fromList') === "1") {
@@ -143,23 +178,15 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
     }
   }, [paramParser.currentData]);
 
-  const onChangeTeethImages = (files: ImagewithLocation[]) => {
-    if (files.length === 0) {
-      setTeethImages(null);
-    } else {
-      setTeethImages(files);
-    }
-  };
-
-  const onChangeOtherImages = (files: ImagewithLocation[]) => {
-    if (files.length === 0) {
-      setOtherImages(null);
-    } else {
-      setOtherImages(files);
-    }
-  };
+  const createImageChangeHandler = useCallback((configKey: string) => {
+    return (files: ImagewithLocation[]) => {
+      updateImages(configKey, files.length === 0 ? null : files);
+    };
+  }, [updateImages]);
 
   if (paramParser.isLoading) return <></>;
+
+  const activeConfigs = Object.entries(imageConfigs).filter(([_, config]) => config.condition);
 
   return (
     <div>
@@ -173,11 +200,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
             <>
               <div className='mt-2 flex'>
                 <div>※&nbsp;</div>
-                <div>歯列の写真は2枚まで登録できます。</div>
-              </div>
-              <div className='mt-2 flex'>
-                <div>※&nbsp;</div>
-                <div>その他の写真は8枚まで登録できます。</div>
+                <div>各項目２枚まで登録可能です。</div>
               </div>
               <div className='mt-2 flex'>
                 <div>※&nbsp;</div>
@@ -190,14 +213,6 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
               <div className='mt-3 flex'>
                 <div>※&nbsp;</div>
                 <div>
-                  <span className='font-bold'>有害捕獲の場合:</span>
-                  <br />
-                  ・検体採取個体の歯列写真
-                </div>
-              </div>
-              <div className='flex'>
-                <div>※&nbsp;</div>
-                <div>
                   <span className='font-bold'>調査捕獲の場合:</span>
                   <br />
                   ・検体採取個体の歯列写真
@@ -205,43 +220,45 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
                   ・全捕獲個体のそれぞれ全体の写真
                 </div>
               </div>
+              <div className='flex'>
+                <div>※&nbsp;</div>
+                <div>
+                  <span className='font-bold'>狩猟の場合:</span>
+                  <br />
+                  ・検体採取個体の歯列写真
+                  <br />
+                  ・捕獲個体の写真
+                </div>
+              </div>
+              <div className='flex'>
+                <div>※&nbsp;</div>
+                <div>
+                  <span className='font-bold'>有害捕獲の場合:</span>
+                  <br />
+                  ・検体採取個体の歯列写真
+                </div>
+              </div>
             </>
           ) : (
             <>※ 画像は10枚まで登録できます。</>
           )}
         </div>
-        {type != 'boar' ? (
-          <></>
-        ) : (
-          <div className='box-border w-full px-[15px] py-2'>
+          {activeConfigs.map(([configKey, config]) => (
+          <div key={configKey} className='box-border w-full px-[15px] py-2'>
             <div className='text-justify text-lg font-bold text-text'>
-              歯列の画像
+              {config.label}
               <ImageInput
-                max_count={type === 'boar' ? 2 : 10}
+                max_count={config.max}
                 type={type}
                 single_file={false}
-                onChange={onChangeTeethImages}
-                objectURLs={teethImages == null ? undefined : teethImages}
-                imageIDs={isEditing ? currentServerTeethImageIds : undefined}
-                onServerImageDeleted={(list) => setNewTeethImageIds(list)}
+                onChange={createImageChangeHandler(configKey)}
+                objectURLs={allImages[configKey] ?? undefined}
+                imageIDs={isEditing ? getServerImageIds(configKey) : undefined}
+                onServerImageDeleted={(list) => updateImageIds(configKey, list)}
               />
             </div>
           </div>
-        )}
-        <div className='box-border w-full px-[15px] py-2'>
-          <div className='text-justify text-lg font-bold text-text'>
-            {type == 'boar' ? 'その他の' : ''}画像
-            <ImageInput
-              max_count={type === 'boar' ? 8 : 10}
-              type={type}
-              single_file={false}
-              onChange={onChangeOtherImages}
-              objectURLs={otherImages == null ? undefined : otherImages}
-              imageIDs={isEditing ? currentServerOtherImageIds : undefined}
-              onServerImageDeleted={(list) => setNewOtherImageIds(list)}
-            />
-          </div>
-        </div>
+        ))}
       </div>
       <FooterAdjustment />
       <div className='fixed bottom-0 w-full'>

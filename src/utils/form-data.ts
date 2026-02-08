@@ -13,6 +13,10 @@ export interface InputFormData {
   inputData: {
     otherImageUrls?: ImagewithLocation[];
     teethImageUrls?: ImagewithLocation[];
+    captureImageUrls?: ImagewithLocation[];
+    captureWithLineImageUrls?: ImagewithLocation[];
+    disposeImageUrls?: ImagewithLocation[];
+    burialImageUrls?: ImagewithLocation[];
     newImageIds?: string[];
     gisData?: FeatureBase;
   };

@@ -13,8 +13,10 @@ import { getAccessToken } from '@/utils/currentUser';
 import { InputFormData, useFormDataParser } from '@/utils/form-data';
 import { to_header_color, to_header_title } from '@/utils/header';
 import { alert, confirm } from '@/utils/modal';
+import { createImageConfigs } from '@/utils/imageConfig';
 
 import { InputFormTemplateCommonProps } from '../interfaces';
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
 
 const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
@@ -25,6 +27,13 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
   const [featureInfo, setFeatureInfo] = useState<FeatureBase | null>(null);
 
   const type = paramParser.currentData.dataType;
+  const type_srv = paramParser.currentData.editData?.type_srv;
+  
+  const imageConfigs = useMemo(
+    () => createImageConfigs({ type, type_srv , isEditing}),
+    [type, type_srv],
+  );
+
   const t = useMemo(() => {
     const tt = paramParser.currentData.editData?.type_srv;
     if (tt == null) {
@@ -130,45 +139,29 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
       // 画像を削除
       await Promise.all(delImg.map((e) => deleteImage(e)));
 
-      // 対象の場合は歯列写真をアップロードしてFeatureにセット
-      if (
-        (!isEditing && paramParser.currentData.dataType === 'boar') ||
-        (isEditing && paramParser.currentData.editData?.type_srv === 'boar-2')
-      ) {
-        const teethImageIds = (
+      for (const config of Object.values(imageConfigs)) {
+        if (!config.condition) continue;
+        const imageUrls =
+          paramParser.currentData.inputData[config.frontUrlKey] || [];
+
+        // 画像アップロード
+        const uploadedIds = (
           await Promise.all(
-            (paramParser.currentData.inputData.teethImageUrls || []).map((e) =>
-              uploadImage(e.objectURL),
-            ),
+            (imageUrls as ImagewithLocation[]).map((e) => uploadImage(e.objectURL)),
           )
-        ).filter((e) => e != null);
+        ).filter((e): e is string => e != null);
+        
+        const propertyKey = config.propertyKey;
 
-        const currentIds = (newData.inputData.gisData.properties as Record<string, string>)[
-          '歯列写真ID'
-        ].split(',');
-        const newIds = currentIds.concat(teethImageIds as string[]).filter((e) => e);
-        (newData.inputData.gisData.properties as Record<string, string>)['歯列写真ID'] =
-          newIds.join(',');
+        const properties =
+          newData.inputData.gisData.properties as Record<string, string>;
+
+        const currentIds = (properties[propertyKey] || '').split(',');
+        const newIds = currentIds.concat(uploadedIds).filter(Boolean);
+
+        //properties[propertyKey] = newIds.join(',');
+        (newData.inputData.gisData.properties as Record<string, string>)[propertyKey] = newIds.join(',');
       }
-
-      // 画像をアップロードしてFeatureにセット
-      const otherImageIds = (
-        await Promise.all(
-          (paramParser.currentData.inputData.otherImageUrls || []).map((e) =>
-            uploadImage(e.objectURL),
-          ),
-        )
-      ).filter((e) => e != null);
-      const currentIds = (
-        (newData.inputData.gisData.properties as Record<string, string>)[
-          t == 'boar' ? '写真ID' : '画像ID'
-        ] || ''
-      ).split(',');
-      const newIds = currentIds.concat(otherImageIds as string[]).filter((e) => e);
-
-      (newData.inputData.gisData.properties as Record<string, string>)[
-        t == 'boar' ? '写真ID' : '画像ID'
-      ] = newIds.join(',');
 
       let res = null;
       if (isEditing) {
@@ -221,8 +214,13 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
     setImageArray(
       (paramParser.currentData.inputData.teethImageUrls ?? [])
         .concat(paramParser.currentData.inputData.otherImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
         .map((e) => e.objectURL),
     );
+
     setServerImages(() => {
       const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
         string,
