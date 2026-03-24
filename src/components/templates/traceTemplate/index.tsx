@@ -36,7 +36,7 @@ const TraceTemplate: React.FunctionComponent = () => {
 
   return (
     <div>
-      <Header>個体検索</Header>
+      <Header>ジビエ肉の履歴確認</Header>
       <div className='mx-auto px-4 pt-3'>
         <TraceForm onSubmit={onSubmit} />
         {searchResult === null ? (
