@@ -68,6 +68,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     if (currentView == null) return;
 
     const { radius, days, style, origin } = currentView;
+    origin.setHours(0, 0, 0, 0);
     const show_date = new Date(origin);
     show_date.setHours(0);
     show_date.setMinutes(0);
