@@ -86,7 +86,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
       )}
       {catchNumInfo}
       <Divider />
-      {detail.properties.捕獲いのしし情報.length === 0 ? (
+      {!Array.isArray(detail.properties.捕獲いのしし情報) || Array.from(detail.properties.捕獲いのしし情報).length === 0 ? (
         <InfoDiv title='個体情報' type='gray' data={'取得に失敗しました。'} />
       ) : (
         detail.properties.捕獲いのしし情報.map((v, index, arr) => {

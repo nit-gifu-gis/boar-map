@@ -32,7 +32,7 @@ export interface TraderInfo {
 
 export interface BoarDetailFormHandler {
   validateData(): boolean;
-  fetchData(): FeatureBase | null;
+  fetchData(): Promise<FeatureBase | null>;
   setDead(): void;
   is_first: boolean;
   setType(type: string): void;
