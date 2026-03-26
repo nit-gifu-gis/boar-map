@@ -9,8 +9,8 @@ import Footer from '@/components/organisms/footer';
 import Header from '@/components/organisms/header';
 import { InputFormData, useFormDataParser } from '@/utils/form-data';
 import { to_header_color } from '@/utils/header';
-import { alert } from '@/utils/modal';
 import { createImageConfigs } from '@/utils/imageConfig';
+import { alert } from '@/utils/modal';
 
 import { InputFormTemplateCommonProps } from '../interfaces';
 
@@ -243,7 +243,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
             <>※ 画像は10枚まで登録できます。</>
           )}
         </div>
-          {activeConfigs.map(([configKey, config]) => (
+        {activeConfigs.map(([configKey, config]) => (
           <div key={configKey} className='box-border w-full px-[15px] py-2'>
             <div className='text-justify text-lg font-bold text-text'>
               {config.label}

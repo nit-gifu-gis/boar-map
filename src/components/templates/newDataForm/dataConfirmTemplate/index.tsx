@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FeatureBase } from '@/types/features';
 
 import FooterAdjustment from '@/components/atomos/footerAdjustment';
+import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
 import RoundButton from '@/components/atomos/roundButton';
 import FeatureViewer from '@/components/organisms/featureViewer';
 import Footer from '@/components/organisms/footer';
@@ -12,11 +13,10 @@ import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
 import { InputFormData, useFormDataParser } from '@/utils/form-data';
 import { to_header_color, to_header_title } from '@/utils/header';
-import { alert, confirm } from '@/utils/modal';
 import { createImageConfigs } from '@/utils/imageConfig';
+import { alert, confirm } from '@/utils/modal';
 
 import { InputFormTemplateCommonProps } from '../interfaces';
-import { ImagewithLocation } from '@/components/atomos/imageInput/interface';
 
 const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();

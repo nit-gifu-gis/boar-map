@@ -61,11 +61,11 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
 
     setImageArray(
       (paramParser.currentData.inputData.teethImageUrls ?? [])
-      .concat(paramParser.currentData.inputData.otherImageUrls ?? [],)
-      .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
-      .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
-      .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
-      .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.otherImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
     );
     setServerImages(() => {
       const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
@@ -110,7 +110,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
     }
   }, []);
 
-  const onClickNext = useCallback(async () => {
+  const onClickNext = async () => {
     if (editorRef == null) {
       // 本来は起きないはず
       alert('内部エラーが発生しました。');
@@ -135,13 +135,12 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
     newData.inputData.gisData = featureInfo;
     paramParser.updateData(newData);
-
     if (isEditing) {
       router.push('/edit/confirm');
     } else {
       router.push('/add/confirm');
     }
-  }, [editorRef, paramParser.currentData]);
+  };
 
   return (
     <div>
@@ -163,7 +162,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
           <RoundButton color='accent' onClick={onClickPrev.bind(this)}>
             &lt; 戻る
           </RoundButton>
-          <RoundButton color='primary' onClick={onClickNext.bind(this)} disabled={isValidating}>
+          <RoundButton color='primary' onClick={onClickNext} disabled={isValidating}>
             {isValidating ? '読み込み中...' : '進む >'}
           </RoundButton>
         </Footer>

@@ -129,7 +129,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       setFemale(sex === 'メス');
     };
 
-    const fetchData = () => {
+    const fetchData = async () => {
       // フォーム
       const form = getForm();
       // 成獣幼獣別

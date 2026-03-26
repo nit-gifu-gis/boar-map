@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 
 import RoundButton from '@/components/atomos/roundButton';
 import BoarTable from '@/components/organisms/boarTable';
+import ButanetsuTable from '@/components/organisms/ButanetsuTable';
 import ReportTable from '@/components/organisms/reportTable';
 import TrapTable from '@/components/organisms/trapTable';
 import VaccineTable from '@/components/organisms/vaccineTable';
-import ButanetsuTable from '@/components/organisms/ButanetsuTable'
 import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
 import { alert } from '@/utils/modal';

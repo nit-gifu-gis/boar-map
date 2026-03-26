@@ -57,7 +57,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
       currentUser.userDepartment === 'D' ||
       currentUser.userDepartment === 'K'
     )
-      list.push('豚熱陽性確認情報')
+      list.push('豚熱陽性確認情報');
     setDataType(list[0]);
     setTypeList(list);
 
