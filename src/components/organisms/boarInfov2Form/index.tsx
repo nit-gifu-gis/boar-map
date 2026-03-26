@@ -124,6 +124,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const isBlood = isMultiple && (division === '有害捕獲' || division === '狩猟');
 
     const fetchData = async () => {
+      /*
       const boarListData = await new Promise<BoarInfoFeatureV2[]>((resolve) => {
         setBoarFormList((boarList) => {
           const asyncFunc = async () => {
@@ -142,6 +143,15 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
           return boarList;
         });
       });
+      */
+      const list: BoarInfoFeatureV2[] = [];
+
+      if (boarFormList != null && Array.isArray(boarFormList)) {
+        for (const item of boarFormList) {
+          const data = await item.ref.current?.fetchData();
+          if (data) list.push(data as BoarInfoFeatureV2);
+        }
+      }
 
       const form = getForm();
       // 入力者
@@ -191,7 +201,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
             props.featureInfo?.properties.歯列写真ID != null
               ? props.featureInfo?.properties.歯列写真ID
               : '',
-          捕獲いのしし情報: boarListData,
+          捕獲いのしし情報: list,
         },
         geometry: {
           type: 'Point',
@@ -290,7 +300,7 @@ const BoarInfov2Form = React.forwardRef<FeatureEditorHandler, BoarInfov2FormProp
     const onChangeTrap = () => {
       const form = getForm();
       const division = form.trap.options[form.trap.selectedIndex].value as string;
-      setTrap(division)
+      setTrap(division);
     };
 
     const validateDate = () => {

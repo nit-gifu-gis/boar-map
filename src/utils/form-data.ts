@@ -1,4 +1,3 @@
-import { parseCookies, setCookie } from 'nookies';
 import { useEffect, useMemo, useState } from 'react';
 
 import { ImagewithLocation } from '../components/atomos/imageInput/interface';
@@ -35,7 +34,7 @@ export interface InputFormData {
 export const useFormDataParser = () => {
   const [isObjectURLChecked, setIsObjectURLChecked] = useState(false);
   const [currentData, setCurrentData] = useState<InputFormData | Record<string, never>>(
-    JSON.parse(parseCookies()['formData'] || '{}') ?? {},
+    JSON.parse(localStorage.getItem("formData") || '{}') ?? {},
   );
   const [isLoading, setIsLoading] = useState(true);
   const isDataExsiting = useMemo(() => Object.keys(currentData).length === 0, [currentData]);
@@ -84,8 +83,10 @@ export const useFormDataParser = () => {
   }, [isObjectURLChecked]);
 
   const updateData = (data: InputFormData | null) => {
+    // cookieのサイズ制限(4KB)を超えないように、ローカルストレージに保存する
+    // setCookie(null, 'formData', JSON.stringify(data), { path: '/' });
+    localStorage.setItem("formData", JSON.stringify(data));
     setCurrentData(data ?? {});
-    setCookie(null, 'formData', JSON.stringify(data), { path: '/' });
   };
 
   return {
