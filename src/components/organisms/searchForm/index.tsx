@@ -19,7 +19,11 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
   const hasBoarSpecialFilterPermission = useMemo(() => {
     if (!currentUser) return false;
 
-    return currentUser.userDepartment === 'K' || currentUser.userDepartment === 'R' || currentUser.userDepartment === 'D';
+    return (
+      currentUser.userDepartment === 'K' ||
+      currentUser.userDepartment === 'R' ||
+      currentUser.userDepartment === 'D'
+    );
   }, [currentUser]);
 
   const dateLabelList: { [key: string]: string } = {
@@ -27,6 +31,7 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     わな設置地点: '設置年月日',
     ワクチン散布地点: '散布年月日',
     作業日報: '作業日',
+    豚熱陽性確認情報: '捕獲年月日',
   };
 
   useEffect(() => {
@@ -48,8 +53,47 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
       currentUser.userDepartment === 'K'
     )
       list.push('作業日報');
+    if(
+      currentUser.userDepartment === 'D' ||
+      currentUser.userDepartment === 'K'
+    )
+      list.push('豚熱陽性確認情報');
     setDataType(list[0]);
     setTypeList(list);
+
+    if (sessionStorage.getItem('fromList') === "2") {
+      const latestSearchParamStr = localStorage.getItem("latestSearchParam");
+      if (latestSearchParamStr) {
+        const latestSearchParam = JSON.parse(latestSearchParamStr);
+        (document.getElementById('division_type') as HTMLSelectElement).value =
+          latestSearchParam.dataType;
+        setDataType(latestSearchParam.dataType);
+        console.log(latestSearchParam.dataType, (document.getElementById('division_type') as HTMLSelectElement).value);
+        (document.getElementById('date1') as HTMLInputElement).value = latestSearchParam.date1;
+        (document.getElementById('date2') as HTMLInputElement).value = latestSearchParam.date2;
+        if (hasBoarSpecialFilterPermission) {
+          const arrival1Input = document.getElementById('arrival_date1') as HTMLInputElement;
+          const arrival2Input = document.getElementById('arrival_date2') as HTMLInputElement;
+          if (arrival1Input)
+            arrival1Input.value = latestSearchParam.arrival1 ? latestSearchParam.arrival1 : '';
+          if (arrival2Input)
+            arrival2Input.value = latestSearchParam.arrival2 ? latestSearchParam.arrival2 : '';
+          const edit1Input = document.getElementById('edit_date1') as HTMLInputElement;
+          const edit2Input = document.getElementById('edit_date2') as HTMLInputElement;
+          if (edit1Input)
+            edit1Input.value = latestSearchParam.edit1 ? latestSearchParam.edit1 : '';
+          if (edit2Input)
+            edit2Input.value = latestSearchParam.edit2 ? latestSearchParam.edit2 : '';
+        }
+        if (latestSearchParam.cities) {
+          const citiesInput = document.getElementById('cities') as HTMLInputElement;
+          if (citiesInput) citiesInput.value = latestSearchParam.cities;
+        }
+        sessionStorage.removeItem('fromList');
+        setTimeout(() =>
+          onClickSearch());
+      }
+    }
   }, [currentUser]);
 
   const validateDate = (date1: string, date2: string) => {
@@ -66,33 +110,43 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setDateError(false);
     const date1 = (document.getElementById('date1') as HTMLInputElement).value;
     const date2 = (document.getElementById('date2') as HTMLInputElement).value;
-    
-    const arrival1Input = (document.getElementById('arrival_date1') as HTMLInputElement);
-    const arrival2Input = (document.getElementById('arrival_date2') as HTMLInputElement);
-    const arrival1 = hasBoarSpecialFilterPermission && arrival1Input != undefined ? arrival1Input.value : undefined;
-    const arrival2 = hasBoarSpecialFilterPermission && arrival2Input != undefined ? arrival2Input.value : undefined;
 
-    const edit1Input = (document.getElementById('edit_date1') as HTMLInputElement);
-    const edit2Input = (document.getElementById('edit_date2') as HTMLInputElement);
+    const arrival1Input = document.getElementById('arrival_date1') as HTMLInputElement;
+    const arrival2Input = document.getElementById('arrival_date2') as HTMLInputElement;
+    const arrival1 =
+      hasBoarSpecialFilterPermission && arrival1Input != undefined
+        ? arrival1Input.value
+        : undefined;
+    const arrival2 =
+      hasBoarSpecialFilterPermission && arrival2Input != undefined
+        ? arrival2Input.value
+        : undefined;
 
-    const edit1 = hasBoarSpecialFilterPermission && edit1Input != undefined ? edit1Input.value : undefined;
-    const edit2 = hasBoarSpecialFilterPermission && edit2Input != undefined ? edit2Input.value : undefined;
+    const edit1Input = document.getElementById('edit_date1') as HTMLInputElement;
+    const edit2Input = document.getElementById('edit_date2') as HTMLInputElement;
+
+    const edit1 =
+      hasBoarSpecialFilterPermission && edit1Input != undefined ? edit1Input.value : undefined;
+    const edit2 =
+      hasBoarSpecialFilterPermission && edit2Input != undefined ? edit2Input.value : undefined;
 
     if (!(date1 && date2) && !(arrival1 && arrival2) && !(edit1 && edit2)) {
       // チェック
       alert(
-        dataType === "いのしし捕獲地点" ? 
-          (hasBoarSpecialFilterPermission ? "「捕獲年月日」または「検体到着予定日」または「最終更新日」を入力してください。" : "「捕獲年月日」を入力してください。")
-          : "日付が入力されていません。"
+        dataType === 'いのしし捕獲地点'
+          ? hasBoarSpecialFilterPermission
+            ? '「捕獲年月日」または「検体到着予定日」または「最終更新日」を入力してください。'
+            : '「捕獲年月日」を入力してください。'
+          : '日付が入力されていません。',
       );
       setDateError(true);
       return;
     }
 
     if (
-      (date1 && date2 && !validateDate(date1, date2))
-      || (arrival1 && arrival2 && !validateDate(arrival1, arrival2))
-      || (edit1 && edit2 && !validateDate(edit1, edit2))
+      (date1 && date2 && !validateDate(date1, date2)) ||
+      (arrival1 && arrival2 && !validateDate(arrival1, arrival2)) ||
+      (edit1 && edit2 && !validateDate(edit1, edit2))
     ) {
       alert('日付の前後が間違っています。');
       setDateError(true);
@@ -102,22 +156,40 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
     setSearching(true);
     const citiesInput = document.getElementById('cities') as HTMLInputElement;
     const citiesStr = citiesInput !== null ? citiesInput.value : '';
-    const cities = hasBoarSpecialFilterPermission ? citiesStr
-      .split(/[\s\n,.，．、。]/)
-      .filter((e) => e)
-      .join(',') : "";
+    const cities = hasBoarSpecialFilterPermission
+      ? citiesStr
+        .split(/[\s\n,.，．、。]/)
+        .filter((e) => e)
+        .join(',')
+      : '';
     const divisionInput = document.getElementById('division') as HTMLInputElement;
     const division = divisionInput !== null ? divisionInput.value : '';
     const dataTypeStr = (document.getElementById('division_type') as HTMLSelectElement).value;
     // ファイルを取得しておく
     const userList = (document.getElementById('userList') as HTMLInputElement).files as FileList;
+
+    const saveParam = {
+      dataType: dataTypeStr,
+      date1: date1,
+      date2: date2,
+      arrival1: arrival1 || '',
+      arrival2: arrival2 || '',
+      edit1: edit1 || '',
+      edit2: edit2 || '',
+      cities: cities,
+      division: division,
+      userList: userList.length !== 0 ? userList[0].name : '',
+    };
+    console.log(saveParam);
+    localStorage.setItem("latestSearchParam", JSON.stringify(saveParam));
+
     const data = new FormData();
     data.append('fromDate', date1);
     data.append('toDate', date2);
-    if (hasBoarSpecialFilterPermission) data.append('fromArrivalDate', arrival1 || "");
-    if (hasBoarSpecialFilterPermission) data.append('toArrivalDate', arrival2 || "");
-    if (hasBoarSpecialFilterPermission) data.append('fromEditDate', edit1 || "");
-    if (hasBoarSpecialFilterPermission) data.append('toEditDate', edit2 || "");
+    if (hasBoarSpecialFilterPermission) data.append('fromArrivalDate', arrival1 || '');
+    if (hasBoarSpecialFilterPermission) data.append('toArrivalDate', arrival2 || '');
+    if (hasBoarSpecialFilterPermission) data.append('fromEditDate', edit1 || '');
+    if (hasBoarSpecialFilterPermission) data.append('toEditDate', edit2 || '');
     if (hasBoarSpecialFilterPermission) data.append('cities', cities);
     data.append('divisions', division);
     data.append('type', dataTypeStr);
@@ -171,9 +243,12 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
                 <div className='flex-[0_1_300px]'>
                   <DateInput id='arrival_date2' error={dateError} />
                 </div>
-              </div></>
-          ) : <></>}
-          {hasBoarSpecialFilterPermission ? (
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+          {hasBoarSpecialFilterPermission && dataType !== '豚熱陽性確認情報' ? (
             <>
               <div className='col-[1/2] row-[4] m-1 flex items-center justify-center'>
                 最終更新日
@@ -188,7 +263,9 @@ const SearchForm: React.FunctionComponent<SearchFormProps> = ({ onClick }) => {
                 </div>
               </div>
             </>
-          ) : <></>}
+          ) : (
+            <></>
+          )}
           {dataType === '作業日報' ? (
             <>
               <div className='col-[1/2] row-[5] m-1 flex items-center justify-center'>地域</div>

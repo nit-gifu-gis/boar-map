@@ -7,20 +7,14 @@ import InfoInput from '@/components/molecules/infoInput';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
-import {
-  fetchTraderList,
-  filterListByArea,
-  getTraderByName,
-  includeTrader,
-} from '@/utils/jibie';
+import { fetchTraderList, filterListByArea, getTraderByName, includeTrader } from '@/utils/jibie';
 import { checkDateError, checkNumberError } from '@/utils/validateData';
 
 import { BoarDetailFormHandler, BoarDetailFormProps, TraderInfo, TraderList } from './interface';
 
-
 const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormProps>(
   function InfoForm(props, ref) {
-    const [noteLabel, setNoteLabel] = useState("備考");
+    const [noteLabel, setNoteLabel] = useState('備考');
     useEffect(() => {
       const fetchTask = async () => {
         const inputRes = await fetch(SERVER_URI + '/Settings/Inputs', {
@@ -33,7 +27,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       };
       fetchTask();
     }, []);
-    
+
     const { currentUser } = useCurrentUser();
 
     const featureValueOrUndefined = (key: keyof BoarInfoPropsV2): string | undefined => {
@@ -135,7 +129,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
       setFemale(sex === 'メス');
     };
 
-    const fetchData = () => {
+    const fetchData = async () => {
       // フォーム
       const form = getForm();
       // 成獣幼獣別
@@ -187,7 +181,7 @@ const BoarDetailForm = React.forwardRef<BoarDetailFormHandler, BoarDetailFormPro
           成獣幼獣別: age,
           性別: gender,
           体長: `${parseInt(length)}`,
-          体重: "",
+          体重: '',
           処分方法: disposal,
           備考: note,
           妊娠の状況: pregnant,

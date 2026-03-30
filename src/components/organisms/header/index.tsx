@@ -74,16 +74,15 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
   }, [currentUser]);
 
   const onClickBugReport = async () => {
-    let msg =  `・ ユーザーID\n`;
+    let msg = `・ ユーザーID\n`;
     msg += `・ ${appLogs.length}件のログデータ\n`;
     msg += `・ 画面遷移についての情報\n`;
     msg += `・ 使用中の機種についての情報\n`;
     msg += `\n`;
     msg += `を開発チームに送信してもよろしいですか？`;
 
-    const additional = await inputBox(msg, "その他に送信したい情報がある場合はご記入ください。");
-    if(additional == null)
-      return;
+    const additional = await inputBox(msg, 'その他に送信したい情報がある場合はご記入ください。');
+    if (additional == null) return;
 
     const data = {
       logs: appLogs,
@@ -94,28 +93,28 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         userAgent: navigator.userAgent,
         vendor: navigator.vendor,
         platform: navigator.platform,
-        product: [navigator.product, navigator.productSub]
+        product: [navigator.product, navigator.productSub],
       },
       user: currentUser?.userId,
-      addtional: additional
+      addtional: additional,
     };
 
-    const req = await fetch(SERVER_URI + "/Debug/Report", {
+    const req = await fetch(SERVER_URI + '/Debug/Report', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
-        "Content-Type": "application/json",
-        "X-Access-Token": await getAccessToken()
-      }
+        'Content-Type': 'application/json',
+        'X-Access-Token': await getAccessToken(),
+      },
     });
 
     const res = await req.json();
-    if(!req.ok) {
-      await alert("送信中にエラーが発生しました。\n\n" + res.error);
+    if (!req.ok) {
+      await alert('送信中にエラーが発生しました。\n\n' + res.error);
       return;
     }
 
-    await alert("送信ありがとうございました。");
+    await alert('送信ありがとうございました。');
   };
 
   const onLogoutClicked = async () => {
@@ -158,7 +157,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         <Link href='/map-dl'>
           <a className='text-14pt text-background no-underline'>ワクチンメッシュ図面ダウンロード</a>
         </Link>
-      </div>
+      </div>,
     );
 
     if (hasListPermission(currentUser)) {
@@ -203,7 +202,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         </div>,
       );
     }
-    
+
     menuItems.push(
       <div
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
@@ -221,7 +220,9 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         key='menu_bugreport'
       >
         <Link href='#'>
-          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>エラー情報の送信</a>
+          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>
+            エラー情報の送信
+          </a>
         </Link>
       </div>,
     );
@@ -248,18 +249,18 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_manual'
       >
-        <Link href="#">
+        <Link href='#'>
           <a
             className='text-14pt text-background no-underline'
             onClick={() => {
-              setManualViewer(viewer => {
+              setManualViewer((viewer) => {
                 setOpen(false);
-                if(viewer == null) {
+                if (viewer == null) {
                   return (
-                    <PDFViewer 
-                      url={MANUAL_URL} 
-                      closeHandler={() => setManualViewer(null)} 
-                      title="操作マニュアル"
+                    <PDFViewer
+                      url={MANUAL_URL}
+                      closeHandler={() => setManualViewer(null)}
+                      title='操作マニュアル'
                     />
                   );
                 }
@@ -347,7 +348,7 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
               <div
                 className={
                   'active:active-dark absolute right-3 top-2.5 box-content flex h-10 w-10 cursor-pointer items-center rounded-md border-x border-y border-solid border-background ' +
-                bgColor
+                  bgColor
                 }
                 onClick={() => {
                   setOpen(!isOpen);
@@ -363,14 +364,14 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
             <div
               className={
                 bgColor +
-              ' ' +
-              (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
+                ' ' +
+                (isOpen ? 'header-anim-close max-h-screen' : 'header-anim-open max-h-0')
               }
             >
               <div
                 className={
                   'overflow-y-hidden ' +
-                (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
+                  (isOpen ? 'header-anim-close opacity-1' : 'header-anim-open opacity-0')
                 }
               >
                 <div className={isOpen ? 'block' : 'hidden'}>{menuItems}</div>
@@ -380,7 +381,6 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         </div>
       </div>
     </>
-    
   );
 };
 

@@ -1,3 +1,3 @@
-export interface InputFormTemplateCommonProps { 
+export interface InputFormTemplateCommonProps {
   isEditing: boolean;
 }

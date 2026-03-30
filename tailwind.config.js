@@ -61,7 +61,8 @@ module.exports = {
       'input-bg': '#ffffff',
       'input-error-bg': '#ffcccc',
       'index-trace': '#ece9c8',
-      'index-map': '#daecc8'
+      'index-map': '#daecc8',
+      'link': '#1565c0',
     },
     fontFamily: {
       default: ["Helvetica Neue", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "sans-serif"]

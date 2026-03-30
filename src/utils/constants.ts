@@ -19,8 +19,9 @@ const getServerURI = (): string => {
   return 'https://boar-map.gifugis.jp/api'; // デフォルト
 };
 
-export const REPORT_FORM_URL = "https://boar-map.gifugis.jp/media/R5_ReportForm_FaxPaper_20231016.pdf";
-export const MANUAL_URL = "https://boar-map.gifugis.jp/media/manual_20251120.pdf";
+export const REPORT_FORM_URL =
+  '/static/pdf/検体提供報告書兼FAX用紙.pdf';
+export const MANUAL_URL = 'https://boar-map.gifugis.jp/media/manual_20251120.pdf';
 
 export const SERVER_URI = getServerURI();
 

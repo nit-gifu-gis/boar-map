@@ -20,7 +20,7 @@ export interface ReportBServerValue {
     幼獣オス: ReportBBodyValue;
     幼獣メス: ReportBBodyValue;
     幼獣不明: ReportBBodyValue;
-  }
+  };
   成獣: ReportBBodyValue;
   幼獣オス: ReportBBodyValue;
   幼獣メス: ReportBBodyValue;
@@ -30,36 +30,36 @@ export interface ReportBServerValue {
 
 export interface WorkValue {
   trap: {
-    placed: number,
-    removed: number
-  },
-  capture: boolean,
-  crawl: boolean,
+    placed: number;
+    removed: number;
+  };
+  capture: boolean;
+  crawl: boolean;
   capture_type: {
-    own: boolean,
-    help: boolean,
-    mistake: boolean,
-  }
+    own: boolean;
+    help: boolean;
+    mistake: boolean;
+  };
 }
 
 export interface MistakeValue {
-  trap_type: string,
-  head_count: number,
-  response: string,
+  trap_type: string;
+  head_count: number;
+  response: string;
   animal_type: {
-    deer: boolean,
-    serow: boolean,
-    boar: boolean,
-    other: boolean,
-  },
-  animal_other: string
+    deer: boolean;
+    serow: boolean;
+    boar: boolean;
+    other: boolean;
+  };
+  animal_other: string;
 }
 
 export interface ToolValue {
   tool: {
-    elec: boolean,
-    gun: boolean,
-    other: boolean,
-  },
-  other_tool: string
+    elec: boolean;
+    gun: boolean;
+    other: boolean;
+  };
+  other_tool: string;
 }

@@ -87,7 +87,10 @@ const DetailTemplate: React.FunctionComponent = () => {
         if (featureType === 'boar-2') {
           const sid = (featureInfo.properties as Record<string, unknown>)['歯列写真ID'] as string;
           if (sid != null && sid !== '') {
-            sid.split(',').filter(e=>e).forEach((e) => imageIds.push(e));
+            sid
+              .split(',')
+              .filter((e) => e)
+              .forEach((e) => imageIds.push(e));
           }
         }
 
@@ -159,13 +162,14 @@ const DetailTemplate: React.FunctionComponent = () => {
   const onClickEdit = useCallback(async () => {
     if (featureInfo == null) return;
 
-    const layerType = (
-      (featureType ?? '').startsWith('boar-') ? 'boar' : featureType
-    ) as LayerType;
+    const layerType = ((featureType ?? '').startsWith('boar-') ? 'boar' : featureType) as LayerType;
 
-    const isImageSkip = layerType === 'report' || layerType === 'butanetsu' || layerType === 'youton'; 
+    const isImageSkip =
+      layerType === 'report' || layerType === 'butanetsu' || layerType === 'youton';
 
-    const yesNoCheck = await yesNo('位置情報の編集を行いますか？\n\n(いのしし捕獲情報のみ)\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 \n(平日8:30～12:00、13:00～17:15)');
+    const yesNoCheck = await yesNo(
+      '位置情報の編集を行いますか？\n\n(いのしし捕獲情報のみ)\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 \n(平日8:30～12:00、13:00～17:15)',
+    );
     paramParser.updateData({
       dataType: layerType,
       isLocationSkipped: !yesNoCheck,
@@ -179,15 +183,21 @@ const DetailTemplate: React.FunctionComponent = () => {
         type_srv: featureType,
         version: router.query.version as string,
         curImg: {
-          teeth: ((featureInfo.properties as Record<string, string>)['歯列写真ID'] || '').split(','),
-          other: ((featureInfo.properties as Record<string, string>)[router.query.type_srv === 'boar-2' ? '写真ID' : '画像ID'] || '').split(','),
-        }
-      }
+          teeth: ((featureInfo.properties as Record<string, string>)['歯列写真ID'] || '').split(
+            ',',
+          ),
+          other: (
+            (featureInfo.properties as Record<string, string>)[
+              router.query.type_srv === 'boar-2' ? '写真ID' : '画像ID'
+            ] || ''
+          ).split(','),
+        },
+      },
     });
-    
+
     if (yesNoCheck) {
       router.push('/edit/location');
-    } else if(isImageSkip) {
+    } else if (isImageSkip) {
       router.push('/edit/info');
     } else {
       router.push('/edit/image');

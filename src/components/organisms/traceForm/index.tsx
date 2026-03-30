@@ -17,6 +17,7 @@ const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
     setInputDisabled(true);
     setButtonEnabled(false);
     setButtonLabel('検索中...');
+    // 現在入力されている値をそのまま送信
     await onSubmit(boarNo);
     setInputDisabled(false);
     setButtonEnabled(true);
@@ -24,52 +25,60 @@ const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
   };
 
   const inputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const NUMBER_LENGTH = 9;
+    const value = e.target.value.trim();
+    setBoarNo(value); // 入力値をステートに即時反映
 
-    const boarNo = e.target.value;
-    if (boarNo === '') {
-      // 何も入力されていない場合はエラーを消して終了する。
+    if (value === '') {
       setError('');
-      setBoarNo('');
       setButtonEnabled(false);
       return;
     }
 
-    if (Number.isNaN(Number(boarNo))) {
-      // 数字以外が入力された場合にはエラーを出す。
-      setError('数字以外が入力されています。');
-      setBoarNo('');
-      setButtonEnabled(false);
+    // --- バリデーションロジック ---
+
+    // 1. 確認番号（数字のみ）の場合の判定
+    const isAllNumbers = /^\d+$/.test(value);
+
+    if (isAllNumbers) {
+      if (value.length < 9) {
+        setError(''); // 桁数が足りない間はエラーを出さず、ボタンも押せない
+        setButtonEnabled(false);
+        return;
+      }
+      if (value.length === 9) {
+        if (checkLuhn(value)) {
+          setError('');
+          setButtonEnabled(true);
+        } else {
+          setError('確認番号が正しくありません。');
+          setButtonEnabled(false);
+        }
+        return;
+      }
+      if (value.length > 9) {
+        setError('確認番号の桁数が多すぎます。');
+        setButtonEnabled(false);
+        return;
+      }
+    }
+
+    // 2. 個体管理番号（英字を含む）の場合の判定
+    // 例: TGK125001 (英数字混在、長さ制限なし〜適度な長さ)
+    const isManagementId = /^[A-Z0-9-]+$/i.test(value);
+    if (isManagementId) {
+      // 英字が含まれていれば、個体管理番号として最低限の長さを条件にする（例: 3文字以上）
+      if (value.length >= 3) {
+        setError('');
+        setButtonEnabled(true);
+      } else {
+        setButtonEnabled(false);
+      }
       return;
     }
 
-    if (boarNo.length < NUMBER_LENGTH) {
-      // 指定された桁数未満の場合は何もしない
-      setError('');
-      setBoarNo('');
-      setButtonEnabled(false);
-      return;
-    }
-
-    if (boarNo.length > NUMBER_LENGTH) {
-      // 指定された桁数より長い場合はエラーを出す。
-      setError('データの形式が不正です。');
-      setBoarNo('');
-      setButtonEnabled(false);
-      return;
-    }
-
-    if (!checkLuhn(boarNo)) {
-      // チェックディジットを計算して間違っている場合にはエラーを返す。
-      setError('入力された値が間違っています。');
-      setBoarNo('');
-      setButtonEnabled(false);
-      return;
-    }
-
-    setButtonEnabled(true);
-    setBoarNo(e.target.value);
-    setError('');
+    // どちらの形式にも当てはまらない場合
+    setError('無効な文字が含まれています。');
+    setButtonEnabled(false);
   };
 
   return (
@@ -77,11 +86,14 @@ const TraceForm: React.FunctionComponent<TraceFormProps> = ({ onSubmit }) => {
       <div className='text-2xl font-bold'>検索条件</div>
       <div className='mb-8 box-border w-full rounded-xl border-2 border-solid border-border py-3 px-4'>
         <div className='grid grid-cols-[100px,1fr]'>
-          <div className='col-[1/2] row-[1] m-1 flex items-center justify-center'>確認番号</div>
+          <div className='col-[1/2] row-[1] m-1 flex items-center justify-center text-sm'>
+            確認番号 /<br />個体管理番号
+          </div>
           <div className='col-[2/3] row-[1] m-1 flex flex-wrap items-center justify-start text-left'>
             <TextInput
-              type='number'
+              type='text' // 英字入力のため text に変更
               id='boar_no'
+              placeholder='例: 231234567 または TGK125001'
               required={true}
               onChange={inputChanged}
               disabled={inputDisabled}
