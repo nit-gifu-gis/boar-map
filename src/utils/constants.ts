@@ -21,7 +21,7 @@ const getServerURI = (): string => {
 
 export const REPORT_FORM_URL =
   '/static/pdf/検体提供報告書兼FAX用紙.pdf';
-export const MANUAL_URL = 'https://boar-map.gifugis.jp/media/manual_20251120.pdf';
+export const MANUAL_URL = '/static/pdf/manual_20260926.pdf';
 
 export const SERVER_URI = getServerURI();
 
