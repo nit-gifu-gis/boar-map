@@ -24,6 +24,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   const [currentLoc, setCurrentLoc] = useState<LatLngZoom | null>(null);
 
   useEffect(() => {
+    if (paramParser.isLoading) return;
     if (!paramParser.currentData.dataType) {
       alert('情報の取得に失敗しました。');
       router.push('/map');
@@ -99,7 +100,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
         }
       }
     }
-  }, [paramParser.currentData, defaultLoc]);
+  }, [paramParser.isLoading, paramParser.currentData, defaultLoc]);
 
   useEffect(() => {
     if (defaultLoc == null) return;
@@ -139,10 +140,10 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
         router.push('/add/image');
       }
     }
-  }, [isEditing]);
+  }, [isEditing, paramParser.currentData, router]);
 
   const onClickNext = useCallback(() => {
-    if (currentLoc == null) return;
+    if (paramParser.isLoading || currentLoc == null) return;
 
     // 現在の入力情報を保存する。
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
@@ -175,7 +176,9 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
     } else {
       router.push('/add/info');
     }
-  }, [currentLoc]);
+  }, [currentLoc, paramParser, isEditing, router]);
+
+  if (paramParser.isLoading) return <></>;
 
   return (
     <div>

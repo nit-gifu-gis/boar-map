@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { FeatureBase } from '@/types/features';
 
@@ -21,6 +21,8 @@ import { InputFormTemplateCommonProps } from '../interfaces';
 const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
   const paramParser = useFormDataParser();
+  const [preparedData, setPreparedData] = useState<typeof paramParser.currentData | null>(null);
+  const submittedRef = useRef(false);
 
   const [imageArray, setImageArray] = useState<string[] | null>(null);
   const [serverImages, setServerImages] = useState<string[] | null>(null);
@@ -28,9 +30,9 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
   const type = paramParser.currentData.dataType;
   const type_srv = paramParser.currentData.editData?.type_srv;
-  
+
   const imageConfigs = useMemo(
-    () => createImageConfigs({ type, type_srv , isEditing}),
+    () => createImageConfigs({ type, type_srv, isEditing }),
     [type, type_srv],
   );
 
@@ -141,26 +143,23 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
       for (const config of Object.values(imageConfigs)) {
         if (!config.condition) continue;
-        const imageUrls =
-          paramParser.currentData.inputData[config.frontUrlKey] || [];
+        const imageUrls = paramParser.currentData.inputData[config.frontUrlKey] || [];
 
         // 画像アップロード
         const uploadedIds = (
-          await Promise.all(
-            (imageUrls as ImagewithLocation[]).map((e) => uploadImage(e.objectURL)),
-          )
+          await Promise.all((imageUrls as ImagewithLocation[]).map((e) => uploadImage(e.objectURL)))
         ).filter((e): e is string => e != null);
-        
+
         const propertyKey = config.propertyKey;
 
-        const properties =
-          newData.inputData.gisData.properties as Record<string, string>;
+        const properties = newData.inputData.gisData.properties as Record<string, string>;
 
         const currentIds = (properties[propertyKey] || '').split(',');
         const newIds = currentIds.concat(uploadedIds).filter(Boolean);
 
         //properties[propertyKey] = newIds.join(',');
-        (newData.inputData.gisData.properties as Record<string, string>)[propertyKey] = newIds.join(',');
+        (newData.inputData.gisData.properties as Record<string, string>)[propertyKey] =
+          newIds.join(',');
       }
 
       let res = null;
@@ -192,6 +191,7 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
 
       if (res.status === 200) {
         await alert('登録が完了しました。\nご協力ありがとうございました。');
+        submittedRef.current = true;
         paramParser.updateData(null);
         setIsLoading(false);
         router.push('/map');
@@ -205,6 +205,7 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
   }, [serverImages, paramParser.currentData, t]);
 
   useEffect(() => {
+    if (paramParser.isLoading || submittedRef.current) return;
     if (!paramParser.currentData.dataType) {
       alert('情報の取得に失敗しました。');
       router.push('/map');
@@ -214,10 +215,10 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
     setImageArray(
       (paramParser.currentData.inputData.teethImageUrls ?? [])
         .concat(paramParser.currentData.inputData.otherImageUrls ?? [])
-        .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.captureImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.burialImageUrls ?? [])
         .map((e) => e.objectURL),
     );
 
@@ -237,7 +238,10 @@ const DataConfirmTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing
     });
 
     setFeatureInfo(paramParser.currentData.inputData.gisData as FeatureBase);
-  }, []);
+    setPreparedData(paramParser.currentData);
+  }, [paramParser.isLoading, paramParser.currentData]);
+
+  if (paramParser.isLoading || preparedData !== paramParser.currentData) return <></>;
 
   return (
     <div>
