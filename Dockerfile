@@ -6,7 +6,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 FROM base AS build
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --non-interactive
+RUN corepack enable
+RUN yarn install --immutable
 COPY . .
 
 ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT=local
