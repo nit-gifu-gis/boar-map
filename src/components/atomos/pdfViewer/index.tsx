@@ -35,10 +35,8 @@ const PDFViewer: React.FunctionComponent<PDFViewerInterface> = (props) => {
       <div className='z-50 h-footer w-full'>
         <div className='shadow-5 flex h-footer w-full items-center justify-center overflow-hidden bg-background'>
           <div className='box-border w-3/4vw p-3vw text-center'>
-            <Link href={props.url}>
-              <a target='_blank' rel='noopener noreferrer'>
-                <RoundButton color='primary'>別ウィンドウで開く</RoundButton>
-              </a>
+            <Link href={props.url} target='_blank' rel='noopener noreferrer'>
+              <RoundButton color='primary'>別ウィンドウで開く</RoundButton>
             </Link>
           </div>
         </div>

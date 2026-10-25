@@ -25,22 +25,18 @@ const IndexTemplate: React.FunctionComponent = () => {
         <div className='mx-auto flex flex-wrap justify-around pt-5'>
           <div className='shadow-selector relative mb-5 w-sel min-w-sel max-w-sel overflow-hidden rounded-xl bg-index-trace before:block before:pb-full'>
             <Link href='/trace'>
-              <a>
-                <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
-                  ジビエ肉の履歴
-                  <br />
-                  確認
-                </div>
-              </a>
+              <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
+                ジビエ肉の履歴
+                <br />
+                確認
+              </div>
             </Link>
           </div>
           <div className='shadow-selector relative mb-5 w-sel min-w-sel max-w-sel overflow-hidden rounded-xl bg-index-map before:block before:pb-full'>
             <Link href='/map'>
-              <a>
-                <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
-                  マップ
-                </div>
-              </a>
+              <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-lg p-1 text-center text-xl'>
+                マップ
+              </div>
             </Link>
           </div>
         </div>

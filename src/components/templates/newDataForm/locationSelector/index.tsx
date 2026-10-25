@@ -20,7 +20,7 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   const type = paramParser.currentData.dataType;
 
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
-  const [mapDiv, setMapDiv] = useState<JSX.Element | null>(null);
+  const [mapDiv, setMapDiv] = useState<React.JSX.Element | null>(null);
   const [currentLoc, setCurrentLoc] = useState<LatLngZoom | null>(null);
 
   useEffect(() => {
@@ -113,8 +113,8 @@ const LocationSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEd
   }, [defaultLoc]);
 
   const onClickPrev = useCallback(() => {
-    if (sessionStorage.getItem('fromList') === "1") {
-      sessionStorage.setItem('fromList', "2");
+    if (sessionStorage.getItem('fromList') === '1') {
+      sessionStorage.setItem('fromList', '2');
       router.push('/list');
       return;
     }

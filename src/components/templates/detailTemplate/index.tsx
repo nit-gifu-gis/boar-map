@@ -25,6 +25,7 @@ const DetailTemplate: React.FunctionComponent = () => {
   const [editable, setEditable] = useState(false);
 
   useEffect(() => {
+    if (!router.isReady || currentUser == null) return;
     const feature_id = router.query.id as string | undefined;
     const feature_ver = router.query.version as string | undefined; // いのしし捕獲地点の場合のみ
     const feature_type = router.query.type as string | undefined;
@@ -35,6 +36,7 @@ const DetailTemplate: React.FunctionComponent = () => {
       return;
     }
 
+    const controller = new AbortController();
     const fetchGis = async () => {
       // GISから情報を取得する。
       const body = {
@@ -48,9 +50,11 @@ const DetailTemplate: React.FunctionComponent = () => {
           'X-Access-Token': getAccessToken(),
         },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
 
       const json = await response.json();
+      if (controller.signal.aborted) return;
       if (response.ok && Array.isArray(json) && json.length === 1 && currentUser != null) {
         setFeatureType(feature_server_type);
         setFeatureInfo(json[0] as FeatureBase);
@@ -66,8 +70,11 @@ const DetailTemplate: React.FunctionComponent = () => {
         return;
       }
     };
-    fetchGis();
-  }, []);
+    fetchGis().catch((error: unknown) => {
+      if (!controller.signal.aborted) console.error(error);
+    });
+    return () => controller.abort();
+  }, [router.isReady, router.query.id, router.query.type, router.query.version, currentUser]);
 
   const onClickDelete = async () => {
     if (featureInfo == null) return;

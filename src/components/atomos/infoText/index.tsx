@@ -1,6 +1,6 @@
 import { InfoTextProps } from './interface';
 
-const InfoText: React.FunctionComponent<InfoTextProps> = (props) => {
+const InfoText: React.FunctionComponent<React.PropsWithChildren<InfoTextProps>> = (props) => {
   return (
     <div
       className={

@@ -12,7 +12,7 @@ import { alert } from '@/utils/modal';
 const SettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
-  const [contents, setContents] = useState<JSX.Element[]>([]);
+  const [contents, setContents] = useState<React.JSX.Element[]>([]);
 
   useEffect(() => {
     if (currentUser == null) return;

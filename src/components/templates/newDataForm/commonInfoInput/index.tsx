@@ -19,7 +19,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   const router = useRouter();
   const paramParser = useFormDataParser();
 
-  const [editorRef, setEditorRef] = useState<React.RefObject<FeatureEditorHandler> | null>(null);
+  const editorRef = React.useRef<FeatureEditorHandler | null>(null);
   const [imageArray, setImageArray] = useState<ImagewithLocation[] | null>(null);
   const [serverImages, setServerImages] = useState<string[] | null>(null);
 
@@ -55,17 +55,13 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
       return;
     }
 
-    if (editorRef == null) {
-      setEditorRef(React.createRef());
-    }
-
     setImageArray(
       (paramParser.currentData.inputData.teethImageUrls ?? [])
-        .concat(paramParser.currentData.inputData.otherImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.otherImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.burialImageUrls ?? []),
     );
     setServerImages(() => {
       const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
@@ -111,7 +107,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   }, []);
 
   const onClickNext = async () => {
-    if (editorRef == null) {
+    if (editorRef.current == null) {
       // 本来は起きないはず
       alert('内部エラーが発生しました。');
       return;
