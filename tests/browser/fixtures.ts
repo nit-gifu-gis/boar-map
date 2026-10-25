@@ -79,7 +79,7 @@ export const test = base.extend<{ authState: AuthState; app: MockApp }>({
           });
 
         // Sentry's same-origin tunnel must not forward an envelope from the Next server.
-        if (path === '/monitoring' || url.hostname.endsWith('.sentry.io')) {
+        if (/^\/monitoring\/?$/.test(path) || url.hostname.endsWith('.sentry.io')) {
           await route.fulfill({ status: 204, headers });
           return;
         }

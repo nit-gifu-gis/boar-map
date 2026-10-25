@@ -32,6 +32,15 @@ yarn build
 yarn start
 ```
 
+ブラウザ回帰テストは外部APIをモックし、実データを変更せずに実行します。
+
+```bash
+yarn playwright install chromium
+yarn test:browser
+```
+
+開発モードでの実行方法と確認範囲は[ブラウザテストの説明](tests/browser/README.md)を参照してください。
+
 `yarn lint:fix`と`yarn format`はファイルを変更するコマンドです。CIと`yarn build`は自動修正を実行しません。
 
 ## Docker
