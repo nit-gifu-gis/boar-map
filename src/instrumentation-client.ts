@@ -3,7 +3,6 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-import { CaptureConsole } from "@sentry/integrations";
 
 Sentry.init({
   dsn: "https://b4d7ef67962e40889b75d5b5b6779e38@o4505520793780224.ingest.sentry.io/4505534484512768",
@@ -24,13 +23,15 @@ Sentry.init({
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
-    new CaptureConsole({
+    Sentry.captureConsoleIntegration({
       levels: ["error"]
     }),
-    new Sentry.Replay({
+    Sentry.replayIntegration({
       // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
