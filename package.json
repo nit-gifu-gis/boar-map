@@ -26,7 +26,7 @@
     "nookies": "^2.5.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "react-markdown": "^8.0.1",
+    "react-markdown": "10.1.0",
     "shpjs": "^4.0.2"
   },
   "devDependencies": {
