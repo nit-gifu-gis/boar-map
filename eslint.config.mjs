@@ -1,9 +1,11 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
+import { fixupConfigRules } from '@eslint/compat';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTypescript from 'eslint-config-next/typescript';
 import prettier from 'eslint-config-prettier/flat';
 
-export default defineConfig([
+// Next's plugins still use APIs removed in ESLint 10. Apply the official compatibility shim.
+export default defineConfig(fixupConfigRules([
   ...nextVitals,
   ...nextTypescript,
   prettier,
@@ -28,4 +30,4 @@ export default defineConfig([
     },
   },
   globalIgnores(['.next/**', 'node_modules/**', 'public/**', 'playwright-report/**', 'test-results/**']),
-]);
+]));
