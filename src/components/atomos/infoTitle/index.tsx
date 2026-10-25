@@ -1,4 +1,4 @@
-const InfoTitle: React.FunctionComponent = (props) => {
+const InfoTitle: React.FunctionComponent<React.PropsWithChildren> = (props) => {
   return (
     <div className='my-[10px] w-full text-justify text-lg font-bold text-text'>
       <div>{props.children}</div>

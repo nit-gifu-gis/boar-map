@@ -2,12 +2,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { destroyCookie } from 'nookies';
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import PDFViewer from '@/components/atomos/pdfViewer';
 import { useAppLogs } from '@/hooks/useAppLogs';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { currentUserState } from '@/states/currentUser';
+import { useSetCurrentUser } from '@/states/currentUser';
 import { MANUAL_URL, SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
 import { hasListPermission } from '@/utils/gis';
@@ -16,13 +15,13 @@ import { getFormUrl } from '@/utils/questionaire';
 
 import { HeaderProps } from './interface';
 
-const Header: React.FunctionComponent<HeaderProps> = (props) => {
+const Header: React.FunctionComponent<React.PropsWithChildren<HeaderProps>> = (props) => {
   const { appLogs } = useAppLogs();
   const { currentUser, isAuthChecking } = useCurrentUser();
   const [isOpen, setOpen] = useState(false);
   const [formUrl, setFormUrl] = useState('');
-  const [manualViewer, setManualViewer] = useState<JSX.Element | null>(null);
-  const setCurrentUser = useSetRecoilState(currentUserState);
+  const [manualViewer, setManualViewer] = useState<React.JSX.Element | null>(null);
+  const setCurrentUser = useSetCurrentUser();
   const router = useRouter();
 
   const isChildrenString = typeof props.children === 'string';
@@ -136,15 +135,15 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
     }
   };
 
-  const menuItems: JSX.Element[] = [];
+  const menuItems: React.JSX.Element[] = [];
   if (!isAuthChecking && currentUser != null) {
     menuItems.push(
       <div
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_map'
       >
-        <Link href='/map'>
-          <a className='text-14pt text-background no-underline'>マップ</a>
+        <Link href='/map' className='text-14pt text-background no-underline'>
+          マップ
         </Link>
       </div>,
     );
@@ -154,8 +153,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_map-dl'
       >
-        <Link href='/map-dl'>
-          <a className='text-14pt text-background no-underline'>ワクチンメッシュ図面ダウンロード</a>
+        <Link href='/map-dl' className='text-14pt text-background no-underline'>
+          ワクチンメッシュ図面ダウンロード
         </Link>
       </div>,
     );
@@ -166,8 +165,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
           key='menu_list'
         >
-          <Link href='/list'>
-            <a className='text-14pt text-background no-underline'>一覧表</a>
+          <Link href='/list' className='text-14pt text-background no-underline'>
+            一覧表
           </Link>
         </div>,
       );
@@ -179,8 +178,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
           key='menu_settings'
         >
-          <Link href='/settings'>
-            <a className='text-14pt text-background no-underline'>サイト設定</a>
+          <Link href='/settings' className='text-14pt text-background no-underline'>
+            サイト設定
           </Link>
         </div>,
       );
@@ -196,8 +195,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
           className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
           key='menu_import'
         >
-          <Link href='/import'>
-            <a className='text-14pt text-background no-underline'>データインポート</a>
+          <Link href='/import' className='text-14pt text-background no-underline'>
+            データインポート
           </Link>
         </div>,
       );
@@ -208,8 +207,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_notice'
       >
-        <Link href='/notice'>
-          <a className='text-14pt text-background no-underline'>お知らせ</a>
+        <Link href='/notice' className='text-14pt text-background no-underline'>
+          お知らせ
         </Link>
       </div>,
     );
@@ -219,10 +218,12 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_bugreport'
       >
-        <Link href='#'>
-          <a className='text-14pt text-background no-underline' onClick={() => onClickBugReport()}>
-            エラー情報の送信
-          </a>
+        <Link
+          href='#'
+          className='text-14pt text-background no-underline'
+          onClick={() => onClickBugReport()}
+        >
+          エラー情報の送信
         </Link>
       </div>,
     );
@@ -232,14 +233,13 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_questionaire'
       >
-        <Link href={formUrl}>
-          <a
-            className='text-14pt text-background no-underline'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            アンケート
-          </a>
+        <Link
+          href={formUrl}
+          className='text-14pt text-background no-underline'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          アンケート
         </Link>
       </div>,
     );
@@ -249,27 +249,26 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_manual'
       >
-        <Link href='#'>
-          <a
-            className='text-14pt text-background no-underline'
-            onClick={() => {
-              setManualViewer((viewer) => {
-                setOpen(false);
-                if (viewer == null) {
-                  return (
-                    <PDFViewer
-                      url={MANUAL_URL}
-                      closeHandler={() => setManualViewer(null)}
-                      title='操作マニュアル'
-                    />
-                  );
-                }
-                return viewer;
-              });
-            }}
-          >
-            操作マニュアル
-          </a>
+        <Link
+          href='#'
+          className='text-14pt text-background no-underline'
+          onClick={() => {
+            setManualViewer((viewer) => {
+              setOpen(false);
+              if (viewer == null) {
+                return (
+                  <PDFViewer
+                    url={MANUAL_URL}
+                    closeHandler={() => setManualViewer(null)}
+                    title='操作マニュアル'
+                  />
+                );
+              }
+              return viewer;
+            });
+          }}
+        >
+          操作マニュアル
         </Link>
       </div>,
     );
@@ -279,8 +278,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_version'
       >
-        <Link href='/version'>
-          <a className='text-14pt text-background no-underline'>バージョン情報</a>
+        <Link href='/version' className='text-14pt text-background no-underline'>
+          バージョン情報
         </Link>
       </div>,
     );
@@ -290,8 +289,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_trace'
       >
-        <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
+        <Link href='/trace' className='text-14pt text-background no-underline'>
+          ジビエ肉の履歴確認
         </Link>
       </div>,
     );
@@ -301,13 +300,12 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_logout'
       >
-        <Link href='#'>
-          <a
-            className='text-14pt text-background no-underline'
-            onClick={onLogoutClicked.bind(this)}
-          >
-            ログアウト
-          </a>
+        <Link
+          href='#'
+          className='text-14pt text-background no-underline'
+          onClick={onLogoutClicked.bind(this)}
+        >
+          ログアウト
         </Link>
       </div>,
     );
@@ -317,8 +315,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_top'
       >
-        <Link href='/'>
-          <a className='text-14pt text-background no-underline'>トップページ</a>
+        <Link href='/' className='text-14pt text-background no-underline'>
+          トップページ
         </Link>
       </div>,
     );
@@ -327,8 +325,8 @@ const Header: React.FunctionComponent<HeaderProps> = (props) => {
         className='m-auto flex h-menu w-9/10 items-center justify-center border-t border-solid border-background'
         key='menu_trace'
       >
-        <Link href='/trace'>
-          <a className='text-14pt text-background no-underline'>ジビエ肉の履歴確認</a>
+        <Link href='/trace' className='text-14pt text-background no-underline'>
+          ジビエ肉の履歴確認
         </Link>
       </div>,
     );

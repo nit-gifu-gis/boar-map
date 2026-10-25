@@ -29,7 +29,7 @@ const FeatureViewer: React.FunctionComponent<FeatureViewerProps> = ({
     return featureInfo == null || type == null;
   };
 
-  let infoDiv: JSX.Element | null = null;
+  let infoDiv: React.JSX.Element | null = null;
   if (featureInfo != null) {
     if (type === 'boar-1' || type === 'boar-old') {
       infoDiv = (

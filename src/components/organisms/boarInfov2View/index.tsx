@@ -30,7 +30,7 @@ const BoarInfov2View: React.FunctionComponent<BoarInfov2ViewProps> = ({
 
   // 箱わな/囲いわなが選択されたときのみ捕獲頭数を表示
   const { currentUser } = useCurrentUser();
-  let catchNumInfo: JSX.Element | null = null;
+  let catchNumInfo: React.JSX.Element | null = null;
   if (detail.properties.罠発見場所 === '箱わな' || detail.properties.罠発見場所 === '囲いわな') {
     let childrenNum = 0;
     let adultsNum = 0;

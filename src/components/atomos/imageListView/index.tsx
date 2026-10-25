@@ -22,8 +22,8 @@ const ImageListView: React.FunctionComponent<ImageListViewProps> = ({
       ? 'max-h-[400px] max-w-full border-solid border-2 border-border rounded-md box-border mx-auto'
       : 'flex-0-0-auto max-h-[400px] max-w-17/20 inline-block border-solid border-2 border-border rounded-md box-border image-between';
   const token = getAccessToken();
-  let description: JSX.Element | null = null;
-  let images: JSX.Element[] = [];
+  let description: React.JSX.Element | null = null;
+  let images: React.JSX.Element[] = [];
 
   if (confMode) {
     if (imageCount === 0) {

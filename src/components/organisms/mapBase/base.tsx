@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { parseCookies, setCookie } from 'nookies';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import EventListener from 'react-event-listener';
-import { useSetRecoilState } from 'recoil';
 import 'leaflet-easybutton';
 import 'leaflet.markercluster';
 
@@ -27,7 +25,7 @@ import {
 import RoundButton from '@/components/atomos/roundButton';
 import { useButanetsuView } from '@/hooks/useButanetsuView';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { butanetsuViewState } from '@/states/butanetsuView';
+import { useSetButanetsuView } from '@/states/butanetsuView';
 import '@/utils/extwms';
 import { getColorCode, layerLabels, MAX_MESH_COUNT, SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
@@ -38,15 +36,15 @@ import { LatLngZoomCookie, Location, LatLngZoom, MapBaseProps } from './interfac
 
 const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const router = useRouter();
-  const [, setLoc] = useState<Location | null>(null);
-  const [watchPosId, setWatchPosId] = useState<number | null>(null);
+  const locationRef = React.useRef<Location | null>(null);
+  const mapRef = React.useRef<L.Map | null>(null);
+  const watchPosIdRef = React.useRef<number | null>(null);
   const [overlayList, setOverlayList] = useState<
     Record<string, L.MarkerClusterGroup | L.LayerGroup>
   >({});
   const { currentUser } = useCurrentUser();
   const { currentView } = useButanetsuView();
-  const firstRunRef = React.useRef(true);
-  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
+  const setCurrentButanetsuView = useSetButanetsuView();
   const [defaultLoc, setDefaultLoc] = useState<LatLngZoom | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
@@ -58,7 +56,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     hunter: {},
     boar: {},
   });
-  const [, setButanetsuLayerID] = useState(-1);
+  const butanetsuLayerIdRef = React.useRef(-1);
   const [locSearchVisible, setLocSearchVisible] = useState(false);
   const [labelVisible, setLabelVisible] = useState(false);
   const [searchButtonLabel, setSearchButtonLabel] = useState('検索');
@@ -67,7 +65,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
     if (currentView == null) return;
 
-    const { radius, days, style, origin } = currentView;
+    const { radius, days, style, origin: viewOrigin } = currentView;
+    const origin = new Date(viewOrigin);
     origin.setHours(0, 0, 0, 0);
     const show_date = new Date(origin);
     show_date.setHours(0);
@@ -89,33 +88,25 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     const newMarkers = style !== 3 ? features.map((f) => makeMarker(f, '豚熱陽性高率エリア')) : [];
 
-    setButanetsuLayerID((id) => {
-      const l = overlayList['豚熱陽性高率エリア'] as L.LayerGroup;
-      const lg = overlayList['豚熱陽性高率エリア'].getLayer(id) as L.MarkerClusterGroup;
-      lg.addLayers(newMarkers);
-      circleMarkers.forEach((m) => {
-        l.addLayer(m);
-      });
-      return id;
+    if (mapRef.current !== myMap) return;
+    const id = butanetsuLayerIdRef.current;
+
+    const l = overlayList['豚熱陽性高率エリア'] as L.LayerGroup;
+    const lg = overlayList['豚熱陽性高率エリア'].getLayer(id) as L.MarkerClusterGroup;
+    if (lg == null) return;
+    lg.addLayers(newMarkers);
+    circleMarkers.forEach((m) => {
+      l.addLayer(m);
     });
   };
 
   useEffect(() => {
-    if (firstRunRef.current) {
-      firstRunRef.current = false;
-      return;
-    }
     const renderMarkers = async () => {
-      if (myMap == null) return;
+      if (myMap == null || mapRef.current !== myMap || butanetsuLayerIdRef.current < 0) return;
 
       setLoading(true);
       // 既存のマーカーをすべて削除
-      const currentButanetsuLayerId = await new Promise<number>((resolve) => {
-        setButanetsuLayerID((id) => {
-          resolve(id);
-          return id;
-        });
-      });
+      const currentButanetsuLayerId = butanetsuLayerIdRef.current;
       const butanetsuLayer = overlayList['豚熱陽性高率エリア'].getLayer(
         currentButanetsuLayerId,
       ) as L.MarkerClusterGroup;
@@ -163,6 +154,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
       if (res.status === 200) {
         const json = (await res.json()) as FeatureExtentResponse;
+        if (mapRef.current !== myMap) return;
         if (json.豚熱陽性高率エリア != null) {
           // 新しい条件で描画する
           addNewButanetsuMarkers(json.豚熱陽性高率エリア);
@@ -232,7 +224,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     });
   };
 
-  const [, setMyLocMarker] = useState<L.Marker | null>(null);
+  const myLocMarkerRef = React.useRef<L.Marker | null>(null);
   // let myLocMarker: L.Marker | null = null;
 
   // クラスタ設定
@@ -254,7 +246,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     maxClusterRadius: 40,
   };
 
-  const setupMap = async () => {
+  const setupMap = () => {
     const overlay: { [key: string]: L.MarkerClusterGroup | L.LayerGroup } = {};
     if (Object.keys(overlay).length === 0 && currentUser != null) {
       // レイヤーの追加
@@ -308,7 +300,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         });
 
         const lg = L.layerGroup([mcg]);
-        setButanetsuLayerID(lg.getLayerId(mcg));
+        butanetsuLayerIdRef.current = lg.getLayerId(mcg);
 
         overlay['豚熱陽性高率エリア'] = lg;
       }
@@ -413,19 +405,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      setLoc((loc) => {
-        if (loc == null) {
-          return {
-            lat: lat,
-            lng: lng,
-          };
-        }
-
-        loc.lat = lat;
-        loc.lng = lng;
-
-        return loc;
-      });
+      if (mapRef.current !== myMap) return;
+      locationRef.current = { lat, lng };
       setCurrentLocation(true);
     };
 
@@ -452,7 +433,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   const updateMarkers = async () => {
-    if (myMap == null) return;
+    if (myMap == null || mapRef.current !== myMap) return;
     // くるくるを表示
     setLoading(true);
 
@@ -492,6 +473,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     if (res.status === 200) {
       const json = (await res.json()) as FeatureExtentResponse;
+      if (mapRef.current !== myMap) return;
       Object.keys(json).forEach((key) => {
         if (featureIDs[key] == null) featureIDs[key] = [];
 
@@ -533,6 +515,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     }
 
     // メッシュデータを取得する
+    if (mapRef.current !== myMap) return;
     const resMesh = await fetch(SERVER_URI + '/Mesh/Search', {
       method: 'POST',
       headers: {
@@ -548,6 +531,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
 
     if (resMesh.status === 200) {
       const data = (await resMesh.json()) as MeshDataResponse;
+      if (mapRef.current !== myMap) return;
 
       const keys = {
         vaccine: ['vaccineMesh', 'ワクチンメッシュ'],
@@ -783,40 +767,28 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
 
   const setCurrentLocation = (moveMarker: boolean) => {
-    if (myMap == null) return;
-    setLoc((loc) => {
-      if (!loc?.lat || !loc.lng) {
-        if (moveMarker) {
-          alert('位置情報の取得ができません。');
-        }
-        return loc;
-      }
-
-      setMyLocMarker((myLocMarker) => {
-        if (myLocMarker == null) {
-          myLocMarker = L.marker([loc.lat, loc.lng], { icon: myLocIcon });
-          try {
-            myLocMarker.addTo(myMap);
-          } catch {
-            /** */
-          }
-        }
-
-        myLocMarker.setLatLng([loc.lat, loc.lng]);
-
-        return myLocMarker;
-      });
+    if (myMap == null || mapRef.current !== myMap) return;
+    const loc = locationRef.current;
+    if (loc == null) {
       if (moveMarker) {
-        myMap.setView([loc.lat, loc.lng], 17);
+        alert('位置情報の取得ができません。');
       }
+      return;
+    }
 
-      return loc;
-    });
+    if (myLocMarkerRef.current == null) {
+      myLocMarkerRef.current = L.marker([loc.lat, loc.lng], { icon: myLocIcon }).addTo(myMap);
+    }
+    myLocMarkerRef.current.setLatLng([loc.lat, loc.lng]);
+    if (moveMarker) {
+      myMap.setView([loc.lat, loc.lng], 17);
+    }
   };
 
   const startWatchLocation = () => {
     if (navigator.geolocation == null) {
       alert('位置情報を取得することができません。');
+      return;
     }
 
     // 位置情報が取れたときの関数
@@ -824,19 +796,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       // 表示は行わず，マーカーの移動のみ処理する
-      setLoc((loc) => {
-        if (loc == null) {
-          return {
-            lat: lat,
-            lng: lng,
-          };
-        }
-
-        loc.lat = lat;
-        loc.lng = lng;
-
-        return loc;
-      });
+      if (mapRef.current !== myMap) return;
+      locationRef.current = { lat, lng };
       setCurrentLocation(false);
     };
 
@@ -850,17 +811,18 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       maximumAge: 0, // キャッシュは使わない
     };
 
-    setWatchPosId(navigator.geolocation.watchPosition(success, error, options));
+    watchPosIdRef.current = navigator.geolocation.watchPosition(success, error, options);
   };
 
   const stopWatchLocation = () => {
-    if (watchPosId != null) {
-      navigator.geolocation.clearWatch(watchPosId);
+    if (watchPosIdRef.current != null) {
+      navigator.geolocation.clearWatch(watchPosIdRef.current);
+      watchPosIdRef.current = null;
     }
   };
 
   // メイン地図レイヤー
-  const [baseMap] = useState(
+  const [baseMap] = useState(() =>
     L.TileLayer.wmsHeader(
       SERVER_URI + '/Map/GetImage',
       {
@@ -885,7 +847,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   );
 
   // メイン地図レイヤー
-  const [structureMap] = useState(
+  const [structureMap] = useState(() =>
     L.TileLayer.wmsHeader(
       SERVER_URI + '/Map/GetImage',
       {
@@ -910,7 +872,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   );
 
   // メイン地図レイヤー
-  const [satelliteMap] = useState(
+  const [satelliteMap] = useState(() =>
     L.TileLayer.wmsHeader(
       SERVER_URI + '/Map/GetImage',
       {
@@ -959,18 +921,34 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       }
     }
 
-    if (myMap == null) {
-      const map = L.map(selfNode, {
-        keyboard: false,
-        layers: [baseMap],
-      });
-      setupMap();
-      setMyMap(map);
-    }
-  }, [currentUser, selfNode, defaultLoc, myMap]);
+    const map = L.map(selfNode, { keyboard: false, layers: [baseMap] });
+    mapRef.current = map;
+    myLocMarkerRef.current = null;
+    butanetsuLayerIdRef.current = -1;
+    Object.keys(featureIDs).forEach((key) => delete featureIDs[key]);
+    Object.values(meshLayers).forEach((layers) => {
+      Object.keys(layers).forEach((key) => delete layers[key]);
+    });
+    setupMap();
+    setMyMap(map);
+
+    return () => {
+      stopWatchLocation();
+      mapRef.current = null;
+      myLocMarkerRef.current = null;
+      map.remove();
+      setMyMap(null);
+    };
+  }, [selfNode, currentUser]);
 
   useEffect(() => {
-    if (myMap == null || defaultLoc == null || Object.keys(overlayList).length == 0) return;
+    if (
+      myMap == null ||
+      mapRef.current !== myMap ||
+      defaultLoc == null ||
+      Object.keys(overlayList).length == 0
+    )
+      return;
 
     myMap.setView([defaultLoc.lat, defaultLoc.lng], defaultLoc.zoom);
 
@@ -979,18 +957,19 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
       getFirstCurrentLocation();
     }
 
-    myMap.on('moveend', () => {
+    const onMoveEnd = () => {
       // マップが動いたとき
       //   従来はここでzoomとresizeもとっていたが、両方とも終了後にmoveendが呼ばれているためmoveendのみにする。
       saveMapState();
       updateMarkers();
-    });
+    };
+    myMap.on('moveend', onMoveEnd);
 
     updateMarkers();
 
-    L.control.scale().addTo(myMap);
+    const scaleControl = L.control.scale().addTo(myMap);
 
-    L.easyButton({
+    const locationButton = L.easyButton({
       id: 'set-location-button',
       position: 'topleft',
       type: 'replace',
@@ -1036,10 +1015,15 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
     startWatchLocation();
 
     return () => {
-      // Unmount時に呼ばれるらしい。
       stopWatchLocation();
-      myMap?.remove();
-      setMyMap(null);
+      myMap.off('moveend', onMoveEnd);
+      contrl.remove();
+      scaleControl.remove();
+      locationButton.remove();
+      reloadButton.remove();
+      locSearchButton.remove();
+      labelButton.remove();
+      viewSettingButton.remove();
     };
   }, [myMap, defaultLoc, overlayList]);
 
@@ -1049,12 +1033,22 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
   };
   const [mapHeight, setMapHeight] = useState(`${calcMapHeight()}px`);
 
-  const onResized = () => {
-    setTimeout(() => {
-      setMapHeight(`${calcMapHeight()}px`);
-      if (myMap != null) myMap.invalidateSize();
-    }, 200);
-  };
+  useEffect(() => {
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+    const onResized = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setMapHeight(`${calcMapHeight()}px`);
+        if (myMap != null && mapRef.current === myMap) myMap.invalidateSize();
+      }, 200);
+    };
+    window.addEventListener('resize', onResized);
+    onResized();
+    return () => {
+      window.removeEventListener('resize', onResized);
+      clearTimeout(resizeTimer);
+    };
+  }, [myMap]);
 
   const onPointSearchClicked = async () => {
     const type_input = document.getElementById('point_search_type') as HTMLSelectElement | null;
@@ -1095,19 +1089,15 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         alert('該当の情報が見つかりませんでした。');
       } else if (list.length === 1) {
         // 1件の時はそのまま場所を変える
-        setMyMap((myMap) => {
-          if (myMap != null) myMap.setView([list[0].point.lat, list[0].point.lng], myMap.getZoom());
-          return myMap;
-        });
+        const map = mapRef.current;
+        if (map != null) map.setView([list[0].point.lat, list[0].point.lng], map.getZoom());
         setLocSearchVisible(false);
       } else {
         // 2件以上の時は確認ダイアログを出す
         const city = await cityList(list);
         if (city == null) return;
-        setMyMap((myMap) => {
-          if (myMap != null) myMap.setView([city.point.lat, city.point.lng], myMap.getZoom());
-          return myMap;
-        });
+        const map = mapRef.current;
+        if (map != null) map.setView([city.point.lat, city.point.lng], map.getZoom());
         setLocSearchVisible(false);
       }
     } else if (type === '緯度・経度（度分秒）' || type === '緯度・経度（度）') {
@@ -1159,12 +1149,7 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         lng = lng_inputs.reduce((prev, cur, i) => prev + cur / Math.pow(60, i), 0);
       }
 
-      const map = await new Promise<L.Map | null>((resolve) =>
-        setMyMap((m) => {
-          resolve(m);
-          return m;
-        }),
-      );
+      const map = mapRef.current;
       if (map == null) {
         alert('内部エラーが発生しました。');
         return;
@@ -1185,10 +1170,8 @@ const MapBase_: React.FunctionComponent<MapBaseProps> = (props) => {
         className='z-0 w-full overflow-hidden'
         id='map'
         style={{ height: mapHeight }}
-        ref={(node) => setSelfNode(node)}
-      >
-        <EventListener target='window' onResize={onResized.bind(this)} />
-      </div>
+        ref={setSelfNode}
+      ></div>
       <div
         className='pointer-events-none absolute top-header z-10 w-full'
         style={{ height: mapHeight }}

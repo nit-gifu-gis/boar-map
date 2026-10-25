@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
@@ -9,26 +9,20 @@ const ImageViewer: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!router) return;
+    if (!router.isReady) return;
 
     if (!router.query.id) {
       window.close();
       router.push('/');
       return;
     }
-  }, [router]);
+  }, [router.isReady, router.query.id, router]);
 
-  useEffect(() => {
-    if (!window) return;
-
-    window.addEventListener('resize', resizeWindow);
-  }, [window]);
-
-  const resizeWindow = () => {
+  const resizeWindow = useCallback(() => {
     const div = document.getElementById('img_area') as HTMLDivElement;
     const image = document.getElementById('image') as HTMLImageElement;
 
-    if (!div || !image) return;
+    if (!div || !image || !image.naturalWidth || !image.naturalHeight) return;
     const r1 = div.clientWidth / image.naturalWidth;
     const r2 = div.clientHeight / image.naturalHeight;
 
@@ -44,7 +38,12 @@ const ImageViewer: NextPage = () => {
       image.style.width = `${w1}px`;
       image.style.height = `${h1}px`;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('resize', resizeWindow);
+    return () => window.removeEventListener('resize', resizeWindow);
+  }, [resizeWindow]);
 
   return (
     <div className='fixed top-0 left-0 z-[999] flex h-screen w-screen flex-col'>
