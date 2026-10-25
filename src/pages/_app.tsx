@@ -3,81 +3,38 @@ import * as Sentry from '@sentry/nextjs';
 import Head from 'next/head';
 import { useEffect } from 'react';
 import React from 'react';
-import { useSetRecoilState, RecoilRoot } from 'recoil';
 
 import LoadingTemplate from '@/components/templates/loadingTemplate';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { currentAppLogs } from '@/states/appLog';
-import { butanetsuViewState } from '@/states/butanetsuView';
-import { currentUserState } from '@/states/currentUser';
+import { useSetAppLogs } from '@/states/appLog';
+import { useSetButanetsuView } from '@/states/butanetsuView';
+import { useSetCurrentUser } from '@/states/currentUser';
+import { AppStateProvider } from '@/states/provider';
+import { captureConsole } from '@/utils/app-logs';
 import { SERVER_URI } from '@/utils/constants';
 import { fetchCurrentUser, getAccessToken } from '@/utils/currentUser';
 
 import type { AppProps } from 'next/app';
 
 const AppInit: React.FunctionComponent = () => {
-  const setCurrentUser = useSetRecoilState(currentUserState);
-  const setCurrentAppLog = useSetRecoilState(currentAppLogs);
-  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
-
-  let appLogs: AppLog[] = [];
-
-  let origLog = console.log;
-  let origWarn = console.warn;
-  let origError = console.error;
-  let origTrace = console.trace;
-
-  const logHandler = (message?: unknown, ...optionalParams: unknown[]) => {
-    origLog(message, ...optionalParams);
-    appLogs = appLogs.slice();
-    appLogs.push({
-      type: 'log',
-      message: message,
-      optionalParams: optionalParams,
-    });
-    setCurrentAppLog(appLogs);
-  };
-
-  const warnHandler = (message?: unknown, ...optionalParams: unknown[]) => {
-    origWarn(message, ...optionalParams);
-    appLogs = appLogs.slice();
-    appLogs.push({
-      type: 'warn',
-      message: message,
-      optionalParams: optionalParams,
-    });
-    setCurrentAppLog(appLogs);
-  };
-
-  const errorHandler = (message?: unknown, ...optionalParams: unknown[]) => {
-    origError(message, ...optionalParams);
-    appLogs = appLogs.slice();
-    appLogs.push({
-      type: 'error',
-      message: message,
-      optionalParams: optionalParams,
-    });
-    setCurrentAppLog(appLogs);
-  };
-
-  const traceHandler = (message?: unknown, ...optionalParams: unknown[]) => {
-    origTrace(message, ...optionalParams);
-    appLogs = appLogs.slice();
-    appLogs.push({
-      type: 'trace',
-      message: message,
-      optionalParams: optionalParams,
-    });
-    setCurrentAppLog(appLogs);
-  };
+  const setCurrentUser = useSetCurrentUser();
+  const setCurrentAppLog = useSetAppLogs();
+  const setCurrentButanetsuView = useSetButanetsuView();
 
   useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    const restoreConsole = captureConsole((entry) => {
+      setCurrentAppLog((logs) => [...logs, entry]);
+    });
+
     (async function () {
       try {
-        const currentUser = await fetchCurrentUser();
+        const currentUser = await fetchCurrentUser(controller.signal);
 
         // 豚熱確認情報の設定を取得する
         const res = await fetch(SERVER_URI + '/Settings/Butanetsu', {
+          signal: controller.signal,
           headers: {
             'X-Access-Token': getAccessToken(),
           },
@@ -85,6 +42,7 @@ const AppInit: React.FunctionComponent = () => {
 
         if (res.ok) {
           const json = await res.json();
+          if (!active) return;
           setCurrentButanetsuView({
             radius: json['radius'] as number,
             days: json['days'] as number,
@@ -93,46 +51,35 @@ const AppInit: React.FunctionComponent = () => {
           });
         }
 
+        if (!active) return;
         setCurrentUser(currentUser);
         Sentry.setUser({ id: currentUser?.userId, segment: currentUser?.userDepartment });
       } catch {
-        setCurrentUser(null);
-      }
-
-      setCurrentAppLog([]);
-      if (console.log != null && console.log != logHandler) {
-        origLog = console.log;
-        console.log = logHandler;
-      }
-
-      if (console.error != null && console.error != errorHandler) {
-        origError = console.error;
-        console.error = errorHandler;
-      }
-
-      if (console.warn != null && console.warn != warnHandler) {
-        origWarn = console.warn;
-        console.warn = warnHandler;
-      }
-
-      if (console.trace != null && console.trace != traceHandler) {
-        origTrace = console.trace;
-        console.trace = traceHandler;
+        if (active) {
+          setCurrentUser(null);
+          Sentry.setUser(null);
+        }
       }
     })();
-  }, []);
+
+    return () => {
+      active = false;
+      controller.abort();
+      restoreConsole();
+    };
+  }, [setCurrentUser, setCurrentAppLog, setCurrentButanetsuView]);
 
   return null;
 };
 
-const ContentSwitcher: React.FunctionComponent = (props) => {
+const ContentSwitcher: React.FunctionComponent<React.PropsWithChildren> = (props) => {
   const { isAuthChecking } = useCurrentUser();
   return isAuthChecking ? <LoadingTemplate /> : <>{props.children}</>;
 };
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <RecoilRoot>
+    <AppStateProvider>
       <Head>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='apple-touch-icon' sizes='180x180' href='/static/favicon/apple-touch-icon.png' />
@@ -160,7 +107,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <Component {...pageProps} />
       </ContentSwitcher>
       <AppInit />
-    </RecoilRoot>
+    </AppStateProvider>
   );
 };
 

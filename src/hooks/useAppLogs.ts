@@ -1,9 +1,7 @@
-import { useRecoilValue } from 'recoil';
-
-import { currentAppLogs } from '@/states/appLog';
+import { useAppLogsValue } from '@/states/appLog';
 
 export const useAppLogs = () => {
-  const appLogs = useRecoilValue(currentAppLogs);
+  const appLogs = useAppLogsValue();
 
   return {
     appLogs,
