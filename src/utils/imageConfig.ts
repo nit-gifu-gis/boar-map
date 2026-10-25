@@ -4,8 +4,8 @@ import { InputFormData } from '@/utils/form-data';
 type ImageConfig = {
   label: string;
   propertyKey: string;
-  urlKey: keyof InputFormData["inputData"];
-  frontUrlKey: keyof InputFormData["inputData"];
+  urlKey: Exclude<keyof InputFormData['inputData'], 'gisData' | 'newImageIds'>;
+  frontUrlKey: Exclude<keyof InputFormData['inputData'], 'gisData' | 'newImageIds'>;
   max: number;
   condition: boolean;
 };

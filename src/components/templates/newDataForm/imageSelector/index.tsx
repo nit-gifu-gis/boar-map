@@ -39,7 +39,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
       const config = imageConfigs[configKey];
       if (!config) return null;
 
-      const inputData = paramParser.currentData.inputData as Record<string, any>;
+      const inputData = paramParser.currentData.inputData;
       return inputData?.[config.frontUrlKey] ?? null;
     },
     [imageConfigs, paramParser.currentData.inputData],
@@ -141,7 +141,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
       // 画像URLを保存
       const urlKey = config.frontUrlKey;
-      (newData.inputData as any)[urlKey] = allImages[configKey] ?? [];
+      newData.inputData[urlKey] = allImages[configKey] ?? [];
 
       // 画像IDをプロパティに保存
       const propertyKey = config.propertyKey;
