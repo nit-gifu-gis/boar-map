@@ -16,7 +16,7 @@ ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT=${NEXT_PUBLIC_SENTRY_ENVIRONMENT} \
 
 RUN yarn lint && yarn typecheck && yarn test
 # The upload token exists only for this command, never in an image layer or runtime ENV.
-RUN --mount=type=secret,id=sentry_auth_token,env=SENTRY_AUTH_TOKEN yarn build
+RUN --mount=type=secret,id=sentry_auth_token,env=SENTRY_AUTH_TOKEN SENTRY_DISABLED=1 yarn build
 
 FROM base AS runner
 ENV NODE_ENV=production
