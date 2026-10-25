@@ -2,21 +2,22 @@ name: Deploy-develop
 
 on:
   workflow_run:
-    workflows:
-      - Build-develop
-    types:
-      - completed
+    workflows: [Build-develop]
+    branches: [develop]
+    types: [completed]
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'develop' }}
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-        
       - name: Notify update to development server
         shell: bash
+        env:
+          DEPLOY_SECRET: ${{ secrets.SECRET_DEVELOPMENT }}
         run: |
-          curl -X POST -d '{ "secret": "${{ secrets.SECRET_DEVELOPMENT }}" }' https://boarmap-dev.gifu-nct.ac.jp/cd-scripts/update.php
-
+          set -euo pipefail
+          jq -n --arg secret "$DEPLOY_SECRET" '{secret: $secret}' | curl --fail --silent --show-error --header 'Content-Type: application/json' --data-binary @- https://boarmap-dev.gifu-nct.ac.jp/cd-scripts/update.php
