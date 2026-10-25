@@ -1,42 +1,34 @@
-FROM node:16.13-stretch-slim as build
-ARG SENTRY_AUTH_TOKEN
-ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT
-ARG NEXT_PUBLIC_SENTRY_RELEASE
-ENV SENTRY_AUTH_TOKEN ${SENTRY_AUTH_TOKEN}
-ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
-ENV NEXT_PUBLIC_SENTRY_RELEASE ${NEXT_PUBLIC_SENTRY_RELEASE}
-WORKDIR /app
-RUN echo "deb http://archive.debian.org/debian/ stretch main" > /etc/apt/sources.list \
-    && echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list \
-    && apt update && apt install -y ca-certificates
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn
-COPY *.ts ./
-COPY *.js ./
-COPY *.json ./
-COPY src/ ./src/
-COPY public/ ./public/
-RUN pwd 1>&2
-RUN ls ./ 1>&2
-RUN ls /app 1>&2
-RUN yarn build
+# syntax=docker/dockerfile:1
 
-FROM node:16.13-stretch-slim as runner
-ARG SENTRY_AUTH_TOKEN
-ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT
-ARG NEXT_PUBLIC_SENTRY_RELEASE
-ENV SENTRY_AUTH_TOKEN ${SENTRY_AUTH_TOKEN}
-ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT ${NEXT_PUBLIC_SENTRY_ENVIRONMENT}
-ENV NEXT_PUBLIC_SENTRY_RELEASE ${NEXT_PUBLIC_SENTRY_RELEASE}
+FROM node:24.22.1-bookworm-slim AS base
 WORKDIR /app
-RUN echo "deb http://archive.debian.org/debian/ stretch main" > /etc/apt/sources.list \
-    && echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list \
-    && apt update && apt install -y ca-certificates
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/.next ./.next
-COPY package.json ./
-COPY --from=build /app/yarn.lock ./
-COPY public/ ./public/
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS build
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --non-interactive
+COPY . .
+
+ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT=local
+ARG NEXT_PUBLIC_SENTRY_RELEASE=none
+ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT=${NEXT_PUBLIC_SENTRY_ENVIRONMENT} \
+    NEXT_PUBLIC_SENTRY_RELEASE=${NEXT_PUBLIC_SENTRY_RELEASE}
+
+RUN yarn lint && yarn typecheck && yarn test
+# The upload token exists only for this command, never in an image layer or runtime ENV.
+RUN --mount=type=secret,id=sentry_auth_token,env=SENTRY_AUTH_TOKEN yarn build
+
+FROM base AS runner
+ENV NODE_ENV=production
+ARG NEXT_PUBLIC_SENTRY_ENVIRONMENT=local
+ARG NEXT_PUBLIC_SENTRY_RELEASE=none
+ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT=${NEXT_PUBLIC_SENTRY_ENVIRONMENT} \
+    NEXT_PUBLIC_SENTRY_RELEASE=${NEXT_PUBLIC_SENTRY_RELEASE}
+
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/.next ./.next
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/package.json /app/yarn.lock /app/next.config.mjs ./
+USER node
 EXPOSE 3000
 CMD ["yarn", "start"]
