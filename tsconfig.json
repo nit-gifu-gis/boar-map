@@ -14,6 +14,8 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    // Keep dev/build route validators isolated while retaining global .d.ts types.
+    "moduleDetection": "force",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
