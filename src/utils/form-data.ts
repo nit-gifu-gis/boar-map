@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ImagewithLocation } from '../components/atomos/imageInput/interface';
 import { FeatureBase } from '../types/features';
@@ -31,63 +31,88 @@ export interface InputFormData {
   };
 }
 
+type FormDataState = InputFormData | Record<string, never>;
+
+const readFormData = (): FormDataState => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem('formData') || '{}');
+    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as FormDataState)
+      : {};
+  } catch {
+    return {};
+  }
+};
+
+const persistFormData = (data: InputFormData | null) => {
+  if (typeof window === 'undefined') return;
+  try {
+    // Photos stay as Blob URLs; only the form metadata is persisted.
+    window.localStorage.setItem('formData', JSON.stringify(data));
+  } catch (error) {
+    // A storage restriction must not discard the data already held in memory.
+    console.warn('入力内容をローカルストレージに保存できませんでした。', error);
+  }
+};
+
 export const useFormDataParser = () => {
-  const [isObjectURLChecked, setIsObjectURLChecked] = useState(false);
-  const [currentData, setCurrentData] = useState<InputFormData | Record<string, never>>(
-    JSON.parse(localStorage.getItem("formData") || '{}') ?? {},
-  );
+  // Read synchronously on client mount: existing form pages use this data in their first effect.
+  const [currentData, setCurrentData] = useState<FormDataState>(readFormData);
+  const initialData = useRef(currentData);
+  const revision = useRef(0);
   const [isLoading, setIsLoading] = useState(true);
   const isDataExsiting = useMemo(() => Object.keys(currentData).length === 0, [currentData]);
 
+  const updateData = useCallback((data: InputFormData | null) => {
+    revision.current += 1;
+    persistFormData(data);
+    setCurrentData(data ?? {});
+  }, []);
+
   useEffect(() => {
-    if (isObjectURLChecked) return;
-
+    let active = true;
+    const startRevision = revision.current;
     const checkFunc = async () => {
-      const dataCopy = JSON.parse(JSON.stringify(currentData)) as InputFormData;
+      const dataCopy = JSON.parse(JSON.stringify(initialData.current)) as InputFormData;
 
-      if (currentData.inputData === undefined) {
-        setIsObjectURLChecked(true);
-        setIsLoading(false);
-        return;
-      }
+      if (!dataCopy.inputData) return;
 
-      const checkKeys: (keyof typeof currentData.inputData)[] = [
+      const checkKeys = [
         'otherImageUrls',
         'teethImageUrls',
-      ];
+        'captureImageUrls',
+        'captureWithLineImageUrls',
+        'disposeImageUrls',
+        'burialImageUrls',
+      ] as const;
 
       for (const key of checkKeys) {
-        if (!currentData.inputData[key]) {
-          continue;
-        }
-
-        const urls = currentData.inputData[key] as ImagewithLocation[];
+        const urls = dataCopy.inputData[key];
+        if (!Array.isArray(urls)) continue;
 
         const checkResults = await Promise.all(
           urls.map(async (url) => {
-            return await isObjectURLAvailable(url.objectURL);
+            return typeof url?.objectURL === 'string' && isObjectURLAvailable(url.objectURL);
           }),
         );
 
         // 無効だったものを弾いてデータに反映させる。
         const filteredUrls = urls.filter((_, i) => checkResults[i]);
-        dataCopy.inputData[key as 'otherImageUrls' | 'teethImageUrls'] = filteredUrls;
+        dataCopy.inputData[key] = filteredUrls;
       }
 
-      updateData(dataCopy);
-      setIsObjectURLChecked(true);
-      setIsLoading(false);
+      // Do not overwrite a newer edit or publish the result after an unmount.
+      if (active && revision.current === startRevision) updateData(dataCopy);
     };
 
-    checkFunc();
-  }, [isObjectURLChecked]);
-
-  const updateData = (data: InputFormData | null) => {
-    // cookieのサイズ制限(4KB)を超えないように、ローカルストレージに保存する
-    // setCookie(null, 'formData', JSON.stringify(data), { path: '/' });
-    localStorage.setItem("formData", JSON.stringify(data));
-    setCurrentData(data ?? {});
-  };
+    checkFunc().finally(() => {
+      if (active) setIsLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [updateData]);
 
   return {
     currentData,

@@ -3,17 +3,15 @@ import { parseCookies, destroyCookie } from 'nookies';
 import { User } from '../types/user';
 import { SERVER_URI } from './constants';
 import { getUserDepartment } from './gis';
+import { decodeJwtPayload, isJwtExpired } from './jwt';
 
 export const getAccessToken = (): string => {
   const cookies = parseCookies();
-  const now = Math.floor(new Date().getTime() / 1000);
   if (cookies.jwt != null) {
     const token = cookies.jwt;
     // 有効期限だけ確認する。
-    const payloadStr = Buffer.from(token.split('.')[1], 'base64').toString();
-    const payload = JSON.parse(payloadStr);
-    if (payload.exp <= now) {
-      // トークンの期限が切れているから削除する
+    if (isJwtExpired(decodeJwtPayload(token))) {
+      // 期限切れ・不正なトークンを削除する。
       destroyCookie(null, 'jwt');
       return '';
     } else {
@@ -24,10 +22,11 @@ export const getAccessToken = (): string => {
 };
 
 // アクセストークンが(署名と時間的に)生きているかをチェックし、そこからUserクラスを生成する。
-export const fetchCurrentUser = async (): Promise<User> => {
+export const fetchCurrentUser = async (signal?: AbortSignal): Promise<User> => {
   const token = getAccessToken();
   const response = await fetch(SERVER_URI + '/Auth/VerifyToken', {
     method: 'GET',
+    signal,
     headers: {
       'X-Access-Token': token,
     },
@@ -38,11 +37,13 @@ export const fetchCurrentUser = async (): Promise<User> => {
   }
 
   // JWTをパースして各種情報の取得
-  const payloadStr = Buffer.from(token.split('.')[1], 'base64').toString();
-  const payload = JSON.parse(payloadStr);
+  const payload = decodeJwtPayload(token);
+  if (typeof payload?.user !== 'string' || typeof payload.token !== 'string') {
+    throw new Error('Invalid authentication token');
+  }
 
-  const user = payload['user'] as string;
-  const gisToken = payload['token'] as string;
+  const user = payload.user;
+  const gisToken = payload.token;
   const dept = getUserDepartment(user);
 
   return {

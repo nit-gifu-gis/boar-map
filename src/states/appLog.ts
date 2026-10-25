@@ -1,6 +1,6 @@
-import { atom } from 'recoil';
+import { createStateContext } from './context';
 
-export const currentAppLogs = atom<AppLog[]>({
-  key: 'AppLog',
-  default: [],
-});
+export const [AppLogsProvider, useAppLogsValue, useSetAppLogs] = createStateContext<AppLog[]>(
+  'AppLogs',
+  () => [],
+);

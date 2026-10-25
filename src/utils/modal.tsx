@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 import AlertModal from "../components/molecules/alertModal";
 import CitySelectModal from "../components/molecules/citySelectModal";
@@ -42,13 +42,14 @@ const textBoxModal = (message: string, title: string): Promise<string | null> =>
   window.addEventListener("scroll", handleScroll);
   // モーダルを表示するdivを作成
   const wrapper = nextDiv.appendChild(document.createElement("div"));
+  const root = createRoot(wrapper);
   wrapper.style.width = "100vw";
   wrapper.style.height = "100vh";
   wrapper.style.position = "fixed";
   wrapper.style.zIndex = "100";
   // モーダルを消去する関数
   const cleanup = () => {
-    ReactDOM.unmountComponentAtNode(wrapper);
+    root.unmount();
     nextDiv.removeEventListener("wheel", handleScrollEvent);
     nextDiv.removeEventListener("touchmove", handleScrollEvent);
     window.removeEventListener("scroll", handleScroll);
@@ -57,7 +58,7 @@ const textBoxModal = (message: string, title: string): Promise<string | null> =>
   const promise = new Promise<string | null>((resolve, reject) => {
     try {
       const modal = <TextInputModal message={message} input_title={title} resolve={resolve} cleanup={cleanup}/>;
-      ReactDOM.render(modal, wrapper);
+      root.render(modal);
     } catch (e) {
       cleanup();
       reject(e);
@@ -82,13 +83,14 @@ const showCityModal = (list: CityInfo[]) => {
   window.addEventListener("scroll", handleScroll);
   // モーダルを表示するdivを作成
   const wrapper = nextDiv.appendChild(document.createElement("div"));
+  const root = createRoot(wrapper);
   wrapper.style.width = "100vw";
   wrapper.style.height = "100vh";
   wrapper.style.position = "fixed";
   wrapper.style.zIndex = "100";
   // モーダルを消去する関数
   const cleanup = () => {
-    ReactDOM.unmountComponentAtNode(wrapper);
+    root.unmount();
     nextDiv.removeEventListener("wheel", handleScrollEvent);
     nextDiv.removeEventListener("touchmove", handleScrollEvent);
     window.removeEventListener("scroll", handleScroll);
@@ -97,7 +99,7 @@ const showCityModal = (list: CityInfo[]) => {
   const promise = new Promise<CityInfo | null>((resolve, reject) => {
     try {
       const modal = <CitySelectModal list={list} resolve={resolve} cleanup={cleanup} />;
-      ReactDOM.render(modal, wrapper);
+      root.render(modal);
     } catch (e) {
       cleanup();
       reject(e);
@@ -123,13 +125,14 @@ const showModal = (type: "confirm" | "alert" | "yes-no", message: string) => {
   window.addEventListener("scroll", handleScroll);
   // モーダルを表示するdivを作成
   const wrapper = nextDiv.appendChild(document.createElement("div"));
+  const root = createRoot(wrapper);
   wrapper.style.width = "100vw";
   wrapper.style.height = "100vh";
   wrapper.style.position = "fixed";
   wrapper.style.zIndex = "100";
   // モーダルを消去する関数
   const cleanup = () => {
-    ReactDOM.unmountComponentAtNode(wrapper);
+    root.unmount();
     nextDiv.removeEventListener("wheel", handleScrollEvent);
     nextDiv.removeEventListener("touchmove", handleScrollEvent);
     window.removeEventListener("scroll", handleScroll);
@@ -145,7 +148,7 @@ const showModal = (type: "confirm" | "alert" | "yes-no", message: string) => {
         ) : (
           <AlertModal message={message} resolve={resolve} cleanup={cleanup} />
         );
-      ReactDOM.render(modal, wrapper);
+      root.render(modal);
     } catch (e) {
       cleanup();
       reject(e);
