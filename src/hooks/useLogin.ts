@@ -11,7 +11,7 @@ export const useRequireLogin = () => {
   useEffect(() => {
     if (isAuthChecking) return; // ログイン状態確認中
     if (!currentUser) router.push('/login'); // 未ログインだったのでログインページにリダイレクト
-  }, [isAuthChecking, currentUser]);
+  }, [isAuthChecking, currentUser, router]);
 };
 
 // ログインした状態でアクセスできないページではこれを呼び出す (ログイン画面)
@@ -22,5 +22,5 @@ export const useRequireNotLogin = () => {
   useEffect(() => {
     if (isAuthChecking) return; // ログイン状態確認中
     if (currentUser != null) router.push('/map'); // ログイン中だったのでマップページにリダイレクト
-  }, [isAuthChecking, currentUser]);
+  }, [isAuthChecking, currentUser, router]);
 };

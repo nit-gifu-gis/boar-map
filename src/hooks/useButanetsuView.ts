@@ -1,9 +1,7 @@
-import { useRecoilValue } from 'recoil';
-
-import { butanetsuViewState } from '@/states/butanetsuView';
+import { useButanetsuViewValue } from '@/states/butanetsuView';
 
 export const useButanetsuView = () => {
-  const currentView = useRecoilValue(butanetsuViewState);
+  const currentView = useButanetsuViewValue();
 
   return {
     currentView,

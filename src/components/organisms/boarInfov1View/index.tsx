@@ -8,8 +8,8 @@ const BoarInfov1View: React.FunctionComponent<BoarInfov1ViewProps> = ({
   imageIDs,
   confirmMode,
 }) => {
-  let pregnantInfo: JSX.Element | null = null;
-  let catchNumInfo: JSX.Element | null = null;
+  let pregnantInfo: React.JSX.Element | null = null;
+  let catchNumInfo: React.JSX.Element | null = null;
 
   if (detail.properties.性別 === 'メス' && detail.properties['幼獣・成獣'] === '成獣') {
     pregnantInfo = <InfoDiv title='妊娠の状況' type='text' data={detail.properties.妊娠の状況} />;

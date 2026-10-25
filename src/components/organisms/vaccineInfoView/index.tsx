@@ -8,7 +8,7 @@ const VaccineInfoView: React.FunctionComponent<VaccineInfoViewProps> = ({
   imageIDs,
   confirmMode,
 }) => {
-  let recoverDiv: JSX.Element | null = null;
+  let recoverDiv: React.JSX.Element | null = null;
   if (detail.properties.回収年月日 != '') {
     recoverDiv = (
       <>

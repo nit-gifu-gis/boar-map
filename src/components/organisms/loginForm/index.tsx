@@ -2,19 +2,18 @@ import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies';
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import RoundButton from '@/components/atomos/roundButton';
 import TextInput from '@/components/atomos/TextInput';
-import { butanetsuViewState } from '@/states/butanetsuView';
-import { currentUserState } from '@/states/currentUser';
+import { useSetButanetsuView } from '@/states/butanetsuView';
+import { useSetCurrentUser } from '@/states/currentUser';
 import { SERVER_URI } from '@/utils/constants';
 import { fetchCurrentUser } from '@/utils/currentUser';
 import { alert, confirm } from '@/utils/modal';
 
 const LoginForm: React.FunctionComponent = () => {
-  const setCurrentUser = useSetRecoilState(currentUserState);
-  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
+  const setCurrentUser = useSetCurrentUser();
+  const setCurrentButanetsuView = useSetButanetsuView();
 
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);

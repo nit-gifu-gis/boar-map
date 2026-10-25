@@ -1,6 +1,8 @@
 import { TextAreaInputProps } from './interface';
 
-const TextAreaInput: React.FunctionComponent<TextAreaInputProps> = (props) => {
+const TextAreaInput: React.FunctionComponent<React.PropsWithChildren<TextAreaInputProps>> = (
+  props,
+) => {
   return (
     <div>
       <textarea

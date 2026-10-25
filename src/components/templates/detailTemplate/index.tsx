@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FeatureBase } from '@/types/features';
 
@@ -23,8 +23,17 @@ const DetailTemplate: React.FunctionComponent = () => {
   const [featureInfo, setFeatureInfo] = useState<FeatureBase | null>(null);
   const [featureType, setFeatureType] = useState<string | null>(null);
   const [editable, setEditable] = useState(false);
+  const [loadedQuery, setLoadedQuery] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
+  const queryKey = JSON.stringify([router.query.id, router.query.type, router.query.version]);
 
   useEffect(() => {
+    const requestId = ++requestIdRef.current;
+    setFeatureInfo(null);
+    setFeatureType(null);
+    setEditable(false);
+    setLoadedQuery(null);
+    if (!router.isReady || currentUser == null) return;
     const feature_id = router.query.id as string | undefined;
     const feature_ver = router.query.version as string | undefined; // いのしし捕獲地点の場合のみ
     const feature_type = router.query.type as string | undefined;
@@ -35,6 +44,7 @@ const DetailTemplate: React.FunctionComponent = () => {
       return;
     }
 
+    const controller = new AbortController();
     const fetchGis = async () => {
       // GISから情報を取得する。
       const body = {
@@ -48,12 +58,15 @@ const DetailTemplate: React.FunctionComponent = () => {
           'X-Access-Token': getAccessToken(),
         },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
 
       const json = await response.json();
+      if (controller.signal.aborted || requestIdRef.current !== requestId) return;
       if (response.ok && Array.isArray(json) && json.length === 1 && currentUser != null) {
         setFeatureType(feature_server_type);
         setFeatureInfo(json[0] as FeatureBase);
+        setLoadedQuery(queryKey);
 
         // 編集可否
         const layerType = (
@@ -66,13 +79,22 @@ const DetailTemplate: React.FunctionComponent = () => {
         return;
       }
     };
-    fetchGis();
-  }, []);
+    fetchGis().catch((error: unknown) => {
+      if (!controller.signal.aborted) console.error(error);
+    });
+    return () => {
+      controller.abort();
+      if (requestIdRef.current === requestId) requestIdRef.current += 1;
+    };
+  }, [router.isReady, router.query.id, router.query.type, router.query.version, currentUser]);
 
   const onClickDelete = async () => {
-    if (featureInfo == null) return;
+    if (featureInfo == null || loadedQuery !== queryKey || !editable) return;
+    const requestId = requestIdRef.current;
+    const featureId = router.query.id as string;
     setEditable(false);
     if (await confirm('この情報を削除します。\n本当によろしいですか？')) {
+      if (requestIdRef.current !== requestId) return;
       // 画像の削除用関数の準備
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       let deleteImage = (id: string) => new Promise<void>((resolve) => resolve());
@@ -130,7 +152,7 @@ const DetailTemplate: React.FunctionComponent = () => {
       // GISにクエリを投げる
       const body = {
         type: featureType,
-        shapeIds: [router.query.id as string],
+        shapeIds: [featureId],
       };
       try {
         // 先に画像を削除する.
@@ -144,6 +166,7 @@ const DetailTemplate: React.FunctionComponent = () => {
           },
           body: JSON.stringify(body),
         });
+        if (requestIdRef.current !== requestId) return;
 
         if (res.status === 200) {
           await alert('削除しました。');
@@ -153,14 +176,18 @@ const DetailTemplate: React.FunctionComponent = () => {
           await alert(json['reason']);
         }
       } catch (e) {
-        await alert(`${e}`);
+        if (requestIdRef.current === requestId) await alert(`${e}`);
       }
     }
-    setEditable(true);
+    if (requestIdRef.current === requestId) setEditable(true);
   };
 
   const onClickEdit = useCallback(async () => {
-    if (featureInfo == null) return;
+    if (featureInfo == null || loadedQuery !== queryKey || !editable) return;
+    const requestId = requestIdRef.current;
+    const editId = router.query.id as string;
+    const editType = router.query.type as string;
+    const editVersion = router.query.version as string;
 
     const layerType = ((featureType ?? '').startsWith('boar-') ? 'boar' : featureType) as LayerType;
 
@@ -170,6 +197,7 @@ const DetailTemplate: React.FunctionComponent = () => {
     const yesNoCheck = await yesNo(
       '位置情報の編集を行いますか？\n\n(いのしし捕獲情報のみ)\n※ 検体到着予定日以降に修正する場合は、下記にご連絡ください。\nTel. 058-272-8096 \n(平日8:30～12:00、13:00～17:15)',
     );
+    if (requestIdRef.current !== requestId) return;
     paramParser.updateData({
       dataType: layerType,
       isLocationSkipped: !yesNoCheck,
@@ -178,10 +206,10 @@ const DetailTemplate: React.FunctionComponent = () => {
         gisData: featureInfo,
       },
       editData: {
-        id: router.query.id as string,
-        type: router.query.type as string,
+        id: editId,
+        type: editType,
         type_srv: featureType,
-        version: router.query.version as string,
+        version: editVersion,
         curImg: {
           teeth: ((featureInfo.properties as Record<string, string>)['歯列写真ID'] || '').split(
             ',',
@@ -202,7 +230,7 @@ const DetailTemplate: React.FunctionComponent = () => {
     } else {
       router.push('/edit/image');
     }
-  }, [featureInfo, featureType]);
+  }, [featureInfo, featureType, loadedQuery, queryKey, editable, router, paramParser.updateData]);
 
   return (
     <div className=''>
@@ -216,10 +244,18 @@ const DetailTemplate: React.FunctionComponent = () => {
           <RoundButton color='accent' onClick={() => router.push('/map')}>
             戻る
           </RoundButton>
-          <RoundButton color='primary' onClick={onClickEdit.bind(this)} disabled={!editable}>
+          <RoundButton
+            color='primary'
+            onClick={onClickEdit.bind(this)}
+            disabled={!editable || loadedQuery !== queryKey}
+          >
             編集
           </RoundButton>
-          <RoundButton color='danger' onClick={onClickDelete.bind(this)} disabled={!editable}>
+          <RoundButton
+            color='danger'
+            onClick={onClickDelete.bind(this)}
+            disabled={!editable || loadedQuery !== queryKey}
+          >
             削除
           </RoundButton>
         </Footer>

@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
 
 import FooterAdjustment from '@/components/atomos/footerAdjustment';
 import RoundButton from '@/components/atomos/roundButton';
@@ -8,7 +7,7 @@ import InfoInput from '@/components/molecules/infoInput';
 import Footer from '@/components/organisms/footer';
 import Header from '@/components/organisms/header';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { butanetsuViewState } from '@/states/butanetsuView';
+import { useSetButanetsuView } from '@/states/butanetsuView';
 import { SERVER_URI } from '@/utils/constants';
 import { getAccessToken } from '@/utils/currentUser';
 import { confirm } from '@/utils/modal';
@@ -16,7 +15,7 @@ import { confirm } from '@/utils/modal';
 const MapSettingsTemplate: React.FunctionComponent = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUser();
-  const setCurrentButanetsuView = useSetRecoilState(butanetsuViewState);
+  const setCurrentButanetsuView = useSetButanetsuView();
 
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [deleteButtonDisabled, setDeleteButtonDisabled] = useState(false);

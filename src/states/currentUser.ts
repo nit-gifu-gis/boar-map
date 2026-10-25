@@ -1,8 +1,7 @@
-import { atom } from 'recoil';
+import { createStateContext } from './context';
 
-import { User } from '../types/user';
+import type { User } from '../types/user';
 
-export const currentUserState = atom<undefined | null | User>({
-  key: 'CurrentUser',
-  default: undefined,
-});
+// undefined: checking authentication, null: signed out.
+export const [CurrentUserProvider, useCurrentUserValue, useSetCurrentUser] =
+  createStateContext<User | null | undefined>('CurrentUser', () => undefined);

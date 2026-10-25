@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs';
 import { NextPage, NextPageContext } from 'next';
 import Image from 'next/image';
 import React from 'react';
@@ -54,7 +55,9 @@ const ErrorPage: NextPage<Props> = ({ statusCode }) => {
   );
 };
 
-ErrorPage.getInitialProps = async ({ res, err }: NextPageContext) => {
+ErrorPage.getInitialProps = async (context: NextPageContext) => {
+  await Sentry.captureUnderscoreErrorException(context);
+  const { res, err } = context;
   // statusCodeを算出する。
   // - resが存在する時はSSRであり、res.statusCodeをそのまま利用すれば良い。
   // - resがない場合はCSRである。

@@ -2,48 +2,46 @@ name: Build Check
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    if: ${{ !contains(github.event.commits.*.message, '[meta]') }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
-      - name: Setup Build Cache
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-${{ hashFiles('./yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('./yarn.lock') }}
-            ${{ runner.os }}-
-            refs/head/master
-
-      - name: Create Sentry Release
-        shell: bash
-        id: sentry_release
-        run: |
-          echo "::set-output name=env::${GITHUB_REF#refs/heads/}"
-          echo "::set-output name=release::$(git show --format="%H" --no-patch)"
-            
       - name: Setup Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v4
 
-      - name: Build image
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with: 
-          context: ./
-          build-args: |
-            "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
-            "NEXT_PUBLIC_SENTRY_ENVIRONMENT=${{ steps.sentry_release.outputs.env }}"
-            "NEXT_PUBLIC_SENTRY_RELEASE=${{ steps.sentry_release.outputs.release }}"
+      # The build stage runs lint, typecheck, unit tests and the production build.
+      # PR checks do not upload source maps or require deployment secrets.
+      - name: Build and check image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
           file: ./Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
           push: false
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          load: true
+          tags: boar-map:check
+          build-args: |
+            NEXT_PUBLIC_SENTRY_ENVIRONMENT=check
+            NEXT_PUBLIC_SENTRY_RELEASE=${{ github.sha }}
+          cache-from: type=gha,scope=boar-map-check
+          cache-to: type=gha,mode=max,scope=boar-map-check
+
+      - name: Check production container
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --detach --name boar-map-check --env SENTRY_DISABLED=1 --publish 127.0.0.1:3000:3000 boar-map:check
+          trap 'docker logs boar-map-check; docker rm --force boar-map-check' EXIT
+          # Docker can reset connections while Next.js is still starting.
+          curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-connrefused --retry-delay 2 --retry-max-time 60 --connect-timeout 2 --max-time 5 http://127.0.0.1:3000/login > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:3000/map > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:3000/static/leaflet.css > /dev/null
+          test "$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/next16-missing-page)" = 404

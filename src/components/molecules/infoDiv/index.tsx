@@ -62,7 +62,7 @@ const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, titl
         );
         break;
       case 'gray':
-        dataDiv = <InfoText is_gray={true}>{data}</InfoText>;
+        dataDiv = <InfoText is_gray={true}>{data as string}</InfoText>;
         break;
       case 'period':
         per_rec = data as Record<string, string>;
@@ -199,7 +199,7 @@ const InfoDiv: React.FunctionComponent<InfoDivProps> = ({ type, data, unit, titl
       }
       case 'text':
       default:
-        dataDiv = <InfoText>{data}</InfoText>;
+        dataDiv = <InfoText>{data as string}</InfoText>;
     }
   }
   return (

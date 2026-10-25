@@ -18,8 +18,9 @@ import { InputFormTemplateCommonProps } from '../interfaces';
 const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditing }) => {
   const router = useRouter();
   const paramParser = useFormDataParser();
+  const [preparedData, setPreparedData] = useState<typeof paramParser.currentData | null>(null);
 
-  const [editorRef, setEditorRef] = useState<React.RefObject<FeatureEditorHandler> | null>(null);
+  const editorRef = React.useRef<FeatureEditorHandler | null>(null);
   const [imageArray, setImageArray] = useState<ImagewithLocation[] | null>(null);
   const [serverImages, setServerImages] = useState<string[] | null>(null);
 
@@ -40,8 +41,8 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   const location = useMemo(() => {
     return {
       isDefault: false,
-      lat: paramParser.currentData.inputData.gisData?.geometry?.coordinates[1] ?? 0,
-      lng: paramParser.currentData.inputData.gisData?.geometry?.coordinates[0] ?? 0,
+      lat: paramParser.currentData.inputData?.gisData?.geometry?.coordinates[1] ?? 0,
+      lng: paramParser.currentData.inputData?.gisData?.geometry?.coordinates[0] ?? 0,
       zoom: 17,
     };
   }, [paramParser.currentData]);
@@ -49,23 +50,20 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
+    if (paramParser.isLoading) return;
     if (!paramParser.currentData.dataType) {
       alert('情報の取得に失敗しました。');
       router.push('/map');
       return;
     }
 
-    if (editorRef == null) {
-      setEditorRef(React.createRef());
-    }
-
     setImageArray(
       (paramParser.currentData.inputData.teethImageUrls ?? [])
-        .concat(paramParser.currentData.inputData.otherImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.captureImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [],)
-        .concat(paramParser.currentData.inputData.burialImageUrls ?? [],)
+        .concat(paramParser.currentData.inputData.otherImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.captureWithLineImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.disposeImageUrls ?? [])
+        .concat(paramParser.currentData.inputData.burialImageUrls ?? []),
     );
     setServerImages(() => {
       const featureProps = paramParser.currentData.inputData?.gisData?.properties as Record<
@@ -81,7 +79,8 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
         .filter((e) => e);
       return arr;
     });
-  }, [paramParser.currentData, editorRef]);
+    setPreparedData(paramParser.currentData);
+  }, [paramParser.isLoading, paramParser.currentData]);
 
   const onClickPrev = useCallback(() => {
     if (isEditing) {
@@ -111,7 +110,7 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
   }, []);
 
   const onClickNext = async () => {
-    if (editorRef == null) {
+    if (editorRef.current == null) {
       // 本来は起きないはず
       alert('内部エラーが発生しました。');
       return;
@@ -141,6 +140,8 @@ const CommonInfoInputTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEdi
       router.push('/add/confirm');
     }
   };
+
+  if (paramParser.isLoading || preparedData !== paramParser.currentData) return <></>;
 
   return (
     <div>

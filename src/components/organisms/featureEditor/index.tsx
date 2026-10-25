@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useState } from 'react';
+import React, { useImperativeHandle } from 'react';
 
 import {
   BoarFeatureV1,
@@ -23,26 +23,19 @@ import { FeatureEditorHandler, FeatureEditorProps } from './interface';
 
 const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>(
   function FeatureEditor({ type, featureInfo, imageIds, objectURLs, location }, ref) {
-    const [formRef, setFormRef] = useState<React.RefObject<FeatureEditorHandler> | null>(null);
-
-    useEffect(() => {
-      if (formRef == null) {
-        setFormRef(React.createRef());
-      }
-    }, []);
+    const formRef = React.useRef<FeatureEditorHandler | null>(null);
 
     const isLoading = () => {
       return type == null;
     };
 
     const fetchData = async (): Promise<FeatureBase | null> => {
-      if (formRef == null || formRef.current == null) return null;
+      if (formRef.current == null) return null;
       return await formRef.current.fetchData();
     };
 
     const validateData = (): Promise<boolean> => {
-      if (formRef == null || formRef.current == null)
-        return new Promise<boolean>((resolve) => resolve(false));
+      if (formRef.current == null) return new Promise<boolean>((resolve) => resolve(false));
       return formRef.current.validateData();
     };
 
@@ -50,7 +43,7 @@ const FeatureEditor = React.forwardRef<FeatureEditorHandler, FeatureEditorProps>
       return { validateData, fetchData };
     });
 
-    let infoDiv: JSX.Element | null = null;
+    let infoDiv: React.JSX.Element | null = null;
     if (type != null) {
       if (type === 'boar') {
         infoDiv = (

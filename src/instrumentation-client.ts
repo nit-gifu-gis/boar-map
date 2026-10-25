@@ -3,7 +3,6 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-import { CaptureConsole } from "@sentry/integrations";
 
 Sentry.init({
   dsn: "https://b4d7ef67962e40889b75d5b5b6779e38@o4505520793780224.ingest.sentry.io/4505534484512768",
@@ -13,6 +12,14 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  // Preserve the previous SDK's collection policy when upgrading to v11 defaults.
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpBodies: [],
+    httpHeaders: { request: { deny: ['authorization', 'cookie', 'x-access-token'] } },
+  },
 
   environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || "local",
   release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || "none",
@@ -24,13 +31,15 @@ Sentry.init({
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
-    new CaptureConsole({
+    Sentry.captureConsoleIntegration({
       levels: ["error"]
     }),
-    new Sentry.Replay({
+    Sentry.replayIntegration({
       // Additional Replay configuration goes in here, for example:
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

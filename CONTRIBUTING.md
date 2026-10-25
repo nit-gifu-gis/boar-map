@@ -29,7 +29,13 @@ ex) `ログイン画面の実装 #1`
 1. 上記コミットメッセージのルールに従ってコミットする
 1. Pull Requestを作成する (基本的にはdevelopなど開発用のブランチに)
 
-## 更新履歴の追加方法(master/developブランチのみ対応)
+## Pull Request前の確認
+
+Node.jsとYarnは`package.json`のVolta設定に合わせます。`yarn install --frozen-lockfile`でインストールし、`yarn lint`、`yarn typecheck`、`yarn test`、`yarn build`を実行してください。自動修正は必要な場合に`yarn lint:fix`を明示して実行します。
+
+PRの対象は通常`develop`です。`main`への反映は本番配信、`develop`への反映は開発環境への配信を開始します。作業ブランチでは配信されません。画面・外部APIを含む確認項目は[Next.js 16移行記録](docs/next16-migration.md)を参照してください。
+
+## 更新履歴の追加方法(main/developブランチのみ対応)
 マージ時のコメント(一番新しいコミットのコミットメッセージ)に次の形式でデータを含める
 ```
 [meta]

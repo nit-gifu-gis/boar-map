@@ -47,7 +47,7 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
     }
 
     return new Promise<ImagewithLocation>((resolve, reject) => {
-      if (process.browser) {
+      if (typeof window !== 'undefined') {
         // 圧縮処理
         const imageData = new Image();
         imageData.src = URL.createObjectURL(file);
@@ -186,7 +186,7 @@ const ImageInput: React.FunctionComponent<ImageInputProps> = (props) => {
     if (props.onChange != null) props.onChange(newList);
   };
 
-  const previewChildren: JSX.Element[] = [];
+  const previewChildren: React.JSX.Element[] = [];
   const token = getAccessToken();
 
   // 1. もともと登録されている画像（サーバー側）

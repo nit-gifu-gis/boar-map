@@ -1,6 +1,6 @@
 import { RoundButtonProps } from './interface';
 
-const RoundButton: React.FunctionComponent<RoundButtonProps> = (props) => {
+const RoundButton: React.FunctionComponent<React.PropsWithChildren<RoundButtonProps>> = (props) => {
   let bgColor = '';
   switch (props.color) {
     case 'primary':

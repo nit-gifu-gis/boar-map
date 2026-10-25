@@ -13,6 +13,6 @@ export interface BoarInfov2FormProps {
 }
 
 export interface BoarFormRef {
-  ref: React.RefObject<BoarDetailFormHandler>;
-  obj: JSX.Element;
+  ref: React.RefObject<BoarDetailFormHandler | null>;
+  obj: React.JSX.Element;
 }

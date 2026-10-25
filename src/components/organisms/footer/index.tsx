@@ -1,4 +1,4 @@
-const Footer: React.FunctionComponent = (props) => {
+const Footer: React.FunctionComponent<React.PropsWithChildren> = (props) => {
   let children;
 
   if (Array.isArray(props.children)) {

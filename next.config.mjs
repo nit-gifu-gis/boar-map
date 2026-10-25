@@ -1,48 +1,26 @@
-// Injected content via Sentry wizard below
-import { withSentryConfig } from "@sentry/nextjs";
-import path from "path";
+﻿import { withSentryConfig } from '@sentry/nextjs/config';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  productionBrowserSourceMaps: true,
   reactStrictMode: true,
-  webpack: config => {
-    // Vue と同じように 「@ = src/」,「~ = src/」に設定する。
-    // => モジュールのパス解決とエイリアスを設定している。
-    config.resolve.alias["@"] = path.resolve(process.cwd(), "src");
-    return config;
-  },
+  allowedDevOrigins: ['127.0.0.1'],
+  // @/* is resolved from tsconfig.json by Next.js.
 };
 
-export default withSentryConfig(
-  nextConfig,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
-
-    // Suppresses source map uploading logs during build
-    silent: true,
-
-    org: "boar-map",
-    project: "boar-map",
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+export default withSentryConfig(nextConfig, {
+  org: 'boar-map',
+  project: 'boar-map',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  release: {
+    name: process.env.NEXT_PUBLIC_SENTRY_RELEASE,
+    create: Boolean(process.env.SENTRY_AUTH_TOKEN),
+    finalize: Boolean(process.env.SENTRY_AUTH_TOKEN),
   },
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: true,
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-  }
-);
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN },
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  webpack: {
+    treeshake: { removeDebugLogging: true },
+  },
+});

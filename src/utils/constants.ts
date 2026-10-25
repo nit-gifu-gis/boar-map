@@ -5,9 +5,9 @@ const getServerURI = (): string => {
   if (process.env.NEXT_PUBLIC_API_OVERRIDE) {
     return process.env.NEXT_PUBLIC_API_OVERRIDE;
   }
-  if (process.browser) {
+  if (typeof window !== 'undefined') {
     // ブラウザで処理が行われている時はアクセスされているドメインを見る
-    const domain = document.domain.toLowerCase();
+    const domain = window.location.hostname.toLowerCase();
     if (domain.endsWith('.gifu-nct.ac.jp')) {
       // 開発用サーバー (develop)
       return 'https://boarmap-dev.gifu-nct.ac.jp/api';

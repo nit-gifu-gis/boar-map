@@ -1,10 +1,11 @@
 // This file configures the initialization of Sentry on the server.
 // The config you add here will be used whenever the server handles a request.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/pages-router/
 
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
+  enabled: process.env.SENTRY_DISABLED !== '1',
   dsn: "https://b4d7ef67962e40889b75d5b5b6779e38@o4505520793780224.ingest.sentry.io/4505534484512768",
 
   environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || "local",
@@ -15,4 +16,11 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpBodies: [],
+    httpHeaders: { request: { deny: ['authorization', 'cookie', 'x-access-token'] } },
+  },
 });
