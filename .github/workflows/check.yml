@@ -40,7 +40,8 @@ jobs:
           set -euo pipefail
           docker run --detach --name boar-map-check --env SENTRY_DISABLED=1 --publish 127.0.0.1:3000:3000 boar-map:check
           trap 'docker logs boar-map-check; docker rm --force boar-map-check' EXIT
-          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000/login > /dev/null
+          # Docker can reset connections while Next.js is still starting.
+          curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-connrefused --retry-delay 2 --retry-max-time 60 --connect-timeout 2 --max-time 5 http://127.0.0.1:3000/login > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:3000/map > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:3000/static/leaflet.css > /dev/null
           test "$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' http://127.0.0.1:3000/next16-missing-page)" = 404
