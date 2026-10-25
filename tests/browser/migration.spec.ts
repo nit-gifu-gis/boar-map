@@ -172,3 +172,38 @@ test('the registration draft and a selected photo survive page changes, and an e
     app.requests.some((request) => /\/(AddFeature|UpdateFeature|AddImage)$/.test(request.path)),
   ).toBe(false);
 });
+
+test('reloading the image step removes an expired Blob URL from both the draft and the preview', async ({
+  page,
+}) => {
+  await page.goto('/add');
+  await page.getByText('わな情報', { exact: true }).click();
+  await page.getByRole('button', { name: '進む >', exact: true }).click();
+  await expect(page).toHaveURL(/\/add\/image$/);
+  await page
+    .locator('input[type=file]')
+    .setInputFiles({ name: 'draft.png', mimeType: 'image/png', buffer: samplePng });
+  await expect(page.getByAltText('Local image 1', { exact: true })).toBeVisible();
+  // Moving forward persists the draft without uploading the selected image.
+  await page.getByRole('button', { name: '進む >', exact: true }).click();
+  await expect(page).toHaveURL(/\/add\/location$/);
+  await expectMap(page);
+  await page.getByRole('button', { name: '< 戻る', exact: true }).click();
+  await expect(page).toHaveURL(/\/add\/image$/);
+  await expect(page.getByAltText('Local image 1', { exact: true })).toBeVisible();
+
+  await page.reload();
+  await expect(page).toHaveURL(/\/add\/image$/);
+  await expect(page.getByRole('button', { name: '画像を選択', exact: true })).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => JSON.parse(localStorage.getItem('formData') || '{}').inputData?.otherImageUrls,
+      ),
+    )
+    .toEqual([]);
+  await expect(page.getByAltText('Local image 1', { exact: true })).toHaveCount(0);
+  expect(
+    await page.evaluate(() => JSON.parse(localStorage.getItem('formData') || '{}').dataType),
+  ).toBe('trap');
+});
