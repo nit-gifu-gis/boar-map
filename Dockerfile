@@ -4,9 +4,11 @@ FROM node:24.22.1-bookworm-slim AS base
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ENV COREPACK_HOME=/usr/local/share/corepack
+RUN corepack enable && corepack install -g yarn@4.18.1
+
 FROM base AS build
-COPY package.json yarn.lock ./
-RUN corepack enable
+COPY package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --immutable
 COPY . .
 
