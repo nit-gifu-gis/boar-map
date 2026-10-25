@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker run --detach --name boar-map-check --publish 127.0.0.1:3000:3000 boar-map:check
+          docker run --detach --name boar-map-check --env SENTRY_DISABLED=1 --publish 127.0.0.1:3000:3000 boar-map:check
           trap 'docker logs boar-map-check; docker rm --force boar-map-check' EXIT
           curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000/login > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:3000/map > /dev/null
