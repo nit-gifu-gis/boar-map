@@ -13,6 +13,14 @@ Sentry.init({
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
 
+  // Preserve the previous SDK's collection policy when upgrading to v11 defaults.
+  dataCollection: {
+    userInfo: false,
+    cookies: false,
+    httpBodies: [],
+    httpHeaders: { request: { deny: ['authorization', 'cookie', 'x-access-token'] } },
+  },
+
   environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || "local",
   release: process.env.NEXT_PUBLIC_SENTRY_RELEASE || "none",
 
