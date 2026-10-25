@@ -14,6 +14,11 @@ export default defineConfig(fixupConfigRules([
     rules: {
       // Preserve the existing project's policy while updating the lint runner.
       'react-hooks/exhaustive-deps': 'off',
+      // Compiler adoption is separate from this framework migration. Keep its new
+      // diagnostics visible without making the existing imperative UI a build failure.
+      'react-hooks/immutability': 'warn',
+      'react-hooks/refs': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
       '@next/next/no-img-element': 'off',
       'semi': ['error', 'always'],
       'import/order': ['warn', {
