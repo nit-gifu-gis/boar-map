@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { destroyCookie } from 'nookies';
@@ -131,6 +132,7 @@ const Header: React.FunctionComponent<React.PropsWithChildren<HeaderProps>> = (p
       }
       destroyCookie(null, 'jwt');
       setCurrentUser(null);
+      Sentry.setUser(null);
       router.push('/login');
     }
   };

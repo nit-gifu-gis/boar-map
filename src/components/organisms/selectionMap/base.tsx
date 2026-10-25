@@ -42,6 +42,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   >({});
   const { currentUser } = useCurrentUser();
   const { currentView } = useButanetsuView();
+  const currentViewRef = React.useRef(currentView);
   const setCurrentButanetsuView = useSetButanetsuView();
   const [isLoading, setLoading] = useState(false);
   const [selfNode, setSelfNode] = useState<HTMLDivElement | null>(null);
@@ -61,10 +62,11 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     boar: {},
   });
 
-  const addNewButanetsuMarkers = async (_features: ButanetsuFeature[]) => {
-    if (currentView == null) return;
+  const addNewButanetsuMarkers = (_features: ButanetsuFeature[]) => {
+    const view = currentViewRef.current;
+    if (view == null || myMap == null || mapRef.current !== myMap) return;
 
-    const { radius, days, style, origin: viewOrigin } = currentView;
+    const { radius, days, style, origin: viewOrigin } = view;
     const origin = new Date(viewOrigin);
     const show_date = new Date(origin);
     show_date.setHours(0);
@@ -82,7 +84,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
       return show_date <= date && date <= origin;
     });
 
-    const circleMarkers = style !== 2 ? await makeCircleMarkers(radius, features) : [];
+    const circleMarkers = style !== 2 ? makeCircleMarkers(radius, features) : [];
 
     const newMarkers = style !== 3 ? features.map((f) => makeMarker(f, '豚熱陽性高率エリア')) : [];
 
@@ -99,6 +101,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   };
 
   useEffect(() => {
+    currentViewRef.current = currentView;
+    const controller = new AbortController();
     const renderMarkers = async () => {
       if (myMap == null || mapRef.current !== myMap || butanetsuLayerIdRef.current < 0) return;
 
@@ -148,17 +152,22 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
           'X-Access-Token': getAccessToken(),
         },
         body: JSON.stringify(req_body),
+        signal: controller.signal,
       });
 
+      if (controller.signal.aborted || mapRef.current !== myMap) return;
       if (res.status === 200) {
         const json = (await res.json()) as FeatureExtentResponse;
-        if (mapRef.current !== myMap) return;
+        if (controller.signal.aborted || mapRef.current !== myMap) return;
         if (json.豚熱陽性高率エリア != null) {
           // 新しい条件で描画する
-          addNewButanetsuMarkers(json.豚熱陽性高率エリア);
+          const features = json.豚熱陽性高率エリア.filter(
+            (feature) => !featureIDs['豚熱陽性高率エリア'].includes(`${feature.properties.ID$}`),
+          );
+          addNewButanetsuMarkers(features);
 
           featureIDs['豚熱陽性高率エリア'].push(
-            ...json.豚熱陽性高率エリア.map((f) => {
+            ...features.map((f) => {
               return `${f.properties.ID$}`;
             }),
           );
@@ -169,7 +178,13 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
 
       setLoading(false);
     };
-    renderMarkers();
+    renderMarkers().catch((error: unknown) => {
+      if (!controller.signal.aborted && mapRef.current === myMap) {
+        console.error(error);
+        setLoading(false);
+      }
+    });
+    return () => controller.abort();
   }, [currentView]);
 
   const handleViewSettingsUpdate = () => {
@@ -585,10 +600,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     setLoading(false);
   };
 
-  const makeCircleMarkers = async (
-    radius: number,
-    features: ButanetsuFeature[],
-  ): Promise<L.Circle[]> => {
+  const makeCircleMarkers = (radius: number, features: ButanetsuFeature[]): L.Circle[] => {
     const l: L.Circle[] = [];
     features.forEach((feature) => {
       const loc = [
@@ -645,6 +657,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     };
 
     const error = (e: GeolocationPositionError) => {
+      if (mapRef.current !== myMap) return;
       console.warn('位置情報取得失敗', e);
     };
 
@@ -798,6 +811,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     };
 
     const error = (e: GeolocationPositionError) => {
+      if (mapRef.current !== myMap) return;
       console.warn('位置情報取得失敗', e);
     };
 
@@ -908,6 +922,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
     const map = L.map(selfNode, { keyboard: false, layers: [baseMap] });
     mapRef.current = map;
     myLocMarkerRef.current = null;
+    locationRef.current = null;
     butanetsuLayerIdRef.current = -1;
     Object.keys(featureIDs).forEach((key) => delete featureIDs[key]);
     Object.values(meshLayers).forEach((layers) => {
@@ -1070,6 +1085,8 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
   }, [myMap]);
 
   const onPointSearchClicked = async () => {
+    const targetMap = mapRef.current;
+    if (targetMap == null) return;
     const type_input = document.getElementById('point_search_type') as HTMLSelectElement | null;
     if (type_input == null) {
       alert('内部エラーが発生しました。');
@@ -1096,6 +1113,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         }),
       });
       const json = await res.json();
+      if (mapRef.current !== targetMap) return;
       setSearchButtonLabel('検索');
       if (!res.ok) {
         alert(json['error']);
@@ -1108,14 +1126,14 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         alert('該当の情報が見つかりませんでした。');
       } else if (list.length === 1) {
         // 1件の時はそのまま場所を変える
-        const map = mapRef.current;
+        const map = targetMap;
         if (map != null) map.setView([list[0].point.lat, list[0].point.lng], map.getZoom());
         setLocSearchVisible(false);
       } else {
         // 2件以上の時は確認ダイアログを出す
         const city = await cityList(list);
-        if (city == null) return;
-        const map = mapRef.current;
+        if (city == null || mapRef.current !== targetMap) return;
+        const map = targetMap;
         if (map != null) map.setView([city.point.lat, city.point.lng], map.getZoom());
         setLocSearchVisible(false);
       }
@@ -1168,7 +1186,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
         lng = lng_inputs.reduce((prev, cur, i) => prev + cur / Math.pow(60, i), 0);
       }
 
-      const map = mapRef.current;
+      const map = targetMap;
       if (map == null) {
         alert('内部エラーが発生しました。');
         return;
@@ -1400,7 +1418,7 @@ const SelectionMap_: React.FunctionComponent<SelectionMapProps> = (props) => {
             'shadow-3 loading-center absolute z-20 rounded ' + (isLoading ? 'block' : 'hidden')
           }
         >
-          <Image src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
+          <Image unoptimized src='/images/map/loading.gif' alt='Loading icon' width={33} height={33} />
         </div>
       </div>
     </div>

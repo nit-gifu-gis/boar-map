@@ -31,53 +31,62 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
   const imageConfigs = useMemo(
     () => createImageConfigs({ type, type_srv, isEditing }),
-    [type, type_srv],
+    [type, type_srv, isEditing],
   );
 
-  const getInitialImages = useCallback((configKey: string): ImagewithLocation[] | null => {
-    const config = imageConfigs[configKey];
-    if (!config) return null;
-    
-    const inputData = paramParser.currentData.inputData as Record<string, any>;
-    return inputData?.[config.frontUrlKey] ?? null;
-  }, [imageConfigs, paramParser.currentData.inputData]);
+  const getInitialImages = useCallback(
+    (configKey: string): ImagewithLocation[] | null => {
+      const config = imageConfigs[configKey];
+      if (!config) return null;
+
+      const inputData = paramParser.currentData.inputData as Record<string, any>;
+      return inputData?.[config.frontUrlKey] ?? null;
+    },
+    [imageConfigs, paramParser.currentData.inputData],
+  );
 
   // 各画像タイプのサーバーIDを取得するヘルパー関数
-  const getServerImageIds = useCallback((configKey: string): string[] => {
-    if (!isEditing) return [];
+  const getServerImageIds = useCallback(
+    (configKey: string): string[] => {
+      if (!isEditing) return [];
 
-    const featureProps = paramParser.currentData.inputData?.gisData?.properties as
-      | Record<string, string>
-      | undefined;
-    if (!featureProps) return [];
+      const featureProps = paramParser.currentData.inputData?.gisData?.properties as
+        | Record<string, string>
+        | undefined;
+      if (!featureProps) return [];
 
-    const config = imageConfigs[configKey];
-    if (!config || !config.condition) return [];
+      const config = imageConfigs[configKey];
+      if (!config || !config.condition) return [];
 
-    const propertyKey = config.propertyKey;
+      const propertyKey = config.propertyKey;
 
-    return (featureProps[propertyKey] ?? '').split(',').filter((e) => e);
-  }, [isEditing, paramParser.currentData.inputData?.gisData, imageConfigs, type_srv]);
+      return (featureProps[propertyKey] ?? '').split(',').filter((e) => e);
+    },
+    [isEditing, paramParser.currentData.inputData?.gisData, imageConfigs, type_srv],
+  );
 
-  const [newAllImageIds, setNewAllImageIds] = useState<AllImageIdsState>(() => {
+  const [newAllImageIds, setNewAllImageIds] = useState<AllImageIdsState>({});
+  const [allImages, setAllImages] = useState<AllImagesState>({});
+  const [preparedData, setPreparedData] = useState<typeof paramParser.currentData | null>(null);
+
+  useEffect(() => {
+    if (paramParser.isLoading) return;
     const initialIds: AllImageIdsState = {};
-    
+    const initialImages: AllImagesState = {};
     Object.keys(imageConfigs).forEach((key) => {
       initialIds[key] = getServerImageIds(key);
-    });
-    
-    return initialIds;
-  });
-
-  const [allImages, setAllImages] = useState<AllImagesState>(() => {
-    const initialImages: AllImagesState = {};
-    
-    Object.keys(imageConfigs).forEach((key) => {
       initialImages[key] = getInitialImages(key);
     });
-    
-    return initialImages;
-  });
+    setNewAllImageIds(initialIds);
+    setAllImages(initialImages);
+    setPreparedData(paramParser.currentData);
+  }, [
+    paramParser.isLoading,
+    paramParser.currentData,
+    imageConfigs,
+    getServerImageIds,
+    getInitialImages,
+  ]);
 
   // 特定の画像タイプのIDを更新する関数
   const updateImageIds = useCallback((configKey: string, ids: string[]) => {
@@ -96,6 +105,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
   }, []);
 
   useEffect(() => {
+    if (paramParser.isLoading) return;
     if (!paramParser.currentData.dataType) {
       alert('情報の取得に失敗しました。');
       router.push('/map');
@@ -106,9 +116,10 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
     if (paramParser.currentData.isImageSkipped && !isEditing) {
       router.push('/add/location');
     }
-  }, [paramParser.currentData]);
+  }, [paramParser.isLoading, paramParser.currentData, isEditing, router]);
 
   const onClickNext = useCallback(() => {
+    if (paramParser.isLoading || preparedData !== paramParser.currentData) return;
     const newData = JSON.parse(JSON.stringify(paramParser.currentData)) as InputFormData;
 
     if (!isEditing && !newData.inputData?.gisData) {
@@ -134,7 +145,7 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
 
       // 画像IDをプロパティに保存
       const propertyKey = config.propertyKey;
-      
+
       featureProps[propertyKey] = newAllImageIds[configKey]?.join(',') ?? '';
     });
 
@@ -147,11 +158,20 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
     } else {
       router.push('/add/location');
     }
-  }, [allImages, newAllImageIds, imageConfigs, type_srv, paramParser, isEditing, router]);
+  }, [
+    allImages,
+    newAllImageIds,
+    imageConfigs,
+    type_srv,
+    paramParser,
+    preparedData,
+    isEditing,
+    router,
+  ]);
 
   const onClickPrev = useCallback(() => {
-    if (sessionStorage.getItem('fromList') === "1") {
-      sessionStorage.setItem('fromList', "2");
+    if (sessionStorage.getItem('fromList') === '1') {
+      sessionStorage.setItem('fromList', '2');
       router.push('/list');
       return;
     }
@@ -176,15 +196,18 @@ const ImageSelectorTemplate: React.FC<InputFormTemplateCommonProps> = ({ isEditi
     } else {
       router.push('/add');
     }
-  }, [paramParser.currentData]);
+  }, [paramParser.isLoading, paramParser.currentData, isEditing, router]);
 
-  const createImageChangeHandler = useCallback((configKey: string) => {
-    return (files: ImagewithLocation[]) => {
-      updateImages(configKey, files.length === 0 ? null : files);
-    };
-  }, [updateImages]);
+  const createImageChangeHandler = useCallback(
+    (configKey: string) => {
+      return (files: ImagewithLocation[]) => {
+        updateImages(configKey, files.length === 0 ? null : files);
+      };
+    },
+    [updateImages],
+  );
 
-  if (paramParser.isLoading) return <></>;
+  if (paramParser.isLoading || preparedData !== paramParser.currentData) return <></>;
 
   const activeConfigs = Object.entries(imageConfigs).filter(([_, config]) => config.condition);
 
