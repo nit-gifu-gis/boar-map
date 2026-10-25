@@ -45,7 +45,20 @@ export const test = base.extend<{ authState: AuthState; app: MockApp }>({
       const requests: ApiRequest[] = [];
       const unexpectedApi: string[] = [];
       const pageErrors: string[] = [];
+      const reactDiagnostics: string[] = [];
       page.on('pageerror', (error) => pageErrors.push(error.message));
+      page.on('console', (message) => {
+        // HTTP 401s and intentionally aborted requests also appear as console errors.
+        // Only fail on React lifecycle/rendering diagnostics, not those expected network logs.
+        if (
+          message.type() === 'error' &&
+          /cannot update a component|while rendering a different component|maximum update depth|can(?:not|'t) perform (?:a )?react state update|hydration (?:failed|error|mismatch)|a tree hydrated but|text content does not match|did not match.+(?:server|client)/i.test(
+            message.text(),
+          )
+        ) {
+          reactDiagnostics.push(message.text());
+        }
+      });
 
       // Context routing covers popups as well as the page. No external request is continued.
       await context.route('**/*', async (route) => {
@@ -173,6 +186,10 @@ export const test = base.extend<{ authState: AuthState; app: MockApp }>({
         'Every application API request must have an explicit local mock',
       ).toEqual([]);
       expect(pageErrors, 'No unhandled browser errors during the migration flows').toEqual([]);
+      expect(
+        reactDiagnostics,
+        'No React lifecycle or hydration errors during the migration flows',
+      ).toEqual([]);
     },
     { auto: true },
   ],

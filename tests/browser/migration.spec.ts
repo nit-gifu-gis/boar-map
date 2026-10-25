@@ -43,10 +43,13 @@ test.describe('invalid authentication cookie', () => {
 test('an authenticated login visit redirects to a map that survives Link navigation and resize', async ({
   page,
   app,
-}) => {
+}, testInfo) => {
   await page.goto('/login');
   await expect(page).toHaveURL(/\/map$/);
   await expectMap(page);
+  const mapScreenshot = testInfo.outputPath('authenticated-map.png');
+  await page.screenshot({ path: mapScreenshot });
+  await testInfo.attach('Authenticated map', { path: mapScreenshot, contentType: 'image/png' });
 
   for (let visit = 0; visit < 2; visit += 1) {
     await openNavigation(page);
