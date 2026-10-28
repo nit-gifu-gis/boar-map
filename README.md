@@ -52,6 +52,8 @@ docker run --rm --publish 3000:3000 boar-map:local
 
 Dockerビルドでもlint・型チェック・単体テスト・本番ビルドを実行します。`.env`類やローカルの`node_modules`はイメージに含みません。Node.js 24のDebian bookwormイメージを使い、実行時は`node`ユーザーで起動します。
 
+コンテナは`node node_modules/next/dist/bin/next start`でNext.jsを直接起動します。Composeなどで起動コマンドを上書きする場合も、このコマンドを指定してください。Dockerfileを変更した場合はイメージを再ビルドし、新しいイメージからコンテナを作り直してください。
+
 Sentryへソースマップを送信するビルドでは、環境変数`SENTRY_AUTH_TOKEN`をBuildKitのsecretとして渡します。トークンをbuild-argや実行コンテナの環境変数に設定する必要はありません。
 
 ```bash

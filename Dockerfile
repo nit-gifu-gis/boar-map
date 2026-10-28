@@ -34,4 +34,5 @@ COPY --from=build --chown=node:node /app/public ./public
 COPY --from=build --chown=node:node /app/package.json /app/yarn.lock /app/next.config.mjs ./
 USER node
 EXPOSE 3000
-CMD ["yarn", "start"]
+# Start the built app without creating Yarn state files at runtime.
+CMD ["node", "node_modules/next/dist/bin/next", "start"]
