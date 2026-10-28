@@ -29,9 +29,11 @@ ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT=${NEXT_PUBLIC_SENTRY_ENVIRONMENT} \
     NEXT_PUBLIC_SENTRY_RELEASE=${NEXT_PUBLIC_SENTRY_RELEASE}
 
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
+# Yarn needs both its install state and node-modules linker configuration at runtime.
+COPY --from=build --chown=node:node /app/.yarn ./.yarn
 COPY --from=build --chown=node:node /app/.next ./.next
 COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/package.json /app/yarn.lock /app/next.config.mjs ./
+COPY --from=build --chown=node:node /app/package.json /app/yarn.lock /app/.yarnrc.yml /app/next.config.mjs ./
 USER node
 EXPOSE 3000
 CMD ["yarn", "start"]
